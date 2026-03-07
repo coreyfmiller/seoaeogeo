@@ -25,7 +25,9 @@ export async function POST(req: Request) {
             title: scanResult.title,
             description: scanResult.description,
             thinnedText: scanResult.thinnedText,
-            schemas: scanResult.schemas
+            schemas: scanResult.schemas,
+            structuralData: scanResult.structuralData
+
         });
         console.log(`[API] Analysis complete.`);
 

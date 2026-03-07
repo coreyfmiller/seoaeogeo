@@ -102,7 +102,18 @@ interface SEOTabProps {
       status: number,
       responseTimeMs: number
     },
+    structuralData?: {
+      semanticTags: { article: number, main: number, nav: number, aside: number, headers: number };
+      links: { internal: number, external: number };
+      media: { totalImages: number, imagesWithAlt: number };
+      wordCount: number;
+    },
     ai?: {
+      penaltyLedger?: Array<{
+        category: "seo" | "aeo" | "geo",
+        penalty: string,
+        pointsDeducted: number
+      }>,
       seoAnalysis: {
         onPageIssues: string[],
         keywordOpportunities: string[],
@@ -112,6 +123,8 @@ interface SEOTabProps {
     }
   }
 }
+
+
 
 export function SEOTab({ data }: SEOTabProps) {
   const displayTechnicalHealth = data?.technical ? [
@@ -124,9 +137,39 @@ export function SEOTab({ data }: SEOTabProps) {
   ] : technicalHealth
 
   const aiSeo = data?.ai?.seoAnalysis
+  const penaltyLedger = data?.ai?.penaltyLedger || []
+  const struct = data?.structuralData
 
   return (
     <div className="grid gap-6">
+      {/* Penalty Ledger Header (Only shows if penalties exist) */}
+      {penaltyLedger.length > 0 && (
+        <Card className="border-destructive/30 bg-destructive/5 mb-2 shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2 text-destructive">
+              <Shield className="h-5 w-5" />
+              Intelligence Penalty Ledger
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">The AI explicitly deducted points from this site for the following structural failures:</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {penaltyLedger.map((penalty, i) => (
+                <div key={i} className="flex items-start gap-3 rounded-lg border border-destructive/20 bg-background/50 p-3">
+                  <Badge variant="outline" className="border-destructive/50 text-destructive bg-destructive/10 shrink-0">
+                    {penalty.pointsDeducted} pts
+                  </Badge>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[10px] font-bold uppercase text-muted-foreground mb-1">{penalty.category} Penalty</div>
+                    <div className="text-sm font-medium text-foreground leading-tight">{penalty.penalty}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* On-Page AI Analysis */}
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="border-seo/20 bg-seo-muted/10">
@@ -293,45 +336,89 @@ export function SEOTab({ data }: SEOTabProps) {
         </Card>
       </div>
 
-      {/* Technical Health */}
-      <Card className="border-seo/20 bg-seo-muted/10">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg flex items-center gap-2 text-foreground">
-            <Shield className="h-5 w-5 text-seo" />
-            Technical Health Checklist
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {displayTechnicalHealth.map((item) => (
-              <div
-                key={item.name}
-                className={cn(
-                  "flex items-center gap-3 rounded-lg border p-3 transition-colors",
-                  item.status
-                    ? "border-geo/30 bg-geo-muted/20"
-                    : "border-destructive/30 bg-destructive/10"
-                )}
-              >
-                <item.icon
+      {/* Technical Health & Structure */}
+      <h2 className="text-xl font-bold mt-4 flex items-center gap-2">
+        <Bot className="h-6 w-6 text-geo" />
+        Extracted DOM Intelligence
+      </h2>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card className="border-seo/20 bg-seo-muted/10 h-full">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+              <Shield className="h-5 w-5 text-seo" />
+              Technical Response Items
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {displayTechnicalHealth.map((item) => (
+                <div
+                  key={item.name}
                   className={cn(
-                    "h-5 w-5",
-                    item.status ? "text-geo" : "text-destructive"
+                    "flex items-center gap-3 rounded-lg border p-3 transition-colors",
+                    item.status
+                      ? "border-geo/30 bg-geo-muted/20"
+                      : "border-destructive/30 bg-destructive/10"
                   )}
-                />
-                <span className="text-sm font-medium text-foreground">{item.name}</span>
-                <div className="ml-auto">
-                  {item.status ? (
-                    <CheckCircle2 className="h-5 w-5 text-geo" />
-                  ) : (
-                    <XCircle className="h-5 w-5 text-destructive" />
-                  )}
+                >
+                  <item.icon
+                    className={cn(
+                      "h-5 w-5",
+                      item.status ? "text-geo" : "text-destructive"
+                    )}
+                  />
+                  <span className="text-sm font-medium text-foreground">{item.name}</span>
+                  <div className="ml-auto">
+                    {item.status ? (
+                      <CheckCircle2 className="h-5 w-5 text-geo" />
+                    ) : (
+                      <XCircle className="h-5 w-5 text-destructive" />
+                    )}
+                  </div>
                 </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-seo/20 bg-seo-muted/10 h-full">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+              <FileText className="h-5 w-5 text-seo" />
+              Semantic DOM Structure
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-background/50">
+                <span className="text-sm font-medium text-muted-foreground">Word Count</span>
+                <span className="font-mono font-bold">{struct?.wordCount || 0}</span>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-background/50">
+                <span className="text-sm font-medium text-muted-foreground">Internal Links</span>
+                <span className="font-mono font-bold text-seo">{struct?.links?.internal || 0}</span>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-background/50">
+                <span className="text-sm font-medium text-muted-foreground">Semantic Body Tags</span>
+                <span className="font-mono font-bold">
+                  {(struct?.semanticTags?.article || 0) + (struct?.semanticTags?.main || 0) + (struct?.semanticTags?.aside || 0)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-background/50">
+                <span className="text-sm font-medium text-muted-foreground">Header Tags (H1-H6)</span>
+                <span className="font-mono font-bold">{struct?.semanticTags?.headers || 0}</span>
+              </div>
+            </div>
+
+            {struct?.wordCount && struct.wordCount < 300 && (
+              <div className="mt-4 p-3 rounded-lg border border-destructive/30 bg-destructive/10 text-destructive text-sm flex gap-2">
+                <XCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                Warning: Thin Content. Sites with under 300 words of body text rarely rank in AI queries.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

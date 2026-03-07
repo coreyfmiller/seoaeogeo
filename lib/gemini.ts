@@ -9,16 +9,30 @@ export async function analyzeWithGemini(context: {
   description: string;
   thinnedText: string;
   schemas: any[];
+  structuralData?: any;
 }) {
+
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   const prompt = `
-    Analyze the following website content for Search Intelligence (SEO, AEO, and GEO).
+    You are a ruthless, highly-critical Search Intelligence Analyst evaluating a website for SEO, AEO (Answer Engine Optimization), and GEO (Generative Engine Optimization).
+    
+    CRITICAL GRADING RULES - DO NOT IGNORE:
+    1. Base Score is ZERO. Sites must EARN points. Do not give "benefit of the doubt" scores.
+    2. Any site with under 500 words of body text should not exceed 40/100 in any category.
+    3. Sites with NO LD+JSON schema MUST be heavily penalized in AEO/GEO (Max score 30).
+    4. If there is little to no internal linking, penalize SEO heavily.
+    5. Be brutal but accurate. A 15-year old local business site with generic copy should score below 30.
+
+    Analyze the following extracted data:
     
     WEBSITE TITLE: ${context.title}
     METADATA: ${context.description}
     LD+JSON SCHEMAS: ${JSON.stringify(context.schemas)}
+    
+    STRUCTURAL DATA (Extracted from DOM):
+    ${context.structuralData ? JSON.stringify(context.structuralData, null, 2) : "Not available"}
     
     BODY CONTENT (THINNED): 
     ---
@@ -32,10 +46,15 @@ export async function analyzeWithGemini(context: {
         "aeo": number (0-100),
         "geo": number (0-100)
       },
+      "penaltyLedger": Array<{
+        "category": "seo" | "aeo" | "geo",
+        "penalty": string,
+        "pointsDeducted": number (e.g., -20)
+      }>,
       "seoAnalysis": {
         "onPageIssues": string[],
         "keywordOpportunities": string[],
-        "contentQuality": "excellent" | "good" | "fair" | "poor",
+        "contentQuality": "excellent" | "good" | "fair" | "poor" | "unacceptable",
         "metaAnalysis": string
       },
       "aeoAnalysis": {
@@ -60,6 +79,7 @@ export async function analyzeWithGemini(context: {
       }>
     }
   `;
+
 
   try {
     const result = await model.generateContent(prompt);
