@@ -110,7 +110,13 @@ const categoryColors = {
   geo: "text-geo",
 }
 
-export function Recommendations() {
+interface RecommendationsProps {
+  data?: Recommendation[]
+}
+
+export function Recommendations({ data }: RecommendationsProps) {
+  const displayRecommendations = data && data.length > 0 ? data : recommendations
+
   return (
     <Card className="border-border/50 bg-card/50 h-full">
       <CardHeader className="pb-3">
@@ -120,7 +126,7 @@ export function Recommendations() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {recommendations.map((rec) => {
+        {displayRecommendations.map((rec) => {
           const config = priorityConfig[rec.priority]
           const PriorityIcon = config.icon
           return (

@@ -81,7 +81,23 @@ const llmPresence = [
   { name: "Perplexity", citations: 52, trend: 22 },
 ]
 
-export function GEOTab() {
+interface GEOTabProps {
+  data?: {
+    sentimentScore: number,
+    brandPerception: "positive" | "neutral" | "negative",
+    citationLikelihood: number,
+    llmContextClarity: number,
+    visibilityGaps: string[]
+  }
+}
+
+export function GEOTab({ data }: GEOTabProps) {
+  const displaySentiment = data ? [
+    { name: "Positive", value: Math.max(0, data.sentimentScore), color: "oklch(0.7 0.2 160)" },
+    { name: "Neutral", value: data.sentimentScore === 0 ? 100 : 0, color: "oklch(0.65 0 0)" },
+    { name: "Negative", value: Math.max(0, -data.sentimentScore), color: "oklch(0.55 0.22 25)" },
+  ] : sentimentData
+
   return (
     <div className="grid gap-6">
       {/* Brand Share of Voice */}
@@ -150,7 +166,7 @@ export function GEOTab() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {sentimentData.map((item) => (
+              {displaySentiment.map((item) => (
                 <div key={item.name} className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-foreground">{item.name}</span>
@@ -173,44 +189,63 @@ export function GEOTab() {
                 <TrendingUp className="h-5 w-5 text-geo" />
                 <span className="font-medium text-foreground">Overall Sentiment Score</span>
               </div>
-              <p className="mt-2 text-3xl font-bold text-geo">+78%</p>
+              <p className="mt-2 text-3xl font-bold text-geo">{data ? (data.sentimentScore > 0 ? `+${data.sentimentScore}` : data.sentimentScore) : "+78"}%</p>
               <p className="text-sm text-muted-foreground">Positive perception across LLMs</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* LLM Presence */}
-      <Card className="border-geo/20 bg-geo-muted/10">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg flex items-center gap-2 text-foreground">
-            <Bot className="h-5 w-5 text-geo" />
-            LLM Citation Presence
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {llmPresence.map((llm) => (
-              <div
-                key={llm.name}
-                className="rounded-lg border border-geo/20 bg-geo-muted/20 p-4"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-foreground">{llm.name}</span>
-                  <Badge
-                    variant="outline"
-                    className="border-geo/50 text-geo bg-geo/10"
-                  >
-                    +{llm.trend}%
-                  </Badge>
+      {/* Visibility Gaps & Clarity */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card className="border-geo/20 bg-geo-muted/10">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+              <Bot className="h-5 w-5 text-geo" />
+              AI Visibility Gaps
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {data?.visibilityGaps && data.visibilityGaps.length > 0 ? (
+                data.visibilityGaps.map((gap: string) => (
+                  <div key={gap} className="flex items-start gap-2 text-sm text-foreground/80">
+                    <TrendingUp className="h-4 w-4 text-geo mt-0.5 shrink-0" />
+                    <span>{gap}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground italic">Run an analysis to identify visibility gaps...</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-geo/20 bg-geo-muted/10">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+              <Sparkles className="h-5 w-5 text-geo" />
+              LLM Context Clarity
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col items-center justify-center py-4">
+              <div className="relative h-24 w-full">
+                <Progress value={data?.citationLikelihood ?? 70} className="h-4 bg-muted" />
+                <div className="mt-2 flex justify-between text-xs text-muted-foreground uppercase font-semibold">
+                  <span>Likelihood of Citation</span>
+                  <span className="text-geo">{data?.citationLikelihood ?? 70}%</span>
                 </div>
-                <p className="mt-2 text-3xl font-bold text-foreground">{llm.citations}</p>
-                <p className="text-sm text-muted-foreground">citations this month</p>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              <div className="mt-6 w-full p-4 rounded bg-geo-muted/30 border border-geo/10">
+                <p className="text-sm text-foreground/70 text-center italic">
+                  "Your site's context clarity is rated at {data?.citationLikelihood ?? 70}%. High clarity leads to more frequent and accurate AI citations."
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* AI Citation Mentions */}
       <Card className="border-geo/20 bg-geo-muted/10">
@@ -243,11 +278,11 @@ export function GEOTab() {
                         variant="outline"
                         className={cn(
                           citation.sentiment === "positive" &&
-                            "border-geo/50 text-geo",
+                          "border-geo/50 text-geo",
                           citation.sentiment === "neutral" &&
-                            "border-muted-foreground/50 text-muted-foreground",
+                          "border-muted-foreground/50 text-muted-foreground",
                           citation.sentiment === "negative" &&
-                            "border-destructive/50 text-destructive"
+                          "border-destructive/50 text-destructive"
                         )}
                       >
                         {citation.sentiment}

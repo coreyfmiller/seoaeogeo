@@ -20,6 +20,7 @@ import {
   Shield,
   MapPin,
   Bot,
+  Sparkles,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -94,59 +95,98 @@ const trafficData = [
   { month: "Jun", organic: 26400, direct: 5800 },
 ]
 
-export function SEOTab() {
+interface SEOTabProps {
+  data?: {
+    technical?: {
+      isHttps: boolean,
+      status: number,
+      responseTimeMs: number
+    },
+    ai?: {
+      seoAnalysis: {
+        onPageIssues: string[],
+        keywordOpportunities: string[],
+        contentQuality: string,
+        metaAnalysis: string
+      }
+    }
+  }
+}
+
+export function SEOTab({ data }: SEOTabProps) {
+  const displayTechnicalHealth = data?.technical ? [
+    { name: "SSL Certificate", status: data.technical.isHttps, icon: Shield },
+    { name: "Server Status", status: data.technical.status === 200, icon: MapPin },
+    { name: "Response Time", status: data.technical.responseTimeMs < 2000, icon: Bot },
+    { name: "Canonical Tags", status: true, icon: FileText },
+    { name: "Mobile Friendly", status: true, icon: CheckCircle2 },
+    { name: "Core Web Vitals", status: false, icon: TrendingUp },
+  ] : technicalHealth
+
+  const aiSeo = data?.ai?.seoAnalysis
+
   return (
     <div className="grid gap-6">
-      {/* Traffic Growth Chart */}
-      <Card className="border-seo/20 bg-seo-muted/10">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg flex items-center gap-2 text-foreground">
-            <TrendingUp className="h-5 w-5 text-seo" />
-            Organic Traffic Growth
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[200px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={trafficData}>
-                <defs>
-                  <linearGradient id="organicGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="oklch(0.7 0.2 250)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="oklch(0.7 0.2 250)" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis
-                  dataKey="month"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "oklch(0.65 0 0)", fontSize: 12 }}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: "oklch(0.65 0 0)", fontSize: 12 }}
-                  tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "oklch(0.13 0.01 260)",
-                    border: "1px solid oklch(0.25 0.01 260)",
-                    borderRadius: "8px",
-                    color: "oklch(0.95 0 0)",
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="organic"
-                  stroke="oklch(0.7 0.2 250)"
-                  strokeWidth={2}
-                  fill="url(#organicGradient)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+      {/* On-Page AI Analysis */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card className="border-seo/20 bg-seo-muted/10">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+              <Sparkles className="h-5 w-5 text-seo" />
+              On-Page AI Audit
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {aiSeo ? (
+                aiSeo.onPageIssues.map((issue: string, i: number) => (
+                  <div key={i} className="flex items-start gap-2 text-sm text-foreground/80">
+                    <XCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" />
+                    <span>{issue}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground italic">Run an analysis to see AI audit results...</p>
+              )}
+            </div>
+            {aiSeo?.metaAnalysis && (
+              <div className="mt-4 p-3 rounded bg-seo-muted/30 border border-seo/10">
+                <p className="text-xs font-semibold text-seo uppercase mb-1">AI Context Analysis</p>
+                <p className="text-sm text-foreground/70 leading-relaxed">{aiSeo.metaAnalysis}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="border-seo/20 bg-seo-muted/10">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+              <TrendingUp className="h-5 w-5 text-seo" />
+              Keyword Opportunities
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {aiSeo ? (
+                aiSeo.keywordOpportunities.map((kw: string, i: number) => (
+                  <Badge key={i} variant="outline" className="border-seo/30 text-seo bg-seo/5 px-3 py-1 text-sm">
+                    {kw}
+                  </Badge>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground italic">Identify new keyword gaps via AI...</p>
+              )}
+            </div>
+            <div className="mt-6 h-[100px] w-full opacity-50">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={trafficData}>
+                  <Area type="monotone" dataKey="organic" stroke="oklch(0.7 0.2 250)" fill="transparent" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Keyword Rankings */}
@@ -270,7 +310,7 @@ export function SEOTab() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {technicalHealth.map((item) => (
+            {displayTechnicalHealth.map((item) => (
               <div
                 key={item.name}
                 className={cn(

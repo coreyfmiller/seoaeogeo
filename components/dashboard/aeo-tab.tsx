@@ -85,8 +85,25 @@ const featuredSnippets = [
   },
 ]
 
-export function AEOTab() {
-  const schemaHealthScore = 85
+interface AEOTabProps {
+  data?: {
+    questionsAnswered: { who: number, what: number, where: number, why: number, how: number },
+    missingSchemas: string[],
+    snippetEligibilityScore: number,
+    topOpportunities: string[]
+  }
+}
+
+export function AEOTab({ data }: AEOTabProps) {
+  const schemaHealthScore = data?.snippetEligibilityScore ?? 85
+
+  const displayQuestionAnalysis = data ? [
+    { type: "Who", questions: 10, answered: data.questionsAnswered.who, examples: [] },
+    { type: "What", questions: 10, answered: data.questionsAnswered.what, examples: [] },
+    { type: "Where", questions: 10, answered: data.questionsAnswered.where, examples: [] },
+    { type: "Why", questions: 10, answered: data.questionsAnswered.why, examples: [] },
+    { type: "How", questions: 10, answered: data.questionsAnswered.how, examples: [] },
+  ] : questionAnalysis
 
   return (
     <div className="grid gap-6">
@@ -140,46 +157,47 @@ export function AEOTab() {
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Code2 className="h-5 w-5 text-aeo" />
-              Schema Validation Status
+              Real-time Schema Audit
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-3 sm:grid-cols-2">
-              {schemaTypes.map((schema) => (
-                <div
-                  key={schema.name}
-                  className={cn(
-                    "flex items-center gap-3 rounded-lg border p-3",
-                    schema.status === "valid" && "border-geo/30 bg-geo-muted/10",
-                    schema.status === "warning" && "border-yellow-500/30 bg-yellow-500/10",
-                    schema.status === "error" && "border-destructive/30 bg-destructive/10"
-                  )}
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      {schema.status === "valid" && (
-                        <CheckCircle2 className="h-4 w-4 text-geo" />
-                      )}
-                      {schema.status === "warning" && (
-                        <AlertCircle className="h-4 w-4 text-yellow-500" />
-                      )}
-                      {schema.status === "error" && (
-                        <XCircle className="h-4 w-4 text-destructive" />
-                      )}
-                      <span className="text-sm font-medium text-foreground">{schema.name}</span>
-                    </div>
-                    <div className="mt-2 flex items-center gap-2">
-                      <Progress
-                        value={schema.coverage}
-                        className="h-1.5 flex-1 bg-muted"
-                      />
-                      <span className="text-xs text-muted-foreground w-8">
-                        {schema.coverage}%
-                      </span>
+              {data?.missingSchemas && data.missingSchemas.length > 0 ? (
+                data.missingSchemas.map((schema: string) => (
+                  <div key={schema} className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-3">
+                    <XCircle className="h-4 w-4 text-destructive" />
+                    <span className="text-sm font-medium text-foreground">{schema}</span>
+                    <Badge variant="outline" className="ml-auto border-destructive/20 text-destructive text-[10px]">MISSING</Badge>
+                  </div>
+                ))
+              ) : (
+                schemaTypes.map((schema) => (
+                  <div
+                    key={schema.name}
+                    className={cn(
+                      "flex items-center gap-3 rounded-lg border p-3",
+                      schema.status === "valid" && "border-geo/30 bg-geo-muted/10",
+                      schema.status === "warning" && "border-yellow-500/30 bg-yellow-500/10",
+                      schema.status === "error" && "border-destructive/30 bg-destructive/10"
+                    )}
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        {schema.status === "valid" && (
+                          <CheckCircle2 className="h-4 w-4 text-geo" />
+                        )}
+                        {schema.status === "warning" && (
+                          <AlertCircle className="h-4 w-4 text-yellow-500" />
+                        )}
+                        {schema.status === "error" && (
+                          <XCircle className="h-4 w-4 text-destructive" />
+                        )}
+                        <span className="text-sm font-medium text-foreground">{schema.name}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
@@ -195,7 +213,7 @@ export function AEOTab() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            {questionAnalysis.map((qa) => {
+            {displayQuestionAnalysis.map((qa) => {
               const percentage = Math.round((qa.answered / qa.questions) * 100)
               return (
                 <div
@@ -245,49 +263,63 @@ export function AEOTab() {
         </CardHeader>
         <CardContent>
           <div className="grid gap-3 sm:grid-cols-2">
-            {featuredSnippets.map((snippet) => (
-              <div
-                key={snippet.query}
-                className={cn(
-                  "flex items-start gap-3 rounded-lg border p-4",
-                  snippet.status === "featured"
-                    ? "border-aeo/40 bg-aeo-muted/30"
-                    : "border-border/50 bg-muted/20"
-                )}
-              >
-                <MessageSquareQuote
-                  className={cn(
-                    "h-5 w-5 mt-0.5 shrink-0",
-                    snippet.status === "featured" ? "text-aeo" : "text-muted-foreground"
-                  )}
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">
-                    {snippet.query}
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        snippet.status === "featured"
-                          ? "border-aeo/50 text-aeo bg-aeo/10"
-                          : "border-muted-foreground/50 text-muted-foreground"
-                      )}
-                    >
-                      {snippet.status === "featured" ? "Featured" : "Eligible"}
-                    </Badge>
-                    {snippet.position > 0 && (
-                      <span className="text-xs text-muted-foreground">
-                        Position #{snippet.position}
-                      </span>
-                    )}
+            {data?.topOpportunities && data.topOpportunities.length > 0 ? (
+              data.topOpportunities.map((opp: string) => (
+                <div
+                  key={opp}
+                  className="flex items-start gap-3 rounded-lg border border-aeo/40 bg-aeo-muted/30 p-4"
+                >
+                  <Sparkles className="h-5 w-5 mt-0.5 shrink-0 text-aeo" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground">
+                      {opp}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge variant="outline" className="border-aeo/50 text-aeo bg-aeo/10">AI RECOMMENDATION</Badge>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              featuredSnippets.map((snippet) => (
+                <div
+                  key={snippet.query}
+                  className={cn(
+                    "flex items-start gap-3 rounded-lg border p-4",
+                    snippet.status === "featured"
+                      ? "border-aeo/40 bg-aeo-muted/30"
+                      : "border-border/50 bg-muted/20"
+                  )}
+                >
+                  <MessageSquareQuote
+                    className={cn(
+                      "h-5 w-5 mt-0.5 shrink-0",
+                      snippet.status === "featured" ? "text-aeo" : "text-muted-foreground"
+                    )}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {snippet.query}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          snippet.status === "featured"
+                            ? "border-aeo/50 text-aeo bg-aeo/10"
+                            : "border-muted-foreground/50 text-muted-foreground"
+                        )}
+                      >
+                        {snippet.status === "featured" ? "Featured" : "Eligible"}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>
-    </div>
+    </div >
   )
 }

@@ -23,14 +23,39 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("seo")
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [currentUrl, setCurrentUrl] = useState("https://searchiq.example.com")
+  const [analysisData, setAnalysisData] = useState<any>(null)
 
-  const handleAnalyze = (url: string) => {
+  const handleAnalyze = async (url: string) => {
     setIsAnalyzing(true)
     setCurrentUrl(url)
-    // Simulate analysis
-    setTimeout(() => {
+
+    try {
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        setAnalysisData(result.data)
+        console.log('Scan Successful:', result.data)
+      } else {
+        console.error('Scan Error:', result.error)
+      }
+    } catch (error) {
+      console.error('Crawler failed:', error)
+    } finally {
       setIsAnalyzing(false)
-    }, 2000)
+    }
+  }
+
+  // Use real data scores or default mock scores
+  const scores = analysisData?.ai?.scores || {
+    seo: 78,
+    aeo: 85,
+    geo: 62
   }
 
   return (
@@ -82,22 +107,22 @@ export default function Dashboard() {
                 <div className="grid gap-4 sm:grid-cols-3 mb-6">
                   <ScoreCard
                     title="SEO Visibility"
-                    score={78}
-                    change={5}
+                    score={scores.seo}
+                    change={analysisData ? 0 : 5}
                     variant="seo"
                     description="Crawlability & Authority"
                   />
                   <ScoreCard
                     title="AEO Readiness"
-                    score={85}
-                    change={12}
+                    score={scores.aeo}
+                    change={analysisData ? 0 : 12}
                     variant="aeo"
                     description="Snippets & Knowledge Graph"
                   />
                   <ScoreCard
                     title="GEO Presence"
-                    score={62}
-                    change={-3}
+                    score={scores.geo}
+                    change={analysisData ? 0 : -3}
                     variant="geo"
                     description="Citations & LLM Context"
                   />
@@ -147,13 +172,13 @@ export default function Dashboard() {
 
                   <div className="mt-6">
                     <TabsContent value="seo" className="mt-0">
-                      <SEOTab />
+                      <SEOTab data={analysisData} />
                     </TabsContent>
                     <TabsContent value="aeo" className="mt-0">
-                      <AEOTab />
+                      <AEOTab data={analysisData?.ai?.aeoAnalysis} />
                     </TabsContent>
                     <TabsContent value="geo" className="mt-0">
-                      <GEOTab />
+                      <GEOTab data={analysisData?.ai?.geoAnalysis} />
                     </TabsContent>
                   </div>
                 </Tabs>
@@ -161,7 +186,7 @@ export default function Dashboard() {
 
               {/* Recommendations Sidebar */}
               <div className="w-full xl:w-80 shrink-0">
-                <Recommendations />
+                <Recommendations data={analysisData?.ai?.recommendations} />
               </div>
             </div>
           </div>
