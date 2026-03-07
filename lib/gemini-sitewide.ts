@@ -13,7 +13,7 @@ export async function analyzeSitewideIntelligence(context: {
   }>;
 }) {
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   const prompt = `
     Perform a PRO Deep Site Audit for the domain: ${context.domain}.

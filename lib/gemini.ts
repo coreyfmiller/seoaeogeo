@@ -11,7 +11,7 @@ export async function analyzeWithGemini(context: {
   schemas: any[];
 }) {
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
   const prompt = `
     Analyze the following website content for Search Intelligence (SEO, AEO, and GEO).
