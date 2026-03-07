@@ -15,7 +15,8 @@ import {
     TrendingUp,
     Target,
     Zap,
-    Lock
+    Lock,
+    Sparkles
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -38,13 +39,13 @@ export default function SiteAnalysis() {
             const response = await fetch('/api/analyze-site', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: targetUrl, maxPages: 10 })
+                body: JSON.stringify({ url: targetUrl, maxPages: 20 })
             })
 
             const result = await response.json()
 
             if (result.success) {
-                setAnalysisData(result.data.ai)
+                setAnalysisData(result.data)
                 setApiStatus("healthy")
             } else {
                 setError(result.error || 'Deep audit failed. Site might be blocking crawlers.')
@@ -76,7 +77,7 @@ export default function SiteAnalysis() {
                                     PRO: Deep Site Authority Audit
                                 </h1>
                                 <p className="text-muted-foreground mt-2 max-w-2xl">
-                                    Advanced sitewide analysis. We crawl 10+ pages to verify brand consistency,
+                                    Advanced sitewide analysis. We crawl 20+ pages to verify brand consistency,
                                     schema coverage, and global AI authority.
                                 </p>
                             </div>
@@ -165,7 +166,7 @@ export default function SiteAnalysis() {
                             <div className="flex flex-col items-center justify-center py-20 animate-in fade-in zoom-in-95">
                                 <div className="h-20 w-20 rounded-full border-4 border-t-geo border-r-aeo border-b-seo border-l-transparent animate-spin mb-6"></div>
                                 <h2 className="text-2xl font-bold">Deep Sitewide Scan in Progress...</h2>
-                                <p className="text-muted-foreground mt-2 italic animate-pulse">This usually takes 45-60 seconds for 10+ pages.</p>
+                                <p className="text-muted-foreground mt-2 italic animate-pulse">This usually takes 45-90 seconds for 20+ pages.</p>
                                 <div className="mt-8 w-64 h-2 bg-muted rounded-full overflow-hidden">
                                     <div className="h-full bg-geo animate-progress-fast"></div>
                                 </div>
@@ -174,29 +175,35 @@ export default function SiteAnalysis() {
                             /* Deep Audit Results */
                             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
                                 {/* Top Stats */}
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                                    <Card className="border-border/50 bg-muted/30">
+                                        <CardHeader className="pb-2">
+                                            <CardDescription className="text-xs font-bold uppercase tracking-tighter">Pages Scanned</CardDescription>
+                                            <CardTitle className="text-4xl font-black">{analysisData.pagesCrawled}</CardTitle>
+                                        </CardHeader>
+                                    </Card>
                                     <Card className="border-geo/20 bg-geo/5">
                                         <CardHeader className="pb-2">
                                             <CardDescription className="text-xs font-bold uppercase tracking-tighter">Domain Health</CardDescription>
-                                            <CardTitle className="text-4xl font-black text-geo">{analysisData.domainHealthScore}%</CardTitle>
+                                            <CardTitle className="text-4xl font-black text-geo">{analysisData.ai.domainHealthScore}%</CardTitle>
                                         </CardHeader>
                                     </Card>
                                     <Card className="border-aeo/20 bg-aeo/5">
                                         <CardHeader className="pb-2">
                                             <CardDescription className="text-xs font-bold uppercase tracking-tighter">Consistency</CardDescription>
-                                            <CardTitle className="text-4xl font-black text-aeo">{analysisData.consistencyScore}%</CardTitle>
+                                            <CardTitle className="text-4xl font-black text-aeo">{analysisData.ai.consistencyScore}%</CardTitle>
                                         </CardHeader>
                                     </Card>
                                     <Card className="border-border/50">
                                         <CardHeader className="pb-2">
                                             <CardDescription className="text-xs font-bold uppercase tracking-tighter">Schema Coverage</CardDescription>
-                                            <CardTitle className="text-4xl font-black">{analysisData.authorityMetrics.schemaCoverage}%</CardTitle>
+                                            <CardTitle className="text-4xl font-black">{analysisData.ai.authorityMetrics.schemaCoverage}%</CardTitle>
                                         </CardHeader>
                                     </Card>
                                     <Card className="border-border/50">
                                         <CardHeader className="pb-2">
                                             <CardDescription className="text-xs font-bold uppercase tracking-tighter">Meta Opt.</CardDescription>
-                                            <CardTitle className="text-4xl font-black">{analysisData.authorityMetrics.metadataOptimization}%</CardTitle>
+                                            <CardTitle className="text-4xl font-black">{analysisData.ai.authorityMetrics.metadataOptimization}%</CardTitle>
                                         </CardHeader>
                                     </Card>
                                 </div>
@@ -212,7 +219,7 @@ export default function SiteAnalysis() {
                                         </CardHeader>
                                         <CardContent>
                                             <div className="space-y-4">
-                                                {analysisData.sitewideInsights.map((insight: any, i: number) => (
+                                                {analysisData.ai.sitewideInsights.map((insight: any, i: number) => (
                                                     <div key={i} className="p-4 rounded-xl border border-border/40 bg-background/50 flex gap-4">
                                                         <div className={cn(
                                                             "h-8 w-8 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold",
@@ -240,7 +247,7 @@ export default function SiteAnalysis() {
                                             </CardHeader>
                                             <CardContent>
                                                 <p className="text-sm leading-relaxed text-foreground/80 italic">
-                                                    "{analysisData.navigationAnalysis}"
+                                                    "{analysisData.ai.navigationAnalysis}"
                                                 </p>
                                             </CardContent>
                                         </Card>
@@ -254,7 +261,7 @@ export default function SiteAnalysis() {
                                             </CardHeader>
                                             <CardContent>
                                                 <p className="text-sm font-medium leading-relaxed">
-                                                    {analysisData.brandClarityVerdict}
+                                                    {analysisData.ai.brandClarityVerdict}
                                                 </p>
                                                 <div className="mt-6 flex items-center justify-between">
                                                     <button
