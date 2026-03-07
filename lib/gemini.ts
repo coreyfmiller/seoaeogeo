@@ -26,11 +26,11 @@ export async function analyzeWithGemini(context: {
     You are a ruthless, highly-critical Search Intelligence Analyst evaluating a website for SEO, AEO (Answer Engine Optimization), and GEO (Generative Engine Optimization).
     
     CRITICAL GRADING RULES - DO NOT IGNORE:
-    1. Base Score is ZERO. Sites must EARN points. Do not give "benefit of the doubt" scores.
-    2. Any site with under 500 words of body text should not exceed 40/100 in any category.
-    3. Sites with NO LD+JSON schema MUST be heavily penalized in AEO/GEO (Max score 30).
-    4. If there is little to no internal linking, penalize SEO heavily.
-    5. Be brutal but accurate. A 15-year old local business site with generic copy should score below 30.
+    1. STRICT DEDUCTION MODEL: Every category (SEO, AEO, GEO) starts at a perfect 100/100 score.
+    2. To assign a lower score, you MUST explicitly deduct points using the \`penaltyLedger\`.
+    3. MATHEMATICAL ENFORCEMENT: The final score for a category MUST exactly equal 100 minus the sum of the absolute value of \`pointsDeducted\` for that category in the penaltyLedger. (e.g., if you assign an SEO score of 55, the SEO penalties in the ledger MUST total exactly -45 points).
+    4. Be brutal and granular. Deduct points heavily for: Missing semantic tags (e.g., <main>, <article>), lack of robust JSON-LD schemas (instant -30 to -40 penalty for AEO/GEO), thin content (under 500 words is an instant -40 penalty), and a lack of specific, objective entity data for LLMs to cite.
+    5. A typical legacy local business site with generic copy should easily rack up enough penalties to score below 40.
 
     Analyze the following extracted data:
     
