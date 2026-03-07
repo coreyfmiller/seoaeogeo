@@ -16,6 +16,7 @@ import {
   Bot,
   Clock,
   RefreshCw,
+  XCircle,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -24,9 +25,11 @@ export default function Dashboard() {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [currentUrl, setCurrentUrl] = useState("https://searchiq.example.com")
   const [analysisData, setAnalysisData] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const handleAnalyze = async (url: string) => {
     setIsAnalyzing(true)
+    setError(null)
     setCurrentUrl(url)
 
     try {
@@ -42,10 +45,12 @@ export default function Dashboard() {
         setAnalysisData(result.data)
         console.log('Scan Successful:', result.data)
       } else {
+        setError(result.error || 'Analysis failed. Please try again.')
         console.error('Scan Error:', result.error)
       }
-    } catch (error) {
-      console.error('Crawler failed:', error)
+    } catch (err: any) {
+      setError('Connection failed. Ensure the server is running.')
+      console.error('Crawler failed:', err)
     } finally {
       setIsAnalyzing(false)
     }
@@ -99,6 +104,20 @@ export default function Dashboard() {
                 </button>
               </div>
             </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="mb-6 p-4 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
+                <XCircle className="h-5 w-5" />
+                <div className="flex-1 text-sm font-medium">{error}</div>
+                <button
+                  onClick={() => setError(null)}
+                  className="text-xs uppercase tracking-wider font-bold hover:underline"
+                >
+                  Dismiss
+                </button>
+              </div>
+            )}
 
             <div className="flex flex-col xl:flex-row gap-6">
               {/* Main Content Area */}

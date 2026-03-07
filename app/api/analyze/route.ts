@@ -15,15 +15,19 @@ export async function POST(req: Request) {
         }
 
         // 1. Crawler Core (Retrieval)
+        console.log(`[API] Starting crawl for: ${url}`);
         const scanResult = await performScan(url);
+        console.log(`[API] Crawl finished: ${scanResult.title}`);
 
         // 2. Gemini Intelligence (Analysis)
+        console.log(`[API] Starting Gemini analysis...`);
         const aiAnalysis = await analyzeWithGemini({
             title: scanResult.title,
             description: scanResult.description,
             thinnedText: scanResult.thinnedText,
             schemas: scanResult.schemas
         });
+        console.log(`[API] Analysis complete.`);
 
         return NextResponse.json({
             success: true,

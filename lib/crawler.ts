@@ -19,6 +19,11 @@ export interface ScanResult {
  * JS and extract relevant search/AI intelligence.
  */
 export async function performScan(targetUrl: string): Promise<ScanResult> {
+    // 0. Sanitize URL (ensure protocol)
+    if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+        targetUrl = `https://${targetUrl}`;
+    }
+
     let browser: Browser | null = null;
     const startTime = Date.now();
 

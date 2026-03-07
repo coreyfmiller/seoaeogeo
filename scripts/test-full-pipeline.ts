@@ -5,7 +5,7 @@ dotenv.config({ path: '.env.local' });
 console.log('Using Key:', process.env.GOOGLE_GENERATIVE_AI_API_KEY?.substring(0, 4) + '...' + process.env.GOOGLE_GENERATIVE_AI_API_KEY?.slice(-4));
 
 async function testFullPipeline() {
-    const url = 'https://www.google.com';
+    const url = process.argv[2] || 'https://www.google.com';
     console.log(`🚀 Testing Full Pipeline for: ${url}`);
 
     try {
