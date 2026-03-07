@@ -9,6 +9,8 @@ import {
   Menu,
   Globe,
   Loader2,
+  Activity,
+  ShieldAlert,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -16,9 +18,10 @@ interface HeaderProps {
   onAnalyze?: (url: string) => void
   isAnalyzing?: boolean
   currentUrl?: string
+  apiStatus?: "healthy" | "error" | "idle"
 }
 
-export function Header({ onAnalyze, isAnalyzing, currentUrl }: HeaderProps) {
+export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" }: HeaderProps) {
   const [url, setUrl] = useState(currentUrl || "")
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -75,7 +78,18 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl }: HeaderProps) {
       </form>
 
       {/* Right side actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
+        {/* API Status Indicator */}
+        <div className={cn(
+          "flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-wider",
+          apiStatus === "healthy" && "border-geo/30 bg-geo/10 text-geo",
+          apiStatus === "error" && "border-destructive/30 bg-destructive/10 text-destructive animate-pulse",
+          apiStatus === "idle" && "border-border/50 bg-muted/50 text-muted-foreground"
+        )}>
+          {apiStatus === "healthy" ? <Activity className="h-3 w-3" /> : <ShieldAlert className="h-3 w-3" />}
+          API {apiStatus}
+        </div>
+
         <Button
           variant="ghost"
           size="icon"

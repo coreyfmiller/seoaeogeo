@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [currentUrl, setCurrentUrl] = useState("https://searchiq.example.com")
   const [analysisData, setAnalysisData] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
+  const [apiStatus, setApiStatus] = useState<"healthy" | "error" | "idle">("idle")
 
   const handleAnalyze = async (url: string) => {
     setIsAnalyzing(true)
@@ -43,13 +44,16 @@ export default function Dashboard() {
 
       if (result.success) {
         setAnalysisData(result.data)
+        setApiStatus("healthy")
         console.log('Scan Successful:', result.data)
       } else {
         setError(result.error || 'Analysis failed. Please try again.')
+        setApiStatus("error")
         console.error('Scan Error:', result.error)
       }
     } catch (err: any) {
       setError('Connection failed. Ensure the server is running.')
+      setApiStatus("error")
       console.error('Crawler failed:', err)
     } finally {
       setIsAnalyzing(false)
@@ -75,6 +79,7 @@ export default function Dashboard() {
           onAnalyze={handleAnalyze}
           isAnalyzing={isAnalyzing}
           currentUrl={currentUrl}
+          apiStatus={apiStatus}
         />
 
         {/* Dashboard Content */}
