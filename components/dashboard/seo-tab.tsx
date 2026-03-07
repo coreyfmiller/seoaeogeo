@@ -166,23 +166,16 @@ export function SEOTab({ data }: SEOTabProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 overflow-hidden">
               {aiSeo ? (
                 aiSeo.keywordOpportunities.map((kw: string, i: number) => (
-                  <Badge key={i} variant="outline" className="border-seo/30 text-seo bg-seo/5 px-3 py-1 text-sm">
+                  <Badge key={i} variant="outline" className="border-seo/30 text-seo bg-seo/5 px-3 py-1 text-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]">
                     {kw}
                   </Badge>
                 ))
               ) : (
                 <p className="text-sm text-muted-foreground italic">Identify new keyword gaps via AI...</p>
               )}
-            </div>
-            <div className="mt-6 h-[100px] w-full opacity-50">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={trafficData}>
-                  <Area type="monotone" dataKey="organic" stroke="oklch(0.7 0.2 250)" fill="transparent" />
-                </AreaChart>
-              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
