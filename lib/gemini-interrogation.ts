@@ -11,7 +11,14 @@ export async function performLiveInterrogation(context: {
     contentSummary: string;
 }) {
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({
+        model: "gemini-2.5-flash",
+        generationConfig: {
+            temperature: 0.1,
+            topP: 0.1,
+            responseMimeType: "application/json"
+        }
+    });
 
     const prompt = `
     You are an AI Search Engine. I am going to give you a website's details.

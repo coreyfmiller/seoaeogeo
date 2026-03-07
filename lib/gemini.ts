@@ -13,7 +13,14 @@ export async function analyzeWithGemini(context: {
 }) {
 
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash",
+    generationConfig: {
+      temperature: 0.1,
+      topP: 0.1,
+      responseMimeType: "application/json"
+    }
+  });
 
   const prompt = `
     You are a ruthless, highly-critical Search Intelligence Analyst evaluating a website for SEO, AEO (Answer Engine Optimization), and GEO (Generative Engine Optimization).
