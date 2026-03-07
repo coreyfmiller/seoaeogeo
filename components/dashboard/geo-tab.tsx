@@ -10,6 +10,8 @@ import {
   Sparkles,
   MessageCircle,
   ExternalLink,
+  Shield,
+  ImageIcon,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -83,23 +85,70 @@ const llmPresence = [
 
 interface GEOTabProps {
   data?: {
-    sentimentScore: number,
-    brandPerception: "positive" | "neutral" | "negative",
-    citationLikelihood: number,
-    llmContextClarity: number,
-    visibilityGaps: string[]
+    structuralData?: {
+      semanticTags: { article: number, main: number, nav: number, aside: number, headers: number };
+      links: { internal: number, external: number };
+      media: { totalImages: number, imagesWithAlt: number };
+      wordCount: number;
+    },
+    ai?: {
+      penaltyLedger?: Array<{
+        category: "seo" | "aeo" | "geo",
+        penalty: string,
+        pointsDeducted: number
+      }>,
+      geoAnalysis: {
+        sentimentScore: number,
+        brandPerception: "positive" | "neutral" | "negative",
+        citationLikelihood: number,
+        llmContextClarity: number,
+        visibilityGaps: string[]
+      }
+    }
   }
 }
 
 export function GEOTab({ data }: GEOTabProps) {
-  const displaySentiment = data ? [
-    { name: "Positive", value: Math.max(0, data.sentimentScore), color: "oklch(0.7 0.2 160)" },
-    { name: "Neutral", value: data.sentimentScore === 0 ? 100 : 0, color: "oklch(0.65 0 0)" },
-    { name: "Negative", value: Math.max(0, -data.sentimentScore), color: "oklch(0.55 0.22 25)" },
+  const geoData = data?.ai?.geoAnalysis
+  const penaltyLedger = (data?.ai?.penaltyLedger || []).filter(p => p.category === "geo")
+  const struct = data?.structuralData
+
+  const displaySentiment = geoData ? [
+    { name: "Positive", value: Math.max(0, geoData.sentimentScore), color: "oklch(0.7 0.2 160)" },
+    { name: "Neutral", value: geoData.sentimentScore === 0 ? 100 : 0, color: "oklch(0.65 0 0)" },
+    { name: "Negative", value: Math.max(0, -geoData.sentimentScore), color: "oklch(0.55 0.22 25)" },
   ] : sentimentData
 
   return (
     <div className="grid gap-6">
+      {/* Penalty Ledger Header (Only shows if GEO penalties exist) */}
+      {penaltyLedger.length > 0 && (
+        <Card className="border-destructive/30 bg-destructive/5 mb-2 shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2 text-destructive">
+              <Shield className="h-5 w-5" />
+              Generative Engine Penalty Ledger
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">The AI explicitly deducted points from this site for the following Generative Engine failures:</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {penaltyLedger.map((penalty, i) => (
+                <div key={i} className="flex items-start gap-3 rounded-lg border border-destructive/20 bg-background/50 p-3">
+                  <Badge variant="outline" className="border-destructive/50 text-destructive bg-destructive/10 shrink-0">
+                    {penalty.pointsDeducted} pts
+                  </Badge>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[10px] font-bold uppercase text-muted-foreground mb-1">{penalty.category} Penalty</div>
+                    <div className="text-sm font-medium text-foreground leading-tight">{penalty.penalty}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Brand Share of Voice */}
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="border-geo/20 bg-geo-muted/10">
@@ -189,12 +238,44 @@ export function GEOTab({ data }: GEOTabProps) {
                 <TrendingUp className="h-5 w-5 text-geo" />
                 <span className="font-medium text-foreground">Overall Sentiment Score</span>
               </div>
-              <p className="mt-2 text-3xl font-bold text-geo">{data ? (data.sentimentScore > 0 ? `+${data.sentimentScore}` : data.sentimentScore) : "+78"}%</p>
+              <p className="mt-2 text-3xl font-bold text-geo">{geoData ? (geoData.sentimentScore > 0 ? `+${geoData.sentimentScore}` : geoData.sentimentScore) : "+78"}%</p>
               <p className="text-sm text-muted-foreground">Positive perception across LLMs</p>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Media Context & Entity Module */}
+      <Card className="border-geo/20 bg-geo-muted/10">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+            <ImageIcon className="h-5 w-5 text-geo" />
+            Media Context & Brand Visiblity
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="rounded-lg border border-geo/20 bg-geo-muted/20 p-4">
+              <span className="text-sm font-medium text-muted-foreground">Total Brand Images</span>
+              <p className="mt-1 text-3xl font-bold font-mono">{struct?.media?.totalImages || 0}</p>
+            </div>
+            <div className="rounded-lg border border-geo/20 bg-geo-muted/20 p-4">
+              <span className="text-sm font-medium text-muted-foreground">Images with AI Context (Alt text)</span>
+              <p className="mt-1 text-3xl font-bold font-mono text-geo">{struct?.media?.imagesWithAlt || 0}</p>
+            </div>
+            <div className="rounded-lg border border-geo/20 bg-geo-muted/20 p-4">
+              <span className="text-sm font-medium text-muted-foreground">AI Blindspot Ratio</span>
+              <p className="mt-1 text-3xl font-bold font-mono text-destructive">
+                {struct?.media?.totalImages ? Math.round(((struct.media.totalImages - struct.media.imagesWithAlt) / struct.media.totalImages) * 100) : 0}%
+              </p>
+            </div>
+          </div>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Current multi-modal LLMs (like ChatGPT and Claude) rely heavily on image alt text to establish entity relationships. A high blindspot ratio means conversational AIs cannot "see" your brand.
+          </p>
+        </CardContent>
+      </Card>
+
 
       {/* Visibility Gaps & Clarity */}
       <div className="grid gap-6 lg:grid-cols-2">
@@ -207,8 +288,8 @@ export function GEOTab({ data }: GEOTabProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {data?.visibilityGaps && data.visibilityGaps.length > 0 ? (
-                data.visibilityGaps.map((gap: string) => (
+              {geoData?.visibilityGaps && geoData.visibilityGaps.length > 0 ? (
+                geoData.visibilityGaps.map((gap: string) => (
                   <div key={gap} className="flex items-start gap-2 text-sm text-foreground/80">
                     <TrendingUp className="h-4 w-4 text-geo mt-0.5 shrink-0" />
                     <span>{gap}</span>
@@ -231,15 +312,15 @@ export function GEOTab({ data }: GEOTabProps) {
           <CardContent>
             <div className="flex flex-col items-center justify-center py-4">
               <div className="relative h-24 w-full">
-                <Progress value={data?.citationLikelihood ?? 70} className="h-4 bg-muted" />
+                <Progress value={geoData?.citationLikelihood ?? 70} className="h-4 bg-muted" />
                 <div className="mt-2 flex justify-between text-xs text-muted-foreground uppercase font-semibold">
                   <span>Likelihood of Citation</span>
-                  <span className="text-geo">{data?.citationLikelihood ?? 70}%</span>
+                  <span className="text-geo">{geoData?.citationLikelihood ?? 70}%</span>
                 </div>
               </div>
               <div className="mt-6 w-full p-4 rounded bg-geo-muted/30 border border-geo/10">
                 <p className="text-sm text-foreground/70 text-center italic">
-                  "Your site's context clarity is rated at {data?.citationLikelihood ?? 70}%. High clarity leads to more frequent and accurate AI citations."
+                  "Your site's context clarity is rated at {geoData?.citationLikelihood ?? 70}%. High clarity leads to more frequent and accurate AI citations."
                 </p>
               </div>
             </div>

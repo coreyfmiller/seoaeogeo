@@ -11,6 +11,7 @@ import {
   MessageSquareQuote,
   Sparkles,
   AlertCircle,
+  Shield,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
@@ -87,68 +88,99 @@ const featuredSnippets = [
 
 interface AEOTabProps {
   data?: {
-    questionsAnswered: { who: number, what: number, where: number, why: number, how: number },
-    missingSchemas: string[],
-    snippetEligibilityScore: number,
-    topOpportunities: string[]
+    structuralData?: {
+      semanticTags: { article: number, main: number, nav: number, aside: number, headers: number };
+      links: { internal: number, external: number };
+      media: { totalImages: number, imagesWithAlt: number };
+      wordCount: number;
+    },
+    ai?: {
+      penaltyLedger?: Array<{
+        category: "seo" | "aeo" | "geo",
+        penalty: string,
+        pointsDeducted: number
+      }>,
+      aeoAnalysis: {
+        questionsAnswered: { who: number, what: number, where: number, why: number, how: number },
+        missingSchemas: string[],
+        snippetEligibilityScore: number,
+        topOpportunities: string[]
+      }
+    }
   }
 }
 
 export function AEOTab({ data }: AEOTabProps) {
-  const schemaHealthScore = data?.snippetEligibilityScore ?? 85
+  const aeoData = data?.ai?.aeoAnalysis
+  const penaltyLedger = (data?.ai?.penaltyLedger || []).filter(p => p.category === "aeo")
+  const struct = data?.structuralData
 
-  const displayQuestionAnalysis = data ? [
-    { type: "Who", questions: 10, answered: data.questionsAnswered.who, examples: [] },
-    { type: "What", questions: 10, answered: data.questionsAnswered.what, examples: [] },
-    { type: "Where", questions: 10, answered: data.questionsAnswered.where, examples: [] },
-    { type: "Why", questions: 10, answered: data.questionsAnswered.why, examples: [] },
-    { type: "How", questions: 10, answered: data.questionsAnswered.how, examples: [] },
+  const schemaHealthScore = aeoData?.snippetEligibilityScore ?? 85
+
+  const displayQuestionAnalysis = aeoData ? [
+    { type: "Who", questions: 10, answered: aeoData.questionsAnswered.who, examples: [] },
+    { type: "What", questions: 10, answered: aeoData.questionsAnswered.what, examples: [] },
+    { type: "Where", questions: 10, answered: aeoData.questionsAnswered.where, examples: [] },
+    { type: "Why", questions: 10, answered: aeoData.questionsAnswered.why, examples: [] },
+    { type: "How", questions: 10, answered: aeoData.questionsAnswered.how, examples: [] },
   ] : questionAnalysis
 
   return (
     <div className="grid gap-6">
-      {/* Schema Health Overview */}
+      {/* Penalty Ledger Header (Only shows if AEO penalties exist) */}
+      {penaltyLedger.length > 0 && (
+        <Card className="border-destructive/30 bg-destructive/5 mb-2 shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2 text-destructive">
+              <Shield className="h-5 w-5" />
+              Answer Engine Penalty Ledger
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">The AI explicitly deducted points from this site for the following Answer Engine failures:</p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {penaltyLedger.map((penalty, i) => (
+                <div key={i} className="flex items-start gap-3 rounded-lg border border-destructive/20 bg-background/50 p-3">
+                  <Badge variant="outline" className="border-destructive/50 text-destructive bg-destructive/10 shrink-0">
+                    {penalty.pointsDeducted} pts
+                  </Badge>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[10px] font-bold uppercase text-muted-foreground mb-1">{penalty.category} Penalty</div>
+                    <div className="text-sm font-medium text-foreground leading-tight">{penalty.penalty}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Extracted Schema & QA Readiness Modules */}
+      <h2 className="text-xl font-bold mt-2 flex items-center gap-2">
+        <Sparkles className="h-6 w-6 text-aeo" />
+        Answer Engine Readiness
+      </h2>
+
       <div className="grid gap-6 lg:grid-cols-3">
+        {/* QA Content Depth module */}
         <Card className="border-aeo/20 bg-aeo-muted/10 lg:col-span-1">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Code2 className="h-5 w-5 text-aeo" />
-              Schema Health Score
+              Content QA Depth
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col items-center justify-center py-6">
-            <div className="relative h-[180px] w-[180px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadialBarChart
-                  cx="50%"
-                  cy="50%"
-                  innerRadius="70%"
-                  outerRadius="100%"
-                  barSize={12}
-                  data={[{ value: schemaHealthScore, fill: "oklch(0.65 0.25 300)" }]}
-                  startAngle={90}
-                  endAngle={-270}
-                >
-                  <PolarAngleAxis
-                    type="number"
-                    domain={[0, 100]}
-                    angleAxisId={0}
-                    tick={false}
-                  />
-                  <RadialBar
-                    background={{ fill: "oklch(0.2 0.01 260)" }}
-                    dataKey="value"
-                    cornerRadius={10}
-                  />
-                </RadialBarChart>
-              </ResponsiveContainer>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-4xl font-bold text-foreground">{schemaHealthScore}</span>
-                <span className="text-sm text-muted-foreground">/100</span>
-              </div>
+          <CardContent className="flex flex-col gap-4 py-4">
+            <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-background/50">
+              <span className="text-sm font-medium text-muted-foreground">Conversational Headers</span>
+              <span className="font-mono font-bold text-aeo">{struct?.semanticTags?.headers || 0}</span>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground text-center">
-              Your structured data is well-optimized for AI extraction
+            <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-background/50">
+              <span className="text-sm font-medium text-muted-foreground">Total Answer Corpus</span>
+              <span className="font-mono font-bold">{struct?.wordCount || 0} words</span>
+            </div>
+            <p className="mt-2 text-sm text-muted-foreground text-center">
+              LLMs rely on deep header hierarchy to instantly index Answers.
             </p>
           </CardContent>
         </Card>
@@ -162,8 +194,8 @@ export function AEOTab({ data }: AEOTabProps) {
           </CardHeader>
           <CardContent>
             <div className="grid gap-3 sm:grid-cols-2">
-              {data?.missingSchemas && data.missingSchemas.length > 0 ? (
-                data.missingSchemas.map((schema: string) => (
+              {aeoData?.missingSchemas && aeoData.missingSchemas.length > 0 ? (
+                aeoData.missingSchemas.map((schema: string) => (
                   <div key={schema} className="flex items-center gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-3">
                     <XCircle className="h-4 w-4 text-destructive" />
                     <span className="text-sm font-medium text-foreground">{schema}</span>
@@ -263,8 +295,8 @@ export function AEOTab({ data }: AEOTabProps) {
         </CardHeader>
         <CardContent>
           <div className="grid gap-3 sm:grid-cols-2">
-            {data?.topOpportunities && data.topOpportunities.length > 0 ? (
-              data.topOpportunities.map((opp: string) => (
+            {aeoData?.topOpportunities && aeoData.topOpportunities.length > 0 ? (
+              aeoData.topOpportunities.map((opp: string) => (
                 <div
                   key={opp}
                   className="flex items-start gap-3 rounded-lg border border-aeo/40 bg-aeo-muted/30 p-4"

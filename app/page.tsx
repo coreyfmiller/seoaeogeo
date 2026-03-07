@@ -305,10 +305,10 @@ export default function Dashboard() {
                           <SEOTab data={analysisData} />
                         </TabsContent>
                         <TabsContent value="aeo" className="mt-0">
-                          <AEOTab data={analysisData?.ai?.aeoAnalysis} />
+                          <AEOTab data={analysisData} />
                         </TabsContent>
                         <TabsContent value="geo" className="mt-0">
-                          <GEOTab data={analysisData?.ai?.geoAnalysis} />
+                          <GEOTab data={analysisData} />
                         </TabsContent>
                       </div>
                     </Tabs>
