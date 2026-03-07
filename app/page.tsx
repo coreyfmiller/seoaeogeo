@@ -268,8 +268,9 @@ export default function Dashboard() {
                         <TabsTrigger
                           value="seo"
                           className={cn(
-                            "gap-2 data-[state=active]:bg-seo/20 data-[state=active]:text-seo",
-                            "data-[state=active]:shadow-none"
+                            "gap-2 border border-transparent transition-all duration-200",
+                            "hover:border-seo/30 hover:bg-seo/10 hover:text-seo cursor-pointer",
+                            "data-[state=active]:border-seo/50 data-[state=active]:bg-seo/20 data-[state=active]:text-seo data-[state=active]:shadow-sm"
                           )}
                         >
                           <Search className="h-4 w-4" />
@@ -279,8 +280,9 @@ export default function Dashboard() {
                         <TabsTrigger
                           value="aeo"
                           className={cn(
-                            "gap-2 data-[state=active]:bg-aeo/20 data-[state=active]:text-aeo",
-                            "data-[state=active]:shadow-none"
+                            "gap-2 border border-transparent transition-all duration-200",
+                            "hover:border-aeo/30 hover:bg-aeo/10 hover:text-aeo cursor-pointer",
+                            "data-[state=active]:border-aeo/50 data-[state=active]:bg-aeo/20 data-[state=active]:text-aeo data-[state=active]:shadow-sm"
                           )}
                         >
                           <Sparkles className="h-4 w-4" />
@@ -290,8 +292,9 @@ export default function Dashboard() {
                         <TabsTrigger
                           value="geo"
                           className={cn(
-                            "gap-2 data-[state=active]:bg-geo/20 data-[state=active]:text-geo",
-                            "data-[state=active]:shadow-none"
+                            "gap-2 border border-transparent transition-all duration-200",
+                            "hover:border-geo/30 hover:bg-geo/10 hover:text-geo cursor-pointer",
+                            "data-[state=active]:border-geo/50 data-[state=active]:bg-geo/20 data-[state=active]:text-geo data-[state=active]:shadow-sm"
                           )}
                         >
                           <Bot className="h-4 w-4" />
