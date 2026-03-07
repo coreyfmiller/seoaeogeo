@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { performScan } from '@/lib/crawler';
 import { analyzeWithGemini } from '@/lib/gemini';
+import { performLiveInterrogation } from '@/lib/gemini-interrogation';
 
 /**
  * Main Analysis API: Receives a URL and runs 
@@ -19,23 +20,34 @@ export async function POST(req: Request) {
         const scanResult = await performScan(url);
         console.log(`[API] Crawl finished: ${scanResult.title}`);
 
-        // 2. Gemini Intelligence (Analysis)
-        console.log(`[API] Starting Gemini analysis...`);
-        const aiAnalysis = await analyzeWithGemini({
-            title: scanResult.title,
-            description: scanResult.description,
-            thinnedText: scanResult.thinnedText,
-            schemas: scanResult.schemas,
-            structuralData: scanResult.structuralData
+        // 2. Gemini Analysis & Live LLM Interrogation (Parallel)
+        console.log(`[API] Starting Gemini analysis & Live LLM Interrogation...`);
+        const [aiAnalysis, liveInterrogation] = await Promise.all([
+            analyzeWithGemini({
+                title: scanResult.title,
+                description: scanResult.description,
+                thinnedText: scanResult.thinnedText,
+                schemas: scanResult.schemas,
+                structuralData: scanResult.structuralData
+            }),
+            performLiveInterrogation({
+                domain: scanResult.url,
+                title: scanResult.title,
+                description: scanResult.description,
+                contentSummary: scanResult.thinnedText,
+            })
+        ]);
 
-        });
         console.log(`[API] Analysis complete.`);
 
         return NextResponse.json({
             success: true,
             data: {
                 ...scanResult,
-                ai: aiAnalysis
+                ai: {
+                    ...aiAnalysis,
+                    liveInterrogation
+                }
             }
         });
 

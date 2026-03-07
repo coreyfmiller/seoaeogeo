@@ -103,6 +103,12 @@ interface GEOTabProps {
         citationLikelihood: number,
         llmContextClarity: number,
         visibilityGaps: string[]
+      },
+      liveInterrogation?: {
+        identifiedQuery: string,
+        isRecommended: boolean,
+        shareOfVoiceData: Array<{ competitor: string, share: number }>,
+        aiCitations: Array<{ llm: string, query: string, context: string, sentiment: string, date: string }>
       }
     }
   }
@@ -112,6 +118,10 @@ export function GEOTab({ data }: GEOTabProps) {
   const geoData = data?.ai?.geoAnalysis
   const penaltyLedger = (data?.ai?.penaltyLedger || []).filter(p => p.category === "geo")
   const struct = data?.structuralData
+  const liveInt = data?.ai?.liveInterrogation
+
+  const displayShareOfVoice = liveInt?.shareOfVoiceData || shareOfVoiceData
+  const displayAiCitations = liveInt?.aiCitations || aiCitations
 
   const displaySentiment = geoData ? [
     { name: "Positive", value: Math.max(0, geoData.sentimentScore), color: "oklch(0.7 0.2 160)" },
@@ -155,14 +165,14 @@ export function GEOTab({ data }: GEOTabProps) {
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Sparkles className="h-5 w-5 text-geo" />
-              Brand Share of Voice in AI Responses
+              Live LLM Share of Voice {liveInt?.identifiedQuery && <span className="text-xs font-normal text-muted-foreground ml-2 p-1 bg-geo/10 rounded">Query: "{liveInt.identifiedQuery}"</span>}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                  data={shareOfVoiceData}
+                  data={displayShareOfVoice}
                   layout="vertical"
                   margin={{ left: 0, right: 20 }}
                 >
@@ -192,7 +202,7 @@ export function GEOTab({ data }: GEOTabProps) {
                     formatter={(value: number) => [`${value}%`, "Share"]}
                   />
                   <Bar dataKey="share" radius={[0, 4, 4, 0]}>
-                    {shareOfVoiceData.map((entry, index) => (
+                    {displayShareOfVoice.map((entry, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={index === 0 ? "oklch(0.7 0.2 160)" : "oklch(0.3 0.05 160)"}
@@ -338,7 +348,7 @@ export function GEOTab({ data }: GEOTabProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {aiCitations.map((citation, index) => (
+            {displayAiCitations.map((citation, index) => (
               <div
                 key={index}
                 className="rounded-lg border border-border/50 bg-muted/20 p-4 hover:border-geo/30 transition-colors"
