@@ -8,8 +8,8 @@ export interface ScanResult {
     thinnedText: string;
     schemas: any[];
     structuralData: {
-        semanticTags: { article: number, main: number, nav: number, aside: number, headers: number };
-        links: { internal: number, external: number };
+        semanticTags: { article: number, main: number, nav: number, aside: number, headers: number, h1Count: number };
+        links: { internal: number, external: number, socialLinksCount: number };
         media: { totalImages: number, imagesWithAlt: number };
         wordCount: number;
     };
@@ -72,12 +72,17 @@ export async function performScan(targetUrl: string): Promise<ScanResult> {
 
             let internalLinks = 0;
             let externalLinks = 0;
+            let socialLinksCount = 0;
+            const socialDomains = ['linkedin.com', 'twitter.com', 'x.com', 'facebook.com', 'instagram.com', 'github.com', 'youtube.com'];
 
             links.forEach(link => {
                 if (link.href.includes(currentHostname) || link.href.startsWith('/')) {
                     internalLinks++;
                 } else if (link.href && link.href.startsWith('http')) {
                     externalLinks++;
+                    if (socialDomains.some(domain => link.href.toLowerCase().includes(domain))) {
+                        socialLinksCount++;
+                    }
                 }
             });
 
@@ -93,11 +98,13 @@ export async function performScan(targetUrl: string): Promise<ScanResult> {
                     main: document.querySelectorAll('main').length,
                     nav: document.querySelectorAll('nav').length,
                     aside: document.querySelectorAll('aside').length,
-                    headers: document.querySelectorAll('h1, h2, h3, h4, h5, h6').length
+                    headers: document.querySelectorAll('h1, h2, h3, h4, h5, h6').length,
+                    h1Count: document.querySelectorAll('h1').length
                 },
                 links: {
                     internal: internalLinks,
-                    external: externalLinks
+                    external: externalLinks,
+                    socialLinksCount: socialLinksCount
                 },
                 media: {
                     totalImages: images.length,

@@ -25,12 +25,10 @@ export async function analyzeWithGemini(context: {
   const prompt = `
     You are a ruthless, highly-critical Search Intelligence Analyst evaluating a website for SEO, AEO (Answer Engine Optimization), and GEO (Generative Engine Optimization).
     
-    CRITICAL GRADING RULES - DO NOT IGNORE:
-    1. STRICT DEDUCTION MODEL: Every category (SEO, AEO, GEO) starts at a perfect 100/100 score.
-    2. To assign a lower score, you MUST explicitly deduct points using the \`penaltyLedger\`.
-    3. MATHEMATICAL ENFORCEMENT: The final score for a category MUST exactly equal 100 minus the sum of the absolute value of \`pointsDeducted\` for that category in the penaltyLedger. (e.g., if you assign an SEO score of 55, the SEO penalties in the ledger MUST total exactly -45 points).
-    4. You MUST manually verify your math before outputting JSON. Let x = the sum of all "pointsDeducted" where category="seo". Your "seo" score MUST equal 100 + x. Same for AEO and GEO.
-    5. Be brutal and granular. Deduct points heavily for: Missing semantic tags (e.g., <main>, <article>), lack of robust JSON-LD schemas (instant -30 to -40 penalty for AEO/GEO), thin content (under 500 words is an instant -40 penalty), and a lack of specific, objective entity data for LLMs to cite.
+    CRITICAL EXTRACTION RULES - DO NOT IGNORE:
+    1. You are no longer responsible for scoring or generating penalties. You are purely a Semantic Data Extractor.
+    2. Answer the semantic boolean flags completely objectively (true/false) based on the content.
+    3. Generate the remaining qualitative analysis data for the dashboard UI (recommendations, gaps, opportunities).
 
     Analyze the following extracted data:
     
@@ -48,16 +46,20 @@ export async function analyzeWithGemini(context: {
 
     Return a JSON object exactly matching this structure:
     {
-      "scores": {
-        "seo": number (0-100),
-        "aeo": number (0-100),
-        "geo": number (0-100)
+      "semanticFlags": {
+        "topicMisalignment": boolean,
+        "keywordStuffing": boolean,
+        "poorReadability": boolean,
+        "noDirectQnAMatching": boolean,
+        "lowEntityDensity": boolean,
+        "poorFormattingConciseness": boolean,
+        "lackOfDefinitionStatements": boolean,
+        "promotionalTone": boolean,
+        "lackOfExpertiseSignals": boolean,
+        "lackOfHardData": boolean,
+        "heavyFirstPersonUsage": boolean,
+        "unsubstantiatedClaims": boolean
       },
-      "penaltyLedger": Array<{
-        "category": "seo" | "aeo" | "geo",
-        "penalty": string,
-        "pointsDeducted": number (e.g., -20)
-      }>,
       "seoAnalysis": {
         "onPageIssues": string[],
         "keywordOpportunities": string[],

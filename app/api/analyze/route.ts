@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { performScan } from '@/lib/crawler';
 import { analyzeWithGemini } from '@/lib/gemini';
 import { performLiveInterrogation } from '@/lib/gemini-interrogation';
+import { calculateDeterministicScores } from '@/lib/grader';
 
 /**
  * Main Analysis API: Receives a URL and runs 
@@ -38,7 +39,16 @@ export async function POST(req: Request) {
             })
         ]);
 
-        console.log(`[API] Analysis complete.`);
+        console.log(`[API] AI Analysis Complete. Calculating Deterministic Scores...`);
+        const gradingResults = calculateDeterministicScores(
+            scanResult.structuralData,
+            scanResult.schemas,
+            aiAnalysis.semanticFlags,
+            scanResult.title.length,
+            scanResult.description.length
+        );
+
+        console.log(`[API] Deterministic Scoring Complete.`);
 
         return NextResponse.json({
             success: true,
@@ -46,6 +56,7 @@ export async function POST(req: Request) {
                 ...scanResult,
                 ai: {
                     ...aiAnalysis,
+                    ...gradingResults,
                     liveInterrogation
                 }
             }
