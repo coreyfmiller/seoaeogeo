@@ -298,7 +298,7 @@ export function AEOTab({ data }: AEOTabProps) {
                     )}
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
+                    <p className="text-sm font-medium text-foreground">
                       {snippet.query}
                     </p>
                     <div className="flex items-center gap-2 mt-2">

@@ -169,7 +169,7 @@ export function SEOTab({ data }: SEOTabProps) {
             <div className="flex flex-wrap gap-2 overflow-hidden">
               {aiSeo ? (
                 aiSeo.keywordOpportunities.map((kw: string, i: number) => (
-                  <Badge key={i} variant="outline" className="border-seo/30 text-seo bg-seo/5 px-3 py-1 text-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]">
+                  <Badge key={i} variant="outline" className="border-seo/30 text-seo bg-seo/5 px-3 py-1.5 text-sm h-auto text-left leading-normal ring-offset-background">
                     {kw}
                   </Badge>
                 ))

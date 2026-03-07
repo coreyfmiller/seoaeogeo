@@ -80,6 +80,18 @@ export default function SiteAnalysis() {
                                     Advanced sitewide analysis. We crawl 20+ pages to verify brand consistency,
                                     schema coverage, and global AI authority.
                                 </p>
+                                {analysisData && (
+                                    <div className="flex items-center gap-3 mt-4 text-sm text-muted-foreground animate-in fade-in slide-in-from-left-4">
+                                        <span className="flex items-center gap-1.5 text-geo font-medium">
+                                            <Globe className="h-4 w-4" />
+                                            Analysis Live: {url}
+                                        </span>
+                                        <Badge variant="outline" className="border-geo/50 text-geo bg-geo/5">
+                                            <Activity className="h-3 w-3 mr-1.5" />
+                                            {analysisData.pagesCrawled} Pages Scanned
+                                        </Badge>
+                                    </div>
+                                )}
                             </div>
                             <Badge variant="secondary" className="bg-geo/10 text-geo border-geo/20 px-4 py-1 self-start sm:self-center">
                                 <Lock className="h-3 w-3 mr-2" />

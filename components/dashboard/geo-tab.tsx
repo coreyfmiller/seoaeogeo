@@ -291,7 +291,7 @@ export function GEOTab({ data }: GEOTabProps) {
                     <p className="mt-2 text-sm font-medium text-foreground">
                       {citation.query}
                     </p>
-                    <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                    <p className="mt-1 text-sm text-muted-foreground">
                       {citation.context}
                     </p>
                   </div>
