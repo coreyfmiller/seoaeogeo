@@ -17,6 +17,8 @@ import {
   Clock,
   RefreshCw,
   XCircle,
+  Globe,
+  CheckCircle2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -147,25 +149,43 @@ export default function Dashboard() {
                 <p className="text-muted-foreground text-center max-w-lg mb-8 text-lg">
                   Enter any website URL to perform a comprehensive SEO, AEO, and GEO audit powered by Gemini 2.5 Flash.
                 </p>
-                <div className="flex flex-wrap justify-center gap-4">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.currentTarget);
+                    const url = formData.get('url') as string;
+                    if (url) handleAnalyze(url);
+                  }}
+                  className="w-full max-w-lg relative group"
+                >
+                  <Globe className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-seo transition-colors" />
+                  <input
+                    name="url"
+                    type="text"
+                    placeholder="https://your-website.com"
+                    className="w-full pl-12 pr-32 py-4 bg-muted/50 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-seo/20 focus:border-seo/50 transition-all text-lg"
+                    required
+                  />
                   <button
-                    onClick={() => handleAnalyze("google.com")}
-                    className="px-6 py-2 rounded-full border border-border hover:border-seo/50 hover:bg-seo/5 transition-all text-sm font-medium"
+                    type="submit"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-seo text-seo-foreground px-6 py-2 rounded-xl font-bold hover:bg-seo/90 transition-all"
                   >
-                    Try Google.com
+                    Analyze
                   </button>
-                  <button
-                    onClick={() => handleAnalyze("valleymarketing.ca")}
-                    className="px-6 py-2 rounded-full border border-border hover:border-aeo/50 hover:bg-aeo/5 transition-all text-sm font-medium"
-                  >
-                    Try Valley Marketing
-                  </button>
-                  <button
-                    onClick={() => handleAnalyze("fundylogic.com")}
-                    className="px-6 py-2 rounded-full border border-border hover:border-geo/50 hover:bg-geo/5 transition-all text-sm font-medium"
-                  >
-                    Try Fundy Logic
-                  </button>
+                </form>
+                <div className="mt-8 flex items-center gap-6">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <CheckCircle2 className="h-3 w-3 text-geo" />
+                    Real-time Crawling
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <CheckCircle2 className="h-3 w-3 text-aeo" />
+                    Gemini 2.5 Analysis
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <CheckCircle2 className="h-3 w-3 text-geo" />
+                    GEO/AEO Audits
+                  </div>
                 </div>
               </div>
             ) : (
