@@ -4,18 +4,18 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
  * Sitewide Analysis: Analyzes aggregate data from multiple pages.
  */
 export async function analyzeSitewideIntelligence(context: {
-    domain: string;
-    pages: Array<{
-        url: string;
-        title: string;
-        description: string;
-        schemas: any[];
-    }>;
+  domain: string;
+  pages: Array<{
+    url: string;
+    title: string;
+    description: string;
+    schemas: any[];
+  }>;
 }) {
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const prompt = `
+  const prompt = `
     Perform a PRO Deep Site Audit for the domain: ${context.domain}.
     
     DATA FROM ${context.pages.length} PAGES:
@@ -51,16 +51,16 @@ export async function analyzeSitewideIntelligence(context: {
     }
     `;
 
-    try {
-        const result = await model.generateContent(prompt);
-        const responseText = result.response.text();
+  try {
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
 
-        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) throw new Error("Could not parse AI response as JSON");
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("Could not parse AI response as JSON");
 
-        return JSON.parse(jsonMatch[0]);
-    } catch (error) {
-        console.error("Gemini Sitewide Analysis Error:", error);
-        throw error;
-    }
+    return JSON.parse(jsonMatch[0]);
+  } catch (error) {
+    console.error("Gemini Sitewide Analysis Error:", error);
+    throw error;
+  }
 }

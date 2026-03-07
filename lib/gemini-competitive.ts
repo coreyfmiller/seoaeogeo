@@ -4,20 +4,20 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
  * Comparative Analysis: Compares two sites and identifies competitive gaps.
  */
 export async function analyzeCompetitive(siteA: {
-    title: string;
-    description: string;
-    thinnedText: string;
-    schemas: any[];
+  title: string;
+  description: string;
+  thinnedText: string;
+  schemas: any[];
 }, siteB: {
-    title: string;
-    description: string;
-    thinnedText: string;
-    schemas: any[];
+  title: string;
+  description: string;
+  thinnedText: string;
+  schemas: any[];
 }) {
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const prompt = `
+  const prompt = `
     Perform a Detailed Competitive Search Intelligence Analysis between two websites.
     
     SITE A (TARGET):
@@ -51,16 +51,16 @@ export async function analyzeCompetitive(siteA: {
     }
     `;
 
-    try {
-        const result = await model.generateContent(prompt);
-        const responseText = result.response.text();
+  try {
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
 
-        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) throw new Error("Could not parse AI response as JSON");
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("Could not parse AI response as JSON");
 
-        return JSON.parse(jsonMatch[0]);
-    } catch (error) {
-        console.error("Gemini Competitive Analysis Error:", error);
-        throw error;
-    }
+    return JSON.parse(jsonMatch[0]);
+  } catch (error) {
+    console.error("Gemini Competitive Analysis Error:", error);
+    throw error;
+  }
 }

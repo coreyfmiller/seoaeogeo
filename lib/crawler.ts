@@ -34,7 +34,7 @@ export async function performScan(targetUrl: string): Promise<ScanResult> {
         // 1. Visit URL
         const response = await page.goto(targetUrl, {
             waitUntil: 'networkidle',
-            timeout: 30000
+            timeout: 60000
         });
 
         if (!response) {

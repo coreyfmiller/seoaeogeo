@@ -47,7 +47,7 @@ export async function performDeepScan(baseUrl: string, maxPages: number = 10): P
         // 1. DISCOVERY PHASE
         const page = await context.newPage();
         console.log(`[Deep Crawler] Discovering links on: ${baseUrl}`);
-        await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
         const homeData = await extractPageData(page);
         results.push(homeData);
