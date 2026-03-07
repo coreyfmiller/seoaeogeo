@@ -31,15 +31,19 @@ export async function performScan(targetUrl: string): Promise<ScanResult> {
         browser = await chromium.launch({ headless: true });
         const page: Page = await browser.newPage();
 
-        // 1. Visit URL
+        console.log(`[Crawler] Navigating to: ${targetUrl}`);
+        // 1. Visit URL (domcontentloaded is faster and less prone to hanging than networkidle)
         const response = await page.goto(targetUrl, {
-            waitUntil: 'networkidle',
+            waitUntil: 'domcontentloaded',
             timeout: 60000
         });
 
         if (!response) {
+            console.error(`[Crawler] No response object returned for ${targetUrl}`);
             throw new Error(`Failed to retrieve response for ${targetUrl}`);
         }
+
+        console.log(`[Crawler] Successfully loaded ${targetUrl} (Status: ${response.status()})`);
 
         const html = await page.content();
         const title = await page.title();
