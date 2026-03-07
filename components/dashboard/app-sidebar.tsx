@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
   LayoutDashboard,
   Search,
@@ -18,12 +20,11 @@ interface NavItem {
   name: string
   icon: React.ElementType
   href: string
-  active?: boolean
   badge?: string
 }
 
 const mainNav: NavItem[] = [
-  { name: "Dashboard", icon: LayoutDashboard, href: "#", active: true },
+  { name: "Dashboard", icon: LayoutDashboard, href: "/" },
   { name: "Site Analysis", icon: Search, href: "#" },
   { name: "Keywords", icon: FileText, href: "#" },
   { name: "Backlinks", icon: TrendingUp, href: "#" },
@@ -33,7 +34,7 @@ const intelligenceNav: NavItem[] = [
   { name: "SEO Insights", icon: BarChart3, href: "#", badge: "12" },
   { name: "AEO Monitor", icon: Sparkles, href: "#", badge: "5" },
   { name: "GEO Tracker", icon: Bot, href: "#", badge: "8" },
-  { name: "Competitors", icon: Globe, href: "#" },
+  { name: "Intelligence Hub", icon: Globe, href: "/intelligence" },
 ]
 
 const bottomNav: NavItem[] = [
@@ -42,6 +43,8 @@ const bottomNav: NavItem[] = [
 ]
 
 export function AppSidebar() {
+  const pathname = usePathname()
+
   return (
     <aside className="hidden lg:flex flex-col w-64 border-r border-border/50 bg-sidebar">
       {/* Logo */}
@@ -64,18 +67,18 @@ export function AppSidebar() {
           <ul className="space-y-1">
             {mainNav.map((item) => (
               <li key={item.name}>
-                <a
+                <Link
                   href={item.href}
                   className={cn(
                     "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
-                    item.active
+                    pathname === item.href
                       ? "bg-seo/10 text-seo font-medium"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                   )}
                 >
                   <item.icon className="h-4 w-4" />
                   {item.name}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -88,9 +91,14 @@ export function AppSidebar() {
           <ul className="space-y-1">
             {intelligenceNav.map((item) => (
               <li key={item.name}>
-                <a
+                <Link
                   href={item.href}
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
+                    pathname === item.href
+                      ? "bg-seo/10 text-seo font-medium"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  )}
                 >
                   <item.icon className="h-4 w-4" />
                   <span className="flex-1">{item.name}</span>
@@ -99,7 +107,7 @@ export function AppSidebar() {
                       {item.badge}
                     </span>
                   )}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -111,13 +119,18 @@ export function AppSidebar() {
         <ul className="space-y-1">
           {bottomNav.map((item) => (
             <li key={item.name}>
-              <a
+              <Link
                 href={item.href}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
+                  pathname === item.href
+                    ? "bg-seo/10 text-seo font-medium"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                )}
               >
                 <item.icon className="h-4 w-4" />
                 {item.name}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
