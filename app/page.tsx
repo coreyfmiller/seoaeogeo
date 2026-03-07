@@ -19,6 +19,7 @@ import {
   XCircle,
   Globe,
   CheckCircle2,
+  Loader2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -168,114 +169,148 @@ export default function Dashboard() {
                   />
                   <button
                     type="submit"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-seo text-seo-foreground px-6 py-2 rounded-xl font-bold hover:bg-seo/90 transition-all"
+                    disabled={isAnalyzing}
+                    className={cn(
+                      "absolute right-2 top-1/2 -translate-y-1/2 bg-seo text-seo-foreground px-6 py-2 rounded-xl font-bold hover:bg-seo/90 transition-all",
+                      isAnalyzing && "animate-scan-glow opacity-70"
+                    )}
                   >
-                    Analyze
+                    {isAnalyzing ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Scanning
+                      </div>
+                    ) : (
+                      "Analyze"
+                    )}
                   </button>
                 </form>
-                <div className="mt-8 flex items-center gap-6">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <CheckCircle2 className="h-3 w-3 text-geo" />
-                    Real-time Crawling
+                {isAnalyzing && (
+                  <p className="mt-4 text-sm text-seo animate-pulse font-medium">
+                    Our AI is currently crawling and analyzing {currentUrl}...
+                  </p>
+                )}
+                {!isAnalyzing && (
+                  <div className="mt-8 flex items-center gap-6">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <CheckCircle2 className="h-3 w-3 text-geo" />
+                      Real-time Crawling
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <CheckCircle2 className="h-3 w-3 text-aeo" />
+                      Gemini 2.5 Analysis
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <CheckCircle2 className="h-3 w-3 text-geo" />
+                      GEO/AEO Audits
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <CheckCircle2 className="h-3 w-3 text-aeo" />
-                    Gemini 2.5 Analysis
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <CheckCircle2 className="h-3 w-3 text-geo" />
-                    GEO/AEO Audits
-                  </div>
-                </div>
+                )}
               </div>
             ) : (
-              <div className="flex flex-col xl:flex-row gap-6">
-                {/* Main Content Area */}
-                <div className="flex-1 min-w-0">
-                  {/* Score Cards */}
-                  <div className="grid gap-4 sm:grid-cols-3 mb-6">
-                    <ScoreCard
-                      title="SEO Visibility"
-                      score={scores.seo}
-                      change={analysisData ? 0 : 0}
-                      variant="seo"
-                      description="Crawlability & Authority"
-                    />
-                    <ScoreCard
-                      title="AEO Readiness"
-                      score={scores.aeo}
-                      change={analysisData ? 0 : 0}
-                      variant="aeo"
-                      description="Snippets & Knowledge Graph"
-                    />
-                    <ScoreCard
-                      title="GEO Presence"
-                      score={scores.geo}
-                      change={analysisData ? 0 : 0}
-                      variant="geo"
-                      description="Citations & LLM Context"
-                    />
+              <div className="relative">
+                {isAnalyzing && (
+                  <div className="absolute inset-0 z-50 bg-background/20 backdrop-blur-[1px] flex items-start justify-center pt-20">
+                    <div className="bg-card/90 border border-seo/30 p-6 rounded-2xl shadow-2xl flex flex-col items-center gap-4 animate-in fade-in zoom-in-95">
+                      <div className="h-12 w-12 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
+                      <div className="text-center">
+                        <h3 className="text-lg font-bold text-foreground">Deep Audit in Progress</h3>
+                        <p className="text-sm text-muted-foreground">Analyzing content, schemas, and AI visibility...</p>
+                      </div>
+                      <div className="w-48 h-1.5 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-seo animate-progress-fast" style={{ width: '60%' }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div className={cn("flex flex-col xl:flex-row gap-6", isAnalyzing && "opacity-40 grayscale-[0.5] transition-all duration-700")}>
+                  {/* Main Content Area */}
+                  <div className="flex-1 min-w-0">
+                    {/* Score Cards */}
+                    <div className="grid gap-4 sm:grid-cols-3 mb-6">
+                      <ScoreCard
+                        title="SEO Visibility"
+                        score={scores.seo}
+                        change={analysisData ? 0 : 0}
+                        variant="seo"
+                        description="Crawlability & Authority"
+                      />
+                      <ScoreCard
+                        title="AEO Readiness"
+                        score={scores.aeo}
+                        change={analysisData ? 0 : 0}
+                        variant="aeo"
+                        description="Snippets & Knowledge Graph"
+                      />
+                      <ScoreCard
+                        title="GEO Presence"
+                        score={scores.geo}
+                        change={analysisData ? 0 : 0}
+                        variant="geo"
+                        description="Citations & LLM Context"
+                      />
+                    </div>
+
+                    {/* Tabbed Interface */}
+                    <Tabs
+                      value={activeTab}
+                      onValueChange={setActiveTab}
+                      className="w-full"
+                    >
+                      <TabsList className="w-full sm:w-auto bg-muted/50 p-1">
+                        <TabsTrigger
+                          value="seo"
+                          className={cn(
+                            "gap-2 data-[state=active]:bg-seo/20 data-[state=active]:text-seo",
+                            "data-[state=active]:shadow-none"
+                          )}
+                        >
+                          <Search className="h-4 w-4" />
+                          <span className="hidden sm:inline">SEO Analysis</span>
+                          <span className="sm:hidden">SEO</span>
+                        </TabsTrigger>
+                        <TabsTrigger
+                          value="aeo"
+                          className={cn(
+                            "gap-2 data-[state=active]:bg-aeo/20 data-[state=active]:text-aeo",
+                            "data-[state=active]:shadow-none"
+                          )}
+                        >
+                          <Sparkles className="h-4 w-4" />
+                          <span className="hidden sm:inline">AEO Analysis</span>
+                          <span className="sm:hidden">AEO</span>
+                        </TabsTrigger>
+                        <TabsTrigger
+                          value="geo"
+                          className={cn(
+                            "gap-2 data-[state=active]:bg-geo/20 data-[state=active]:text-geo",
+                            "data-[state=active]:shadow-none"
+                          )}
+                        >
+                          <Bot className="h-4 w-4" />
+                          <span className="hidden sm:inline">GEO Analysis</span>
+                          <span className="sm:hidden">GEO</span>
+                        </TabsTrigger>
+                      </TabsList>
+
+                      <div className="mt-6">
+                        <TabsContent value="seo" className="mt-0">
+                          <SEOTab data={analysisData} />
+                        </TabsContent>
+                        <TabsContent value="aeo" className="mt-0">
+                          <AEOTab data={analysisData?.ai?.aeoAnalysis} />
+                        </TabsContent>
+                        <TabsContent value="geo" className="mt-0">
+                          <GEOTab data={analysisData?.ai?.geoAnalysis} />
+                        </TabsContent>
+                      </div>
+                    </Tabs>
                   </div>
 
-                  {/* Tabbed Interface */}
-                  <Tabs
-                    value={activeTab}
-                    onValueChange={setActiveTab}
-                    className="w-full"
-                  >
-                    <TabsList className="w-full sm:w-auto bg-muted/50 p-1">
-                      <TabsTrigger
-                        value="seo"
-                        className={cn(
-                          "gap-2 data-[state=active]:bg-seo/20 data-[state=active]:text-seo",
-                          "data-[state=active]:shadow-none"
-                        )}
-                      >
-                        <Search className="h-4 w-4" />
-                        <span className="hidden sm:inline">SEO Analysis</span>
-                        <span className="sm:hidden">SEO</span>
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="aeo"
-                        className={cn(
-                          "gap-2 data-[state=active]:bg-aeo/20 data-[state=active]:text-aeo",
-                          "data-[state=active]:shadow-none"
-                        )}
-                      >
-                        <Sparkles className="h-4 w-4" />
-                        <span className="hidden sm:inline">AEO Analysis</span>
-                        <span className="sm:hidden">AEO</span>
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="geo"
-                        className={cn(
-                          "gap-2 data-[state=active]:bg-geo/20 data-[state=active]:text-geo",
-                          "data-[state=active]:shadow-none"
-                        )}
-                      >
-                        <Bot className="h-4 w-4" />
-                        <span className="hidden sm:inline">GEO Analysis</span>
-                        <span className="sm:hidden">GEO</span>
-                      </TabsTrigger>
-                    </TabsList>
-
-                    <div className="mt-6">
-                      <TabsContent value="seo" className="mt-0">
-                        <SEOTab data={analysisData} />
-                      </TabsContent>
-                      <TabsContent value="aeo" className="mt-0">
-                        <AEOTab data={analysisData?.ai?.aeoAnalysis} />
-                      </TabsContent>
-                      <TabsContent value="geo" className="mt-0">
-                        <GEOTab data={analysisData?.ai?.geoAnalysis} />
-                      </TabsContent>
-                    </div>
-                  </Tabs>
-                </div>
-
-                {/* Recommendations Sidebar */}
-                <div className="w-full xl:w-80 shrink-0">
-                  <Recommendations data={analysisData?.ai?.recommendations} />
+                  {/* Recommendations Sidebar */}
+                  <div className="w-full xl:w-80 shrink-0">
+                    <Recommendations data={analysisData?.ai?.recommendations} />
+                  </div>
                 </div>
               </div>
             )}

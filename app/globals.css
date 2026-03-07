@@ -24,29 +24,29 @@
   --border: oklch(0.25 0.01 260);
   --input: oklch(0.18 0.01 260);
   --ring: oklch(0.65 0.2 250);
-  
+
   /* SEO - Neon Blue */
   --seo: oklch(0.7 0.2 250);
   --seo-foreground: oklch(0.15 0 0);
   --seo-muted: oklch(0.25 0.08 250);
-  
+
   /* AEO - Purple */
   --aeo: oklch(0.65 0.25 300);
   --aeo-foreground: oklch(0.15 0 0);
   --aeo-muted: oklch(0.25 0.1 300);
-  
+
   /* GEO - Emerald Green */
   --geo: oklch(0.7 0.2 160);
   --geo-foreground: oklch(0.15 0 0);
   --geo-muted: oklch(0.25 0.08 160);
-  
+
   /* Chart colors */
   --chart-1: oklch(0.7 0.2 250);
   --chart-2: oklch(0.65 0.25 300);
   --chart-3: oklch(0.7 0.2 160);
   --chart-4: oklch(0.75 0.15 50);
   --chart-5: oklch(0.6 0.2 25);
-  
+
   --radius: 0.625rem;
   --sidebar: oklch(0.08 0.01 260);
   --sidebar-foreground: oklch(0.95 0 0);
@@ -132,7 +132,7 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  
+
   /* Custom SEO/AEO/GEO colors */
   --color-seo: var(--seo);
   --color-seo-foreground: var(--seo-foreground);
@@ -145,10 +145,76 @@
   --color-geo-muted: var(--geo-muted);
 }
 
+@layer utilities {
+  @keyframes scan-glow {
+
+    0%,
+    100% {
+      box-shadow: 0 0 0px var(--seo), 0 0 0px var(--aeo);
+    }
+
+    50% {
+      box-shadow: 0 0 25px var(--seo), 0 0 40px var(--aeo);
+    }
+  }
+
+  .animate-scan-glow {
+    animation: scan-glow 2s infinite ease-in-out;
+  }
+
+  @keyframes border-spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .glow-border-wrap {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .glow-border-wrap::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(transparent,
+        transparent,
+        transparent,
+        var(--seo),
+        var(--aeo),
+        var(--geo),
+        var(--seo));
+    animation: border-spin 3s linear infinite;
+  }
+
+  @keyframes progress-fast {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-progress-fast {
+    animation: progress-fast 1.5s infinite linear;
+    width: 100%;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
