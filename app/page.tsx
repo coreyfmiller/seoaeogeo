@@ -20,6 +20,7 @@ import {
   Globe,
   CheckCircle2,
   Loader2,
+  Activity,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -101,10 +102,16 @@ export default function Dashboard() {
                       {currentUrl || "No analysis active"}
                     </span>
                     {analysisData && (
-                      <Badge variant="outline" className="border-geo/50 text-geo">
-                        <Clock className="h-3 w-3 mr-1" />
-                        Analysis Live
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="border-geo/50 text-geo">
+                          <Clock className="h-3 w-3 mr-1" />
+                          Analysis Live
+                        </Badge>
+                        <Badge variant="outline" className="border-geo/50 text-geo bg-geo/5">
+                          <Activity className="h-3 w-3 mr-1.5" />
+                          1 Page Scanned
+                        </Badge>
+                      </div>
                     )}
                   </div>
                 </div>

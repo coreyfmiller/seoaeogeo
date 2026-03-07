@@ -43,8 +43,8 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" 
         <div className="relative">
           <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            type="url"
-            placeholder="Enter URL to analyze (e.g., https://example.com)"
+            type="text"
+            placeholder="Enter URL to analyze (e.g., example.com)"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             className={cn(
