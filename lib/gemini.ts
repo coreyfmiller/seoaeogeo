@@ -29,8 +29,8 @@ export async function analyzeWithGemini(context: {
     1. STRICT DEDUCTION MODEL: Every category (SEO, AEO, GEO) starts at a perfect 100/100 score.
     2. To assign a lower score, you MUST explicitly deduct points using the \`penaltyLedger\`.
     3. MATHEMATICAL ENFORCEMENT: The final score for a category MUST exactly equal 100 minus the sum of the absolute value of \`pointsDeducted\` for that category in the penaltyLedger. (e.g., if you assign an SEO score of 55, the SEO penalties in the ledger MUST total exactly -45 points).
-    4. Be brutal and granular. Deduct points heavily for: Missing semantic tags (e.g., <main>, <article>), lack of robust JSON-LD schemas (instant -30 to -40 penalty for AEO/GEO), thin content (under 500 words is an instant -40 penalty), and a lack of specific, objective entity data for LLMs to cite.
-    5. A typical legacy local business site with generic copy should easily rack up enough penalties to score below 40.
+    4. You MUST manually verify your math before outputting JSON. Let x = the sum of all "pointsDeducted" where category="seo". Your "seo" score MUST equal 100 + x. Same for AEO and GEO.
+    5. Be brutal and granular. Deduct points heavily for: Missing semantic tags (e.g., <main>, <article>), lack of robust JSON-LD schemas (instant -30 to -40 penalty for AEO/GEO), thin content (under 500 words is an instant -40 penalty), and a lack of specific, objective entity data for LLMs to cite.
 
     Analyze the following extracted data:
     
