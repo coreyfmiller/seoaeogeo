@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { Header } from "@/components/dashboard/header"
 import { ScoreCard } from "@/components/dashboard/score-card"
@@ -31,6 +31,24 @@ export default function Dashboard() {
   const [analysisData, setAnalysisData] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [apiStatus, setApiStatus] = useState<"healthy" | "error" | "idle">("idle")
+
+  // Restore state from sessionStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedUrl = sessionStorage.getItem("dashboard_url")
+      const savedData = sessionStorage.getItem("dashboard_data")
+      if (savedUrl) setCurrentUrl(savedUrl)
+      if (savedData) setAnalysisData(JSON.parse(savedData))
+    }
+  }, [])
+
+  // Save state to sessionStorage when it changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (currentUrl) sessionStorage.setItem("dashboard_url", currentUrl)
+      if (analysisData) sessionStorage.setItem("dashboard_data", JSON.stringify(analysisData))
+    }
+  }, [currentUrl, analysisData])
 
   const handleAnalyze = async (url: string) => {
     setIsAnalyzing(true)

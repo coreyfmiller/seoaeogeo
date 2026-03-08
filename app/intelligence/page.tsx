@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { Header } from "@/components/dashboard/header"
 import { Badge } from "@/components/ui/badge"
@@ -30,6 +30,28 @@ export default function CompetitorClash() {
     const [comparisonData, setComparisonData] = useState<any>(null)
     const [error, setError] = useState<string | null>(null)
     const [apiStatus, setApiStatus] = useState<"healthy" | "error" | "idle">("idle")
+
+    // Restore state from sessionStorage on mount
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const savedSiteA = sessionStorage.getItem("competitor_siteA")
+            const savedSiteB = sessionStorage.getItem("competitor_siteB")
+            const savedData = sessionStorage.getItem("competitor_data")
+
+            if (savedSiteA) setSiteA(savedSiteA)
+            if (savedSiteB) setSiteB(savedSiteB)
+            if (savedData) setComparisonData(JSON.parse(savedData))
+        }
+    }, [])
+
+    // Save state to sessionStorage when it changes
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            if (siteA) sessionStorage.setItem("competitor_siteA", siteA)
+            if (siteB) sessionStorage.setItem("competitor_siteB", siteB)
+            if (comparisonData) sessionStorage.setItem("competitor_data", JSON.stringify(comparisonData))
+        }
+    }, [siteA, siteB, comparisonData])
 
     const handleBattle = async (urlA: string, urlB: string) => {
         setIsAnalyzing(true)
@@ -98,7 +120,7 @@ export default function CompetitorClash() {
 
                         {/* Battle Form */}
                         {!comparisonData && !isAnalyzing ? (
-                            <div className="relative overflow-hidden bg-card/20 backdrop-blur-3xl border border-aeo/20 rounded-[2.5rem] p-8 md:p-16 flex flex-col items-center animate-in fade-in zoom-in-95 animate-duration-500 shadow-2xl">
+                            <div className="bg-card/50 border border-border/50 rounded-3xl p-10 flex flex-col items-center animate-in fade-in zoom-in-95 animate-duration-500">
                                 {/* Ambient Background Glows */}
                                 <div className="absolute top-0 left-0 w-96 h-96 bg-seo/10 rounded-full blur-[100px] pointer-events-none" />
                                 <div className="absolute bottom-0 right-0 w-96 h-96 bg-aeo/10 rounded-full blur-[100px] pointer-events-none" />
@@ -107,13 +129,15 @@ export default function CompetitorClash() {
                                     {/* Site A */}
                                     <div className="space-y-4">
                                         <label className="text-sm font-bold text-muted-foreground ml-1 uppercase tracking-widest text-seo">Contender 1</label>
-                                        <div className="relative group shadow-xl shadow-black/20 rounded-2xl">
-                                            <Globe className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground group-focus-within:text-seo transition-colors" />
+                                        <div className="relative group">
+                                            <Globe className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-seo transition-colors" />
                                             <input
                                                 id="siteA"
                                                 type="text"
+                                                value={siteA}
+                                                onChange={(e) => setSiteA(e.target.value)}
                                                 placeholder="fundylogic.com"
-                                                className="w-full pl-14 pr-6 py-5 bg-background border border-border/50 rounded-2xl focus:outline-none focus:ring-4 focus:ring-seo/20 focus:border-seo/50 transition-all text-xl font-medium shadow-inner"
+                                                className="w-full pl-12 pr-6 py-4 bg-muted/50 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-seo/20 focus:border-seo/50 transition-all text-lg"
                                             />
                                         </div>
                                     </div>
@@ -121,7 +145,7 @@ export default function CompetitorClash() {
                                     {/* VS Divider */}
                                     <div className="flex flex-col items-center justify-center pt-8 md:pt-0">
                                         <div className="h-20 w-px bg-border/50 hidden md:block" />
-                                        <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-background border-2 border-border/50 shadow-xl flex items-center justify-center font-black text-foreground text-xl md:text-2xl italic z-10 shrink-0 ring-8 ring-background/50">
+                                        <div className="h-12 w-12 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center font-black text-foreground italic z-10 shrink-0">
                                             VS
                                         </div>
                                         <div className="h-20 w-px bg-border/50 hidden md:block" />
@@ -130,13 +154,15 @@ export default function CompetitorClash() {
                                     {/* Site B */}
                                     <div className="space-y-4">
                                         <label className="text-sm font-bold text-muted-foreground ml-1 uppercase tracking-widest text-aeo">Contender 2</label>
-                                        <div className="relative group shadow-xl shadow-black/20 rounded-2xl">
-                                            <Globe className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground group-focus-within:text-aeo transition-colors" />
+                                        <div className="relative group">
+                                            <Globe className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-aeo transition-colors" />
                                             <input
                                                 id="siteB"
                                                 type="text"
+                                                value={siteB}
+                                                onChange={(e) => setSiteB(e.target.value)}
                                                 placeholder="competitor.ca"
-                                                className="w-full pl-14 pr-6 py-5 bg-background border border-border/50 rounded-2xl focus:outline-none focus:ring-4 focus:ring-aeo/20 focus:border-aeo/50 transition-all text-xl font-medium shadow-inner"
+                                                className="w-full pl-12 pr-6 py-4 bg-muted/50 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-aeo/20 focus:border-aeo/50 transition-all text-lg"
                                             />
                                         </div>
                                     </div>
@@ -145,11 +171,13 @@ export default function CompetitorClash() {
                                 <div className="mt-14 relative z-10">
                                     <button
                                         onClick={() => {
-                                            const a = (document.getElementById('siteA') as HTMLInputElement).value;
-                                            const b = (document.getElementById('siteB') as HTMLInputElement).value;
-                                            if (a && b) handleBattle(a, b);
+                                            if (siteA && siteB) handleBattle(siteA, siteB);
                                         }}
-                                        className="group relative flex items-center justify-center px-12 py-5 bg-foreground text-background rounded-full font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:shadow-[0_0_50px_rgba(255,255,255,0.15)] ring-4 ring-transparent hover:ring-foreground/10"
+                                        disabled={isAnalyzing}
+                                        className={cn(
+                                            "group relative flex items-center justify-center px-10 py-4 bg-foreground text-background rounded-2xl font-bold text-lg hover:scale-105 active:scale-95 transition-all shadow-md hover:shadow-lg ring-2 ring-transparent hover:ring-foreground/10",
+                                            isAnalyzing && "opacity-70 pointer-events-none"
+                                        )}
                                     >
                                         Start The Clash
                                         <Zap className="inline-block ml-3 h-6 w-6 animate-pulse" />

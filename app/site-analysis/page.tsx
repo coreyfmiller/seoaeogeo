@@ -41,8 +41,20 @@ export default function SiteAnalysis() {
                 setIsAuthorized(false)
             }
             setIsCheckingAuth(false)
+
+            const savedUrl = sessionStorage.getItem("pro_url")
+            const savedData = sessionStorage.getItem("pro_data")
+            if (savedUrl) setUrl(savedUrl)
+            if (savedData) setAnalysisData(JSON.parse(savedData))
         }
     }, [])
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            if (url) sessionStorage.setItem("pro_url", url)
+            if (analysisData) sessionStorage.setItem("pro_data", JSON.stringify(analysisData))
+        }
+    }, [url, analysisData])
 
     const handleDeepAudit = async (targetUrl: string) => {
         setIsAnalyzing(true)
