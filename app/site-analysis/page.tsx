@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { Header } from "@/components/dashboard/header"
 import { Badge } from "@/components/ui/badge"
@@ -28,6 +29,18 @@ export default function SiteAnalysis() {
     const [error, setError] = useState<string | null>(null)
     const [apiStatus, setApiStatus] = useState<"healthy" | "error" | "idle">("idle")
     const [progress, setProgress] = useState(0)
+    const [isAuthorized, setIsAuthorized] = useState(false)
+    const router = useRouter()
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            if (localStorage.getItem("isProUnlocked") !== "true") {
+                router.push("/")
+            } else {
+                setIsAuthorized(true)
+            }
+        }
+    }, [router])
 
     const handleDeepAudit = async (targetUrl: string) => {
         setIsAnalyzing(true)
@@ -58,6 +71,17 @@ export default function SiteAnalysis() {
             setIsAnalyzing(false)
             setProgress(0)
         }
+    }
+
+    if (!isAuthorized) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-background">
+                <div className="flex flex-col items-center gap-4 text-muted-foreground animate-pulse">
+                    <Lock className="h-8 w-8 text-yellow-500" />
+                    <p>Verifying Pro Passcode...</p>
+                </div>
+            </div>
+        )
     }
 
     return (

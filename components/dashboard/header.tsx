@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
@@ -11,8 +11,19 @@ import {
   Loader2,
   Activity,
   ShieldAlert,
+  Lock,
+  Unlock,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useRouter, usePathname } from "next/navigation"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog"
 
 interface HeaderProps {
   onAnalyze?: (url: string) => void
@@ -23,6 +34,40 @@ interface HeaderProps {
 
 export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" }: HeaderProps) {
   const [url, setUrl] = useState(currentUrl || "")
+  const [isProUnlocked, setIsProUnlocked] = useState(false)
+  const [showProModal, setShowProModal] = useState(false)
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState(false)
+
+  const router = useRouter()
+  const pathname = usePathname()
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsProUnlocked(localStorage.getItem("isProUnlocked") === "true")
+    }
+  }, [])
+
+  const handleUnlock = () => {
+    if (password === "password123") {
+      localStorage.setItem("isProUnlocked", "true")
+      setIsProUnlocked(true)
+      setShowProModal(false)
+      setPassword("")
+      setError(false)
+      router.push("/site-analysis")
+    } else {
+      setError(true)
+    }
+  }
+
+  const handleLock = () => {
+    localStorage.removeItem("isProUnlocked")
+    setIsProUnlocked(false)
+    if (pathname === "/site-analysis") {
+      router.push("/")
+    }
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -91,14 +136,62 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" 
           API {apiStatus}
         </div>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative text-muted-foreground hover:text-foreground"
-        >
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-seo rounded-full" />
-        </Button>
+        {/* Pro Mode Unlock Toggle */}
+        {isProUnlocked ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLock}
+            className="text-muted-foreground hover:text-foreground hidden sm:flex items-center gap-2 border border-destructive/20 hover:border-destructive/40 hover:bg-destructive/10"
+          >
+            <Lock className="h-4 w-4" />
+            Exit Pro Mode
+          </Button>
+        ) : (
+          <Dialog open={showProModal} onOpenChange={setShowProModal}>
+            <DialogTrigger asChild>
+              <Button
+                size="sm"
+                className="bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 border border-yellow-500/30 font-semibold shadow-sm transition-all"
+              >
+                <Unlock className="h-4 w-4 mr-2" />
+                Go Pro
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md border-border/50 bg-background/95 backdrop-blur-md">
+              <DialogHeader>
+                <DialogTitle className="text-xl flex items-center gap-2">
+                  <Lock className="h-5 w-5 text-yellow-500" />
+                  Enter Beta Authorization
+                </DialogTitle>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Enter your beta key to unlock the Deep Scanning multi-page engine.
+                </p>
+              </DialogHeader>
+              <div className="flex flex-col gap-4 py-4">
+                <Input
+                  type="password"
+                  placeholder="Enter Passcode..."
+                  value={password}
+                  onChange={(e) => { setPassword(e.target.value); setError(false); }}
+                  className={cn(
+                    "border-border/50 bg-input",
+                    error && "border-destructive focus-visible:ring-destructive"
+                  )}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleUnlock()
+                  }}
+                />
+                {error && <p className="text-sm text-destructive font-medium animate-in fade-in">Invalid passcode. Please try again.</p>}
+              </div>
+              <DialogFooter>
+                <Button onClick={handleUnlock} className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold w-full">
+                  Unlock Pro Dashboard
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </header>
   )
