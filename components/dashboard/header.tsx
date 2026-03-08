@@ -55,7 +55,11 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" 
       setShowProModal(false)
       setPassword("")
       setError(false)
-      router.push("/site-analysis")
+      if (pathname === "/site-analysis") {
+        window.location.reload()
+      } else {
+        router.push("/site-analysis")
+      }
     } else {
       setError(true)
     }
