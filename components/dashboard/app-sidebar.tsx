@@ -26,15 +26,15 @@ interface NavItem {
 const mainNav: NavItem[] = [
   { name: "Dashboard", icon: LayoutDashboard, href: "/" },
   { name: "Site Analysis", icon: Search, href: "/site-analysis" },
-  { name: "Keywords", icon: FileText, href: "#" },
-  { name: "Backlinks", icon: TrendingUp, href: "#" },
+  { name: "Intelligence Hub", icon: Globe, href: "/intelligence" },
 ]
 
-const intelligenceNav: NavItem[] = [
-  { name: "SEO Insights", icon: BarChart3, href: "#", badge: "12" },
-  { name: "AEO Monitor", icon: Sparkles, href: "#", badge: "5" },
-  { name: "GEO Tracker", icon: Bot, href: "#", badge: "8" },
-  { name: "Intelligence Hub", icon: Globe, href: "/intelligence" },
+const comingSoonNav: NavItem[] = [
+  { name: "Keywords", icon: FileText, href: "#", badge: "Soon" },
+  { name: "Backlinks", icon: TrendingUp, href: "#", badge: "Soon" },
+  { name: "SEO Insights", icon: BarChart3, href: "#", badge: "Soon" },
+  { name: "AEO Monitor", icon: Sparkles, href: "#", badge: "Soon" },
+  { name: "GEO Tracker", icon: Bot, href: "#", badge: "Soon" },
 ]
 
 const bottomNav: NavItem[] = [
@@ -85,29 +85,23 @@ export function AppSidebar() {
         </div>
 
         <div>
-          <p className="px-3 mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Intelligence
+          <p className="px-3 mb-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+            Coming Soon
           </p>
           <ul className="space-y-1">
-            {intelligenceNav.map((item) => (
+            {comingSoonNav.map((item) => (
               <li key={item.name}>
-                <Link
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
-                    pathname === item.href
-                      ? "bg-seo/10 text-seo font-medium"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  )}
+                <div
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-muted-foreground/40 cursor-not-allowed select-none"
                 >
                   <item.icon className="h-4 w-4" />
                   <span className="flex-1">{item.name}</span>
                   {item.badge && (
-                    <span className="flex items-center justify-center h-5 min-w-5 px-1.5 rounded-full bg-seo/20 text-seo text-xs font-medium">
+                    <span className="flex items-center justify-center h-5 px-2.5 rounded-full bg-muted/50 text-muted-foreground/60 text-[10px] uppercase font-bold tracking-wider">
                       {item.badge}
                     </span>
                   )}
-                </Link>
+                </div>
               </li>
             ))}
           </ul>
