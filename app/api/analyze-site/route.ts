@@ -31,7 +31,13 @@ export async function POST(req: Request) {
                 url: p.url,
                 title: p.title,
                 description: p.description,
-                schemas: p.schemas
+                schemas: p.schemas,
+                schemaTypes: p.schemaTypes,
+                wordCount: p.wordCount,
+                internalLinks: p.internalLinks,
+                hasH1: p.hasH1,
+                isHttps: p.isHttps,
+                responseTimeMs: p.responseTimeMs,
             }))
         });
 

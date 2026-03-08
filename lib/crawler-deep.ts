@@ -2,13 +2,20 @@ import { chromium as playwright, type Browser, type Page } from 'playwright-core
 import chromium from '@sparticuz/chromium';
 import { thinHtml, extractSchema } from './utils/cleaner';
 
-interface PageScan {
+export interface PageScan {
     url: string;
     title: string;
     description: string;
     schemas: any[];
+    schemaTypes: string[];
     thinnedText: string;
     status: 'success' | 'failed';
+    wordCount: number;
+    internalLinks: number;
+    externalLinks: number;
+    hasH1: boolean;
+    isHttps: boolean;
+    responseTimeMs: number;
 }
 
 interface DeepSiteScanResult {
@@ -44,9 +51,8 @@ export async function performDeepScan(baseUrl: string, maxPages: number = 10): P
 
         browser = await playwright.launch({
             args: isLocal ? [] : chromium.args,
-            defaultViewport: chromium.defaultViewport,
             executablePath: isLocal ? undefined : await chromium.executablePath(),
-            headless: isLocal ? true : chromium.headless,
+            headless: true,
             channel: isLocal ? 'chrome' : undefined,
         });
 
@@ -57,13 +63,14 @@ export async function performDeepScan(baseUrl: string, maxPages: number = 10): P
         // 1. DISCOVERY PHASE
         const page = await context.newPage();
         console.log(`[Deep Crawler] Discovering links on: ${baseUrl}`);
+        const t0 = Date.now();
         await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
-        const homeData = await extractPageData(page);
+        const homeData = await extractPageData(page, domain, Date.now() - t0);
         results.push(homeData);
         visited.add(baseUrl);
 
-        // Extract internal links
+        // Extract internal links for queue
         const rawLinks = await page.evaluate(() => {
             return Array.from(document.querySelectorAll('a[href]'))
                 .map(a => (a as HTMLAnchorElement).href)
@@ -71,7 +78,7 @@ export async function performDeepScan(baseUrl: string, maxPages: number = 10): P
         });
 
         // Clean and queue links
-        for (let link of rawLinks) {
+        for (const link of rawLinks) {
             try {
                 const fullLink = new URL(link, baseUrl).href.split('#')[0].replace(/\/$/, "");
                 if (
@@ -87,13 +94,12 @@ export async function performDeepScan(baseUrl: string, maxPages: number = 10): P
 
         // 2. CRAWLING PHASE (Parallel Chunking)
         const targetLinks = [...new Set(queue)].slice(0, maxPages - 1);
-        console.log(`[Deep Crawler] Queue established: ${targetLinks.length} internal pages found.`);
+        console.log(`[Deep Crawler] Queue: ${targetLinks.length} internal pages found.`);
 
-        // Process in chunks of 3 to avoid overloading
         const chunkSize = 3;
         for (let i = 0; i < targetLinks.length; i += chunkSize) {
             const chunk = targetLinks.slice(i, i + chunkSize);
-            console.log(`[Deep Crawler] Processing chunk: ${i / chunkSize + 1}`);
+            console.log(`[Deep Crawler] Processing chunk ${i / chunkSize + 1}`);
 
             const chunkResults = await Promise.all(chunk.map(async (url) => {
                 if (visited.has(url)) return null;
@@ -101,12 +107,13 @@ export async function performDeepScan(baseUrl: string, maxPages: number = 10): P
 
                 const p = await context.newPage();
                 try {
+                    const start = Date.now();
                     await p.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
-                    const data = await extractPageData(p);
+                    const data = await extractPageData(p, domain, Date.now() - start);
                     await p.close();
                     return data;
                 } catch (err) {
-                    console.error(`[Deep Crawler] Failed to crawl ${url}:`, err);
+                    console.error(`[Deep Crawler] Failed: ${url}`);
                     await p.close();
                     return null;
                 }
@@ -130,23 +137,43 @@ export async function performDeepScan(baseUrl: string, maxPages: number = 10): P
     }
 }
 
-async function extractPageData(page: Page): Promise<PageScan> {
+async function extractPageData(page: Page, domain: string, responseTimeMs: number): Promise<PageScan> {
     const url = page.url();
     const title = await page.title();
 
     let description = '';
     try {
-        description = await page.$eval('meta[name="description"]', el => el.getAttribute('content') || '') || "";
+        description = await page.$eval('meta[name="description"]', (el: Element) => el.getAttribute('content') || '') || "";
     } catch (e) { }
 
     const html = await page.content();
+    const schemas = extractSchema(html);
+    const schemaTypes: string[] = schemas.map((s: any) => s['@type'] || 'Unknown').filter(Boolean);
+
+    // Extract structural signals in-browser
+    const pageSignals = await page.evaluate((domainStr: string) => {
+        const bodyText = (document.body as HTMLElement)?.innerText || '';
+        const words = bodyText.trim().split(/\s+/).filter((w: string) => w.length > 0);
+        const allLinks = Array.from(document.querySelectorAll('a[href]')) as HTMLAnchorElement[];
+        const internalLinks = allLinks.filter(a => a.href.includes(domainStr) || a.href.startsWith('/')).length;
+        const externalLinks = allLinks.filter(a => a.href.startsWith('http') && !a.href.includes(domainStr)).length;
+        const hasH1 = !!document.querySelector('h1');
+        return { wordCount: words.length, internalLinks, externalLinks, hasH1 };
+    }, domain);
 
     return {
         url,
         title,
         description,
-        schemas: extractSchema(html),
-        thinnedText: thinHtml(html).substring(0, 3000), // Only need first 3k tokens for sitewide analysis
-        status: 'success'
+        schemas,
+        schemaTypes,
+        thinnedText: thinHtml(html).substring(0, 3000),
+        status: 'success',
+        wordCount: pageSignals.wordCount,
+        internalLinks: pageSignals.internalLinks,
+        externalLinks: pageSignals.externalLinks,
+        hasH1: pageSignals.hasH1,
+        isHttps: url.startsWith('https://'),
+        responseTimeMs,
     };
 }
