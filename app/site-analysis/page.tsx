@@ -184,12 +184,11 @@ export default function SiteAnalysis() {
                     position: static !important;
                 }
 
-                /* 5. White background, clean text */
-                body {
-                    background: white !important;
-                    color: black !important;
-                    -webkit-print-color-adjust: exact;
-                    print-color-adjust: exact;
+                /* 5. Preserve all colours in print */
+                *, *::before, *::after {
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                    color-adjust: exact !important;
                 }
 
                 /* 6. Prevent cards from being sliced */
