@@ -170,7 +170,7 @@ export default function Dashboard() {
                   <Sparkles className="h-10 w-10 text-seo animate-pulse" />
                 </div>
                 <h2 className="text-3xl font-bold text-foreground mb-3 text-center">
-                  Unlock Search Intelligence
+                  Generate Intelligence Report
                 </h2>
                 <p className="text-muted-foreground text-center max-w-lg mb-8 text-lg">
                   Enter any website URL to perform a comprehensive SEO, AEO, and GEO audit powered by Gemini 2.5 Flash.
