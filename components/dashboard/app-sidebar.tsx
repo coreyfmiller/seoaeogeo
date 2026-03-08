@@ -25,7 +25,7 @@ interface NavItem {
 
 const mainNav: NavItem[] = [
   { name: "Dashboard", icon: LayoutDashboard, href: "/" },
-  { name: "Competitor Clash", icon: Globe, href: "/intelligence" },
+  { name: "Site Vs Site", icon: Globe, href: "/intelligence" },
   { name: "Deep Crawler", icon: Search, href: "/site-analysis", badge: "PRO" },
 ]
 

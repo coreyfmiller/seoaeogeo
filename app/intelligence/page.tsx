@@ -23,7 +23,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
-export default function CompetitorClash() {
+export default function SiteVsSite() {
     const [isAnalyzing, setIsAnalyzing] = useState(false)
     const [siteA, setSiteA] = useState("")
     const [siteB, setSiteB] = useState("")
@@ -96,7 +96,7 @@ export default function CompetitorClash() {
                         <div className="mb-10 text-center sm:text-left">
                             <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-seo via-aeo to-geo flex items-center gap-4 mb-4">
                                 <Swords className="h-10 w-10 text-aeo animate-pulse" />
-                                Competitor Clash
+                                Site Vs Site
                             </h1>
                             <p className="text-muted-foreground mt-2 max-w-2xl text-lg">
                                 Benchmark SEO, AEO, and GEO citation metrics between your brand and a competitor.
