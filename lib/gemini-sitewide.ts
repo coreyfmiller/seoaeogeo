@@ -16,6 +16,10 @@ export async function analyzeSitewideIntelligence(context: {
     hasH1?: boolean;
     isHttps?: boolean;
     responseTimeMs?: number;
+    h2Count?: number;
+    h3Count?: number;
+    imgTotal?: number;
+    imgWithAlt?: number;
   }>;
 }) {
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
@@ -23,12 +27,13 @@ export async function analyzeSitewideIntelligence(context: {
 
   const pagesSummary = context.pages.map(p => `
   - URL: ${p.url}
-  - Title: ${p.title}
+  - Title: ${p.title || "MISSING"}
   - Meta Description: ${p.description || "MISSING"}
   - Schema Types: ${p.schemaTypes && p.schemaTypes.length > 0 ? p.schemaTypes.join(', ') : "None"}
   - Word Count: ${p.wordCount ?? "Unknown"}
   - Internal Links: ${p.internalLinks ?? "Unknown"}
-  - Has H1: ${p.hasH1 ? "Yes" : "No"}
+  - H1: ${p.hasH1 ? "Yes" : "No"} | H2s: ${p.h2Count ?? 0} | H3s: ${p.h3Count ?? 0}
+  - Images: ${p.imgTotal ?? 0} total, ${p.imgWithAlt ?? 0} with alt text
   - HTTPS: ${p.isHttps ? "Yes" : "No"}
   - Response Time: ${p.responseTimeMs ? `${p.responseTimeMs}ms` : "Unknown"}
   `).join('\n');
@@ -45,9 +50,7 @@ export async function analyzeSitewideIntelligence(context: {
       "consistencyScore": number (0-100, how consistent brand/meta is across pages),
       "authorityMetrics": {
         "schemaCoverage": number (% of pages with any schema),
-        "metadataOptimization": number (% of pages with title + meta desc),
-        "h1Coverage": number (% of pages with an H1 tag),
-        "httpsCompliance": number (% of pages on HTTPS)
+        "metadataOptimization": number (% of pages with title + meta desc)
       },
       "sitewideInsights": Array of up to 5 objects: {
         "title": string,
@@ -66,7 +69,32 @@ export async function analyzeSitewideIntelligence(context: {
       "internalLinkLeaders": Array of up to 5 URLs that receive the most internal links (estimate from available data),
       "orphanPageRisks": Array of up to 3 URLs that appear to have low internal link equity,
       "navigationAnalysis": string (2-3 sentence summary of site architecture quality),
-      "brandClarityVerdict": string (2-3 sentence expert brand verdict)
+      "brandClarityVerdict": string (2-3 sentence expert brand verdict),
+      "aeoReadiness": {
+        "score": number (0-100, how ready this domain is to be cited by ChatGPT, Perplexity, Gemini),
+        "signals": {
+          "hasAboutPage": boolean,
+          "hasFaqContent": boolean,
+          "hasStructuredQa": boolean,
+          "hasAuthorOrExpertSignals": boolean,
+          "hasClearTopicFocus": boolean,
+          "hasSchemaForAi": boolean,
+          "hasLongformContent": boolean
+        },
+        "verdict": string (2-3 sentences on AEO citation readiness)
+      },
+      "socialProofSignals": {
+        "found": Array of strings (e.g. "Testimonials section", "ReviewSchema on homepage", "Case Studies page"),
+        "missing": Array of strings (e.g. "Author bio pages", "Star rating schema", "Client logos"),
+        "verdict": string (1-2 sentence trust signal summary)
+      },
+      "prioritizedFixes": Array of exactly 3 objects: {
+        "rank": number (1, 2, or 3),
+        "title": string (short action title),
+        "action": string (specific, concrete step to take),
+        "estimatedImpact": "High" | "Medium",
+        "category": "Technical" | "Content" | "AEO" | "Trust"
+      }
     }
     `;
 

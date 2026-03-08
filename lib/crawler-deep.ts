@@ -16,6 +16,10 @@ export interface PageScan {
     hasH1: boolean;
     isHttps: boolean;
     responseTimeMs: number;
+    h2Count: number;
+    h3Count: number;
+    imgTotal: number;
+    imgWithAlt: number;
 }
 
 interface DeepSiteScanResult {
@@ -158,7 +162,12 @@ async function extractPageData(page: Page, domain: string, responseTimeMs: numbe
         const internalLinks = allLinks.filter(a => a.href.includes(domainStr) || a.href.startsWith('/')).length;
         const externalLinks = allLinks.filter(a => a.href.startsWith('http') && !a.href.includes(domainStr)).length;
         const hasH1 = !!document.querySelector('h1');
-        return { wordCount: words.length, internalLinks, externalLinks, hasH1 };
+        const h2Count = document.querySelectorAll('h2').length;
+        const h3Count = document.querySelectorAll('h3').length;
+        const allImgs = Array.from(document.querySelectorAll('img')) as HTMLImageElement[];
+        const imgTotal = allImgs.length;
+        const imgWithAlt = allImgs.filter(img => img.alt && img.alt.trim().length > 0).length;
+        return { wordCount: words.length, internalLinks, externalLinks, hasH1, h2Count, h3Count, imgTotal, imgWithAlt };
     }, domain);
 
     return {
@@ -173,6 +182,10 @@ async function extractPageData(page: Page, domain: string, responseTimeMs: numbe
         internalLinks: pageSignals.internalLinks,
         externalLinks: pageSignals.externalLinks,
         hasH1: pageSignals.hasH1,
+        h2Count: pageSignals.h2Count,
+        h3Count: pageSignals.h3Count,
+        imgTotal: pageSignals.imgTotal,
+        imgWithAlt: pageSignals.imgWithAlt,
         isHttps: url.startsWith('https://'),
         responseTimeMs,
     };

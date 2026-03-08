@@ -9,19 +9,35 @@ export async function POST(req: Request) {
     try {
         const { url, maxPages = 10 } = await req.json();
 
-        // 1. Paid Feature Check Placeholder (Paywall Logic goes here)
-        // const isPro = checkUserPlan(req); 
-        // if (!isPro) return NextResponse.json({ error: 'Pro Plan Required' }, { status: 403 });
-
         if (!url) {
             return NextResponse.json({ error: 'No URL provided' }, { status: 400 });
         }
 
         console.log(`[API PRO] Starting Deep Site Audit for: ${url}`);
 
-        // 2. Deep Crawler (Parallel Multi-Page Scan)
+        // 1. Deep Crawler (Parallel Multi-Page Scan)
         const scanResults = await performDeepScan(url, maxPages);
         console.log(`[API PRO] Crawled ${scanResults.pagesCrawled} pages.`);
+
+        // 2. Robots.txt & Sitemap check (simple fetch, no Playwright needed)
+        let robotsTxt = { exists: false, raw: '' };
+        let sitemap = { exists: false };
+        try {
+            const baseOrigin = new URL(url.startsWith('http') ? url : `https://${url}`).origin;
+            const [robotsRes, sitemapRes] = await Promise.allSettled([
+                fetch(`${baseOrigin}/robots.txt`, { signal: AbortSignal.timeout(5000) }),
+                fetch(`${baseOrigin}/sitemap.xml`, { signal: AbortSignal.timeout(5000) }),
+            ]);
+            if (robotsRes.status === 'fulfilled' && robotsRes.value.ok) {
+                const text = await robotsRes.value.text();
+                robotsTxt = { exists: true, raw: text.substring(0, 2000) };
+            }
+            if (sitemapRes.status === 'fulfilled' && sitemapRes.value.ok) {
+                sitemap = { exists: true };
+            }
+        } catch (e) {
+            console.warn('[API PRO] robots.txt/sitemap check failed:', e);
+        }
 
         // 3. Aggregate AI Analysis (Synthesis)
         console.log(`[API PRO] Running AI synthesis...`);
@@ -38,6 +54,10 @@ export async function POST(req: Request) {
                 hasH1: p.hasH1,
                 isHttps: p.isHttps,
                 responseTimeMs: p.responseTimeMs,
+                h2Count: p.h2Count,
+                h3Count: p.h3Count,
+                imgTotal: p.imgTotal,
+                imgWithAlt: p.imgWithAlt,
             }))
         });
 
@@ -47,6 +67,8 @@ export async function POST(req: Request) {
             success: true,
             data: {
                 ...scanResults,
+                robotsTxt,
+                sitemap,
                 ai: aiAnalysis
             }
         });

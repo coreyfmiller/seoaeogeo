@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { Header } from "@/components/dashboard/header"
@@ -115,6 +115,7 @@ export default function SiteAnalysis() {
 
     const ai = analysisData?.ai
     const pages = analysisData?.pages || []
+    const reportRef = useRef<HTMLDivElement>(null)
 
     // Derived per-page metrics from actual crawl data
     const avgResponseTime = pages.length > 0
@@ -124,6 +125,45 @@ export default function SiteAnalysis() {
     const thinPages = pages.filter((p: any) => p.wordCount < 300)
     const missingH1 = pages.filter((p: any) => !p.hasH1)
     const pagesWithSchema = pages.filter((p: any) => p.schemas?.length > 0)
+
+    // Duplicate title / meta detection
+    const titleGroups = pages.reduce((acc: Record<string, string[]>, p: any) => {
+        if (p.title) { acc[p.title] = [...(acc[p.title] || []), p.url] }
+        return acc
+    }, {})
+    const duplicateTitles: [string, string[]][] = (Object.entries(titleGroups) as [string, string[]][]).filter(([, urls]) => urls.length > 1)
+
+    const metaGroups = pages.reduce((acc: Record<string, string[]>, p: any) => {
+        if (p.description) { acc[p.description] = [...(acc[p.description] || []), p.url] }
+        return acc
+    }, {})
+    const duplicateMetas: [string, string[]][] = (Object.entries(metaGroups) as [string, string[]][]).filter(([, urls]) => urls.length > 1)
+
+    // Image alt coverage
+    const totalImgs = pages.reduce((s: number, p: any) => s + (p.imgTotal || 0), 0)
+    const imgsWithAlt = pages.reduce((s: number, p: any) => s + (p.imgWithAlt || 0), 0)
+    const imgAltPct = totalImgs > 0 ? Math.round((imgsWithAlt / totalImgs) * 100) : 100
+
+    // Heading depth
+    const pagesWithH2 = pages.filter((p: any) => (p.h2Count || 0) > 0).length
+    const pagesWithH3 = pages.filter((p: any) => (p.h3Count || 0) > 0).length
+    const flatPages = pages.filter((p: any) => (p.h2Count || 0) === 0 && p.hasH1)
+
+    // PDF Export
+    const handleExportPdf = () => {
+        const printStyles = `
+            @media print {
+                body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                .no-print { display: none !important; }
+                .print-break { page-break-before: always; }
+            }
+        `
+        const styleEl = document.createElement('style')
+        styleEl.innerHTML = printStyles
+        document.head.appendChild(styleEl)
+        window.print()
+        document.head.removeChild(styleEl)
+    }
 
     return (
         <div className="flex h-screen bg-background">
@@ -619,15 +659,289 @@ export default function SiteAnalysis() {
                                         </Card>
                                     </div>
 
-                                    {/* Start Over */}
-                                    <div className="flex justify-between items-center pt-4 border-t border-border/50">
+                                    {/* ── Robots.txt & Sitemap Status ── */}
+                                    <Card className="border-border/50">
+                                        <CardHeader>
+                                            <CardTitle className="flex items-center gap-2">
+                                                <Globe className="h-5 w-5 text-geo" />
+                                                Robots.txt & Sitemap Status
+                                            </CardTitle>
+                                            <CardDescription>Crawlability infrastructure check</CardDescription>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                <div className={cn("flex items-center gap-3 p-4 rounded-xl border", analysisData?.robotsTxt?.exists ? "border-geo/30 bg-geo/5" : "border-destructive/30 bg-destructive/5")}>
+                                                    {analysisData?.robotsTxt?.exists ? <CheckCircle2 className="h-5 w-5 text-geo shrink-0" /> : <XCircle className="h-5 w-5 text-destructive shrink-0" />}
+                                                    <div>
+                                                        <p className="text-sm font-bold">robots.txt</p>
+                                                        <p className="text-xs text-muted-foreground">{analysisData?.robotsTxt?.exists ? "File found — crawler instructions present" : "Missing — all bots have unrestricted access"}</p>
+                                                    </div>
+                                                </div>
+                                                <div className={cn("flex items-center gap-3 p-4 rounded-xl border", analysisData?.sitemap?.exists ? "border-geo/30 bg-geo/5" : "border-destructive/30 bg-destructive/5")}>
+                                                    {analysisData?.sitemap?.exists ? <CheckCircle2 className="h-5 w-5 text-geo shrink-0" /> : <XCircle className="h-5 w-5 text-destructive shrink-0" />}
+                                                    <div>
+                                                        <p className="text-sm font-bold">sitemap.xml</p>
+                                                        <p className="text-xs text-muted-foreground">{analysisData?.sitemap?.exists ? "Sitemap found — Google can discover all pages" : "Missing — Google must manually crawl to find pages"}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+
+                                    {/* ── Heading Structure + Image Alt ── */}
+                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                        <Card className="border-border/50">
+                                            <CardHeader>
+                                                <CardTitle className="flex items-center gap-2">
+                                                    <FileText className="h-5 w-5 text-aeo" />
+                                                    Heading Structure Analysis
+                                                </CardTitle>
+                                                <CardDescription>Document hierarchy depth across all crawled pages</CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="space-y-4">
+                                                    {[
+                                                        { label: "H1 Coverage", pct: Math.round((pages.filter((p: any) => p.hasH1).length / Math.max(pages.length, 1)) * 100), count: pages.filter((p: any) => p.hasH1).length, color: "bg-geo", textColor: "text-geo", desc: "pages have an H1 heading" },
+                                                        { label: "H2 Coverage", pct: Math.round((pagesWithH2 / Math.max(pages.length, 1)) * 100), count: pagesWithH2, color: "bg-aeo", textColor: "text-aeo", desc: "pages have H2 subheadings" },
+                                                        { label: "H3 Coverage", pct: Math.round((pagesWithH3 / Math.max(pages.length, 1)) * 100), count: pagesWithH3, color: "bg-seo", textColor: "text-seo", desc: "pages have H3 subheadings" },
+                                                    ].map(h => (
+                                                        <div key={h.label} className="space-y-1.5">
+                                                            <div className="flex items-center justify-between text-xs">
+                                                                <span className="font-bold">{h.label}</span>
+                                                                <span className={cn("font-black", h.textColor)}>{h.count} / {pages.length} pages</span>
+                                                            </div>
+                                                            <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                                                <div className={cn("h-full rounded-full", h.color)} style={{ width: `${h.pct}%` }} />
+                                                            </div>
+                                                            <p className="text-[10px] text-muted-foreground">{h.count} {h.desc}</p>
+                                                        </div>
+                                                    ))}
+                                                    {flatPages.length > 0 && (
+                                                        <div className="mt-2 p-3 rounded-lg border border-aeo/20 bg-aeo/5 text-xs text-aeo">
+                                                            ⚠ {flatPages.length} page(s) have H1 but no H2 — &ldquo;flat&rdquo; content that AI models find hard to parse.
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+
+                                        <Card className={cn("border-border/50", imgAltPct < 80 && "border-destructive/20")}>
+                                            <CardHeader>
+                                                <CardTitle className="flex items-center gap-2">
+                                                    <Activity className="h-5 w-5 text-seo" />
+                                                    Image Alt Text Coverage
+                                                    <Badge className={cn("ml-auto text-xs font-black", imgAltPct >= 90 ? "bg-geo/10 text-geo border-geo/30" : imgAltPct >= 70 ? "bg-aeo/10 text-aeo border-aeo/30" : "bg-destructive/10 text-destructive border-destructive/30")}>{imgAltPct}%</Badge>
+                                                </CardTitle>
+                                                <CardDescription>Accessibility & SEO image signal across the domain</CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="mb-4">
+                                                    <div className="flex justify-between text-xs mb-1.5">
+                                                        <span className="text-muted-foreground">{imgsWithAlt} of {totalImgs} images have alt text</span>
+                                                        <span className={cn("font-black", imgAltPct >= 90 ? "text-geo" : imgAltPct >= 70 ? "text-aeo" : "text-destructive")}>{imgAltPct}%</span>
+                                                    </div>
+                                                    <div className="h-3 bg-muted rounded-full overflow-hidden">
+                                                        <div className={cn("h-full rounded-full", imgAltPct >= 90 ? "bg-geo" : imgAltPct >= 70 ? "bg-aeo" : "bg-destructive")} style={{ width: `${imgAltPct}%` }} />
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-2 max-h-44 overflow-y-auto pr-1">
+                                                    {pages.filter((p: any) => (p.imgTotal || 0) > 0).map((p: any, i: number) => {
+                                                        const pct = p.imgTotal > 0 ? Math.round((p.imgWithAlt / p.imgTotal) * 100) : 100
+                                                        return (
+                                                            <div key={i} className="flex items-center gap-2 text-xs">
+                                                                <span className="font-mono text-muted-foreground truncate flex-1">{new URL(p.url).pathname || "/"}</span>
+                                                                <span className={cn("font-bold shrink-0", pct === 100 ? "text-geo" : pct >= 70 ? "text-aeo" : "text-destructive")}>{p.imgWithAlt}/{p.imgTotal}</span>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+
+                                    {/* ── Duplicate Title & Meta Detection ── */}
+                                    {(duplicateTitles.length > 0 || duplicateMetas.length > 0) && (
+                                        <Card className="border-destructive/30 bg-destructive/5">
+                                            <CardHeader>
+                                                <CardTitle className="flex items-center gap-2 text-destructive">
+                                                    <AlertTriangle className="h-5 w-5" />
+                                                    Duplicate Title & Meta Detection
+                                                </CardTitle>
+                                                <CardDescription>Pages sharing identical title tags or meta descriptions — a direct ranking penalty signal</CardDescription>
+                                            </CardHeader>
+                                            <CardContent className="space-y-5">
+                                                {duplicateTitles.length > 0 && (
+                                                    <div>
+                                                        <p className="text-xs font-bold uppercase tracking-wider text-destructive mb-2">Duplicate Titles ({duplicateTitles.length})</p>
+                                                        <div className="space-y-2">
+                                                            {duplicateTitles.map(([title, urls], i) => (
+                                                                <div key={i} className="p-3 rounded-lg border border-destructive/20 bg-background/50">
+                                                                    <p className="text-xs font-semibold mb-1.5 truncate">&ldquo;{title}&rdquo;</p>
+                                                                    {urls.map((u, j) => <p key={j} className="text-[10px] font-mono text-muted-foreground truncate">↳ {u}</p>)}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {duplicateMetas.length > 0 && (
+                                                    <div>
+                                                        <p className="text-xs font-bold uppercase tracking-wider text-destructive mb-2">Duplicate Meta Descriptions ({duplicateMetas.length})</p>
+                                                        <div className="space-y-2">
+                                                            {duplicateMetas.map(([meta, urls], i) => (
+                                                                <div key={i} className="p-3 rounded-lg border border-destructive/20 bg-background/50">
+                                                                    <p className="text-xs font-semibold mb-1.5 line-clamp-2">&ldquo;{meta}&rdquo;</p>
+                                                                    {urls.map((u, j) => <p key={j} className="text-[10px] font-mono text-muted-foreground truncate">↳ {u}</p>)}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    )}
+                                    {(duplicateTitles.length === 0 && duplicateMetas.length === 0 && pages.length > 0) && (
+                                        <Card className="border-geo/20 bg-geo/5">
+                                            <CardContent className="flex items-center gap-3 py-4">
+                                                <CheckCircle2 className="h-5 w-5 text-geo shrink-0" />
+                                                <p className="text-sm font-medium text-geo">No duplicate titles or meta descriptions detected across {pages.length} pages.</p>
+                                            </CardContent>
+                                        </Card>
+                                    )}
+
+                                    {/* ── AEO Citation Readiness ── */}
+                                    {ai?.aeoReadiness && (
+                                        <Card className="border-aeo/20 bg-aeo/5">
+                                            <CardHeader>
+                                                <CardTitle className="flex items-center gap-2 text-aeo">
+                                                    <Sparkles className="h-5 w-5" />
+                                                    AEO Citation Readiness Score
+                                                    <Badge className="ml-auto bg-aeo/10 text-aeo border-aeo/30 text-xs font-black">{ai.aeoReadiness.score} / 100</Badge>
+                                                </CardTitle>
+                                                <CardDescription>How ready this domain is to be cited by ChatGPT, Perplexity, and Gemini</CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 mb-4">
+                                                    {ai.aeoReadiness.signals && Object.entries(ai.aeoReadiness.signals).map(([key, val]: [string, any]) => {
+                                                        const labels: Record<string, string> = {
+                                                            hasAboutPage: "About Page", hasFaqContent: "FAQ Content", hasStructuredQa: "Q&A Structure",
+                                                            hasAuthorOrExpertSignals: "Expert Signals", hasClearTopicFocus: "Topic Focus",
+                                                            hasSchemaForAi: "AI Schema", hasLongformContent: "Long-form"
+                                                        }
+                                                        return (
+                                                            <div key={key} className={cn("flex flex-col items-center gap-1.5 p-2.5 rounded-lg border text-center", val ? "border-aeo/30 bg-aeo/10" : "border-border/40 bg-muted/30")}>
+                                                                {val ? <CheckCircle2 className="h-4 w-4 text-aeo" /> : <XCircle className="h-4 w-4 text-muted-foreground" />}
+                                                                <p className="text-[10px] font-medium leading-tight">{labels[key] || key}</p>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                <p className="text-sm text-foreground/80 leading-relaxed italic border-t border-border/50 pt-4">&ldquo;{ai.aeoReadiness.verdict}&rdquo;</p>
+                                            </CardContent>
+                                        </Card>
+                                    )}
+
+                                    {/* ── Social Proof Signals ── */}
+                                    {ai?.socialProofSignals && (
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                            <Card className="border-border/50">
+                                                <CardHeader>
+                                                    <CardTitle className="flex items-center gap-2">
+                                                        <CheckCircle2 className="h-5 w-5 text-geo" />
+                                                        Social Proof Signals Found
+                                                    </CardTitle>
+                                                    <CardDescription>Trust signals Google and AI models use to verify authority</CardDescription>
+                                                </CardHeader>
+                                                <CardContent>
+                                                    {ai.socialProofSignals.found?.length > 0 ? (
+                                                        <div className="space-y-2">
+                                                            {ai.socialProofSignals.found.map((s: string, i: number) => (
+                                                                <div key={i} className="flex items-center gap-2.5 p-2.5 rounded-lg border border-geo/20 bg-geo/5">
+                                                                    <CheckCircle2 className="h-3.5 w-3.5 text-geo shrink-0" />
+                                                                    <p className="text-xs">{s}</p>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-sm text-muted-foreground italic">No social proof signals detected on this domain.</p>
+                                                    )}
+                                                </CardContent>
+                                            </Card>
+                                            <Card className="border-border/50">
+                                                <CardHeader>
+                                                    <CardTitle className="flex items-center gap-2">
+                                                        <AlertCircle className="h-5 w-5 text-aeo" />
+                                                        Missing Trust Signals
+                                                    </CardTitle>
+                                                    <CardDescription>High-impact trust indicators your competitors likely have</CardDescription>
+                                                </CardHeader>
+                                                <CardContent>
+                                                    {ai.socialProofSignals.missing?.length > 0 ? (
+                                                        <div className="space-y-2">
+                                                            {ai.socialProofSignals.missing.map((s: string, i: number) => (
+                                                                <div key={i} className="flex items-center gap-2.5 p-2.5 rounded-lg border border-aeo/20 bg-aeo/5">
+                                                                    <XCircle className="h-3.5 w-3.5 text-aeo shrink-0" />
+                                                                    <p className="text-xs">{s}</p>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex items-center gap-2 text-geo">
+                                                            <CheckCircle2 className="h-4 w-4" />
+                                                            <p className="text-sm font-medium">Strong trust signal presence — no major gaps found.</p>
+                                                        </div>
+                                                    )}
+                                                </CardContent>
+                                            </Card>
+                                        </div>
+                                    )}
+
+                                    {/* ── Prioritized Fix List ── */}
+                                    {ai?.prioritizedFixes?.length > 0 && (
+                                        <Card className="border-geo/30 bg-gradient-to-br from-geo/5 to-aeo/5">
+                                            <CardHeader>
+                                                <CardTitle className="flex items-center gap-2">
+                                                    <Zap className="h-5 w-5 text-geo" />
+                                                    Top 3 Prioritized Fixes
+                                                </CardTitle>
+                                                <CardDescription>If you could only fix 3 things this month, fix these — ordered by ROI</CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="space-y-4">
+                                                    {ai.prioritizedFixes.map((fix: any, i: number) => (
+                                                        <div key={i} className="flex gap-4 p-4 rounded-xl border border-border/40 bg-background/70">
+                                                            <div className="h-10 w-10 shrink-0 rounded-full bg-geo/10 border border-geo/30 flex items-center justify-center text-lg font-black text-geo">
+                                                                {fix.rank}
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <h5 className="font-bold text-sm">{fix.title}</h5>
+                                                                    <Badge variant="outline" className="text-[10px] border-border/50 text-muted-foreground">{fix.category}</Badge>
+                                                                    <Badge className={cn("text-[10px] ml-auto", fix.estimatedImpact === 'High' ? "bg-geo/10 text-geo border-geo/30" : "bg-aeo/10 text-aeo border-aeo/30")}>{fix.estimatedImpact} Impact</Badge>
+                                                                </div>
+                                                                <p className="text-xs text-muted-foreground leading-relaxed">{fix.action}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    )}
+
+                                    {/* Start Over + PDF Export */}
+                                    <div className="flex justify-between items-center pt-4 border-t border-border/50 no-print">
                                         <button
                                             onClick={() => { setAnalysisData(null); setUrl(""); sessionStorage.removeItem("pro_url"); sessionStorage.removeItem("pro_data"); }}
                                             className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
                                         >
                                             ← Start New Audit
                                         </button>
-                                        <Badge className="bg-geo hover:bg-geo/90 cursor-pointer">Export White-Label Report (Pro)</Badge>
+                                        <button
+                                            onClick={handleExportPdf}
+                                            className="flex items-center gap-2 bg-geo text-geo-foreground px-5 py-2.5 rounded-xl font-bold hover:bg-geo/90 transition-all text-sm shadow-md"
+                                        >
+                                            <FileText className="h-4 w-4" />
+                                            Export PDF Report
+                                        </button>
                                     </div>
                                 </div>
                             )}
