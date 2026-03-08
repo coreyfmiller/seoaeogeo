@@ -184,11 +184,27 @@ export default function SiteAnalysis() {
                     position: static !important;
                 }
 
-                /* 5. Preserve all colours in print */
+                /* 5. Preserve accent colours, but use light base for paper */
                 *, *::before, *::after {
                     -webkit-print-color-adjust: exact !important;
                     print-color-adjust: exact !important;
                     color-adjust: exact !important;
+                }
+
+                :root {
+                    --background: oklch(1 0 0) !important;
+                    --foreground: oklch(0.15 0 0) !important;
+                    --card: oklch(0.98 0 0) !important;
+                    --card-foreground: oklch(0.15 0 0) !important;
+                    --muted: oklch(0.94 0 0) !important;
+                    --muted-foreground: oklch(0.4 0 0) !important;
+                    --border: oklch(0.85 0 0) !important;
+                    --popover: oklch(0.98 0 0) !important;
+                    --popover-foreground: oklch(0.15 0 0) !important;
+                }
+
+                body {
+                    background: white !important;
                 }
 
                 /* 6. Prevent cards from being sliced */
