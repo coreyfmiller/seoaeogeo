@@ -109,7 +109,7 @@ export default function Intelligence() {
                                             <input
                                                 id="siteA"
                                                 type="text"
-                                                placeholder="valleymarketing.ca"
+                                                placeholder="fundylogic.com"
                                                 className="w-full pl-12 pr-4 py-4 bg-background border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-seo/20 focus:border-seo/50 transition-all text-lg"
                                             />
                                         </div>

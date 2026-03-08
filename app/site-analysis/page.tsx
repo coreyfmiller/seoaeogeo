@@ -153,7 +153,7 @@ export default function SiteAnalysis() {
                                     <div className="flex gap-2 p-2 bg-background border border-border/50 rounded-2xl focus-within:ring-2 focus-within:ring-geo/20 transition-all shadow-lg">
                                         <input
                                             type="text"
-                                            placeholder="e.g. valleymarketing.ca"
+                                            placeholder="e.g. fundylogic.com"
                                             className="flex-1 bg-transparent border-none focus:outline-none px-4 py-3"
                                             value={url}
                                             onChange={(e) => setUrl(e.target.value)}
