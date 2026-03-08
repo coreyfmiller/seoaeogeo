@@ -52,6 +52,7 @@ export default function SiteAnalysis() {
     const [isAuthorized, setIsAuthorized] = useState(false)
     const [isCheckingAuth, setIsCheckingAuth] = useState(true)
     const router = useRouter()
+    const reportRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         if (typeof window !== "undefined") {
@@ -115,7 +116,6 @@ export default function SiteAnalysis() {
 
     const ai = analysisData?.ai
     const pages = analysisData?.pages || []
-    const reportRef = useRef<HTMLDivElement>(null)
 
     // Derived per-page metrics from actual crawl data
     const avgResponseTime = pages.length > 0
