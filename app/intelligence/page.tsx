@@ -120,11 +120,11 @@ export default function CompetitorClash() {
 
                                     {/* VS Divider */}
                                     <div className="flex flex-col items-center justify-center pt-8 md:pt-0">
-                                        <div className="h-20 w-px bg-gradient-to-b from-transparent to-aeo/50 hidden md:block" />
-                                        <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-gradient-to-br from-aeo to-seo shadow-[0_0_30px_rgba(168,85,247,0.3)] border border-white/10 flex items-center justify-center font-black text-white text-xl md:text-2xl italic z-10 shrink-0">
+                                        <div className="h-20 w-px bg-border/50 hidden md:block" />
+                                        <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-background border-2 border-border/50 shadow-xl flex items-center justify-center font-black text-foreground text-xl md:text-2xl italic z-10 shrink-0 ring-8 ring-background/50">
                                             VS
                                         </div>
-                                        <div className="h-20 w-px bg-gradient-to-t from-transparent to-aeo/50 hidden md:block" />
+                                        <div className="h-20 w-px bg-border/50 hidden md:block" />
                                     </div>
 
                                     {/* Site B */}
@@ -149,7 +149,7 @@ export default function CompetitorClash() {
                                             const b = (document.getElementById('siteB') as HTMLInputElement).value;
                                             if (a && b) handleBattle(a, b);
                                         }}
-                                        className="group relative px-12 py-5 bg-gradient-to-r from-aeo to-seo text-white rounded-full font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(168,85,247,0.3)] hover:shadow-[0_0_60px_rgba(168,85,247,0.5)] border border-white/10"
+                                        className="group relative flex items-center justify-center px-12 py-5 bg-foreground text-background rounded-full font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:shadow-[0_0_50px_rgba(255,255,255,0.15)] ring-4 ring-transparent hover:ring-foreground/10"
                                     >
                                         Start The Clash
                                         <Zap className="inline-block ml-3 h-6 w-6 animate-pulse" />
