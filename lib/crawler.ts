@@ -1,4 +1,5 @@
-import { chromium, type Browser, type Page } from 'playwright';
+import { chromium as playwright, type Browser, type Page } from 'playwright-core';
+import chromium from '@sparticuz/chromium';
 import { thinHtml, extractSchema } from './utils/cleaner';
 
 export interface ScanResult {
@@ -34,7 +35,16 @@ export async function performScan(targetUrl: string): Promise<ScanResult> {
     const startTime = Date.now();
 
     try {
-        browser = await chromium.launch({ headless: true });
+        const isLocal = process.env.NODE_ENV === 'development';
+
+        browser = await playwright.launch({
+            args: isLocal ? [] : chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: isLocal ? undefined : await chromium.executablePath(),
+            headless: isLocal ? true : chromium.headless,
+            channel: isLocal ? 'chrome' : undefined,
+        });
+
         const page: Page = await browser.newPage();
 
         console.log(`[Crawler] Navigating to: ${targetUrl}`);

@@ -1,4 +1,5 @@
-import { chromium, Browser, Page } from 'playwright';
+import { chromium as playwright, type Browser, type Page } from 'playwright-core';
+import chromium from '@sparticuz/chromium';
 import { thinHtml, extractSchema } from './utils/cleaner';
 
 interface PageScan {
@@ -39,7 +40,16 @@ export async function performDeepScan(baseUrl: string, maxPages: number = 10): P
     }
 
     try {
-        browser = await chromium.launch({ headless: true });
+        const isLocal = process.env.NODE_ENV === 'development';
+
+        browser = await playwright.launch({
+            args: isLocal ? [] : chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: isLocal ? undefined : await chromium.executablePath(),
+            headless: isLocal ? true : chromium.headless,
+            channel: isLocal ? 'chrome' : undefined,
+        });
+
         const context = await browser.newContext({
             userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 SearchIQ-Bot/1.0'
         });
