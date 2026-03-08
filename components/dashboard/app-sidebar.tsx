@@ -25,7 +25,7 @@ interface NavItem {
 
 const mainNav: NavItem[] = [
   { name: "Dashboard", icon: LayoutDashboard, href: "/" },
-  { name: "Site Analysis", icon: Search, href: "/site-analysis" },
+  { name: "Deep Crawler", icon: Search, href: "/site-analysis", badge: "PRO" },
   { name: "Intelligence Hub", icon: Globe, href: "/intelligence" },
 ]
 
@@ -77,7 +77,12 @@ export function AppSidebar() {
                   )}
                 >
                   <item.icon className="h-4 w-4" />
-                  {item.name}
+                  <span className="flex-1">{item.name}</span>
+                  {item.badge === "PRO" && (
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                      {item.badge}
+                    </span>
+                  )}
                 </Link>
               </li>
             ))}
