@@ -153,72 +153,68 @@ export default function SiteAnalysis() {
     const handleExportPdf = () => {
         const printStyles = `
             @media print {
-                /* Reset layout for natural document flow */
-                html, body {
+                @page { size: auto; margin: 15mm; }
+
+                /* 1. Hide EVERYTHING */
+                body * { visibility: hidden !important; }
+
+                /* 2. Show only the report and all its descendants */
+                [data-report],
+                [data-report] * {
+                    visibility: visible !important;
+                }
+
+                /* 3. Pull report out of the dashboard layout */
+                [data-report] {
+                    position: absolute !important;
+                    left: 0 !important;
+                    top: 0 !important;
+                    width: 100% !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                }
+
+                /* 4. Unlock all parent scroll locks */
+                html, body,
+                body > div, body > div > div, body > div > div > div,
+                main, [class*="overflow"] {
                     height: auto !important;
-                    overflow: visible !important;
-                    background: white !important;
-                    color: black !important;
-                    margin: 0;
-                    padding: 0;
-                }
-                
-                /* Hide all UI chrome */
-                .no-print { display: none !important; }
-                
-                /* Ensure main area expands to full height */
-                div.flex.h-screen { 
-                    height: auto !important; 
-                    display: block !important; 
-                    overflow: visible !important; 
-                }
-                
-                main { 
-                    overflow: visible !important; 
-                    height: auto !important; 
                     max-height: none !important;
-                    padding: 20mm !important;
-                    display: block !important;
+                    overflow: visible !important;
+                    position: static !important;
                 }
 
-                /* Force cards to be document-friendly */
-                .card, div[role="region"] {
-                    page-break-inside: avoid;
-                    break-inside: avoid;
-                    margin-bottom: 2rem !important;
+                /* 5. White background, clean text */
+                body {
                     background: white !important;
-                    border: 1px solid #eee !important;
-                    box-shadow: none !important;
-                }
-
-                .badge, .text-geo, .text-aeo, .text-seo {
                     color: black !important;
-                    border-color: #ddd !important;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
                 }
 
-                /* Remove scrollbars from tables */
-                .overflow-x-auto { overflow: visible !important; }
-                
-                /* Add report title */
-                .print-header {
-                    display: block !important;
-                    margin-bottom: 2rem;
-                    border-bottom: 2px solid #000;
-                    padding-bottom: 1rem;
+                /* 6. Prevent cards from being sliced */
+                [data-report] > div {
+                    break-inside: avoid;
+                    page-break-inside: avoid;
                 }
-            }
-            
-            @page {
-                size: auto;
-                margin: 20mm;
+
+                /* 7. Hide interactive-only elements */
+                .no-print { display: none !important; }
+
+                /* 8. Show print header */
+                .print-header { display: block !important; }
             }
         `
         const styleEl = document.createElement('style')
+        styleEl.id = 'pdf-print-styles'
         styleEl.innerHTML = printStyles
         document.head.appendChild(styleEl)
 
         const originalTitle = document.title
-        document.title = `SiteAudit_Report_${new URL(url).hostname}`
+        try {
+            const hostname = url.includes('://') ? new URL(url).hostname : url
+            document.title = `SiteAudit_Report_${hostname}`
+        } catch { document.title = 'SiteAudit_Report' }
 
         window.print()
 
@@ -342,7 +338,7 @@ export default function SiteAnalysis() {
 
                             ) : (
                                 analysisData && (
-                                    <div ref={reportRef} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                                    <div ref={reportRef} data-report className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                                         {/* ── Print Header (Only visible in PDF) ── */}
                                         <div className="hidden print-header">
                                             <h1 className="text-3xl font-black mb-1">Intelligence Report</h1>
