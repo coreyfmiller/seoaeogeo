@@ -27,8 +27,21 @@ import {
     LayoutDashboard,
     AlertTriangle,
     Map,
+    Info,
     Code2,
 } from "lucide-react"
+
+// Simple tooltip component
+function StatTooltip({ text }: { text: string }) {
+    return (
+        <div className="group relative inline-flex">
+            <Info className="h-3 w-3 text-muted-foreground/50 hover:text-muted-foreground cursor-help transition-colors" />
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 px-3 py-2 bg-popover border border-border rounded-lg text-xs text-muted-foreground shadow-xl z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150 leading-relaxed">
+                {text}
+            </div>
+        </div>
+    )
+}
 
 export default function SiteAnalysis() {
     const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -231,25 +244,35 @@ export default function SiteAnalysis() {
                                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
 
                                     {/* ── Row 1: Aggregate Score Cards ── */}
-                                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
-                                        {[
-                                            { label: "Pages Scanned", value: analysisData.pagesCrawled, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30" },
-                                            { label: "Domain Health", value: `${ai?.domainHealthScore ?? "–"}%`, color: "text-geo", border: "border-geo/20", bg: "bg-geo/5" },
-                                            { label: "Brand Consistency", value: `${ai?.consistencyScore ?? "–"}%`, color: "text-aeo", border: "border-aeo/20", bg: "bg-aeo/5" },
-                                            { label: "Schema Coverage", value: `${ai?.authorityMetrics?.schemaCoverage ?? "–"}%`, color: "text-seo", border: "border-seo/20", bg: "bg-seo/5" },
-                                            { label: "Metadata Opt.", value: `${ai?.authorityMetrics?.metadataOptimization ?? "–"}%`, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30" },
-                                            { label: "H1 Coverage", value: `${ai?.authorityMetrics?.h1Coverage ?? "–"}%`, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30" },
-                                            { label: "HTTPS Compliance", value: `${ai?.authorityMetrics?.httpsCompliance ?? "–"}%`, color: "text-geo", border: "border-geo/20", bg: "bg-geo/5" },
-                                            { label: "Avg Response", value: `${avgResponseTime}ms`, color: avgResponseTime < 1500 ? "text-geo" : "text-destructive", border: "border-border/50", bg: "bg-muted/30" },
-                                        ].map(stat => (
-                                            <Card key={stat.label} className={cn("col-span-1 md:col-span-1 lg:col-span-1", stat.border, stat.bg)}>
-                                                <CardHeader className="pb-1 pt-4 px-4">
-                                                    <CardDescription className="text-[10px] font-bold uppercase tracking-tighter leading-tight">{stat.label}</CardDescription>
-                                                    <CardTitle className={cn("text-2xl font-black", stat.color)}>{stat.value}</CardTitle>
-                                                </CardHeader>
-                                            </Card>
-                                        ))}
-                                    </div>
+                                    {(() => {
+                                        const h1Pct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.hasH1).length / pages.length) * 100) : 0
+                                        const httpsPct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.isHttps).length / pages.length) * 100) : 0
+                                        const stats = [
+                                            { label: "Pages Scanned", value: analysisData.pagesCrawled, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", tip: "Total number of unique internal pages the crawler successfully visited on this domain." },
+                                            { label: "Domain Health", value: `${ai?.domainHealthScore ?? "–"}%`, color: "text-geo", border: "border-geo/20", bg: "bg-geo/5", tip: "AI-generated composite score (0-100) measuring the overall structural and content health of the domain." },
+                                            { label: "Brand Consistency", value: `${ai?.consistencyScore ?? "–"}%`, color: "text-aeo", border: "border-aeo/20", bg: "bg-aeo/5", tip: "How consistently the brand message, tone, and topic focus is maintained across all crawled pages." },
+                                            { label: "Schema Coverage", value: `${ai?.authorityMetrics?.schemaCoverage ?? "–"}%`, color: "text-seo", border: "border-seo/20", bg: "bg-seo/5", tip: "Percentage of pages that include at least one valid JSON-LD structured data block. Critical for AI citation visibility." },
+                                            { label: "Metadata Opt.", value: `${ai?.authorityMetrics?.metadataOptimization ?? "–"}%`, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", tip: "Percentage of pages that have both a title tag and a meta description present and non-empty." },
+                                            { label: "H1 Coverage", value: `${h1Pct}%`, color: h1Pct >= 90 ? "text-geo" : "text-destructive", border: h1Pct >= 90 ? "border-geo/20" : "border-destructive/20", bg: h1Pct >= 90 ? "bg-geo/5" : "bg-destructive/5", tip: "Percentage of pages with a valid H1 heading tag. Missing H1s are a direct SEO penalty signal." },
+                                            { label: "HTTPS", value: `${httpsPct}%`, color: httpsPct === 100 ? "text-geo" : "text-destructive", border: httpsPct === 100 ? "border-geo/20" : "border-destructive/20", bg: httpsPct === 100 ? "bg-geo/5" : "bg-destructive/5", tip: "Percentage of crawled pages served over a secure HTTPS connection. Any HTTP pages are a trust and ranking risk." },
+                                            { label: "Avg Response", value: `${avgResponseTime}ms`, color: avgResponseTime < 1500 ? "text-geo" : "text-destructive", border: "border-border/50", bg: "bg-muted/30", tip: "Average server response time across all crawled pages. Under 1500ms is healthy. Over 2000ms risks ranking demotion." },
+                                        ]
+                                        return (
+                                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+                                                {stats.map(stat => (
+                                                    <Card key={stat.label} className={cn("col-span-1", stat.border, stat.bg)}>
+                                                        <CardHeader className="pb-1 pt-4 px-4">
+                                                            <CardDescription className="text-[10px] font-bold uppercase tracking-tighter leading-tight flex items-center gap-1">
+                                                                {stat.label}
+                                                                <StatTooltip text={stat.tip} />
+                                                            </CardDescription>
+                                                            <CardTitle className={cn("text-2xl font-black", stat.color)}>{stat.value}</CardTitle>
+                                                        </CardHeader>
+                                                    </Card>
+                                                ))}
+                                            </div>
+                                        )
+                                    })()}
 
                                     {/* ── Row 2: Sitewide Insights + Content Gap ── */}
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
