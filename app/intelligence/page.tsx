@@ -23,7 +23,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
-export default function Intelligence() {
+export default function CompetitorClash() {
     const [isAnalyzing, setIsAnalyzing] = useState(false)
     const [siteA, setSiteA] = useState("")
     const [siteB, setSiteB] = useState("")
@@ -71,14 +71,13 @@ export default function Intelligence() {
 
                 <main className="flex-1 overflow-y-auto p-6">
                     <div className="max-w-6xl mx-auto">
-                        {/* Page Header */}
-                        <div className="mb-8 text-center sm:text-left">
-                            <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
-                                <Swords className="h-8 w-8 text-aeo" />
-                                Intelligence Hub: Competitive Battle Mode
+                        <div className="mb-10 text-center sm:text-left">
+                            <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-seo via-aeo to-geo flex items-center gap-4 mb-4">
+                                <Swords className="h-10 w-10 text-aeo animate-pulse" />
+                                Competitor Clash
                             </h1>
-                            <p className="text-muted-foreground mt-2 max-w-2xl">
-                                Benchmarking SEO, AEO, and GEO citation metrics between your brand and a competitor.
+                            <p className="text-muted-foreground mt-2 max-w-2xl text-lg">
+                                Benchmark SEO, AEO, and GEO citation metrics between your brand and a competitor.
                                 Identify exactly how they are winning and how to reclaim your visibility.
                             </p>
                         </div>
@@ -99,54 +98,60 @@ export default function Intelligence() {
 
                         {/* Battle Form */}
                         {!comparisonData && !isAnalyzing ? (
-                            <div className="bg-card/50 border border-border/50 rounded-3xl p-10 flex flex-col items-center animate-in fade-in zoom-in-95 animate-duration-500">
-                                <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 w-full items-center">
+                            <div className="relative overflow-hidden bg-card/20 backdrop-blur-3xl border border-aeo/20 rounded-[2.5rem] p-8 md:p-16 flex flex-col items-center animate-in fade-in zoom-in-95 animate-duration-500 shadow-2xl">
+                                {/* Ambient Background Glows */}
+                                <div className="absolute top-0 left-0 w-96 h-96 bg-seo/10 rounded-full blur-[100px] pointer-events-none" />
+                                <div className="absolute bottom-0 right-0 w-96 h-96 bg-aeo/10 rounded-full blur-[100px] pointer-events-none" />
+
+                                <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 md:gap-10 w-full items-center relative z-10">
                                     {/* Site A */}
                                     <div className="space-y-4">
-                                        <label className="text-sm font-medium text-muted-foreground ml-1">Your Website</label>
-                                        <div className="relative group">
-                                            <Globe className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-seo transition-colors" />
+                                        <label className="text-sm font-bold text-muted-foreground ml-1 uppercase tracking-widest text-seo">Contender 1</label>
+                                        <div className="relative group shadow-xl shadow-black/20 rounded-2xl">
+                                            <Globe className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground group-focus-within:text-seo transition-colors" />
                                             <input
                                                 id="siteA"
                                                 type="text"
                                                 placeholder="fundylogic.com"
-                                                className="w-full pl-12 pr-4 py-4 bg-background border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-seo/20 focus:border-seo/50 transition-all text-lg"
+                                                className="w-full pl-14 pr-6 py-5 bg-background border border-border/50 rounded-2xl focus:outline-none focus:ring-4 focus:ring-seo/20 focus:border-seo/50 transition-all text-xl font-medium shadow-inner"
                                             />
                                         </div>
                                     </div>
 
                                     {/* VS Divider */}
-                                    <div className="flex flex-col items-center">
-                                        <div className="h-10 w-px bg-border/50 hidden md:block"></div>
-                                        <div className="h-12 w-12 rounded-full bg-aeo/10 border border-aeo/30 flex items-center justify-center font-black text-aeo italic">VS</div>
-                                        <div className="h-10 w-px bg-border/50 hidden md:block"></div>
+                                    <div className="flex flex-col items-center justify-center pt-8 md:pt-0">
+                                        <div className="h-20 w-px bg-gradient-to-b from-transparent to-aeo/50 hidden md:block" />
+                                        <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-gradient-to-br from-aeo to-seo shadow-[0_0_30px_rgba(168,85,247,0.3)] border border-white/10 flex items-center justify-center font-black text-white text-xl md:text-2xl italic z-10 shrink-0">
+                                            VS
+                                        </div>
+                                        <div className="h-20 w-px bg-gradient-to-t from-transparent to-aeo/50 hidden md:block" />
                                     </div>
 
                                     {/* Site B */}
                                     <div className="space-y-4">
-                                        <label className="text-sm font-medium text-muted-foreground ml-1">Competitor Website</label>
-                                        <div className="relative group">
-                                            <Globe className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-aeo transition-colors" />
+                                        <label className="text-sm font-bold text-muted-foreground ml-1 uppercase tracking-widest text-aeo">Contender 2</label>
+                                        <div className="relative group shadow-xl shadow-black/20 rounded-2xl">
+                                            <Globe className="absolute left-5 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground group-focus-within:text-aeo transition-colors" />
                                             <input
                                                 id="siteB"
                                                 type="text"
                                                 placeholder="competitor.ca"
-                                                className="w-full pl-12 pr-4 py-4 bg-background border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-aeo/20 focus:border-aeo/50 transition-all text-lg"
+                                                className="w-full pl-14 pr-6 py-5 bg-background border border-border/50 rounded-2xl focus:outline-none focus:ring-4 focus:ring-aeo/20 focus:border-aeo/50 transition-all text-xl font-medium shadow-inner"
                                             />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="mt-10">
+                                <div className="mt-14 relative z-10">
                                     <button
                                         onClick={() => {
                                             const a = (document.getElementById('siteA') as HTMLInputElement).value;
                                             const b = (document.getElementById('siteB') as HTMLInputElement).value;
                                             if (a && b) handleBattle(a, b);
                                         }}
-                                        className="group relative px-10 py-4 bg-aeo text-aeo-foreground rounded-2xl font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-xl shadow-aeo/20 hover:shadow-aeo/40"
+                                        className="group relative px-12 py-5 bg-gradient-to-r from-aeo to-seo text-white rounded-full font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(168,85,247,0.3)] hover:shadow-[0_0_60px_rgba(168,85,247,0.5)] border border-white/10"
                                     >
-                                        Start Intelligence Battle
+                                        Start The Clash
                                         <Zap className="inline-block ml-3 h-6 w-6 animate-pulse" />
                                     </button>
                                 </div>
