@@ -274,6 +274,70 @@ export default function SiteAnalysis() {
                                         )
                                     })()}
 
+                                    {/* ── Domain Health Breakdown ── */}
+                                    <Card className="border-geo/20 bg-geo/5">
+                                        <CardHeader>
+                                            <CardTitle className="flex items-center gap-2 text-geo">
+                                                <ShieldCheck className="h-5 w-5" />
+                                                Domain Health Breakdown
+                                                <Badge className="ml-auto bg-geo/10 text-geo border-geo/30 text-xs font-black">{ai?.domainHealthScore ?? "–"} / 100</Badge>
+                                            </CardTitle>
+                                            <CardDescription>How the composite Domain Health score was calculated across crawled pages</CardDescription>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                                                {[
+                                                    {
+                                                        label: "Content Quality",
+                                                        desc: "Pages with 300+ words of substantive body text",
+                                                        pct: pages.length > 0 ? Math.round((pages.filter((p: any) => p.wordCount >= 300).length / pages.length) * 100) : 0,
+                                                        color: "text-geo",
+                                                        bar: "bg-geo"
+                                                    },
+                                                    {
+                                                        label: "Schema Deployment",
+                                                        desc: "Pages with valid JSON-LD structured data",
+                                                        pct: pages.length > 0 ? Math.round((pages.filter((p: any) => p.schemas?.length > 0).length / pages.length) * 100) : 0,
+                                                        color: "text-seo",
+                                                        bar: "bg-seo"
+                                                    },
+                                                    {
+                                                        label: "Metadata Completeness",
+                                                        desc: "Pages with both a title tag and meta description",
+                                                        pct: pages.length > 0 ? Math.round((pages.filter((p: any) => p.title && p.description).length / pages.length) * 100) : 0,
+                                                        color: "text-aeo",
+                                                        bar: "bg-aeo"
+                                                    },
+                                                    {
+                                                        label: "H1 Compliance",
+                                                        desc: "Pages with at least one H1 heading tag",
+                                                        pct: pages.length > 0 ? Math.round((pages.filter((p: any) => p.hasH1).length / pages.length) * 100) : 0,
+                                                        color: "text-geo",
+                                                        bar: "bg-geo"
+                                                    },
+                                                    {
+                                                        label: "Site Security",
+                                                        desc: "Pages served over a secure HTTPS connection",
+                                                        pct: pages.length > 0 ? Math.round((pages.filter((p: any) => p.isHttps).length / pages.length) * 100) : 0,
+                                                        color: "text-geo",
+                                                        bar: "bg-geo"
+                                                    },
+                                                ].map(factor => (
+                                                    <div key={factor.label} className="p-3 rounded-xl border border-border/40 bg-background/60 space-y-2">
+                                                        <div className="flex items-center justify-between">
+                                                            <p className="text-xs font-bold">{factor.label}</p>
+                                                            <span className={cn("text-sm font-black", factor.color)}>{factor.pct}%</span>
+                                                        </div>
+                                                        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                                                            <div className={cn("h-full rounded-full", factor.bar)} style={{ width: `${factor.pct}%` }} />
+                                                        </div>
+                                                        <p className="text-[10px] text-muted-foreground leading-snug">{factor.desc}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+
                                     {/* ── Row 2: Sitewide Insights + Content Gap ── */}
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                         <Card className="border-border/50">
@@ -437,23 +501,31 @@ export default function SiteAnalysis() {
                                                             <tr className="border-b border-border/50">
                                                                 <th className="text-left text-muted-foreground pb-2 font-medium">Page</th>
                                                                 <th className="text-center text-muted-foreground pb-2 font-medium">H1</th>
+                                                                <th className="text-center text-muted-foreground pb-2 font-medium">Meta</th>
                                                                 <th className="text-center text-muted-foreground pb-2 font-medium">Schema</th>
+                                                                <th className="text-center text-muted-foreground pb-2 font-medium">HTTPS</th>
                                                                 <th className="text-center text-muted-foreground pb-2 font-medium">Words</th>
-                                                                <th className="text-center text-muted-foreground pb-2 font-medium">Int. Links</th>
+                                                                <th className="text-center text-muted-foreground pb-2 font-medium">Links</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody className="divide-y divide-border/30">
                                                             {pages.slice(0, 12).map((p: any, i: number) => (
                                                                 <tr key={i} className="hover:bg-muted/30 transition-colors">
-                                                                    <td className="py-2 font-mono truncate max-w-[140px]">{new URL(p.url).pathname || "/"}</td>
+                                                                    <td className="py-2 font-mono truncate max-w-[120px]">{new URL(p.url).pathname || "/"}</td>
                                                                     <td className="py-2 text-center">
                                                                         {p.hasH1 ? <CheckCircle2 className="h-3 w-3 text-geo inline" /> : <XCircle className="h-3 w-3 text-destructive inline" />}
                                                                     </td>
                                                                     <td className="py-2 text-center">
+                                                                        {(p.title && p.description) ? <CheckCircle2 className="h-3 w-3 text-geo inline" /> : <XCircle className="h-3 w-3 text-destructive inline" />}
+                                                                    </td>
+                                                                    <td className="py-2 text-center">
                                                                         {p.schemas?.length > 0 ? <CheckCircle2 className="h-3 w-3 text-geo inline" /> : <XCircle className="h-3 w-3 text-destructive inline" />}
                                                                     </td>
-                                                                    <td className={cn("py-2 text-center font-mono", p.wordCount < 300 ? "text-destructive" : "text-foreground")}>{p.wordCount}</td>
-                                                                    <td className="py-2 text-center font-mono text-muted-foreground">{p.internalLinks}</td>
+                                                                    <td className="py-2 text-center">
+                                                                        {p.isHttps ? <CheckCircle2 className="h-3 w-3 text-geo inline" /> : <XCircle className="h-3 w-3 text-destructive inline" />}
+                                                                    </td>
+                                                                    <td className={cn("py-2 text-center font-mono text-xs", p.wordCount < 300 ? "text-destructive" : "text-foreground")}>{p.wordCount}</td>
+                                                                    <td className="py-2 text-center font-mono text-xs text-muted-foreground">{p.internalLinks}</td>
                                                                 </tr>
                                                             ))}
                                                         </tbody>
@@ -468,14 +540,44 @@ export default function SiteAnalysis() {
                                         </Card>
                                     </div>
 
-                                    {/* ── Row 5: Brand Verdict + Orphan Pages + Schema Coverage ── */}
+                                    {/* ── HTTPS Violations (conditional) ── */}
+                                    {(() => {
+                                        const httpViolations = pages.filter((p: any) => !p.isHttps)
+                                        if (httpViolations.length === 0) return null
+                                        return (
+                                            <Card className="border-destructive/30 bg-destructive/5">
+                                                <CardHeader>
+                                                    <CardTitle className="flex items-center gap-2 text-destructive">
+                                                        <AlertTriangle className="h-5 w-5" />
+                                                        HTTPS Violations Detected
+                                                        <Badge variant="outline" className="ml-auto border-destructive/50 text-destructive">{httpViolations.length} insecure page{httpViolations.length > 1 ? 's' : ''}</Badge>
+                                                    </CardTitle>
+                                                    <CardDescription>These pages are being served over unencrypted HTTP. Google treats mixed-content sites as untrusted and may demote them in rankings.</CardDescription>
+                                                </CardHeader>
+                                                <CardContent>
+                                                    <div className="space-y-2">
+                                                        {httpViolations.map((p: any, i: number) => (
+                                                            <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg border border-destructive/20 bg-background/50">
+                                                                <XCircle className="h-4 w-4 text-destructive shrink-0" />
+                                                                <span className="text-xs font-mono text-muted-foreground truncate">{p.url}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        )
+                                    })()}
+
+                                    {/* ── Row 5: Brand Consistency Analysis + Architecture + Schema ── */}
                                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                         <Card className="border-aeo/20 bg-aeo/5 lg:col-span-1">
                                             <CardHeader>
                                                 <CardTitle className="flex items-center gap-2 text-aeo">
                                                     <Sparkles className="h-5 w-5" />
-                                                    Brand Verdict
+                                                    Brand Consistency Analysis
+                                                    <Badge className="ml-auto bg-aeo/10 text-aeo border-aeo/30 text-xs font-black">{ai?.consistencyScore ?? "–"}%</Badge>
                                                 </CardTitle>
+                                                <CardDescription>AI-measured brand cohesion across all crawled pages</CardDescription>
                                             </CardHeader>
                                             <CardContent>
                                                 <p className="text-sm font-medium leading-relaxed">{ai?.brandClarityVerdict}</p>
