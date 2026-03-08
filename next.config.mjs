@@ -7,7 +7,10 @@ const nextConfig = {
     unoptimized: true,
   },
   experimental: {
-    serverComponentsExternalPackages: ["@sparticuz/chromium", "playwright-core"]
+    serverComponentsExternalPackages: ["@sparticuz/chromium", "playwright-core"],
+    outputFileTracingIncludes: {
+      "/api/**/*": ["./node_modules/@sparticuz/chromium/bin/**/*"]
+    }
   }
 }
 
