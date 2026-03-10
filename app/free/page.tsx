@@ -178,6 +178,153 @@ export default function FreeDashboard() {
                   />
                 </div>
 
+                {/* Technical Metrics Overview */}
+                <Card className="border-border/50">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Technical Metrics</CardTitle>
+                    <CardDescription>Key indicators from your page analysis</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {/* HTTPS */}
+                      <div className="flex flex-col gap-1">
+                        <div className="text-xs text-muted-foreground uppercase tracking-wider">HTTPS</div>
+                        <div className="flex items-center gap-2">
+                          {analysisData.structuralData?.https ? (
+                            <>
+                              <CheckCircle2 className="h-4 w-4 text-geo" />
+                              <span className="text-sm font-medium">Secure</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="h-4 w-4 text-destructive" />
+                              <span className="text-sm font-medium">Not Secure</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Response Time */}
+                      <div className="flex flex-col gap-1">
+                        <div className="text-xs text-muted-foreground uppercase tracking-wider">Response Time</div>
+                        <div className="text-sm font-medium">
+                          {analysisData.structuralData?.responseTime 
+                            ? `${analysisData.structuralData.responseTime}ms`
+                            : 'N/A'}
+                        </div>
+                      </div>
+
+                      {/* H1 Coverage */}
+                      <div className="flex flex-col gap-1">
+                        <div className="text-xs text-muted-foreground uppercase tracking-wider">H1 Tags</div>
+                        <div className="flex items-center gap-2">
+                          {analysisData.structuralData?.semanticTags?.h1Count === 1 ? (
+                            <>
+                              <CheckCircle2 className="h-4 w-4 text-geo" />
+                              <span className="text-sm font-medium">1 (Good)</span>
+                            </>
+                          ) : analysisData.structuralData?.semanticTags?.h1Count === 0 ? (
+                            <>
+                              <XCircle className="h-4 w-4 text-destructive" />
+                              <span className="text-sm font-medium">Missing</span>
+                            </>
+                          ) : (
+                            <>
+                              <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                              <span className="text-sm font-medium">{analysisData.structuralData?.semanticTags?.h1Count} (Multiple)</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Schema Coverage */}
+                      <div className="flex flex-col gap-1">
+                        <div className="text-xs text-muted-foreground uppercase tracking-wider">Schema Types</div>
+                        <div className="flex items-center gap-2">
+                          {analysisData.schemas?.length > 0 ? (
+                            <>
+                              <CheckCircle2 className="h-4 w-4 text-geo" />
+                              <span className="text-sm font-medium">{analysisData.schemas.length} Found</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="h-4 w-4 text-destructive" />
+                              <span className="text-sm font-medium">None</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Schema Quality */}
+                      <div className="flex flex-col gap-1">
+                        <div className="text-xs text-muted-foreground uppercase tracking-wider">Schema Quality</div>
+                        <div className="text-sm font-medium">
+                          {analysisData.ai?.schemaQuality?.score 
+                            ? `${analysisData.ai.schemaQuality.score}/100`
+                            : 'N/A'}
+                        </div>
+                      </div>
+
+                      {/* Metadata Health */}
+                      <div className="flex flex-col gap-1">
+                        <div className="text-xs text-muted-foreground uppercase tracking-wider">Meta Description</div>
+                        <div className="flex items-center gap-2">
+                          {analysisData.description && analysisData.description.length >= 50 && analysisData.description.length <= 160 ? (
+                            <>
+                              <CheckCircle2 className="h-4 w-4 text-geo" />
+                              <span className="text-sm font-medium">Good</span>
+                            </>
+                          ) : analysisData.description ? (
+                            <>
+                              <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                              <span className="text-sm font-medium">Needs Work</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="h-4 w-4 text-destructive" />
+                              <span className="text-sm font-medium">Missing</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Word Count */}
+                      <div className="flex flex-col gap-1">
+                        <div className="text-xs text-muted-foreground uppercase tracking-wider">Word Count</div>
+                        <div className="text-sm font-medium">
+                          {analysisData.structuralData?.wordCount?.toLocaleString() ?? 'N/A'}
+                        </div>
+                      </div>
+
+                      {/* Image Alt Coverage */}
+                      <div className="flex flex-col gap-1">
+                        <div className="text-xs text-muted-foreground uppercase tracking-wider">Image Alt Text</div>
+                        <div className="flex items-center gap-2">
+                          {analysisData.structuralData?.media?.totalImages > 0 ? (
+                            <>
+                              {analysisData.structuralData.media.imagesWithAlt === analysisData.structuralData.media.totalImages ? (
+                                <>
+                                  <CheckCircle2 className="h-4 w-4 text-geo" />
+                                  <span className="text-sm font-medium">100%</span>
+                                </>
+                              ) : (
+                                <>
+                                  <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                                  <span className="text-sm font-medium">
+                                    {Math.round((analysisData.structuralData.media.imagesWithAlt / analysisData.structuralData.media.totalImages) * 100)}%
+                                  </span>
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-sm font-medium text-muted-foreground">No Images</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
                 {/* Issues Found - Free Tier (Generic) */}
                 {getIssueCount() > 0 ? (
                   <Card className="border-yellow-500/20 bg-yellow-500/5">
