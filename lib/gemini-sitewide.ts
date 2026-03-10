@@ -94,20 +94,31 @@ export async function analyzeSitewideIntelligence(context: {
   console.log('[GEMINI-SITEWIDE] Schema health score:', schemaHealthAudit.overallScore);
   console.log('[GEMINI-SITEWIDE] Brand consistency score:', brandConsistency);
 
-  const pagesSummary = context.pages.map(p => `
+  const pagesSummary = context.pages.map(p => {
+    // Optimize schema data - only send type and key properties, not full JSON
+    const schemasSummary = p.schemas && p.schemas.length > 0 
+      ? p.schemas.map(s => {
+          const type = s['@type'] || 'Unknown';
+          const name = s.name || s.legalName || '';
+          const id = s['@id'] || '';
+          return `${type}${name ? ` (${name})` : ''}${id ? ` [id: ${id}]` : ''}`;
+        }).join(', ')
+      : "None";
+    
+    return `
   - URL: ${p.url}
   - Title: ${p.title || "MISSING"}
   - Meta Description: ${p.description || "MISSING"}
-  - Schema Types Found: ${p.schemaTypes && p.schemaTypes.length > 0 ? p.schemaTypes.join(', ') : "None"}
-  - Schema Data: ${p.schemas && p.schemas.length > 0 ? JSON.stringify(p.schemas, null, 2) : "No schema found"}
+  - Schema Types: ${schemasSummary}
   - Word Count: ${p.wordCount ?? "Unknown"}
   - Internal Links: ${p.internalLinks ?? "Unknown"}
   - H1: ${p.hasH1 ? "Yes" : "No"} | H2s: ${p.h2Count ?? 0} | H3s: ${p.h3Count ?? 0}
   - Images: ${p.imgTotal ?? 0} total, ${p.imgWithAlt ?? 0} with alt text
   - HTTPS: ${p.isHttps ? "Yes" : "No"}
   - Response Time: ${p.responseTimeMs ? `${p.responseTimeMs}ms` : "Unknown"}
-  - Outbound Internal Links: ${p.outboundLinks?.join(', ') || "None"}
-  `).join('\n');
+  - Outbound Internal Links: ${p.outboundLinks?.slice(0, 5).join(', ') || "None"}${p.outboundLinks && p.outboundLinks.length > 5 ? ` (+${p.outboundLinks.length - 5} more)` : ''}
+  `;
+  }).join('\n');
 
   const prompt = `
     You are performing a PRO Deep Site Audit using MODERN CRAWLER STANDARDS (Google 2026, Bing 2026).
