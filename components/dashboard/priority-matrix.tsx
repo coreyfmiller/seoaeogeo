@@ -130,11 +130,15 @@ export function PriorityMatrix({ recommendations, onRecommendationClick }: Prior
             <div className="absolute inset-8">
               {recommendations.map((rec) => {
                 const pos = getPosition(rec)
-                const config = categoryConfig[rec.category]
+                // Normalize category to match expected values, or use default
+                const normalizedCategory = rec.category in categoryConfig 
+                  ? rec.category 
+                  : 'Medium Priority' as const
+                const config = categoryConfig[normalizedCategory]
                 
-                // Safety check - skip if config is undefined
+                // Safety check - skip if config is still undefined (shouldn't happen with fallback)
                 if (!config || !config.bg || !config.border || !config.color) {
-                  console.warn('[PriorityMatrix] Invalid category config for:', rec)
+                  console.warn('[PriorityMatrix] Invalid category:', rec.category, 'for recommendation:', rec.title)
                   return null
                 }
                 
