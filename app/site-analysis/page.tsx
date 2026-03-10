@@ -655,6 +655,62 @@ export default function SiteAnalysis() {
                                             )
                                         })()}
 
+                                        {/* ── Prioritized Site Improvements ── */}
+                                        {ai?.recommendations?.length > 0 && (
+                                            <Card className="border-geo/30 bg-gradient-to-br from-geo/5 to-aeo/5 relative z-10">
+                                                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                                    <div>
+                                                        <CardTitle className="flex items-center gap-2">
+                                                            <Zap className="h-5 w-5 text-geo" />
+                                                            Prioritized Site Improvements
+                                                        </CardTitle>
+                                                        <CardDescription>Sitewide actions to unify authority, prune crawl issues, and expand semantic reach</CardDescription>
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <Badge variant="outline" className="border-geo/30 text-geo font-black text-[10px] tracking-widest uppercase px-3 py-1 bg-geo/5">
+                                                            Strategic Roadmap
+                                                        </Badge>
+                                                        <button
+                                                            onClick={() => {
+                                                                const text = ai.recommendations.map((f: any) => `[RANK ${f.rank}] ${f.title}\nACTION: ${f.description}\nIMPACT: ${f.impact}`).join('\n\n');
+                                                                navigator.clipboard.writeText(text);
+                                                                alert("Roadmap copied to clipboard!");
+                                                            }}
+                                                            className="bg-background/50 hover:bg-background/80 border border-border/50 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+                                                        >
+                                                            Copy Plan
+                                                        </button>
+                                                    </div>
+                                                </CardHeader>
+                                                <CardContent>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                        {ai.recommendations.map((fix: any, i: number) => (
+                                                            <FixInstructionCard
+                                                                key={i}
+                                                                title={fix.title}
+                                                                category={fix.category || 'Medium Priority'}
+                                                                priority={fix.priority || fix.roi || 'MEDIUM'}
+                                                                steps={fix.steps || [{ step: 1, title: fix.title, description: fix.description }]}
+                                                                code={fix.code}
+                                                                platform={fix.platform || 'general'}
+                                                                estimatedTime={fix.estimatedTime || '30 minutes'}
+                                                                difficulty={fix.effort === 1 ? 'easy' : fix.effort === 3 ? 'difficult' : 'moderate'}
+                                                                impact={fix.impact || 'medium'}
+                                                                affectedPages={fix.affectedPages || 1}
+                                                                validationLinks={fix.validationLinks || []}
+                                                                onMarkComplete={() => {
+                                                                    const updated = { ...analysisData }
+                                                                    updated.ai.recommendations[i].completed = true
+                                                                    setAnalysisData(updated)
+                                                                }}
+                                                                isCompleted={fix.completed || false}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        )}
+
                                         {/* ── Multi-Page Dashboard (when crawl depth > 1) ── */}
                                         {analysisData.pagesCrawled > 1 && analysisData.siteWideIssues && pages.length > 0 && (() => {
                                             // Use AI domain-level scores instead of per-page averages
@@ -703,63 +759,6 @@ export default function SiteAnalysis() {
                                             
                                             return <PageComparisonTable pages={pagesWithScores} />
                                         })()}
-
-                                        {/* ── Prioritized Site Improvements (moved up from below) ── */}
-                                        {ai?.recommendations?.length > 0 && (
-                                            <Card className="border-geo/30 bg-gradient-to-br from-geo/5 to-aeo/5 relative z-10">
-                                                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                                    <div>
-                                                        <CardTitle className="flex items-center gap-2">
-                                                            <Zap className="h-5 w-5 text-geo" />
-                                                            Prioritized Site Improvements
-                                                        </CardTitle>
-                                                        <CardDescription>Sitewide actions to unify authority, prune crawl issues, and expand semantic reach</CardDescription>
-                                                    </div>
-                                                        <div className="flex items-center gap-3">
-                                                            <Badge variant="outline" className="border-geo/30 text-geo font-black text-[10px] tracking-widest uppercase px-3 py-1 bg-geo/5">
-                                                                Strategic Roadmap
-                                                            </Badge>
-                                                            <button
-                                                                onClick={() => {
-                                                                    const text = ai.recommendations.map((f: any) => `[RANK ${f.rank}] ${f.title}\nACTION: ${f.description}\nIMPACT: ${f.impact}`).join('\n\n');
-                                                                    navigator.clipboard.writeText(text);
-                                                                    alert("Roadmap copied to clipboard!");
-                                                                }}
-                                                                className="bg-background/50 hover:bg-background/80 border border-border/50 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
-                                                            >
-                                                                Copy Plan
-                                                            </button>
-                                                        </div>
-                                                    </CardHeader>
-                                                    <CardContent>
-                                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                                            {ai.recommendations.map((fix: any, i: number) => (
-                                                                <FixInstructionCard
-                                                                    key={i}
-                                                                    title={fix.title}
-                                                                    category={fix.category || 'Medium Priority'}
-                                                                    priority={fix.priority || fix.roi || 'MEDIUM'}
-                                                                    steps={fix.steps || [{ step: 1, title: fix.title, description: fix.description }]}
-                                                                    code={fix.code}
-                                                                    platform={fix.platform || 'general'}
-                                                                    estimatedTime={fix.estimatedTime || '30 minutes'}
-                                                                    difficulty={fix.effort === 1 ? 'easy' : fix.effort === 3 ? 'difficult' : 'moderate'}
-                                                                    impact={fix.impact || 'medium'}
-                                                                    affectedPages={fix.affectedPages || 1}
-                                                                    validationLinks={fix.validationLinks || []}
-                                                                    onMarkComplete={() => {
-                                                                        // Mark as complete
-                                                                        const updated = { ...analysisData }
-                                                                        updated.ai.recommendations[i].completed = true
-                                                                        setAnalysisData(updated)
-                                                                    }}
-                                                                    isCompleted={fix.completed || false}
-                                                                />
-                                                            ))}
-                                                        </div>
-                                                    </CardContent>
-                                                </Card>
-                                        )}
 
                                         {/* ── Domain Health Breakdown ── */}
                                         <Card className="border-geo/20 bg-geo/5">
