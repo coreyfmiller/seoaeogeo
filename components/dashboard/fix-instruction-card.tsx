@@ -114,9 +114,10 @@ export function FixInstructionCard({
   const [isExpanded, setIsExpanded] = useState(false)
   const [copiedCode, setCopiedCode] = useState(false)
 
-  const categoryStyle = categoryConfig[category]
-  const priorityStyle = priorityConfig[priority]
-  const difficultyStyle = difficultyConfig[difficulty]
+  // Add fallback for invalid categories
+  const categoryStyle = categoryConfig[category] || categoryConfig['Medium Priority']
+  const priorityStyle = priorityConfig[priority] || priorityConfig['MEDIUM']
+  const difficultyStyle = difficultyConfig[difficulty] || difficultyConfig['moderate']
 
   const handleCopyCode = () => {
     if (code) {
