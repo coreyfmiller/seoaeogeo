@@ -619,14 +619,13 @@ export default function SiteAnalysis() {
                                                 <div className="space-y-6">
                                                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-9 gap-3 relative z-50">
                                                         {statCards.map(stat => (
-                                                            <Card key={stat.label} className={cn("col-span-1", stat.border, stat.bg)}>
-                                                                <CardHeader className="pb-1 pt-4 px-4">
-                                                                    <CardDescription className="text-[10px] font-bold uppercase tracking-tighter leading-tight flex items-center gap-1">
-                                                                        {stat.label}
+                                                            <Card key={stat.label} className={cn("col-span-1 flex flex-col", stat.border, stat.bg)}>
+                                                                <CardHeader className="pb-3 pt-4 px-4 flex-1 flex flex-col justify-between">
+                                                                    <CardDescription className="text-[10px] font-bold uppercase tracking-tighter leading-tight flex items-center gap-1 h-8 mb-1">
+                                                                        <span className="line-clamp-2">{stat.label}</span>
                                                                         <StatTooltip text={stat.tip} />
                                                                     </CardDescription>
-                                                                    <CardTitle className={cn("text-2xl font-black", stat.color)}>{stat.value}</CardTitle>
-                                                                    {/* Hidden in screenshot but kept for data integrity as smaller label if nested, or just removed if strict to screenshot */}
+                                                                    <CardTitle className={cn("text-2xl font-black leading-none", stat.color)}>{stat.value}</CardTitle>
                                                                 </CardHeader>
                                                             </Card>
                                                         ))}
