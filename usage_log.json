@@ -664,5 +664,14 @@
     "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
     "timestamp": "2026-03-10T16:29:15.709Z",
     "cost": 0.0005598000000000001
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 2536,
+    "outputTokens": 2987,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-10T17:09:28.168Z",
+    "cost": 0.0010863
   }
 ]

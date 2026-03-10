@@ -272,8 +272,8 @@ export function Recommendations({ data }: RecommendationsProps) {
       </CardHeader>
       <CardContent className="p-4 space-y-4">
         <div className="space-y-3">
-          {displayRecommendations.map((rec) => (
-            <RecommendationItem key={rec.id} rec={rec} />
+          {displayRecommendations.map((rec, index) => (
+            <RecommendationItem key={rec.id || `rec-${index}-${rec.title}`} rec={rec} />
           ))}
         </div>
 
