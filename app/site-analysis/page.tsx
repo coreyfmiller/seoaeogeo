@@ -35,7 +35,6 @@ import { CrawlConfig } from "@/components/dashboard/crawl-config"
 import { SiteTypeBadge } from "@/components/dashboard/site-type-badge"
 import { MultiPageDashboard } from "@/components/dashboard/multi-page-dashboard"
 import { PageComparisonTable } from "@/components/dashboard/page-comparison-table"
-import { PriorityMatrix } from "@/components/dashboard/priority-matrix"
 import { FixInstructionCard } from "@/components/dashboard/fix-instruction-card"
 import { CompetitorGapView } from "@/components/dashboard/competitor-gap-view"
 import { CrawlProgress } from "@/components/dashboard/crawl-progress"
@@ -705,30 +704,17 @@ export default function SiteAnalysis() {
                                             return <PageComparisonTable pages={pagesWithScores} />
                                         })()}
 
-                                        {/* ── Top 6 Strategic Fixes (Deep Recommendations) ── */}
+                                        {/* ── Prioritized Site Improvements (moved up from below) ── */}
                                         {ai?.recommendations?.length > 0 && (
-                                            <>
-                                                {/* Priority Matrix Visualization */}
-                                                <PriorityMatrix
-                                                    recommendations={ai.recommendations.map((rec: any) => ({
-                                                        id: rec.rank?.toString() || Math.random().toString(),
-                                                        title: rec.title,
-                                                        effort: rec.effort || 2,
-                                                        impact: rec.impact === 'high' ? 3 : rec.impact === 'medium' ? 2 : 1,
-                                                        category: rec.category || 'improvement',
-                                                        roi: rec.roi || rec.priority || 'MEDIUM'
-                                                    }))}
-                                                />
-
-                                                <Card className="border-geo/30 bg-gradient-to-br from-geo/5 to-aeo/5 relative z-10">
-                                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                                        <div>
-                                                            <CardTitle className="flex items-center gap-2">
-                                                                <Zap className="h-5 w-5 text-geo" />
-                                                                Prioritized Site Improvements
-                                                            </CardTitle>
-                                                            <CardDescription>Sitewide actions to unify authority, prune crawl issues, and expand semantic reach</CardDescription>
-                                                        </div>
+                                            <Card className="border-geo/30 bg-gradient-to-br from-geo/5 to-aeo/5 relative z-10">
+                                                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                                    <div>
+                                                        <CardTitle className="flex items-center gap-2">
+                                                            <Zap className="h-5 w-5 text-geo" />
+                                                            Prioritized Site Improvements
+                                                        </CardTitle>
+                                                        <CardDescription>Sitewide actions to unify authority, prune crawl issues, and expand semantic reach</CardDescription>
+                                                    </div>
                                                         <div className="flex items-center gap-3">
                                                             <Badge variant="outline" className="border-geo/30 text-geo font-black text-[10px] tracking-widest uppercase px-3 py-1 bg-geo/5">
                                                                 Strategic Roadmap
@@ -773,7 +759,6 @@ export default function SiteAnalysis() {
                                                         </div>
                                                     </CardContent>
                                                 </Card>
-                                            </>
                                         )}
 
                                         {/* ── Domain Health Breakdown ── */}
@@ -791,6 +776,30 @@ export default function SiteAnalysis() {
                                                 <CardDescription>Detailed breakdown of what's affecting your domain authority score</CardDescription>
                                             </CardHeader>
                                             <CardContent className="space-y-4">
+                                                {/* Individual Scores at Top */}
+                                                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 pb-4 border-b border-border/50">
+                                                    <div className="text-center">
+                                                        <p className="text-2xl font-black text-geo">{ai?.domainHealthBreakdown?.contentQuality ?? 0}</p>
+                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Content</p>
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <p className="text-2xl font-black text-seo">{ai?.domainHealthBreakdown?.schemaQuality ?? 0}</p>
+                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Schema</p>
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <p className="text-2xl font-black text-aeo">{ai?.domainHealthBreakdown?.metadataQuality ?? 0}</p>
+                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Metadata</p>
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <p className="text-2xl font-black text-purple-500">{ai?.domainHealthBreakdown?.technicalHealth ?? 0}</p>
+                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Technical</p>
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <p className="text-2xl font-black text-blue-500">{ai?.domainHealthBreakdown?.architectureHealth ?? 0}</p>
+                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Architecture</p>
+                                                    </div>
+                                                </div>
+                                                
                                                 {[
                                                     {
                                                         label: "Content Quality",
