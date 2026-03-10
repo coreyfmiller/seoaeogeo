@@ -466,5 +466,68 @@
     "url": "fundylogic.com",
     "timestamp": "2026-03-10T12:08:07.458Z",
     "cost": 0.004065299999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 38902,
+    "outputTokens": 3203,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-10T12:20:27.339Z",
+    "cost": 0.0038785499999999997
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 4222,
+    "outputTokens": 4007,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-10T12:25:20.479Z",
+    "cost": 0.00151875
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 4222,
+    "outputTokens": 3413,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-10T12:48:58.388Z",
+    "cost": 0.0013405499999999998
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 798,
+    "outputTokens": 458,
+    "url": "http://pizzatwice.com",
+    "timestamp": "2026-03-10T12:55:30.444Z",
+    "cost": 0.00019725
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 2060,
+    "outputTokens": 1314,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-10T12:55:39.756Z",
+    "cost": 0.0005487000000000001
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 459,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-10T13:02:19.853Z",
+    "cost": 0.000192375
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 5018,
+    "outputTokens": 1443,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-10T13:02:29.039Z",
+    "cost": 0.00080925
   }
 ]

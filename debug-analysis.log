@@ -1,30 +1,30 @@
-[2026-03-10T12:07:04.719Z] [API PRO] Starting Deep Site Audit
+[2026-03-10T12:48:07.353Z] [API PRO] Starting Deep Site Audit
 {
-  "url": "https://fundylogic.com",
+  "url": "pizzatwice.com",
   "maxPages": 20
 }
-[2026-03-10T12:07:08.801Z] [GEMINI-SITEWIDE] Starting AI analysis
+[2026-03-10T12:48:13.033Z] [GEMINI-SITEWIDE] Starting AI analysis
 {
-  "domain": "fundylogic.com",
-  "pageCount": 16
+  "domain": "pizzatwice.com",
+  "pageCount": 8
 }
-[2026-03-10T12:07:08.801Z] [GEMINI-SITEWIDE] Schema health score
+[2026-03-10T12:48:13.033Z] [GEMINI-SITEWIDE] Schema health score
+{
+  "score": 25
+}
+[2026-03-10T12:48:13.033Z] [GEMINI-SITEWIDE] Brand consistency score
 {
   "score": 100
 }
-[2026-03-10T12:07:08.802Z] [GEMINI-SITEWIDE] Brand consistency score
+[2026-03-10T12:48:13.034Z] [GEMINI-SITEWIDE] Calling Gemini API
+[2026-03-10T12:48:58.388Z] [GEMINI-SITEWIDE] Received response
 {
-  "score": 100
+  "length": 14673,
+  "preview": "```json\n{\n  \"domainHealthScore\": 86,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 90,\n    \"schemaQuality\": 55,\n    \"metadataQuality\": 100,\n    \"technicalHealth\": 85,\n    \"architectureHealth\": 10"
 }
-[2026-03-10T12:07:08.803Z] [GEMINI-SITEWIDE] Calling Gemini API
-[2026-03-10T12:08:07.456Z] [GEMINI-SITEWIDE] Received response
+[2026-03-10T12:48:58.390Z] [GEMINI-SITEWIDE] Parsed AI result
 {
-  "length": 16723,
-  "preview": "{\n  \"domainHealthScore\": 90,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 95,\n    \"schemaQuality\": 65,\n    \"metadataQuality\": 98,\n    \"technicalHealth\": 100,\n    \"architectureHealth\": 90\n  },\n  "
-}
-[2026-03-10T12:08:07.460Z] [GEMINI-SITEWIDE] Parsed AI result
-{
-  "domainHealthScore": 90,
+  "domainHealthScore": 86,
   "recommendationsCount": 6,
   "keys": [
     "domainHealthScore",
@@ -45,15 +45,15 @@
     "recommendations"
   ]
 }
-[2026-03-10T12:08:07.460Z] [GEMINI-SITEWIDE] Final result assembled
+[2026-03-10T12:48:58.390Z] [GEMINI-SITEWIDE] Final result assembled
 {
-  "domainHealthScore": 90,
+  "domainHealthScore": 86,
   "consistencyScore": 100,
-  "schemaScore": 100
+  "schemaScore": 25
 }
-[2026-03-10T12:08:07.462Z] [API PRO] AI analysis complete
+[2026-03-10T12:48:58.391Z] [API PRO] AI analysis complete
 {
-  "domainHealthScore": 90,
+  "domainHealthScore": 86,
   "keys": [
     "domainHealthScore",
     "domainHealthBreakdown",
@@ -79,10 +79,10 @@
   "hasRecommendations": true,
   "recommendationsCount": 6
 }
-[2026-03-10T12:08:07.462Z] [API PRO] Final data assembled
+[2026-03-10T12:48:58.392Z] [API PRO] Final data assembled
 {
-  "pagesCrawled": 16,
+  "pagesCrawled": 8,
   "globalTechScore": 100,
-  "aiDomainHealthScore": 90,
+  "aiDomainHealthScore": 86,
   "aiConsistencyScore": 100
 }
