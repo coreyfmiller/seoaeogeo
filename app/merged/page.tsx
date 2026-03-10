@@ -21,29 +21,17 @@ import {
   CheckCircle2,
   Loader2,
   Activity,
-,
   ShieldCheck,
-,
   TrendingUp,
-,
   Target,
-,
   Link2,
-,
   AlarmClock,
-,
   LayoutDashboard,
-,
   FileText,
-,
   Code2,
-,
   Info,
-,
   Map,
-,
   AlertCircle,
-,
   Zap,
 } from "lucide-react"
 import { SemanticMap } from "@/components/dashboard/semantic-map"
@@ -1611,32 +1599,6 @@ export default function MergedDashboard() {
                                                 </Card>
                                             </div>
                                         )}
-
-
-                                        {/* Start Over + PDF Export */}
-                                        <div className="flex justify-between items-center pt-4 border-t border-border/50 no-print">
-                                            <button
-                                                onClick={() => { setAnalysisData(null); setUrl(""); sessionStorage.removeItem("pro_url"); sessionStorage.removeItem("pro_data"); }}
-                                                className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
-                                            >
-                                                ← Start New Audit
-                                            </button>
-                                            <button
-                                                onClick={handleExportPdf}
-                                                className="flex items-center gap-2 bg-geo text-geo-foreground px-5 py-2.5 rounded-xl font-bold hover:bg-geo/90 transition-all text-sm shadow-md"
-                                            >
-                                                <FileText className="h-4 w-4" />
-                                                Export PDF Report
-                                            </button>
-                                        </div>
-                                        </>
-                                        )}
-                                    </div>
-                                )
-                            )}
-                        </div>
-                    )}
-                
                   </div>
 
                   {/* Recommendations Sidebar */}

@@ -114,16 +114,17 @@ merged = merged.replace(headerInsertPoint, scanModeToggle);
 // Find where the tabs end in Pro Dashboard
 const proTabsEndMarker = '</Tabs>\n                  </div>\n\n                  {/* Recommendations Sidebar */}';
 
-// Extract all the deep crawler sections (after tabs, before recommendations sidebar)
+// Extract all the deep crawler sections (after tabs, before "Start Over + PDF Export")
 const deepCrawlerSectionsStart = deepCrawler.indexOf('{/* ── Prioritized Site Improvements ── */}');
-const deepCrawlerSectionsEnd = deepCrawler.lastIndexOf('</main>');
+const deepCrawlerSectionsEnd = deepCrawler.indexOf('{/* Start Over + PDF Export */}');
 
 if (deepCrawlerSectionsStart === -1 || deepCrawlerSectionsEnd === -1) {
   console.error('Could not find deep crawler sections markers');
+  console.error('Start:', deepCrawlerSectionsStart, 'End:', deepCrawlerSectionsEnd);
   process.exit(1);
 }
 
-const deepCrawlerSections = deepCrawler.substring(deepCrawlerSectionsStart, deepCrawlerSectionsEnd);
+const deepCrawlerSections = deepCrawler.substring(deepCrawlerSectionsStart, deepCrawlerSectionsEnd).trim();
 
 // Insert deep crawler sections after tabs - look for Recommendations Sidebar comment
 const insertPoint = merged.indexOf('{/* Recommendations Sidebar */}');
