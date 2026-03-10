@@ -619,5 +619,32 @@
     "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
     "timestamp": "2026-03-10T16:10:23.623Z",
     "cost": 0.0005598000000000001
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 2536,
+    "outputTokens": 2614,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-10T16:13:45.428Z",
+    "cost": 0.0009743999999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 7936,
+    "outputTokens": 3221,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-10T16:14:49.989Z",
+    "cost": 0.0015615
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 4222,
+    "outputTokens": 3453,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-10T16:16:17.277Z",
+    "cost": 0.0013525499999999999
   }
 ]
