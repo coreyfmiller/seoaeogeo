@@ -43,12 +43,9 @@ function InfoTooltip({ text }: { text: string }) {
 
 export function CrawlConfig({ onStartCrawl, isAnalyzing }: CrawlConfigProps) {
   const [url, setUrl] = useState("")
-  const [pageCount, setPageCount] = useState<1 | 10 | 20 | 50>(10)
-  const [competitorUrls, setCompetitorUrls] = useState<string[]>([])
-  const [newCompetitorUrl, setNewCompetitorUrl] = useState("")
+  const [pageCount, setPageCount] = useState<1 | 10 | 20 | 50>(20)
   const [respectRobotsTxt, setRespectRobotsTxt] = useState(true)
   const [urlError, setUrlError] = useState("")
-  const [competitorError, setCompetitorError] = useState("")
 
   const validateUrl = (urlString: string): boolean => {
     if (!urlString) return false
@@ -60,28 +57,6 @@ export function CrawlConfig({ onStartCrawl, isAnalyzing }: CrawlConfigProps) {
     } catch {
       return false
     }
-  }
-
-  const handleAddCompetitor = () => {
-    if (!newCompetitorUrl.trim()) return
-    
-    if (!validateUrl(newCompetitorUrl)) {
-      setCompetitorError("Please enter a valid URL")
-      return
-    }
-
-    if (competitorUrls.length >= 5) {
-      setCompetitorError("Maximum 5 competitors allowed")
-      return
-    }
-
-    setCompetitorUrls([...competitorUrls, newCompetitorUrl.trim()])
-    setNewCompetitorUrl("")
-    setCompetitorError("")
-  }
-
-  const handleRemoveCompetitor = (index: number) => {
-    setCompetitorUrls(competitorUrls.filter((_, i) => i !== index))
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -96,7 +71,7 @@ export function CrawlConfig({ onStartCrawl, isAnalyzing }: CrawlConfigProps) {
     onStartCrawl({
       url: url.startsWith('http') ? url : `https://${url}`,
       pageCount,
-      competitorUrls: competitorUrls.map(u => u.startsWith('http') ? u : `https://${u}`),
+      competitorUrls: [],
       respectRobotsTxt
     })
   }
@@ -195,86 +170,6 @@ export function CrawlConfig({ onStartCrawl, isAnalyzing }: CrawlConfigProps) {
                 </span>
               </span>
             </div>
-          </div>
-
-          {/* Competitor URLs */}
-          <div className="space-y-3">
-            <Label className="flex items-center gap-2">
-              <Globe className="h-4 w-4 text-aeo" />
-              Competitor URLs (Optional)
-              <InfoTooltip text="Add up to 5 competitor sites to identify gaps in your schema, content, and structure. This enables competitive intelligence analysis." />
-            </Label>
-            
-            {/* Competitor List */}
-            {competitorUrls.length > 0 && (
-              <div className="space-y-2">
-                {competitorUrls.map((competitorUrl, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2 p-3 bg-background border border-border/50 rounded-lg"
-                  >
-                    <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
-                    <span className="flex-1 text-sm font-mono truncate">
-                      {competitorUrl}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveCompetitor(index)}
-                      disabled={isAnalyzing}
-                      className="h-8 w-8 p-0"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Add Competitor Input */}
-            {competitorUrls.length < 5 && (
-              <div className="flex gap-2">
-                <Input
-                  type="text"
-                  placeholder="e.g. competitor.com"
-                  value={newCompetitorUrl}
-                  onChange={(e) => {
-                    setNewCompetitorUrl(e.target.value)
-                    setCompetitorError("")
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault()
-                      handleAddCompetitor()
-                    }
-                  }}
-                  className={cn(
-                    "bg-background",
-                    competitorError && "border-destructive focus-visible:ring-destructive"
-                  )}
-                  disabled={isAnalyzing}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleAddCompetitor}
-                  disabled={isAnalyzing || !newCompetitorUrl.trim()}
-                  className="shrink-0"
-                >
-                  <Plus className="h-4 w-4 mr-1" />
-                  Add
-                </Button>
-              </div>
-            )}
-            {competitorError && (
-              <p className="text-xs text-destructive">{competitorError}</p>
-            )}
-            {competitorUrls.length >= 5 && (
-              <p className="text-xs text-muted-foreground">
-                Maximum of 5 competitors reached
-              </p>
-            )}
           </div>
 
           {/* Robots.txt Respect */}

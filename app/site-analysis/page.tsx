@@ -473,7 +473,7 @@ export default function SiteAnalysis() {
                                             </div>
                                             <h2 className="text-2xl font-bold">Launch Full Domain Scan</h2>
                                             <p className="text-muted-foreground">
-                                                Configure your crawl settings and analyze up to 50 pages with competitor comparison.
+                                                Configure your crawl settings and analyze up to 50 pages.
                                             </p>
                                         </div>
 
