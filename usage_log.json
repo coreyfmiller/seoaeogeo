@@ -385,5 +385,41 @@
     "url": "fundylogic.com",
     "timestamp": "2026-03-09T23:29:54.741Z",
     "cost": 0.0038523000000000003
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 4818,
+    "outputTokens": 2789,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-10T10:25:29.980Z",
+    "cost": 0.00119805
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 38899,
+    "outputTokens": 3071,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-10T10:28:23.842Z",
+    "cost": 0.003838725
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 5701,
+    "outputTokens": 3732,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-10T11:05:24.254Z",
+    "cost": 0.001547175
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 5700,
+    "outputTokens": 3362,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-10T11:09:24.042Z",
+    "cost": 0.0014360999999999998
   }
 ]

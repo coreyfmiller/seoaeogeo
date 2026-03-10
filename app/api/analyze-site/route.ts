@@ -2,18 +2,21 @@ import { NextResponse } from 'next/server';
 import { performDeepScan } from '@/lib/crawler-deep';
 import { analyzeSitewideIntelligence } from '@/lib/gemini-sitewide';
 import { saveTestSnapshot } from '@/lib/test-data-store';
+import { debugLog, clearDebugLog } from '@/lib/debug-logger';
 
 /**
  * Deep Site Analysis API (PRO Feature)
  */
 export async function POST(req: Request) {
     try {
+        clearDebugLog(); // Clear previous logs
         const { url, maxPages = 10, saveSnapshot = false } = await req.json();
 
         if (!url) {
             return NextResponse.json({ error: 'No URL provided' }, { status: 400 });
         }
 
+        debugLog('[API PRO] Starting Deep Site Audit', { url, maxPages });
         console.log(`[API PRO] Starting Deep Site Audit for: ${url}`);
 
         // 1. Deep Crawler (Parallel Multi-Page Scan)
@@ -64,6 +67,12 @@ export async function POST(req: Request) {
         });
         console.log(`[API PRO] AI analysis complete. Domain health score:`, aiAnalysis.domainHealthScore);
         console.log(`[API PRO] AI analysis keys:`, Object.keys(aiAnalysis));
+        debugLog('[API PRO] AI analysis complete', { 
+            domainHealthScore: aiAnalysis.domainHealthScore,
+            keys: Object.keys(aiAnalysis),
+            hasRecommendations: !!aiAnalysis.recommendations,
+            recommendationsCount: aiAnalysis.recommendations?.length
+        });
 
         // 4. Calculate Aggregate Metrics for Dashboard
         const totalWords = scanResults.pages.reduce((acc, p) => acc + (p.wordCount || 0), 0);
@@ -88,6 +97,13 @@ export async function POST(req: Request) {
             globalTechScore,
             ai: aiAnalysis
         };
+
+        debugLog('[API PRO] Final data assembled', {
+            pagesCrawled: finalData.pagesCrawled,
+            globalTechScore: finalData.globalTechScore,
+            aiDomainHealthScore: finalData.ai?.domainHealthScore,
+            aiConsistencyScore: finalData.ai?.consistencyScore
+        });
 
         // Save test snapshot if requested (for variance testing)
         if (saveSnapshot) {

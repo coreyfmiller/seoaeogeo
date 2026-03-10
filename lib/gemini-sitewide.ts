@@ -3,6 +3,7 @@ import { logUsage } from "./usage";
 import { validateSchemas, calculateBrandConsistency } from "./schema-validator";
 import { getRecommendedSchemas, formatSiteType } from "./site-type-detector";
 import type { SiteType } from "./types/audit";
+import { debugLog } from "./debug-logger";
 
 /**
  * Sitewide Analysis: Analyzes aggregate data from multiple pages.
@@ -84,6 +85,10 @@ export async function analyzeSitewideIntelligence(context: {
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
+  debugLog('[GEMINI-SITEWIDE] Starting AI analysis', { domain: context.domain, pageCount: context.pages.length });
+  debugLog('[GEMINI-SITEWIDE] Schema health score', { score: schemaHealthAudit.overallScore });
+  debugLog('[GEMINI-SITEWIDE] Brand consistency score', { score: brandConsistency });
+  
   console.log('[GEMINI-SITEWIDE] Starting AI analysis for:', context.domain);
   console.log('[GEMINI-SITEWIDE] Analyzing', context.pages.length, 'pages');
   console.log('[GEMINI-SITEWIDE] Schema health score:', schemaHealthAudit.overallScore);
@@ -305,9 +310,11 @@ export async function analyzeSitewideIntelligence(context: {
     `;
 
   try {
+    debugLog('[GEMINI-SITEWIDE] Calling Gemini API');
     console.log('[GEMINI-SITEWIDE] Calling Gemini API...');
     const result = await model.generateContent(prompt);
     const responseText = result.response.text();
+    debugLog('[GEMINI-SITEWIDE] Received response', { length: responseText.length, preview: responseText.substring(0, 200) });
     console.log('[GEMINI-SITEWIDE] Received response, length:', responseText.length);
 
     // Log Usage
@@ -323,11 +330,17 @@ export async function analyzeSitewideIntelligence(context: {
 
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
+      debugLog('[GEMINI-SITEWIDE] ERROR: Failed to extract JSON from response', { responseText });
       console.error('[GEMINI-SITEWIDE] Failed to extract JSON from response');
       throw new Error("Could not parse AI response as JSON");
     }
 
     const aiResult = JSON.parse(jsonMatch[0]);
+    debugLog('[GEMINI-SITEWIDE] Parsed AI result', { 
+      domainHealthScore: aiResult.domainHealthScore,
+      recommendationsCount: aiResult.recommendations?.length,
+      keys: Object.keys(aiResult)
+    });
     console.log('[GEMINI-SITEWIDE] Parsed AI result, domainHealthScore:', aiResult.domainHealthScore);
     console.log('[GEMINI-SITEWIDE] AI recommendations count:', aiResult.recommendations?.length || 0);
     
@@ -352,9 +365,15 @@ export async function analyzeSitewideIntelligence(context: {
       }
     };
     
+    debugLog('[GEMINI-SITEWIDE] Final result assembled', { 
+      domainHealthScore: finalResult.domainHealthScore,
+      consistencyScore: finalResult.consistencyScore,
+      schemaScore: finalResult.schemaHealthAudit.overallScore
+    });
     console.log('[GEMINI-SITEWIDE] Final result assembled, returning to API');
     return finalResult;
   } catch (error) {
+    debugLog('[GEMINI-SITEWIDE] ERROR', { error: error instanceof Error ? error.message : String(error) });
     console.error("[GEMINI-SITEWIDE] Error:", error);
     throw error;
   }

@@ -6,11 +6,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  experimental: {
-    serverComponentsExternalPackages: ["@sparticuz/chromium", "playwright-core"],
-    outputFileTracingIncludes: {
-      "/api/**/*": ["./node_modules/@sparticuz/chromium/bin/**/*"]
-    }
+  serverExternalPackages: ["@sparticuz/chromium", "playwright-core"],
+  outputFileTracingIncludes: {
+    "/api/**/*": ["./node_modules/@sparticuz/chromium/bin/**/*"]
   },
   // Force new build ID to bust CDN cache
   generateBuildId: async () => {
