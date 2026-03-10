@@ -161,16 +161,16 @@ export function PriorityMatrix({ recommendations, onRecommendationClick }: Prior
                     title={rec.title}
                   >
                     <span className={cn("text-xs font-black", config.color)}>
-                      {rec.roiScore.toFixed(0)}
+                      {typeof rec.roiScore === 'number' ? rec.roiScore.toFixed(0) : '50'}
                     </span>
                     
                     {/* Tooltip on hover */}
                     <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-popover border border-border rounded-lg shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10">
                       <p className="text-xs font-bold mb-1">{rec.title}</p>
                       <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-                        <span>ROI: {rec.roiScore.toFixed(1)}</span>
-                        <span>Impact: {rec.impactScore}</span>
-                        <span>Effort: {rec.effortScore}/3</span>
+                        <span>ROI: {typeof rec.roiScore === 'number' ? rec.roiScore.toFixed(1) : '50.0'}</span>
+                        <span>Impact: {rec.impactScore || 50}</span>
+                        <span>Effort: {rec.effortScore || 2}/3</span>
                       </div>
                     </div>
                   </button>
