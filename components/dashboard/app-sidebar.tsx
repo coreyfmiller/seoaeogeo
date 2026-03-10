@@ -28,6 +28,7 @@ const mainNav: NavItem[] = [
   { name: "Pro Dashboard", icon: LayoutDashboard, href: "/", badge: "PRO" },
   { name: "Site Vs Site", icon: Globe, href: "/intelligence" },
   { name: "Deep Crawler", icon: TrendingUp, href: "/site-analysis", badge: "PRO" },
+  { name: "Merged Dashboard", icon: Sparkles, href: "/merged", badge: "BETA" },
   { name: "Usage & Costs", icon: BarChart3, href: "/usage" },
 ]
 
@@ -82,6 +83,11 @@ export function AppSidebar() {
                   <span className="flex-1">{item.name}</span>
                   {item.badge === "PRO" && (
                     <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                      {item.badge}
+                    </span>
+                  )}
+                  {item.badge === "BETA" && (
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-geo/10 text-geo border border-geo/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       {item.badge}
                     </span>
                   )}
