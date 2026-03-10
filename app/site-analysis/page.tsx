@@ -657,38 +657,53 @@ export default function SiteAnalysis() {
                                         })()}
 
                                         {/* ── Multi-Page Dashboard (when crawl depth > 1) ── */}
-                                        {analysisData.pagesCrawled > 1 && analysisData.siteWideIssues && pages.length > 0 && (
-                                            <MultiPageDashboard
-                                                pagesCrawled={analysisData.pagesCrawled}
-                                                aggregateScores={{
-                                                    seo: Math.round(pages.reduce((sum: number, p: any) => sum + (p.seoScore || 0), 0) / Math.max(pages.length, 1)),
-                                                    aeo: Math.round(pages.reduce((sum: number, p: any) => sum + (p.aeoScore || 0), 0) / Math.max(pages.length, 1)),
-                                                    geo: Math.round(pages.reduce((sum: number, p: any) => sum + (p.geoScore || 0), 0) / Math.max(pages.length, 1))
-                                                }}
-                                                siteWideIssues={analysisData.siteWideIssues}
-                                                totalWords={analysisData.totalWords || 0}
-                                                schemaCount={analysisData.schemaCount || 0}
-                                                orphanCount={ai?.orphanPageRisks?.length || 0}
-                                                duplicateCount={0}
-                                            />
-                                        )}
+                                        {analysisData.pagesCrawled > 1 && analysisData.siteWideIssues && pages.length > 0 && (() => {
+                                            // Use AI domain-level scores instead of per-page averages
+                                            const seoScore = ai?.domainHealthScore || 0
+                                            const aeoScore = ai?.aeoReadiness?.overallScore || 0
+                                            const geoScore = ai?.consistencyScore || 0
+                                            
+                                            return (
+                                                <MultiPageDashboard
+                                                    pagesCrawled={analysisData.pagesCrawled}
+                                                    aggregateScores={{
+                                                        seo: Math.round(seoScore),
+                                                        aeo: Math.round(aeoScore),
+                                                        geo: Math.round(geoScore)
+                                                    }}
+                                                    siteWideIssues={analysisData.siteWideIssues}
+                                                    totalWords={analysisData.totalWords || 0}
+                                                    schemaCount={analysisData.schemaCount || 0}
+                                                    orphanCount={ai?.orphanPageRisks?.length || 0}
+                                                    duplicateCount={0}
+                                                />
+                                            )
+                                        })()}
 
                                         {/* ── Page Comparison Table (when crawl depth > 1) ── */}
-                                        {analysisData.pagesCrawled > 1 && pages.length > 0 && (
-                                            <PageComparisonTable
-                                                pages={pages.map((p: any) => ({
+                                        {analysisData.pagesCrawled > 1 && pages.length > 0 && (() => {
+                                            // Calculate per-page scores based on technical metrics
+                                            // Since we don't have individual AI scores, use deterministic metrics
+                                            const pagesWithScores = pages.map((p: any) => {
+                                                const techScore = (p.hasH1 ? 30 : 0) + (p.isHttps ? 30 : 0) + (p.responseTimeMs < 1500 ? 40 : 20)
+                                                const contentScore = Math.min(100, (p.wordCount || 0) / 10)
+                                                const schemaScore = (p.schemas?.length || 0) > 0 ? 80 : 20
+                                                
+                                                return {
                                                     url: p.url,
-                                                    seoScore: p.seoScore || 0,
-                                                    aeoScore: p.aeoScore || 0,
-                                                    geoScore: p.geoScore || 0,
+                                                    seoScore: Math.round(techScore),
+                                                    aeoScore: Math.round(contentScore),
+                                                    geoScore: Math.round(schemaScore),
                                                     wordCount: p.wordCount || 0,
                                                     issueCount: (p.issues || []).length,
                                                     hasH1: p.hasH1 || false,
                                                     hasSchema: (p.schemas || []).length > 0,
                                                     responseTime: p.responseTimeMs || 0
-                                                }))}
-                                            />
-                                        )}
+                                                }
+                                            })
+                                            
+                                            return <PageComparisonTable pages={pagesWithScores} />
+                                        })()}
 
                                         {/* ── Top 6 Strategic Fixes (Deep Recommendations) ── */}
                                         {ai?.recommendations?.length > 0 && (
