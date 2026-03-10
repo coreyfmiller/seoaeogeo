@@ -83,6 +83,12 @@ function SchemaIssueCard({ issue, index }: { issue: any; index: number }) {
     };
     const impact = impactConfig[issue.modernCrawlerImpact as keyof typeof impactConfig] || impactConfig.medium;
 
+    // Safety check - if config is invalid, skip rendering
+    if (!config || !config.bg || !impact || !impact.bg) {
+        console.warn('[SchemaIssueCard] Invalid config for issue:', issue);
+        return null;
+    }
+
     return (
         <div className={cn("p-4 rounded-xl border bg-background/60 transition-all", config.border)}>
             <div className="flex items-start gap-3">
@@ -1187,7 +1193,7 @@ export default function SiteAnalysis() {
                                                 </CardHeader>
                                                 <CardContent>
                                                     <div className="space-y-3">
-                                                        {ai?.sitewideInsights?.map((insight: any, i: number) => {
+                                                        {ai?.sitewideInsights?.filter((insight: any) => insight && insight.impact && insight.title && insight.description).map((insight: any, i: number) => {
                                                             const impactConfig = {
                                                                 critical: { 
                                                                     label: "CRITICAL", 
@@ -1212,6 +1218,12 @@ export default function SiteAnalysis() {
                                                                 }
                                                             };
                                                             const config = impactConfig[insight.impact as keyof typeof impactConfig] || impactConfig.medium;
+                                                            
+                                                            // Safety check - if config is still undefined, skip this insight
+                                                            if (!config || !config.bg) {
+                                                                console.warn('[SitewideInsights] Invalid impact config for insight:', insight);
+                                                                return null;
+                                                            }
                                                             
                                                             return (
                                                                 <div key={i} className="p-4 rounded-xl border border-border/40 bg-background/50 hover:border-geo/30 transition-colors">
