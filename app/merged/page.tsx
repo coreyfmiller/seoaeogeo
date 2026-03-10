@@ -44,6 +44,9 @@ import { CrawlConfig } from "@/components/dashboard/crawl-config"
 import { CrawlProgress } from "@/components/dashboard/crawl-progress"
 import { cn } from "@/lib/utils"
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 
 // Enhanced tooltip component with better visibility
 function InfoTooltip({ text, title }: { text: string; title?: string }) {
@@ -71,6 +74,97 @@ function StatTooltip({ text }: { text: string }) {
 }
 
 // Schema Issue Component
+function SchemaIssueCard({ issue, index }: { issue: any; index: number }) {
+    const [isExpanded, setIsExpanded] = useState(false);
+    
+    const severityConfig = {
+        critical: { bg: "bg-destructive/10", text: "text-destructive", border: "border-destructive/30", label: "CRITICAL" },
+        high: { bg: "bg-yellow-500/10", text: "text-yellow-600", border: "border-yellow-500/30", label: "HIGH" },
+        medium: { bg: "bg-blue-500/10", text: "text-blue-600", border: "border-blue-500/30", label: "MEDIUM" }
+    };
+    const config = severityConfig[issue.severity as keyof typeof severityConfig] || severityConfig.medium;
+
+    const impactConfig = {
+        high: { bg: "bg-destructive/10", text: "text-destructive", label: "High Impact" },
+        medium: { bg: "bg-yellow-500/10", text: "text-yellow-600", label: "Medium Impact" },
+        low: { bg: "bg-blue-500/10", text: "text-blue-600", label: "Low Impact" }
+    };
+    const impact = impactConfig[issue.modernCrawlerImpact as keyof typeof impactConfig] || impactConfig.medium;
+
+    // Safety check - if config is invalid, skip rendering
+    if (!config || !config.bg || !impact || !impact.bg) {
+        console.warn('[SchemaIssueCard] Invalid config for issue:', issue);
+        return null;
+    }
+
+    return (
+        <div className={cn("p-4 rounded-xl border bg-background/60 transition-all", config.border)}>
+            <div className="flex items-start gap-3">
+                <div className={cn("px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider shrink-0", config.bg, config.text)}>
+                    {config.label}
+                </div>
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex-1">
+                            <h5 className="font-bold text-sm mb-1">{issue.issue}</h5>
+                            {issue.modernCrawlerImpact && (
+                                <div className="flex items-center gap-2">
+                                    <Badge variant="outline" className={cn("text-[9px] font-bold", impact.bg, impact.text)}>
+                                        {impact.label}
+                                    </Badge>
+                                </div>
+                            )}
+                        </div>
+                        <Badge variant="outline" className="shrink-0 text-[10px] font-mono">
+                            -{issue.pointsDeducted ?? 0} pts
+                        </Badge>
+                    </div>
+                    
+                    <p className="text-xs text-muted-foreground mb-3 leading-relaxed">{issue.explanation}</p>
+                    
+                    {/* Affected Pages */}
+                    <div className="mb-3">
+                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1.5">
+                            Affected Pages ({issue.affectedCount ?? issue.affectedPages?.length ?? 0})
+                        </p>
+                        <div className="space-y-1">
+                            {issue.affectedPages?.slice(0, isExpanded ? undefined : 3).map((url: string, idx: number) => (
+                                <div key={idx} className="text-xs font-mono text-muted-foreground/80 truncate bg-muted/30 px-2 py-1 rounded">
+                                    {url}
+                                </div>
+                            ))}
+                            {issue.affectedPages?.length > 3 && (
+                                <button
+                                    onClick={() => setIsExpanded(!isExpanded)}
+                                    className="text-[10px] font-bold text-seo hover:underline uppercase tracking-wider"
+                                >
+                                    {isExpanded ? "Show Less" : `Show ${issue.affectedPages.length - 3} More`}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* How to Fix */}
+                    <div className="p-3 rounded-lg bg-muted/30 border border-border/40">
+                        <div className="flex items-center justify-between mb-2">
+                            <p className="text-[10px] font-bold uppercase text-muted-foreground">How to Fix</p>
+                            <button
+                                onClick={() => {
+                                    navigator.clipboard.writeText(issue.howToFix);
+                                    alert("Fix instructions copied!");
+                                }}
+                                className="text-[9px] font-bold text-seo hover:underline uppercase tracking-wider"
+                            >
+                                Copy
+                            </button>
+                        </div>
+                        <p className="text-xs text-foreground/90 leading-relaxed">{issue.howToFix}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export default function MergedDashboard() {
   const [activeTab, setActiveTab] = useState("seo")
@@ -404,9 +498,10 @@ export default function MergedDashboard() {
                   </div>
 
                   {/* Deep Crawler Sections */}
+                  {analysisData && (
                   <div className="space-y-6 mt-6">
 {/* ── Prioritized Site Improvements ── */}
-                                        {ai?.recommendations?.length > 0 && (
+                                        {analysisData?.ai?.recommendations?.length > 0 && (
                                             <Card className="border-geo/30 bg-gradient-to-br from-geo/5 to-aeo/5 relative z-10">
                                                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                                                     <div>
@@ -422,7 +517,7 @@ export default function MergedDashboard() {
                                                         </Badge>
                                                         <button
                                                             onClick={() => {
-                                                                const text = ai.recommendations.map((f: any) => `[RANK ${f.rank}] ${f.title}\nACTION: ${f.description}\nIMPACT: ${f.impact}`).join('\n\n');
+                                                                const text = analysisData.ai.recommendations.map((f: any) => `[RANK ${f.rank}] ${f.title}\nACTION: ${f.description}\nIMPACT: ${f.impact}`).join('\n\n');
                                                                 navigator.clipboard.writeText(text);
                                                                 alert("Roadmap copied to clipboard!");
                                                             }}
@@ -434,7 +529,7 @@ export default function MergedDashboard() {
                                                 </CardHeader>
                                                 <CardContent>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                                        {ai.recommendations.map((fix: any, i: number) => (
+                                                        {analysisData.ai.recommendations.map((fix: any, i: number) => (
                                                             <FixInstructionCard
                                                                 key={i}
                                                                 title={fix.title}
@@ -450,7 +545,7 @@ export default function MergedDashboard() {
                                                                 validationLinks={fix.validationLinks || []}
                                                                 onMarkComplete={() => {
                                                                     const updated = { ...analysisData }
-                                                                    updated.ai.recommendations[i].completed = true
+                                                                    updated.analysisData.ai.recommendations[i].completed = true
                                                                     setAnalysisData(updated)
                                                                 }}
                                                                 isCompleted={fix.completed || false}
@@ -462,11 +557,13 @@ export default function MergedDashboard() {
                                         )}
 
                                         {/* ── Multi-Page Dashboard (when crawl depth > 1) ── */}
-                                        {analysisData.pagesCrawled > 1 && analysisData.siteWideIssues && pages.length > 0 && (() => {
+                                        {(() => {
+                                            if (!analysisData.pagesCrawled || analysisData.pagesCrawled <= 1 || !analysisData.siteWideIssues || analysisData.pages.length === 0) return null
+                                            
                                             // Use AI domain-level scores instead of per-page averages
-                                            const seoScore = ai?.domainHealthScore || 0
-                                            const aeoScore = ai?.aeoReadiness?.overallScore || 0
-                                            const geoScore = ai?.consistencyScore || 0
+                                            const seoScore = analysisData?.ai?.domainHealthScore || 0
+                                            const aeoScore = analysisData?.ai?.aeoReadiness?.overallScore || 0
+                                            const geoScore = analysisData?.ai?.consistencyScore || 0
                                             
                                             return (
                                                 <MultiPageDashboard
@@ -479,17 +576,19 @@ export default function MergedDashboard() {
                                                     siteWideIssues={analysisData.siteWideIssues}
                                                     totalWords={analysisData.totalWords || 0}
                                                     schemaCount={analysisData.schemaCount || 0}
-                                                    orphanCount={ai?.orphanPageRisks?.length || 0}
+                                                    orphanCount={analysisData?.ai?.orphanPageRisks?.length || 0}
                                                     duplicateCount={0}
                                                 />
                                             )
                                         })()}
 
                                         {/* ── Page Comparison Table (when crawl depth > 1) ── */}
-                                        {analysisData.pagesCrawled > 1 && pages.length > 0 && (() => {
+                                        {(() => {
+                                            if (!analysisData.pagesCrawled || analysisData.pagesCrawled <= 1 || analysisData.pages.length === 0) return null
+                                            
                                             // Calculate per-page scores based on technical metrics
                                             // Since we don't have individual AI scores, use deterministic metrics
-                                            const pagesWithScores = pages.map((p: any) => {
+                                            const pagesWithScores = analysisData.pages.map((p: any) => {
                                                 const techScore = (p.hasH1 ? 30 : 0) + (p.isHttps ? 30 : 0) + (p.responseTimeMs < 1500 ? 40 : 20)
                                                 const contentScore = Math.min(100, (p.wordCount || 0) / 10)
                                                 const schemaScore = (p.schemas?.length || 0) > 0 ? 80 : 20
@@ -532,7 +631,7 @@ export default function MergedDashboard() {
                                                         title="What is Domain Health?"
                                                         text="Aggregate score measuring overall site quality across 5 key areas: content depth, schema implementation, metadata optimization, technical performance, and site architecture. This is the foundation of your SEO authority."
                                                     />
-                                                    <Badge className="ml-auto bg-geo/10 text-geo border-geo/30 text-xs font-black">{ai?.domainHealthScore ?? "–"} / 100</Badge>
+                                                    <Badge className="ml-auto bg-geo/10 text-geo border-geo/30 text-xs font-black">{analysisData?.ai?.domainHealthScore ?? "–"} / 100</Badge>
                                                 </CardTitle>
                                                 <CardDescription>Detailed breakdown of what's affecting your domain authority score</CardDescription>
                                             </CardHeader>
@@ -540,23 +639,23 @@ export default function MergedDashboard() {
                                                 {/* Individual Scores at Top */}
                                                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3 pb-4 border-b border-border/50">
                                                     <div className="text-center">
-                                                        <p className="text-2xl font-black text-geo">{ai?.domainHealthBreakdown?.contentQuality ?? 0}</p>
+                                                        <p className="text-2xl font-black text-geo">{analysisData?.ai?.domainHealthBreakdown?.contentQuality ?? 0}</p>
                                                         <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Content</p>
                                                     </div>
                                                     <div className="text-center">
-                                                        <p className="text-2xl font-black text-seo">{ai?.domainHealthBreakdown?.schemaQuality ?? 0}</p>
+                                                        <p className="text-2xl font-black text-seo">{analysisData?.ai?.domainHealthBreakdown?.schemaQuality ?? 0}</p>
                                                         <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Schema</p>
                                                     </div>
                                                     <div className="text-center">
-                                                        <p className="text-2xl font-black text-aeo">{ai?.domainHealthBreakdown?.metadataQuality ?? 0}</p>
+                                                        <p className="text-2xl font-black text-aeo">{analysisData?.ai?.domainHealthBreakdown?.metadataQuality ?? 0}</p>
                                                         <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Metadata</p>
                                                     </div>
                                                     <div className="text-center">
-                                                        <p className="text-2xl font-black text-purple-500">{ai?.domainHealthBreakdown?.technicalHealth ?? 0}</p>
+                                                        <p className="text-2xl font-black text-purple-500">{analysisData?.ai?.domainHealthBreakdown?.technicalHealth ?? 0}</p>
                                                         <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Technical</p>
                                                     </div>
                                                     <div className="text-center">
-                                                        <p className="text-2xl font-black text-blue-500">{ai?.domainHealthBreakdown?.architectureHealth ?? 0}</p>
+                                                        <p className="text-2xl font-black text-blue-500">{analysisData?.ai?.domainHealthBreakdown?.architectureHealth ?? 0}</p>
                                                         <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Architecture</p>
                                                     </div>
                                                 </div>
@@ -565,7 +664,7 @@ export default function MergedDashboard() {
                                                     {
                                                         label: "Content Quality",
                                                         desc: "Depth, substance, and value of page content",
-                                                        pct: ai?.domainHealthBreakdown?.contentQuality ?? 0,
+                                                        pct: analysisData?.ai?.domainHealthBreakdown?.contentQuality ?? 0,
                                                         color: "text-geo",
                                                         bar: "bg-geo",
                                                         key: "contentQuality"
@@ -573,7 +672,7 @@ export default function MergedDashboard() {
                                                     {
                                                         label: "Schema Quality",
                                                         desc: "Completeness and correctness of structured data",
-                                                        pct: ai?.domainHealthBreakdown?.schemaQuality ?? 0,
+                                                        pct: analysisData?.ai?.domainHealthBreakdown?.schemaQuality ?? 0,
                                                         color: "text-seo",
                                                         bar: "bg-seo",
                                                         key: "schemaQuality"
@@ -581,7 +680,7 @@ export default function MergedDashboard() {
                                                     {
                                                         label: "Metadata Quality",
                                                         desc: "Optimization of titles and meta descriptions",
-                                                        pct: ai?.domainHealthBreakdown?.metadataQuality ?? 0,
+                                                        pct: analysisData?.ai?.domainHealthBreakdown?.metadataQuality ?? 0,
                                                         color: "text-aeo",
                                                         bar: "bg-aeo",
                                                         key: "metadataQuality"
@@ -589,7 +688,7 @@ export default function MergedDashboard() {
                                                     {
                                                         label: "Technical Health",
                                                         desc: "H1 tags, HTTPS, and response performance",
-                                                        pct: ai?.domainHealthBreakdown?.technicalHealth ?? 0,
+                                                        pct: analysisData?.ai?.domainHealthBreakdown?.technicalHealth ?? 0,
                                                         color: "text-geo",
                                                         bar: "bg-geo",
                                                         key: "technicalHealth"
@@ -597,13 +696,13 @@ export default function MergedDashboard() {
                                                     {
                                                         label: "Architecture",
                                                         desc: "Internal linking and navigation structure",
-                                                        pct: ai?.domainHealthBreakdown?.architectureHealth ?? 0,
+                                                        pct: analysisData?.ai?.domainHealthBreakdown?.architectureHealth ?? 0,
                                                         color: "text-geo",
                                                         bar: "bg-geo",
                                                         key: "architectureHealth"
                                                     },
                                                 ].map(factor => {
-                                                    const explanation = ai?.domainHealthExplanations?.[factor.key as keyof typeof ai.domainHealthExplanations];
+                                                    const explanation = analysisData?.ai?.domainHealthExplanations?.[factor.key as keyof typeof analysisData.ai.domainHealthExplanations];
                                                     const hasIssues = explanation?.issues && explanation.issues.length > 0;
                                                     
                                                     return (
@@ -675,7 +774,7 @@ export default function MergedDashboard() {
                                         </Card>
 
                                         {/* ── Schema Health Audit ── */}
-                                        {ai?.schemaHealthAudit && (
+                                        {analysisData?.ai?.schemaHealthAudit && (
                                             <Card className="border-seo/20 bg-seo/5">
                                                 <CardHeader>
                                                     <div className="flex items-center justify-between">
@@ -687,13 +786,13 @@ export default function MergedDashboard() {
                                                                 text="Schema markup (JSON-LD) helps search engines understand your content. This score measures completeness, correctness, and quality of your structured data implementation. Higher scores improve rich result eligibility and AI citation likelihood."
                                                             />
                                                             <Badge className="bg-seo/10 text-seo border-seo/30 text-xs font-black">
-                                                                {ai.schemaHealthAudit.overallScore ?? ai.authorityMetrics?.schemaCoverage ?? 0} / 100
+                                                                {analysisData.ai.schemaHealthAudit.overallScore ?? analysisData.ai.authorityMetrics?.schemaCoverage ?? 0} / 100
                                                             </Badge>
                                                         </div>
-                                                        {ai.schemaHealthAudit.issues && ai.schemaHealthAudit.issues.length > 0 && (
+                                                        {analysisData.ai.schemaHealthAudit.issues && analysisData.ai.schemaHealthAudit.issues.length > 0 && (
                                                             <button
                                                                 onClick={() => {
-                                                                    const text = ai.schemaHealthAudit.issues.map((issue: any) => {
+                                                                    const text = analysisData.ai.schemaHealthAudit.issues.map((issue: any) => {
                                                                         const pages = issue.affectedPages?.slice(0, 5).join('\n  - ') || 'N/A';
                                                                         const morePages = issue.affectedPages?.length > 5 ? `\n  - ...and ${issue.affectedPages.length - 5} more` : '';
                                                                         return `[${issue.severity.toUpperCase()}] ${issue.issue} (-${issue.pointsDeducted ?? 0} pts)\n\nExplanation:\n${issue.explanation}\n\nAffected Pages (${issue.affectedCount ?? issue.affectedPages?.length ?? 0}):\n  - ${pages}${morePages}\n\nHow to Fix:\n${issue.howToFix}`;
@@ -718,17 +817,17 @@ export default function MergedDashboard() {
                                                                 <h4 className="text-sm font-black uppercase tracking-wider text-seo">Schema Type Distribution</h4>
                                                             </div>
                                                             <Badge className="bg-seo/20 text-seo border-seo/40 text-xs font-black">
-                                                                {pagesWithSchema.length} / {pages.length} Pages
+                                                                {pagesWithSchema.length} / {analysisData.pages.length} Pages
                                                             </Badge>
                                                         </div>
                                                         <p className="text-xs text-muted-foreground mb-3">Structured data fingerprints detected across your site architecture</p>
                                                         <div className="flex flex-wrap gap-2">
-                                                            {[...new Set(pages.flatMap((p: any) => p.schemaTypes || []))].map((type: any) => (
+                                                            {[...new Set(analysisData.pages.flatMap((p: any) => p.schemaTypes || []))].map((type: any) => (
                                                                 <Badge key={type} variant="outline" className="border-seo/30 text-seo bg-background font-bold text-xs px-3 py-1 shadow-sm">
                                                                     {type}
                                                                 </Badge>
                                                             ))}
-                                                            {pages.flatMap((p: any) => p.schemaTypes || []).length === 0 && (
+                                                            {analysisData.pages.flatMap((p: any) => p.schemaTypes || []).length === 0 && (
                                                                 <div className="flex flex-col items-center py-4 w-full text-center">
                                                                     <AlertCircle className="h-6 w-6 text-muted-foreground/30 mb-2" />
                                                                     <p className="text-xs text-muted-foreground italic">No structured data found. You are missing out on rich results and AI-engine knowledge graph inclusion.</p>
@@ -744,27 +843,27 @@ export default function MergedDashboard() {
                                                                 <p className="text-[10px] font-bold uppercase text-muted-foreground">Coverage</p>
                                                                 <InfoTooltip text="Percentage of pages with schema markup present. Higher coverage = more pages eligible for rich results." />
                                                             </div>
-                                                            <p className="text-lg font-black text-seo">{ai.schemaHealthAudit.breakdown?.coverage ?? 0}%</p>
+                                                            <p className="text-lg font-black text-seo">{analysisData.ai.schemaHealthAudit.breakdown?.coverage ?? 0}%</p>
                                                         </div>
                                                         <div className="text-center border-l border-border/40">
                                                             <div className="flex items-center justify-center gap-1 mb-1">
                                                                 <p className="text-[10px] font-bold uppercase text-muted-foreground">Quality</p>
                                                                 <InfoTooltip text="Completeness and correctness of schema implementation. Checks for required properties, placeholder data, and validation errors." />
                                                             </div>
-                                                            <p className="text-lg font-black text-seo">{ai.schemaHealthAudit.breakdown?.quality ?? 0}%</p>
+                                                            <p className="text-lg font-black text-seo">{analysisData.ai.schemaHealthAudit.breakdown?.quality ?? 0}%</p>
                                                         </div>
                                                         <div className="text-center border-l border-border/40">
                                                             <div className="flex items-center justify-center gap-1 mb-1">
                                                                 <p className="text-[10px] font-bold uppercase text-muted-foreground">Diversity</p>
                                                                 <InfoTooltip text="Variety of schema types used (Organization, FAQPage, HowTo, etc.). More types = better coverage of different content types." />
                                                             </div>
-                                                            <p className="text-lg font-black text-seo">{ai.schemaHealthAudit.breakdown?.diversity ?? 0}%</p>
+                                                            <p className="text-lg font-black text-seo">{analysisData.ai.schemaHealthAudit.breakdown?.diversity ?? 0}%</p>
                                                         </div>
                                                     </div>
 
                                                     {/* Priority Fixes Section */}
-                                                    {ai.schemaHealthAudit.issues && ai.schemaHealthAudit.issues.length > 0 && (() => {
-                                                        const topIssues = [...ai.schemaHealthAudit.issues]
+                                                    {analysisData.ai.schemaHealthAudit.issues && analysisData.ai.schemaHealthAudit.issues.length > 0 && (() => {
+                                                        const topIssues = [...analysisData.ai.schemaHealthAudit.issues]
                                                             .sort((a, b) => (b.pointsDeducted ?? 0) - (a.pointsDeducted ?? 0))
                                                             .slice(0, 3);
                                                         const totalPointsRecoverable = topIssues.reduce((sum, issue) => sum + (issue.pointsDeducted ?? 0), 0);
@@ -851,7 +950,7 @@ export default function MergedDashboard() {
                                                     })()}
 
                                                     {/* Divider */}
-                                                    {ai.schemaHealthAudit.issues && ai.schemaHealthAudit.issues.length > 0 && (
+                                                    {analysisData.ai.schemaHealthAudit.issues && analysisData.ai.schemaHealthAudit.issues.length > 0 && (
                                                         <div className="flex items-center gap-3 py-2">
                                                             <div className="flex-1 h-px bg-border/50"></div>
                                                             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">All Issues</p>
@@ -860,9 +959,9 @@ export default function MergedDashboard() {
                                                     )}
 
                                                     {/* Issues List */}
-                                                    {ai.schemaHealthAudit.issues && ai.schemaHealthAudit.issues.length > 0 ? (
+                                                    {analysisData.ai.schemaHealthAudit.issues && analysisData.ai.schemaHealthAudit.issues.length > 0 ? (
                                                         <div className="space-y-3">
-                                                            {ai.schemaHealthAudit.issues.map((issue: any, i: number) => (
+                                                            {analysisData.ai.schemaHealthAudit.issues.map((issue: any, i: number) => (
                                                                 <SchemaIssueCard key={i} issue={issue} index={i} />
                                                             ))}
                                                         </div>
@@ -878,7 +977,7 @@ export default function MergedDashboard() {
                                         )}
 
                                         {/* ── Brand Health Audit ── */}
-                                        {ai?.brandConsistencyBreakdown && (
+                                        {analysisData?.ai?.brandConsistencyBreakdown && (
                                             <Card className="border-aeo/20 bg-aeo/5">
                                                 <CardHeader>
                                                     <div className="flex items-center justify-between">
@@ -887,10 +986,10 @@ export default function MergedDashboard() {
                                                             <CardTitle className="text-aeo">Brand Consistency Audit</CardTitle>
                                                             <InfoTooltip 
                                                                 title="What is Brand Consistency?"
-                                                                text="Measures how consistently your brand identity appears across all pages. Includes schema names (40%), title terms (30%), and description consistency (30%). Higher scores improve brand recognition and search engine trust."
+                                                                text="Measures how consistently your brand identity appears across all analysisData.pages. Includes schema names (40%), title terms (30%), and description consistency (30%). Higher scores improve brand recognition and search engine trust."
                                                             />
                                                             <Badge className="bg-aeo/10 text-aeo border-aeo/30 text-xs font-black">
-                                                                {ai.consistencyScore ?? 0} / 100
+                                                                {analysisData.ai.consistencyScore ?? 0} / 100
                                                             </Badge>
                                                         </div>
                                                     </div>
@@ -898,24 +997,24 @@ export default function MergedDashboard() {
                                                 </CardHeader>
                                                 <CardContent className="space-y-4">
                                                     {/* AI Verdict Summary */}
-                                                    {ai?.brandClarityVerdict && (
+                                                    {analysisData?.ai?.brandClarityVerdict && (
                                                         <div className="p-4 rounded-xl bg-gradient-to-br from-aeo/10 to-aeo/5 border border-aeo/30">
                                                             <div className="flex items-start gap-3 mb-3">
                                                                 <Sparkles className="h-5 w-5 text-aeo shrink-0 mt-0.5" />
                                                                 <div className="flex-1">
                                                                     <h4 className="text-sm font-black uppercase tracking-wider text-aeo mb-2">AI Brand Cohesion Verdict</h4>
                                                                     <p className="text-sm font-medium leading-relaxed italic text-foreground/90">
-                                                                        &ldquo;{ai.brandClarityVerdict}&rdquo;
+                                                                        &ldquo;{analysisData.ai.brandClarityVerdict}&rdquo;
                                                                     </p>
                                                                 </div>
                                                             </div>
                                                             
                                                             {/* Topical Clusters */}
-                                                            {ai?.topicalClusters && ai.topicalClusters.length > 0 && (
+                                                            {analysisData?.ai?.topicalClusters && analysisData.ai.topicalClusters.length > 0 && (
                                                                 <div className="pt-3 border-t border-aeo/20">
                                                                     <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground mb-2">Detected Topic Clusters</p>
                                                                     <div className="flex flex-wrap gap-2">
-                                                                        {ai.topicalClusters.map((topic: string) => (
+                                                                        {analysisData.ai.topicalClusters.map((topic: string) => (
                                                                             <div key={topic} className="flex items-center gap-1.5 bg-aeo/10 border border-aeo/20 rounded-full px-3 py-1 text-[10px] font-black text-aeo uppercase tracking-widest">
                                                                                 <Zap className="h-2.5 w-2.5" />
                                                                                 {topic}
@@ -932,38 +1031,38 @@ export default function MergedDashboard() {
                                                         <div className="text-center">
                                                             <div className="flex items-center justify-center gap-1 mb-1">
                                                                 <p className="text-[10px] font-bold uppercase text-muted-foreground">Schema Names</p>
-                                                                <InfoTooltip text="Consistency of brand names in Organization/LocalBusiness schema across all pages. 100% = same name everywhere." />
+                                                                <InfoTooltip text="Consistency of brand names in Organization/LocalBusiness schema across all analysisData.pages. 100% = same name everywhere." />
                                                             </div>
-                                                            <p className="text-lg font-black text-aeo">{ai.brandConsistencyBreakdown.schemaNameConsistency.score}%</p>
+                                                            <p className="text-lg font-black text-aeo">{analysisData.ai.brandConsistencyBreakdown.schemaNameConsistency.score}%</p>
                                                         </div>
                                                         <div className="text-center border-l border-border/40">
                                                             <div className="flex items-center justify-center gap-1 mb-1">
                                                                 <p className="text-[10px] font-bold uppercase text-muted-foreground">Title Terms</p>
                                                                 <InfoTooltip text="Common brand terms appearing in 50%+ of page titles. More consistent terms = stronger brand recognition." />
                                                             </div>
-                                                            <p className="text-lg font-black text-aeo">{ai.brandConsistencyBreakdown.titleConsistency.score}%</p>
+                                                            <p className="text-lg font-black text-aeo">{analysisData.ai.brandConsistencyBreakdown.titleConsistency.score}%</p>
                                                         </div>
                                                         <div className="text-center border-l border-border/40">
                                                             <div className="flex items-center justify-center gap-1 mb-1">
                                                                 <p className="text-[10px] font-bold uppercase text-muted-foreground">Descriptions</p>
-                                                                <InfoTooltip text="Consistency of meta description lengths across pages. Lower variance = more professional appearance in search results." />
+                                                                <InfoTooltip text="Consistency of meta description lengths across analysisData.pages. Lower variance = more professional appearance in search results." />
                                                             </div>
-                                                            <p className="text-lg font-black text-aeo">{ai.brandConsistencyBreakdown.descriptionConsistency.score}%</p>
+                                                            <p className="text-lg font-black text-aeo">{analysisData.ai.brandConsistencyBreakdown.descriptionConsistency.score}%</p>
                                                         </div>
                                                     </div>
 
                                                     {/* Issues and Strengths */}
                                                     {(() => {
                                                         const allIssues = [
-                                                            ...ai.brandConsistencyBreakdown.schemaNameConsistency.issues.map((i: string) => ({ category: 'Schema Names', issue: i })),
-                                                            ...ai.brandConsistencyBreakdown.titleConsistency.issues.map((i: string) => ({ category: 'Page Titles', issue: i })),
-                                                            ...ai.brandConsistencyBreakdown.descriptionConsistency.issues.map((i: string) => ({ category: 'Meta Descriptions', issue: i }))
+                                                            ...analysisData.ai.brandConsistencyBreakdown.schemaNameConsistency.issues.map((i: string) => ({ category: 'Schema Names', issue: i })),
+                                                            ...analysisData.ai.brandConsistencyBreakdown.titleConsistency.issues.map((i: string) => ({ category: 'Page Titles', issue: i })),
+                                                            ...analysisData.ai.brandConsistencyBreakdown.descriptionConsistency.issues.map((i: string) => ({ category: 'Meta Descriptions', issue: i }))
                                                         ];
                                                         
                                                         const allStrengths = [
-                                                            ...ai.brandConsistencyBreakdown.schemaNameConsistency.strengths.map((s: string) => ({ category: 'Schema Names', strength: s })),
-                                                            ...ai.brandConsistencyBreakdown.titleConsistency.strengths.map((s: string) => ({ category: 'Page Titles', strength: s })),
-                                                            ...ai.brandConsistencyBreakdown.descriptionConsistency.strengths.map((s: string) => ({ category: 'Meta Descriptions', strength: s }))
+                                                            ...analysisData.ai.brandConsistencyBreakdown.schemaNameConsistency.strengths.map((s: string) => ({ category: 'Schema Names', strength: s })),
+                                                            ...analysisData.ai.brandConsistencyBreakdown.titleConsistency.strengths.map((s: string) => ({ category: 'Page Titles', strength: s })),
+                                                            ...analysisData.ai.brandConsistencyBreakdown.descriptionConsistency.strengths.map((s: string) => ({ category: 'Meta Descriptions', strength: s }))
                                                         ];
 
                                                         return (
@@ -1032,7 +1131,7 @@ export default function MergedDashboard() {
                                                     </div>
                                                     <button
                                                         onClick={() => {
-                                                            const text = ai.sitewideInsights.map((i: any) => `[${i.impact.toUpperCase()}] ${i.title}\n${i.description}`).join('\n\n');
+                                                            const text = analysisData.ai.sitewideInsights.map((i: any) => `[${i.impact.toUpperCase()}] ${i.title}\n${i.description}`).join('\n\n');
                                                             navigator.clipboard.writeText(text);
                                                             alert("Insights copied to clipboard!");
                                                         }}
@@ -1043,7 +1142,7 @@ export default function MergedDashboard() {
                                                 </CardHeader>
                                                 <CardContent>
                                                     <div className="space-y-3">
-                                                        {ai?.sitewideInsights?.filter((insight: any) => insight && insight.impact && insight.title && insight.description).map((insight: any, i: number) => {
+                                                        {analysisData?.ai?.sitewideInsights?.filter((insight: any) => insight && insight.impact && insight.title && insight.description).map((insight: any, i: number) => {
                                                             const impactConfig = {
                                                                 critical: { 
                                                                     label: "CRITICAL", 
@@ -1103,9 +1202,9 @@ export default function MergedDashboard() {
                                                     <CardDescription>Missing pages that are weakening your domain authority</CardDescription>
                                                 </CardHeader>
                                                 <CardContent>
-                                                    {ai?.contentGapAnalysis?.length > 0 ? (
+                                                    {analysisData?.ai?.contentGapAnalysis?.length > 0 ? (
                                                         <div className="space-y-3">
-                                                            {ai.contentGapAnalysis.map((gap: any, i: number) => (
+                                                            {analysisData.ai.contentGapAnalysis.map((gap: any, i: number) => (
                                                                 <div key={i} className="flex gap-3 p-3 rounded-lg border border-aeo/20 bg-aeo/5">
                                                                     <AlertCircle className="h-4 w-4 text-aeo shrink-0 mt-0.5" />
                                                                     <div>
@@ -1123,18 +1222,22 @@ export default function MergedDashboard() {
                                         </div>
 
                                         {/* ── Competitor Gap Analysis (when competitor data exists) ── */}
-                                        {analysisData.competitorAnalysis && (
-                                            <CompetitorGapView
-                                                gaps={analysisData.competitorAnalysis.gaps?.schemaGaps?.concat(
-                                                    analysisData.competitorAnalysis.gaps?.contentGaps || [],
-                                                    analysisData.competitorAnalysis.gaps?.structuralGaps || []
-                                                ) || []}
-                                                strengths={analysisData.competitorAnalysis.strengths || []}
-                                                advantageScore={analysisData.competitorAnalysis.advantageScore || 50}
-                                                quickWins={analysisData.competitorAnalysis.quickWins || []}
-                                                competitorCount={analysisData.competitorAnalysis.competitors?.length || 0}
-                                            />
-                                        )}
+                                        {(() => {
+                                            if (!analysisData.competitorAnalysis) return null
+                                            
+                                            return (
+                                                <CompetitorGapView
+                                                    gaps={analysisData.competitorAnalysis.gaps?.schemaGaps?.concat(
+                                                        analysisData.competitorAnalysis.gaps?.contentGaps || [],
+                                                        analysisData.competitorAnalysis.gaps?.structuralGaps || []
+                                                    ) || []}
+                                                    strengths={analysisData.competitorAnalysis.strengths || []}
+                                                    advantageScore={analysisData.competitorAnalysis.advantageScore || 50}
+                                                    quickWins={analysisData.competitorAnalysis.quickWins || []}
+                                                    competitorCount={analysisData.competitorAnalysis.competitors?.length || 0}
+                                                />
+                                            )
+                                        })()}
 
                                         {/* ── Row 3: Cannibalization + Internal Link Leaders ── */}
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-30">
@@ -1147,9 +1250,9 @@ export default function MergedDashboard() {
                                                     <CardDescription>Pages competing against each other for the same topic</CardDescription>
                                                 </CardHeader>
                                                 <CardContent className="min-w-0 overflow-hidden">
-                                                    {ai?.cannibalizationRisks && ai.cannibalizationRisks.length > 0 ? (
+                                                    {analysisData?.ai?.cannibalizationRisks && analysisData.ai.cannibalizationRisks.length > 0 ? (
                                                         <div className="space-y-3">
-                                                            {ai.cannibalizationRisks.map((risk: any, i: number) => (
+                                                            {analysisData.ai.cannibalizationRisks.map((risk: any, i: number) => (
                                                                 <div key={i} className="p-3 rounded-lg border border-destructive/20 bg-destructive/5 space-y-2 min-w-0 overflow-hidden">
                                                                     <Badge variant="outline" className="border-destructive/40 text-destructive text-xs truncate max-w-full">{risk.conflictingTopic || 'Competing Topic'}</Badge>
                                                                     <div className="flex flex-col gap-1 min-w-0">
@@ -1187,7 +1290,7 @@ export default function MergedDashboard() {
                                                     </CardHeader>
                                                     <CardContent>
                                                         <div className="space-y-2">
-                                                            {ai?.internalLinkLeaders?.map((link: string, i: number) => (
+                                                            {analysisData?.ai?.internalLinkLeaders?.map((link: string, i: number) => (
                                                                 <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg border border-seo/20 bg-seo/5 min-w-0 overflow-hidden">
                                                                     <span className="text-xs font-black text-seo w-5 shrink-0">#{i + 1}</span>
                                                                     <span className="text-xs font-mono text-muted-foreground truncate flex-1">{link}</span>
@@ -1197,7 +1300,7 @@ export default function MergedDashboard() {
                                                     </CardContent>
                                                 </Card>
 
-                                                {ai?.orphanPageRisks?.length > 0 && (
+                                                {analysisData?.ai?.orphanPageRisks?.length > 0 && (
                                                     <Card className="border-border/50 bg-muted/20 min-w-0">
                                                         <CardHeader className="py-3 px-4">
                                                             <CardTitle className="text-sm flex items-center gap-2 text-muted-foreground">
@@ -1207,7 +1310,7 @@ export default function MergedDashboard() {
                                                         </CardHeader>
                                                         <CardContent className="py-0 px-4 pb-4">
                                                             <div className="space-y-1">
-                                                                {ai.orphanPageRisks.map((url: string, i: number) => (
+                                                                {analysisData.ai.orphanPageRisks.map((url: string, i: number) => (
                                                                     <div key={i} className="text-[10px] font-mono text-muted-foreground truncate py-1 border-b border-border/20 last:border-0 hover:text-foreground transition-colors">
                                                                         {url}
                                                                     </div>
@@ -1220,7 +1323,7 @@ export default function MergedDashboard() {
                                         </div>
 
                                         {/* ── New: Global Semantic Map (Architecture visualization) ── */}
-                                        <SemanticMap pages={pages} clusters={ai?.topicalClusters || []} />
+                                        <SemanticMap pages={pages} clusters={analysisData?.ai?.topicalClusters || []} />
 
                                         {/* ── Row 4: Page-level Speed + Orphan Risks ── */}
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-20">
@@ -1234,7 +1337,7 @@ export default function MergedDashboard() {
                                                 </CardHeader>
                                                 <CardContent>
                                                     <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-                                                        {pages.map((p: any, i: number) => {
+                                                        {analysisData.pages.map((p: any, i: number) => {
                                                             const ms = p.responseTimeMs || 0
                                                             const pct = Math.min((ms / 4000) * 100, 100)
                                                             const color = ms < 1000 ? "bg-geo" : ms < 2000 ? "bg-aeo" : "bg-destructive"
@@ -1282,7 +1385,7 @@ export default function MergedDashboard() {
                                                                 </tr>
                                                             </thead>
                                                             <tbody className="divide-y divide-border/30">
-                                                                {pages.slice(0, 12).map((p: any, i: number) => (
+                                                                {analysisData.pages.slice(0, 12).map((p: any, i: number) => (
                                                                     <tr key={i} className="hover:bg-muted/30 transition-colors">
                                                                         <td className="py-2 font-mono truncate max-w-[120px]">{new URL(p.url).pathname || "/"}</td>
                                                                         <td className="py-2 text-center">
@@ -1315,7 +1418,7 @@ export default function MergedDashboard() {
 
                                         {/* ── HTTPS Violations (conditional) ── */}
                                         {(() => {
-                                            const httpViolations = pages.filter((p: any) => !p.isHttps)
+                                            const httpViolations = analysisData.pages.filter((p: any) => !p.isHttps)
                                             if (httpViolations.length === 0) return null
                                             return (
                                                 <Card className="border-destructive/30 bg-destructive/5">
@@ -1354,7 +1457,7 @@ export default function MergedDashboard() {
                                                 </CardHeader>
                                                 <CardContent>
                                                     <p className="text-sm leading-relaxed text-foreground/80 italic border-l-2 border-geo/30 pl-4 py-1">
-                                                        &ldquo;{ai?.navigationAnalysis || "Architecture audit underway."}&rdquo;
+                                                        &ldquo;{analysisData?.ai?.navigationAnalysis || "Architecture audit underway."}&rdquo;
                                                     </p>
                                                 </CardContent>
                                             </Card>
@@ -1402,14 +1505,14 @@ export default function MergedDashboard() {
                                                 <CardContent>
                                                     <div className="space-y-4">
                                                         {[
-                                                            { label: "H1 Coverage", pct: Math.round((pages.filter((p: any) => p.hasH1).length / Math.max(pages.length, 1)) * 100), count: pages.filter((p: any) => p.hasH1).length, color: "bg-geo", textColor: "text-geo", desc: "pages have an H1 heading" },
-                                                            { label: "H2 Coverage", pct: Math.round((pagesWithH2 / Math.max(pages.length, 1)) * 100), count: pagesWithH2, color: "bg-aeo", textColor: "text-aeo", desc: "pages have H2 subheadings" },
-                                                            { label: "H3 Coverage", pct: Math.round((pagesWithH3 / Math.max(pages.length, 1)) * 100), count: pagesWithH3, color: "bg-seo", textColor: "text-seo", desc: "pages have H3 subheadings" },
+                                                            { label: "H1 Coverage", pct: Math.round((analysisData.pages.filter((p: any) => p.hasH1).length / Math.max(analysisData.pages.length, 1)) * 100), count: analysisData.pages.filter((p: any) => p.hasH1).length, color: "bg-geo", textColor: "text-geo", desc: "pages have an H1 heading" },
+                                                            { label: "H2 Coverage", pct: Math.round((pagesWithH2 / Math.max(analysisData.pages.length, 1)) * 100), count: pagesWithH2, color: "bg-aeo", textColor: "text-aeo", desc: "pages have H2 subheadings" },
+                                                            { label: "H3 Coverage", pct: Math.round((pagesWithH3 / Math.max(analysisData.pages.length, 1)) * 100), count: pagesWithH3, color: "bg-seo", textColor: "text-seo", desc: "pages have H3 subheadings" },
                                                         ].map(h => (
                                                             <div key={h.label} className="space-y-1.5">
                                                                 <div className="flex items-center justify-between text-xs">
                                                                     <span className="font-bold">{h.label}</span>
-                                                                    <span className={cn("font-black", h.textColor)}>{h.count} / {pages.length} pages</span>
+                                                                    <span className={cn("font-black", h.textColor)}>{h.count} / {analysisData.pages.length} pages</span>
                                                                 </div>
                                                                 <div className="h-2 bg-muted rounded-full overflow-hidden">
                                                                     <div className={cn("h-full rounded-full", h.color)} style={{ width: `${h.pct}%` }} />
@@ -1446,7 +1549,7 @@ export default function MergedDashboard() {
                                                         </div>
                                                     </div>
                                                     <div className="space-y-2 max-h-44 overflow-y-auto pr-1">
-                                                        {pages.filter((p: any) => (p.imgTotal || 0) > 0).map((p: any, i: number) => {
+                                                        {analysisData.pages.filter((p: any) => (p.imgTotal || 0) > 0).map((p: any, i: number) => {
                                                             const pct = p.imgTotal > 0 ? Math.round((p.imgWithAlt / p.imgTotal) * 100) : 100
                                                             return (
                                                                 <div key={i} className="flex items-center gap-2 text-xs">
@@ -1500,17 +1603,17 @@ export default function MergedDashboard() {
                                                 </CardContent>
                                             </Card>
                                         )}
-                                        {(duplicateTitles.length === 0 && duplicateMetas.length === 0 && pages.length > 0) && (
+                                        {(duplicateTitles.length === 0 && duplicateMetas.length === 0 && analysisData.pages.length > 0) && (
                                             <Card className="border-geo/20 bg-geo/5">
                                                 <CardContent className="flex items-center gap-3 py-4">
                                                     <CheckCircle2 className="h-5 w-5 text-geo shrink-0" />
-                                                    <p className="text-sm font-medium text-geo">No duplicate titles or meta descriptions detected across {pages.length} pages.</p>
+                                                    <p className="text-sm font-medium text-geo">No duplicate titles or meta descriptions detected across {analysisData.pages.length} analysisData.pages.</p>
                                                 </CardContent>
                                             </Card>
                                         )}
 
                                         {/* ── AEO Citation Readiness ── */}
-                                        {ai?.aeoReadiness && (
+                                        {analysisData?.ai?.aeoReadiness && (
                                             <Card className="border-aeo/20 bg-aeo/5">
                                                 <CardHeader>
                                                     <CardTitle className="flex items-center gap-2 text-aeo">
@@ -1520,13 +1623,13 @@ export default function MergedDashboard() {
                                                             title="What is AEO?"
                                                             text="Answer Engine Optimization - how ready your site is to be cited by AI assistants like ChatGPT, Perplexity, and Gemini. Measures presence of FAQ content, structured Q&A, expert signals, and clear topic focus."
                                                         />
-                                                        <Badge className="ml-auto bg-aeo/10 text-aeo border-aeo/30 text-xs font-black">{ai.aeoReadiness.score} / 100</Badge>
+                                                        <Badge className="ml-auto bg-aeo/10 text-aeo border-aeo/30 text-xs font-black">{analysisData.ai.aeoReadiness.score} / 100</Badge>
                                                     </CardTitle>
                                                     <CardDescription>How ready this domain is to be cited by ChatGPT, Perplexity, and Gemini</CardDescription>
                                                 </CardHeader>
                                                 <CardContent>
                                                     <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 mb-4">
-                                                        {ai.aeoReadiness.signals && Object.entries(ai.aeoReadiness.signals).map(([key, val]: [string, any]) => {
+                                                        {analysisData.ai.aeoReadiness.signals && Object.entries(analysisData.ai.aeoReadiness.signals).map(([key, val]: [string, any]) => {
                                                             const labels: Record<string, string> = {
                                                                 hasAboutPage: "About Page", hasFaqContent: "FAQ Content", hasStructuredQa: "Q&A Structure",
                                                                 hasAuthorOrExpertSignals: "Expert Signals", hasClearTopicFocus: "Topic Focus",
@@ -1540,13 +1643,13 @@ export default function MergedDashboard() {
                                                             )
                                                         })}
                                                     </div>
-                                                    <p className="text-sm text-foreground/80 leading-relaxed italic border-t border-border/50 pt-4">&ldquo;{ai.aeoReadiness.verdict}&rdquo;</p>
+                                                    <p className="text-sm text-foreground/80 leading-relaxed italic border-t border-border/50 pt-4">&ldquo;{analysisData.ai.aeoReadiness.verdict}&rdquo;</p>
                                                 </CardContent>
                                             </Card>
                                         )}
 
                                         {/* ── E-E-A-T & Trust Audit ── */}
-                                        {ai?.socialProofSignals && (
+                                        {analysisData?.ai?.socialProofSignals && (
                                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-30">
                                                 <Card className="border-border/50">
                                                     <CardHeader>
@@ -1557,9 +1660,9 @@ export default function MergedDashboard() {
                                                         <CardDescription>Trust signals Google and AI models use to verify authority</CardDescription>
                                                     </CardHeader>
                                                     <CardContent>
-                                                        {ai.socialProofSignals.found?.length > 0 ? (
+                                                        {analysisData.ai.socialProofSignals.found?.length > 0 ? (
                                                             <div className="space-y-2">
-                                                                {ai.socialProofSignals.found.map((s: string, i: number) => (
+                                                                {analysisData.ai.socialProofSignals.found.map((s: string, i: number) => (
                                                                     <div key={i} className="flex items-center gap-2.5 p-2.5 rounded-lg border border-geo/20 bg-geo/5">
                                                                         <CheckCircle2 className="h-3.5 w-3.5 text-geo shrink-0" />
                                                                         <p className="text-xs">{s}</p>
@@ -1580,9 +1683,9 @@ export default function MergedDashboard() {
                                                         <CardDescription>High-impact trust indicators your competitors likely have</CardDescription>
                                                     </CardHeader>
                                                     <CardContent>
-                                                        {ai.socialProofSignals.missing?.length > 0 ? (
+                                                        {analysisData.ai.socialProofSignals.missing?.length > 0 ? (
                                                             <div className="space-y-2">
-                                                                {ai.socialProofSignals.missing.map((s: string, i: number) => (
+                                                                {analysisData.ai.socialProofSignals.missing.map((s: string, i: number) => (
                                                                     <div key={i} className="flex items-center gap-2.5 p-2.5 rounded-lg border border-aeo/20 bg-aeo/5">
                                                                         <XCircle className="h-3.5 w-3.5 text-aeo shrink-0" />
                                                                         <p className="text-xs">{s}</p>
@@ -1600,6 +1703,7 @@ export default function MergedDashboard() {
                                             </div>
                                         )}
                   </div>
+                  )}
 
                   {/* Recommendations Sidebar */}
                   <div className="w-full xl:w-80 shrink-0">
