@@ -225,24 +225,33 @@ export default function SiteAnalysis() {
 
             setCrawlProgress(prev => ({ ...prev, stage: 'analyzing' }))
 
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+            }
+
             const result = await response.json()
 
-            if (result.success) {
+            if (result.success && result.data) {
                 const data = result.data
                 // Backwards compatibility for data returned from API
                 if (data.ai && data.ai.prioritizedFixes && !data.ai.recommendations) {
                     data.ai.recommendations = data.ai.prioritizedFixes
                 }
+                
+                // Validate data structure
+                if (!data.ai && !data.pages) {
+                    throw new Error('Invalid response: missing required data')
+                }
+                
                 setAnalysisData(data)
                 setApiStatus("healthy")
                 setCrawlProgress(prev => ({ ...prev, stage: 'complete' }))
             } else {
-                setError(result.error || 'Deep audit failed. Site might be blocking crawlers.')
-                setApiStatus("error")
-                setCrawlProgress({ current: 0, total: 0, stage: 'idle' })
+                throw new Error(result.error || 'Deep audit failed. Site might be blocking crawlers.')
             }
         } catch (err: any) {
-            setError('Connection failed. Server timeout or offline.')
+            console.error('[DeepAudit] Error:', err)
+            setError(err.message || 'Connection failed. Server timeout or offline.')
             setApiStatus("error")
             setCrawlProgress({ current: 0, total: 0, stage: 'idle' })
         } finally {
@@ -553,6 +562,23 @@ export default function SiteAnalysis() {
                             ) : (
                                 analysisData && (
                                     <div ref={reportRef} data-report className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                                        {/* Error boundary - if data is malformed, show error */}
+                                        {!analysisData.ai && !analysisData.pages ? (
+                                            <Card className="border-destructive/50 bg-destructive/10">
+                                                <CardContent className="p-6">
+                                                    <div className="flex items-center gap-3">
+                                                        <AlertCircle className="h-5 w-5 text-destructive" />
+                                                        <div>
+                                                            <h3 className="font-bold text-destructive">Analysis Data Error</h3>
+                                                            <p className="text-sm text-muted-foreground mt-1">
+                                                                The analysis completed but returned incomplete data. Please try again.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        ) : (
+                                            <>
                                         {/* ── Print Header (Only visible in PDF) ── */}
                                         <div className="hidden print-header">
                                             <h1 className="text-3xl font-black mb-1">Intelligence Report</h1>
@@ -617,13 +643,13 @@ export default function SiteAnalysis() {
                                         })()}
 
                                         {/* ── Multi-Page Dashboard (when crawl depth > 1) ── */}
-                                        {analysisData.pagesCrawled > 1 && analysisData.siteWideIssues && (
+                                        {analysisData.pagesCrawled > 1 && analysisData.siteWideIssues && pages.length > 0 && (
                                             <MultiPageDashboard
                                                 pagesCrawled={analysisData.pagesCrawled}
                                                 aggregateScores={{
-                                                    seo: Math.round(pages.reduce((sum: number, p: any) => sum + (p.seoScore || 0), 0) / pages.length),
-                                                    aeo: Math.round(pages.reduce((sum: number, p: any) => sum + (p.aeoScore || 0), 0) / pages.length),
-                                                    geo: Math.round(pages.reduce((sum: number, p: any) => sum + (p.geoScore || 0), 0) / pages.length)
+                                                    seo: Math.round(pages.reduce((sum: number, p: any) => sum + (p.seoScore || 0), 0) / Math.max(pages.length, 1)),
+                                                    aeo: Math.round(pages.reduce((sum: number, p: any) => sum + (p.aeoScore || 0), 0) / Math.max(pages.length, 1)),
+                                                    geo: Math.round(pages.reduce((sum: number, p: any) => sum + (p.geoScore || 0), 0) / Math.max(pages.length, 1))
                                                 }}
                                                 siteWideIssues={analysisData.siteWideIssues}
                                                 totalWords={analysisData.totalWords || 0}
@@ -1816,6 +1842,8 @@ export default function SiteAnalysis() {
                                                 Export PDF Report
                                             </button>
                                         </div>
+                                        </>
+                                        )}
                                     </div>
                                 )
                             )}
