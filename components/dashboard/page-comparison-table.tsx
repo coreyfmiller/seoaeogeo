@@ -206,9 +206,6 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                     </button>
                   </th>
                   <th className="text-center p-3 text-xs font-bold uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="text-center p-3 text-xs font-bold uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -238,7 +235,15 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                             >
                               {page.url}
                             </a>
-                            <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0" />
+                            <a
+                              href={page.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="shrink-0 hover:text-geo transition-colors"
+                              title="Open in new tab"
+                            >
+                              <ExternalLink className="h-3 w-3 text-muted-foreground hover:text-geo" />
+                            </a>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1 truncate max-w-md" title={page.title}>
                             {page.title}
@@ -293,78 +298,54 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                           </Badge>
                         </td>
 
-                        {/* Status Indicators */}
-                        <td className="p-3">
-                          <div className="flex items-center justify-center gap-1">
-                            <div title="Has H1">
-                              {page.hasH1 ? (
-                                <CheckCircle2 className="h-4 w-4 text-geo" />
-                              ) : (
-                                <XCircle className="h-4 w-4 text-destructive" />
-                              )}
-                            </div>
-                            <div title="Has Meta Description">
-                              {page.hasMetaDescription ? (
-                                <CheckCircle2 className="h-4 w-4 text-geo" />
-                              ) : (
-                                <XCircle className="h-4 w-4 text-destructive" />
-                              )}
-                            </div>
-                            <div title={page.schemaCount > 0 ? `${page.schemaCount} schemas` : "No Schema"}>
-                              {page.schemaCount > 0 ? (
-                                <Badge variant="outline" className="text-[10px] border-geo/30 text-geo bg-geo/5">
-                                  {page.schemaCount}
-                                </Badge>
-                              ) : (
-                                <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                              )}
-                            </div>
-                          </div>
-                        </td>
-
                         {/* Actions */}
                         <td className="p-3 text-center">
-                          <div className="flex items-center justify-center gap-1">
+                          {page.issueCount > 0 && (
                             <Button
                               size="sm"
                               variant="ghost"
-                              onClick={() => handleCopyUrl(page.url)}
+                              onClick={() => toggleRow(page.url)}
                               className="h-8 px-2"
-                              title="Copy URL"
+                              title={isExpanded ? "Hide issues" : "Show issues"}
                             >
-                              {copiedUrl === page.url ? (
-                                <CheckCircle2 className="h-3.5 w-3.5 text-geo" />
+                              {isExpanded ? (
+                                <ChevronUp className="h-3.5 w-3.5" />
                               ) : (
-                                <Copy className="h-3.5 w-3.5" />
+                                <ChevronDown className="h-3.5 w-3.5" />
                               )}
                             </Button>
-                            {page.issueCount > 0 && (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => toggleRow(page.url)}
-                                className="h-8 px-2"
-                                title={isExpanded ? "Hide issues" : "Show issues"}
-                              >
-                                {isExpanded ? (
-                                  <ChevronUp className="h-3.5 w-3.5" />
-                                ) : (
-                                  <ChevronDown className="h-3.5 w-3.5" />
-                                )}
-                              </Button>
-                            )}
-                          </div>
+                          )}
                         </td>
                       </tr>
 
                       {/* Expanded Row - Issues Detail */}
                       {isExpanded && page.issues.length > 0 && (
                         <tr key={`${page.url}-expanded`} className="bg-muted/30 border-b border-border/50">
-                          <td colSpan={8} className="p-4">
+                          <td colSpan={7} className="p-4">
                             <div className="space-y-3">
-                              <div className="flex items-center gap-2 mb-3">
-                                <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                                <h4 className="text-sm font-bold">Issues Found ({page.issues.length})</h4>
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                  <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                                  <h4 className="text-sm font-bold">Issues Found ({page.issues.length})</h4>
+                                </div>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleCopyUrl(page.url)}
+                                  className="h-7 px-2 text-xs"
+                                >
+                                  {copiedUrl === page.url ? (
+                                    <>
+                                      <CheckCircle2 className="h-3 w-3 mr-1.5 text-geo" />
+                                      Copied
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Copy className="h-3 w-3 mr-1.5" />
+                                      Copy URL
+                                    </>
+                                  )}
+                                </Button>
                               </div>
                               <div className="grid grid-cols-1 gap-2">
                                 {page.issues.map((issue, issueIdx) => {
