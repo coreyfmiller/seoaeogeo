@@ -743,16 +743,28 @@ export default function SiteAnalysis() {
                                                 const contentScore = Math.min(100, (p.wordCount || 0) / 10)
                                                 const schemaScore = (p.schemas?.length || 0) > 0 ? 80 : 20
                                                 
+                                                // Generate per-page issues based on technical metrics
+                                                const pageIssues = []
+                                                if (!p.hasH1) pageIssues.push({ type: 'Missing H1', severity: 'high', fix: 'Add a descriptive H1 heading to this page' })
+                                                if (!p.description) pageIssues.push({ type: 'Missing Meta Description', severity: 'high', fix: 'Add a meta description (120-160 characters)' })
+                                                if (p.wordCount < 300) pageIssues.push({ type: 'Thin Content', severity: 'medium', fix: `Expand content to at least 800 words (currently ${p.wordCount} words)` })
+                                                if (!p.schemas || p.schemas.length === 0) pageIssues.push({ type: 'No Schema Markup', severity: 'medium', fix: 'Add relevant schema.org structured data (Organization, Article, etc.)' })
+                                                if (p.responseTimeMs > 2000) pageIssues.push({ type: 'Slow Response Time', severity: 'medium', fix: `Optimize page speed (currently ${p.responseTimeMs}ms, target <1500ms)` })
+                                                if (p.imgTotal > 0 && p.imgWithAlt < p.imgTotal * 0.5) pageIssues.push({ type: 'Poor Image Alt Coverage', severity: 'low', fix: `Add alt text to ${p.imgTotal - p.imgWithAlt} images` })
+                                                
                                                 return {
                                                     url: p.url,
+                                                    title: p.title || 'Untitled Page',
                                                     seoScore: Math.round(techScore),
                                                     aeoScore: Math.round(contentScore),
                                                     geoScore: Math.round(schemaScore),
                                                     wordCount: p.wordCount || 0,
-                                                    issueCount: (p.issues || []).length,
+                                                    issueCount: pageIssues.length,
+                                                    issues: pageIssues,
                                                     hasH1: p.hasH1 || false,
-                                                    hasSchema: (p.schemas || []).length > 0,
-                                                    responseTime: p.responseTimeMs || 0
+                                                    hasMetaDescription: !!p.description,
+                                                    schemaCount: (p.schemas || []).length,
+                                                    responseTimeMs: p.responseTimeMs || 0
                                                 }
                                             })
                                             

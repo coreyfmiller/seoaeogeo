@@ -15,9 +15,18 @@ import {
   AlertTriangle,
   ChevronLeft,
   ChevronRight,
-  ExternalLink
+  ChevronDown,
+  ChevronUp,
+  ExternalLink,
+  Zap
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+
+interface PageIssue {
+  type: string
+  severity: 'high' | 'medium' | 'low'
+  fix: string
+}
 
 interface PageData {
   url: string
@@ -30,6 +39,7 @@ interface PageData {
   hasMetaDescription: boolean
   schemaCount: number
   issueCount: number
+  issues: PageIssue[]
   responseTimeMs: number
 }
 
@@ -58,6 +68,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
   const [currentPage, setCurrentPage] = useState(1)
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null)
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
 
   const sortedPages = useMemo(() => {
     return [...pages].sort((a, b) => {
@@ -96,6 +107,16 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
     navigator.clipboard.writeText(url)
     setCopiedUrl(url)
     setTimeout(() => setCopiedUrl(null), 2000)
+  }
+
+  const toggleRow = (url: string) => {
+    const newExpanded = new Set(expandedRows)
+    if (newExpanded.has(url)) {
+      newExpanded.delete(url)
+    } else {
+      newExpanded.add(url)
+    }
+    setExpandedRows(newExpanded)
   }
 
   const SortIcon = ({ field }: { field: SortField }) => {
@@ -193,121 +214,207 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                 </tr>
               </thead>
               <tbody>
-                {currentPages.map((page, idx) => (
-                  <tr 
-                    key={page.url}
-                    className={cn(
-                      "border-b border-border/30 hover:bg-muted/30 transition-colors",
-                      idx % 2 === 0 ? "bg-background" : "bg-muted/10"
-                    )}
-                  >
-                    {/* URL */}
-                    <td className="p-3">
-                      <div className="flex items-center gap-2 max-w-md">
-                        <a 
-                          href={page.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs font-mono text-geo hover:underline truncate flex-1"
-                          title={page.url}
-                        >
-                          {page.url}
-                        </a>
-                        <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0" />
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1 truncate max-w-md" title={page.title}>
-                        {page.title}
-                      </p>
-                    </td>
-
-                    {/* SEO Score */}
-                    <td className="p-3 text-center">
-                      <div className={cn("inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold", getScoreBg(page.seoScore))}>
-                        <span className={getScoreColor(page.seoScore)}>{page.seoScore}</span>
-                      </div>
-                    </td>
-
-                    {/* AEO Score */}
-                    <td className="p-3 text-center">
-                      <div className={cn("inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold", getScoreBg(page.aeoScore))}>
-                        <span className={getScoreColor(page.aeoScore)}>{page.aeoScore}</span>
-                      </div>
-                    </td>
-
-                    {/* GEO Score */}
-                    <td className="p-3 text-center">
-                      <div className={cn("inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold", getScoreBg(page.geoScore))}>
-                        <span className={getScoreColor(page.geoScore)}>{page.geoScore}</span>
-                      </div>
-                    </td>
-
-                    {/* Word Count */}
-                    <td className="p-3 text-center">
-                      <span className={cn(
-                        "text-sm font-mono",
-                        page.wordCount < 300 ? "text-destructive" : "text-foreground"
-                      )}>
-                        {page.wordCount.toLocaleString()}
-                      </span>
-                    </td>
-
-                    {/* Issue Count */}
-                    <td className="p-3 text-center">
-                      <Badge 
-                        variant="outline" 
+                {currentPages.map((page, idx) => {
+                  const isExpanded = expandedRows.has(page.url)
+                  return (
+                    <>
+                      <tr 
+                        key={page.url}
                         className={cn(
-                          "text-xs font-bold",
-                          page.issueCount === 0 
-                            ? "border-geo/30 text-geo bg-geo/5"
-                            : page.issueCount <= 2
-                            ? "border-yellow-500/30 text-yellow-600 bg-yellow-500/5"
-                            : "border-destructive/30 text-destructive bg-destructive/5"
+                          "border-b border-border/30 hover:bg-muted/30 transition-colors",
+                          idx % 2 === 0 ? "bg-background" : "bg-muted/10",
+                          isExpanded && "bg-muted/50"
                         )}
                       >
-                        {page.issueCount}
-                      </Badge>
-                    </td>
+                        {/* URL */}
+                        <td className="p-3">
+                          <div className="flex items-center gap-2 max-w-md">
+                            <a 
+                              href={page.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs font-mono text-geo hover:underline truncate flex-1"
+                              title={page.url}
+                            >
+                              {page.url}
+                            </a>
+                            <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0" />
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1 truncate max-w-md" title={page.title}>
+                            {page.title}
+                          </p>
+                        </td>
 
-                    {/* Status Indicators */}
-                    <td className="p-3">
-                      <div className="flex items-center justify-center gap-1">
-                        {page.hasH1 ? (
-                          <CheckCircle2 className="h-4 w-4 text-geo" title="Has H1" />
-                        ) : (
-                          <XCircle className="h-4 w-4 text-destructive" title="Missing H1" />
-                        )}
-                        {page.hasMetaDescription ? (
-                          <CheckCircle2 className="h-4 w-4 text-geo" title="Has Meta Description" />
-                        ) : (
-                          <XCircle className="h-4 w-4 text-destructive" title="Missing Meta Description" />
-                        )}
-                        {page.schemaCount > 0 ? (
-                          <Badge variant="outline" className="text-[10px] border-geo/30 text-geo bg-geo/5">
-                            {page.schemaCount}
+                        {/* SEO Score */}
+                        <td className="p-3 text-center">
+                          <div className={cn("inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold", getScoreBg(page.seoScore))}>
+                            <span className={getScoreColor(page.seoScore)}>{page.seoScore}</span>
+                          </div>
+                        </td>
+
+                        {/* AEO Score */}
+                        <td className="p-3 text-center">
+                          <div className={cn("inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold", getScoreBg(page.aeoScore))}>
+                            <span className={getScoreColor(page.aeoScore)}>{page.aeoScore}</span>
+                          </div>
+                        </td>
+
+                        {/* GEO Score */}
+                        <td className="p-3 text-center">
+                          <div className={cn("inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-bold", getScoreBg(page.geoScore))}>
+                            <span className={getScoreColor(page.geoScore)}>{page.geoScore}</span>
+                          </div>
+                        </td>
+
+                        {/* Word Count */}
+                        <td className="p-3 text-center">
+                          <span className={cn(
+                            "text-sm font-mono",
+                            page.wordCount < 300 ? "text-destructive" : "text-foreground"
+                          )}>
+                            {page.wordCount.toLocaleString()}
+                          </span>
+                        </td>
+
+                        {/* Issue Count */}
+                        <td className="p-3 text-center">
+                          <Badge 
+                            variant="outline" 
+                            className={cn(
+                              "text-xs font-bold",
+                              page.issueCount === 0 
+                                ? "border-geo/30 text-geo bg-geo/5"
+                                : page.issueCount <= 2
+                                ? "border-yellow-500/30 text-yellow-600 bg-yellow-500/5"
+                                : "border-destructive/30 text-destructive bg-destructive/5"
+                            )}
+                          >
+                            {page.issueCount}
                           </Badge>
-                        ) : (
-                          <AlertTriangle className="h-4 w-4 text-yellow-600" title="No Schema" />
-                        )}
-                      </div>
-                    </td>
+                        </td>
 
-                    {/* Actions */}
-                    <td className="p-3 text-center">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleCopyUrl(page.url)}
-                        className="h-8 px-2"
-                      >
-                        {copiedUrl === page.url ? (
-                          <CheckCircle2 className="h-3.5 w-3.5 text-geo" />
-                        ) : (
-                          <Copy className="h-3.5 w-3.5" />
-                        )}
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
+                        {/* Status Indicators */}
+                        <td className="p-3">
+                          <div className="flex items-center justify-center gap-1">
+                            <div title="Has H1">
+                              {page.hasH1 ? (
+                                <CheckCircle2 className="h-4 w-4 text-geo" />
+                              ) : (
+                                <XCircle className="h-4 w-4 text-destructive" />
+                              )}
+                            </div>
+                            <div title="Has Meta Description">
+                              {page.hasMetaDescription ? (
+                                <CheckCircle2 className="h-4 w-4 text-geo" />
+                              ) : (
+                                <XCircle className="h-4 w-4 text-destructive" />
+                              )}
+                            </div>
+                            <div title={page.schemaCount > 0 ? `${page.schemaCount} schemas` : "No Schema"}>
+                              {page.schemaCount > 0 ? (
+                                <Badge variant="outline" className="text-[10px] border-geo/30 text-geo bg-geo/5">
+                                  {page.schemaCount}
+                                </Badge>
+                              ) : (
+                                <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                              )}
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Actions */}
+                        <td className="p-3 text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleCopyUrl(page.url)}
+                              className="h-8 px-2"
+                              title="Copy URL"
+                            >
+                              {copiedUrl === page.url ? (
+                                <CheckCircle2 className="h-3.5 w-3.5 text-geo" />
+                              ) : (
+                                <Copy className="h-3.5 w-3.5" />
+                              )}
+                            </Button>
+                            {page.issueCount > 0 && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => toggleRow(page.url)}
+                                className="h-8 px-2"
+                                title={isExpanded ? "Hide issues" : "Show issues"}
+                              >
+                                {isExpanded ? (
+                                  <ChevronUp className="h-3.5 w-3.5" />
+                                ) : (
+                                  <ChevronDown className="h-3.5 w-3.5" />
+                                )}
+                              </Button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+
+                      {/* Expanded Row - Issues Detail */}
+                      {isExpanded && page.issues.length > 0 && (
+                        <tr key={`${page.url}-expanded`} className="bg-muted/30 border-b border-border/50">
+                          <td colSpan={8} className="p-4">
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2 mb-3">
+                                <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                                <h4 className="text-sm font-bold">Issues Found ({page.issues.length})</h4>
+                              </div>
+                              <div className="grid grid-cols-1 gap-2">
+                                {page.issues.map((issue, issueIdx) => {
+                                  const severityConfig = {
+                                    high: { bg: 'bg-destructive/10', text: 'text-destructive', border: 'border-destructive/30', label: 'HIGH' },
+                                    medium: { bg: 'bg-yellow-500/10', text: 'text-yellow-600', border: 'border-yellow-500/30', label: 'MEDIUM' },
+                                    low: { bg: 'bg-blue-500/10', text: 'text-blue-600', border: 'border-blue-500/30', label: 'LOW' }
+                                  }
+                                  const config = severityConfig[issue.severity]
+                                  
+                                  return (
+                                    <div 
+                                      key={issueIdx}
+                                      className={cn(
+                                        "p-3 rounded-lg border flex items-start gap-3",
+                                        config.border,
+                                        config.bg
+                                      )}
+                                    >
+                                      <Badge 
+                                        variant="outline" 
+                                        className={cn(
+                                          "text-[9px] font-black uppercase tracking-wider shrink-0",
+                                          config.bg,
+                                          config.text,
+                                          config.border
+                                        )}
+                                      >
+                                        {config.label}
+                                      </Badge>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-bold mb-1">{issue.type}</p>
+                                        <div className="flex items-start gap-2 p-2 rounded bg-background/50 border border-border/30">
+                                          <Zap className="h-3 w-3 text-geo shrink-0 mt-0.5" />
+                                          <p className="text-xs text-foreground/90 leading-relaxed">
+                                            <span className="font-semibold text-geo">Fix:</span> {issue.fix}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </>
+                  )
+                })}
               </tbody>
             </table>
           </div>

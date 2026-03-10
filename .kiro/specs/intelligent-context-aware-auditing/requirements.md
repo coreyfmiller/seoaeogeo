@@ -34,7 +34,7 @@ The current system analyzes individual pages using Gemini 2.5 Flash for AI analy
 1. WHEN a site is analyzed, THE Site_Type_Detector SHALL examine content, schema markup, and page structure to determine the Site_Type
 2. THE Site_Type_Detector SHALL classify sites into one of the following categories: e-commerce, local business, blog, SaaS, portfolio, restaurant, contractor, professional services, news/media, educational, or general
 3. THE Site_Type_Detector SHALL achieve 85% or higher classification accuracy based on schema types, content patterns, and structural signals
-4. THE Auditing_System SHALL display the detected Site_Type prominently in the UI with a badge format (e.g., "Detected: Local Service Business")
+4. THE Auditing_System SHALL display the detected Site_Type prominently in the UI with a badge format (e.g., "Detected: Local Service Business")go ah
 5. WHEN the Site_Type is determined, THE Auditing_System SHALL adjust scoring weights for SEO, AEO, and GEO metrics according to site-type-specific expectations
 6. THE Gemini_Analyzer SHALL receive Site_Type context and SHALL recommend only schema types relevant to that Site_Type
 7. WHERE a site matches multiple Site_Type categories, THE Site_Type_Detector SHALL select the primary category and SHALL note secondary categories
