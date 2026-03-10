@@ -11,6 +11,10 @@ const nextConfig = {
     outputFileTracingIncludes: {
       "/api/**/*": ["./node_modules/@sparticuz/chromium/bin/**/*"]
     }
+  },
+  // Force new build ID to bust CDN cache
+  generateBuildId: async () => {
+    return `build-${Date.now()}`
   }
 }
 
