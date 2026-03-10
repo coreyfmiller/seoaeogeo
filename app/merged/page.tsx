@@ -10,6 +10,7 @@ import { GEOTab } from "@/components/dashboard/geo-tab"
 import { Recommendations } from "@/components/dashboard/recommendations"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import {
   Search,
   Sparkles,
@@ -32,6 +33,7 @@ import {
   Info,
   Map,
   AlertCircle,
+  AlertTriangle,
   Zap,
 } from "lucide-react"
 import { SemanticMap } from "@/components/dashboard/semantic-map"
@@ -498,7 +500,42 @@ export default function MergedDashboard() {
                   </div>
 
                   {/* Deep Crawler Sections */}
-                  {analysisData && (
+                  {analysisData && (() => {
+                    // Computed variables for Deep Crawler sections
+                    const pages = analysisData.pages || []
+                    
+                    const avgResponseTime = pages.length > 0
+                        ? Math.round(pages.reduce((s: number, p: any) => s + (p.responseTimeMs || 0), 0) / pages.length)
+                        : 0
+                    const slowPages = pages.filter((p: any) => p.responseTimeMs > 2000)
+                    const thinPages = pages.filter((p: any) => p.wordCount < 300)
+                    const missingH1 = pages.filter((p: any) => !p.hasH1)
+                    const pagesWithSchema = pages.filter((p: any) => p.schemas?.length > 0)
+
+                    // Duplicate title / meta detection
+                    const titleGroups = pages.reduce((acc: Record<string, string[]>, p: any) => {
+                        if (p.title) { acc[p.title] = [...(acc[p.title] || []), p.url] }
+                        return acc
+                    }, {})
+                    const duplicateTitles: [string, string[]][] = (Object.entries(titleGroups) as [string, string[]][]).filter(([, urls]) => urls.length > 1)
+
+                    const metaGroups = pages.reduce((acc: Record<string, string[]>, p: any) => {
+                        if (p.description) { acc[p.description] = [...(acc[p.description] || []), p.url] }
+                        return acc
+                    }, {})
+                    const duplicateMetas: [string, string[]][] = (Object.entries(metaGroups) as [string, string[]][]).filter(([, urls]) => urls.length > 1)
+
+                    // Image alt coverage
+                    const totalImgs = pages.reduce((s: number, p: any) => s + (p.imgTotal || 0), 0)
+                    const imgsWithAlt = pages.reduce((s: number, p: any) => s + (p.imgWithAlt || 0), 0)
+                    const imgAltPct = totalImgs > 0 ? Math.round((imgsWithAlt / totalImgs) * 100) : 100
+
+                    // Heading depth
+                    const pagesWithH2 = pages.filter((p: any) => (p.h2Count || 0) > 0).length
+                    const pagesWithH3 = pages.filter((p: any) => (p.h3Count || 0) > 0).length
+                    const flatPages = pages.filter((p: any) => (p.h2Count || 0) === 0 && p.hasH1)
+
+                    return (
                   <div className="space-y-6 mt-6">
 {/* ── Prioritized Site Improvements ── */}
                                         {analysisData?.ai?.recommendations?.length > 0 && (
@@ -1703,7 +1740,8 @@ export default function MergedDashboard() {
                                             </div>
                                         )}
                   </div>
-                  )}
+                  )
+                  })()}
 
                   {/* Recommendations Sidebar */}
                   <div className="w-full xl:w-80 shrink-0">
