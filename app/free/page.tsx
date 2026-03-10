@@ -65,10 +65,11 @@ export default function FreeDashboard() {
     setCurrentUrl(url)
 
     try {
-      const response = await fetch('/api/analyze', {
+      // Use the same deep crawler API but with maxPages=1 for consistency
+      const response = await fetch('/api/analyze-site', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url })
+        body: JSON.stringify({ url, maxPages: 1 })
       })
 
       if (!response.ok) {
@@ -174,19 +175,19 @@ export default function FreeDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <ScoreCard
                     title="SEO Score"
-                    score={analysisData.ai?.scores?.seo ?? 0}
+                    score={analysisData.ai?.domainHealthScore ?? 0}
                     variant="seo"
                     description="Technical optimization"
                   />
                   <ScoreCard
                     title="AEO Score"
-                    score={analysisData.ai?.scores?.aeo ?? 0}
+                    score={analysisData.ai?.aeoReadiness?.overallScore ?? 0}
                     variant="aeo"
                     description="AI engine readiness"
                   />
                   <ScoreCard
                     title="GEO Score"
-                    score={analysisData.ai?.scores?.geo ?? 0}
+                    score={analysisData.ai?.consistencyScore ?? 0}
                     variant="geo"
                     description="Generative engine optimization"
                   />
@@ -194,38 +195,23 @@ export default function FreeDashboard() {
 
                 {/* Technical Metrics - Stat Cards */}
                 {(() => {
-                  // Match deep dive calculation logic but for single page
-                  const h1Pct = analysisData.structuralData?.semanticTags?.h1Count === 1 ? 100 : 0
-                  const httpsPct = analysisData.structuralData?.https ? 100 : 0
-                  const schemaScore = analysisData.ai?.schemaQuality?.score ?? 0
+                  const ai = analysisData.ai
+                  const pages = analysisData.pages || []
                   
-                  // Domain Health = SEO score (same as deep dive uses domainHealthScore from AI)
-                  const domainHealth = analysisData.ai?.scores?.seo ?? 0
-                  
-                  // Brand Consistency: For single page, check if title and description exist and are optimal
-                  const titleLength = analysisData.title?.length ?? 0
-                  const metaLength = analysisData.description?.length ?? 0
-                  const titleOptimal = titleLength >= 30 && titleLength <= 60
-                  const descOptimal = metaLength >= 50 && metaLength <= 160
-                  const brandConsistency = (titleOptimal && descOptimal) ? 100 : 
-                                          (titleLength > 0 && metaLength > 0) ? 60 : 0
-                  
-                  // Schema Coverage: 100% if has schema, 0% if not (single page)
-                  const schemaCoverage = (analysisData.schemas?.length ?? 0) > 0 ? 100 : 0
-                  
-                  // Metadata Health: Check both title and description completeness
-                  const metadataHealth = (titleLength > 0 && metaLength > 0) ? 100 : 
-                                        (titleLength > 0 || metaLength > 0) ? 50 : 0
+                  // Use exact same calculations as deep dive
+                  const h1Pct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.hasH1).length / pages.length) * 100) : 0
+                  const httpsPct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.isHttps).length / pages.length) * 100) : 0
+                  const schemaScore = ai?.schemaHealthAudit?.overallScore ?? 0
                   
                   const statCards = [
-                    { label: "Domain Health", value: `${domainHealth}%`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", tip: "Overall page quality score based on SEO fundamentals." },
-                    { label: "Brand Consistency", value: `${brandConsistency}%`, color: "text-aeo", border: "border-aeo/30", bg: "bg-aeo/5", tip: "Title and description optimization for brand identity." },
-                    { label: "Schema Coverage", value: `${schemaCoverage}%`, color: "text-seo", border: "border-seo/30", bg: "bg-seo/5", tip: "Structured data presence on this page." },
+                    { label: "Domain Health", value: `${ai?.domainHealthScore ?? 0}%`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", tip: "Aggregate domain authority score." },
+                    { label: "Brand Consistency", value: `${ai?.consistencyScore ?? 0}%`, color: "text-aeo", border: "border-aeo/30", bg: "bg-aeo/5", tip: "Brand cohesion across all crawled pages." },
+                    { label: "Schema Coverage", value: `${ai?.authorityMetrics?.schemaCoverage ?? 0}%`, color: "text-seo", border: "border-seo/30", bg: "bg-seo/5", tip: "Percentage of pages with structured data present." },
                     { label: "Schema Quality", value: `${schemaScore}%`, color: schemaScore >= 70 ? "text-geo" : schemaScore >= 40 ? "text-yellow-600" : "text-destructive", border: schemaScore >= 70 ? "border-geo/30" : schemaScore >= 40 ? "border-yellow-500/30" : "border-destructive/30", bg: schemaScore >= 70 ? "bg-geo/5" : schemaScore >= 40 ? "bg-yellow-500/5" : "bg-destructive/5", tip: "Quality and completeness of structured data implementation." },
-                    { label: "Metadata Health", value: `${metadataHealth}%`, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", tip: "Title and description tag presence." },
-                    { label: "H1 Coverage", value: `${h1Pct}%`, color: h1Pct >= 90 ? "text-geo" : "text-destructive", border: h1Pct >= 90 ? "border-geo/20" : "border-destructive/20", bg: h1Pct >= 90 ? "bg-geo/5" : "bg-destructive/5", tip: "H1 tag presence (should be exactly 1)." },
-                    { label: "HTTPS", value: `${httpsPct}%`, color: httpsPct === 100 ? "text-geo" : "text-destructive", border: httpsPct === 100 ? "border-geo/20" : "border-destructive/20", bg: httpsPct === 100 ? "bg-geo/5" : "bg-destructive/5", tip: "Secure HTTPS connection." },
-                    { label: "Avg Response", value: `${Math.round(analysisData.structuralData?.responseTime ?? 0)}ms`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", tip: "Page load speed." },
+                    { label: "Metadata Health", value: `${ai?.authorityMetrics?.metadataOptimization ?? 0}%`, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", tip: "Description and Title tag completeness." },
+                    { label: "H1 Coverage", value: `${h1Pct}%`, color: h1Pct >= 90 ? "text-geo" : "text-destructive", border: h1Pct >= 90 ? "border-geo/20" : "border-destructive/20", bg: h1Pct >= 90 ? "bg-geo/5" : "bg-destructive/5", tip: "Percentage of pages with a valid H1 tag." },
+                    { label: "HTTPS", value: `${httpsPct}%`, color: httpsPct === 100 ? "text-geo" : "text-destructive", border: httpsPct === 100 ? "border-geo/20" : "border-destructive/20", bg: httpsPct === 100 ? "bg-geo/5" : "bg-destructive/5", tip: "Security coverage across domain." },
+                    { label: "Avg Response", value: `${Math.round(analysisData.avgResponseTime ?? 0)}ms`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", tip: "Avg response time across all pages." },
                   ]
                   
                   return (

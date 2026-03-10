@@ -1,30 +1,30 @@
-[2026-03-10T16:02:33.777Z] [API PRO] Starting Deep Site Audit
+[2026-03-10T16:09:05.719Z] [API PRO] Starting Deep Site Audit
 {
   "url": "pizzatwice.com",
   "maxPages": 20
 }
-[2026-03-10T16:02:39.735Z] [GEMINI-SITEWIDE] Starting AI analysis
+[2026-03-10T16:09:12.295Z] [GEMINI-SITEWIDE] Starting AI analysis
 {
   "domain": "pizzatwice.com",
   "pageCount": 8
 }
-[2026-03-10T16:02:39.736Z] [GEMINI-SITEWIDE] Schema health score
+[2026-03-10T16:09:12.295Z] [GEMINI-SITEWIDE] Schema health score
 {
   "score": 25
 }
-[2026-03-10T16:02:39.736Z] [GEMINI-SITEWIDE] Brand consistency score
+[2026-03-10T16:09:12.295Z] [GEMINI-SITEWIDE] Brand consistency score
 {
   "score": 100
 }
-[2026-03-10T16:02:39.737Z] [GEMINI-SITEWIDE] Calling Gemini API
-[2026-03-10T16:03:38.229Z] [GEMINI-SITEWIDE] Received response
+[2026-03-10T16:09:12.297Z] [GEMINI-SITEWIDE] Calling Gemini API
+[2026-03-10T16:09:51.144Z] [GEMINI-SITEWIDE] Received response
 {
-  "length": 16729,
-  "preview": "```json\n{\n  \"domainHealthScore\": 64,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 65,\n    \"schemaQuality\": 0,\n    \"metadataQuality\": 90,\n    \"technicalHealth\": 80,\n    \"architectureHealth\": 85\n "
+  "length": 13950,
+  "preview": "```json\n{\n  \"domainHealthScore\": 73,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 75,\n    \"schemaQuality\": 5,\n    \"metadataQuality\": 100,\n    \"technicalHealth\": 85,\n    \"architectureHealth\": 100"
 }
-[2026-03-10T16:03:38.241Z] [GEMINI-SITEWIDE] Parsed AI result
+[2026-03-10T16:09:51.145Z] [GEMINI-SITEWIDE] Parsed AI result
 {
-  "domainHealthScore": 64,
+  "domainHealthScore": 73,
   "recommendationsCount": 6,
   "keys": [
     "domainHealthScore",
@@ -45,15 +45,15 @@
     "recommendations"
   ]
 }
-[2026-03-10T16:03:38.241Z] [GEMINI-SITEWIDE] Final result assembled
+[2026-03-10T16:09:51.146Z] [GEMINI-SITEWIDE] Final result assembled
 {
-  "domainHealthScore": 64,
+  "domainHealthScore": 73,
   "consistencyScore": 100,
   "schemaScore": 25
 }
-[2026-03-10T16:03:38.242Z] [API PRO] AI analysis complete
+[2026-03-10T16:09:51.147Z] [API PRO] AI analysis complete
 {
-  "domainHealthScore": 64,
+  "domainHealthScore": 73,
   "keys": [
     "domainHealthScore",
     "domainHealthBreakdown",
@@ -79,10 +79,10 @@
   "hasRecommendations": true,
   "recommendationsCount": 6
 }
-[2026-03-10T16:03:38.243Z] [API PRO] Final data assembled
+[2026-03-10T16:09:51.147Z] [API PRO] Final data assembled
 {
   "pagesCrawled": 8,
   "globalTechScore": 100,
-  "aiDomainHealthScore": 64,
+  "aiDomainHealthScore": 73,
   "aiConsistencyScore": 100
 }

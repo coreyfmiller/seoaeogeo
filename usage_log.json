@@ -592,5 +592,32 @@
     "url": "pizzatwice.com",
     "timestamp": "2026-03-10T16:03:38.239Z",
     "cost": 0.00143535
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 4222,
+    "outputTokens": 3259,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-10T16:09:51.145Z",
+    "cost": 0.0012943499999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 798,
+    "outputTokens": 451,
+    "url": "https://pizzatwice.com",
+    "timestamp": "2026-03-10T16:10:12.953Z",
+    "cost": 0.00019515
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 2060,
+    "outputTokens": 1351,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-10T16:10:23.623Z",
+    "cost": 0.0005598000000000001
   }
 ]
