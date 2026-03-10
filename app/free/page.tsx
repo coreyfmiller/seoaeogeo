@@ -103,9 +103,18 @@ export default function FreeDashboard() {
                   <Activity className="h-8 w-8 text-seo" />
                   Quick Audit
                 </h1>
-                <p className="text-muted-foreground mt-2">
-                  Free single-page analysis with basic recommendations
-                </p>
+                {currentUrl && analysisData ? (
+                  <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <Search className="h-4 w-4" />
+                      {currentUrl}
+                    </span>
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground mt-2">
+                    Free single-page analysis with basic recommendations
+                  </p>
+                )}
               </div>
               <Badge variant="secondary" className="bg-muted text-foreground border-border">
                 FREE TIER
@@ -185,27 +194,27 @@ export default function FreeDashboard() {
                         </div>
                       </div>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                    {/* Display all recommendations */}
+                    <CardContent className="space-y-3">
+                    {/* Display only issue titles - no descriptions (teaser for Pro) */}
                     {analysisData.ai?.recommendations?.map((rec: any, i: number) => (
-                      <div key={i} className="p-3 rounded-lg border border-border/50 bg-background/50 flex items-start gap-3">
-                        <XCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="text-sm font-medium">{rec.title}</p>
-                            {rec.priority && (
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${
-                                rec.priority === 'high' ? 'bg-destructive/20 text-destructive' :
-                                rec.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-600' :
-                                'bg-muted text-muted-foreground'
-                              }`}>
-                                {rec.priority}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground">{rec.description}</p>
+                      <div key={i} className="p-3 rounded-lg border border-border/50 bg-background/50 flex items-center gap-3 group hover:border-yellow-500/30 transition-colors">
+                        <div className="h-8 w-8 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
+                          <XCircle className="h-4 w-4 text-destructive" />
                         </div>
-                        <Lock className="h-4 w-4 text-muted-foreground/50 shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{rec.title}</p>
+                          <p className="text-xs text-muted-foreground">Unlock Pro to see detailed fix instructions</p>
+                        </div>
+                        {rec.priority && (
+                          <span className={`text-[10px] px-2 py-1 rounded font-bold uppercase shrink-0 ${
+                            rec.priority === 'high' ? 'bg-destructive/20 text-destructive' :
+                            rec.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-600' :
+                            'bg-muted text-muted-foreground'
+                          }`}>
+                            {rec.priority}
+                          </span>
+                        )}
+                        <Lock className="h-4 w-4 text-muted-foreground/30 shrink-0 group-hover:text-yellow-500/50 transition-colors" />
                       </div>
                     ))}
                   </CardContent>
@@ -223,47 +232,55 @@ export default function FreeDashboard() {
                 )}
 
                 {/* Upgrade CTA */}
-                <Card className="border-geo/30 bg-gradient-to-br from-geo/10 to-aeo/10">
-                  <CardContent className="p-8">
+                <Card className="border-geo/30 bg-gradient-to-br from-geo/10 to-aeo/10 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-geo/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                  <CardContent className="p-8 relative">
                     <div className="flex flex-col md:flex-row items-center gap-6">
                       <div className="flex-1">
-                        <h3 className="text-2xl font-bold mb-2 flex items-center gap-2">
-                          <Zap className="h-6 w-6 text-geo" />
-                          Unlock Detailed Fixes
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-geo/20 text-geo text-xs font-bold mb-3">
+                          <Zap className="h-3 w-3" />
+                          UPGRADE TO PRO
+                        </div>
+                        <h3 className="text-2xl font-bold mb-2">
+                          Get Step-by-Step Fix Instructions
                         </h3>
                         <p className="text-muted-foreground mb-4">
-                          Get step-by-step implementation guides, copy-paste code examples, platform-specific instructions, and priority scoring.
+                          Stop guessing. Get exact implementation guides with copy-paste code for every issue.
                         </p>
-                        <ul className="space-y-2 mb-4">
+                        <ul className="space-y-2 mb-6">
                           <li className="flex items-center gap-2 text-sm">
-                            <CheckCircle2 className="h-4 w-4 text-geo" />
-                            <span>Exact code examples you can copy-paste</span>
+                            <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
+                            <span><strong>Detailed explanations</strong> of why each fix matters</span>
                           </li>
                           <li className="flex items-center gap-2 text-sm">
-                            <CheckCircle2 className="h-4 w-4 text-geo" />
-                            <span>Platform-specific guides (WordPress, Shopify, etc.)</span>
+                            <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
+                            <span><strong>Copy-paste code examples</strong> ready to implement</span>
                           </li>
                           <li className="flex items-center gap-2 text-sm">
-                            <CheckCircle2 className="h-4 w-4 text-geo" />
-                            <span>Priority scoring and ROI estimates</span>
+                            <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
+                            <span><strong>Platform-specific guides</strong> (WordPress, Shopify, custom)</span>
                           </li>
                           <li className="flex items-center gap-2 text-sm">
-                            <CheckCircle2 className="h-4 w-4 text-geo" />
-                            <span>Validation links and testing tools</span>
+                            <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
+                            <span><strong>ROI estimates</strong> and priority scoring</span>
+                          </li>
+                          <li className="flex items-center gap-2 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
+                            <span><strong>Multi-page deep crawl</strong> for site-wide analysis</span>
                           </li>
                         </ul>
                       </div>
-                      <div className="shrink-0">
+                      <div className="shrink-0 text-center">
                         <Button
                           size="lg"
                           onClick={() => router.push('/')}
-                          className="bg-geo hover:bg-geo/90 text-geo-foreground"
+                          className="bg-geo hover:bg-geo/90 text-geo-foreground shadow-lg hover:shadow-xl transition-all"
                         >
                           View Pro Dashboard
                           <ArrowRight className="h-4 w-4 ml-2" />
                         </Button>
-                        <p className="text-xs text-center text-muted-foreground mt-2">
-                          See the difference
+                        <p className="text-xs text-muted-foreground mt-3">
+                          See detailed fixes for this URL
                         </p>
                       </div>
                     </div>
