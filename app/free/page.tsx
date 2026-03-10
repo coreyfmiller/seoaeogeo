@@ -194,33 +194,31 @@ export default function FreeDashboard() {
 
                 {/* Technical Metrics - Stat Cards */}
                 {(() => {
+                  // Only show metrics that are actually calculated for single-page scans
                   const schemaScore = analysisData.ai?.schemaQuality?.score ?? 0
+                  const schemaCount = analysisData.schemas?.length ?? 0
                   const h1Count = analysisData.structuralData?.semanticTags?.h1Count ?? 0
                   const httpsStatus = analysisData.structuralData?.https ? 100 : 0
                   const metaLength = analysisData.description?.length ?? 0
                   const titleLength = analysisData.title?.length ?? 0
-                  const metaHealth = (metaLength >= 50 && metaLength <= 160 && titleLength >= 30 && titleLength <= 60) ? 100 : 
-                                     (metaLength > 0 && titleLength > 0) ? 50 : 0
                   
-                  // Calculate single-page equivalents of multi-page metrics
-                  const domainHealth = analysisData.ai?.scores?.seo ?? 0 // Use SEO score as proxy for single page
-                  const brandConsistency = (titleLength > 0 && metaLength > 0) ? 100 : 
-                                          (titleLength > 0 || metaLength > 0) ? 50 : 0 // Has both title and description
-                  const schemaCoverage = analysisData.schemas?.length > 0 ? 100 : 0 // Has schema or not
+                  // Metadata health: both title and description must be optimal length
+                  const titleOptimal = titleLength >= 30 && titleLength <= 60
+                  const descOptimal = metaLength >= 50 && metaLength <= 160
+                  const metaHealth = (titleOptimal && descOptimal) ? 100 : 
+                                     (titleLength > 0 && metaLength > 0) ? 50 : 0
                   
                   const statCards = [
-                    { label: "Domain Health", value: `${domainHealth}%`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", tip: "Overall page quality score based on SEO fundamentals." },
-                    { label: "Brand Consistency", value: `${brandConsistency}%`, color: "text-aeo", border: "border-aeo/30", bg: "bg-aeo/5", tip: "Title and description presence for brand identity." },
-                    { label: "Schema Coverage", value: `${schemaCoverage}%`, color: "text-seo", border: "border-seo/30", bg: "bg-seo/5", tip: "Structured data presence on this page." },
+                    { label: "Schema Types", value: schemaCount.toString(), color: schemaCount > 0 ? "text-geo" : "text-destructive", border: schemaCount > 0 ? "border-geo/30" : "border-destructive/30", bg: schemaCount > 0 ? "bg-geo/5" : "bg-destructive/5", tip: "Number of structured data types found on this page." },
                     { label: "Schema Quality", value: `${schemaScore}%`, color: schemaScore >= 70 ? "text-geo" : schemaScore >= 40 ? "text-yellow-600" : "text-destructive", border: schemaScore >= 70 ? "border-geo/30" : schemaScore >= 40 ? "border-yellow-500/30" : "border-destructive/30", bg: schemaScore >= 70 ? "bg-geo/5" : schemaScore >= 40 ? "bg-yellow-500/5" : "bg-destructive/5", tip: "Quality and completeness of structured data implementation." },
-                    { label: "Metadata Health", value: `${metaHealth}%`, color: metaHealth === 100 ? "text-geo" : metaHealth === 50 ? "text-yellow-600" : "text-destructive", border: metaHealth === 100 ? "border-geo/30" : metaHealth === 50 ? "border-yellow-500/30" : "border-destructive/30", bg: metaHealth === 100 ? "bg-geo/5" : metaHealth === 50 ? "bg-yellow-500/5" : "bg-destructive/5", tip: "Title and description tag completeness and length." },
-                    { label: "H1 Coverage", value: h1Count === 1 ? "100%" : "0%", color: h1Count === 1 ? "text-geo" : "text-destructive", border: h1Count === 1 ? "border-geo/20" : "border-destructive/20", bg: h1Count === 1 ? "bg-geo/5" : "bg-destructive/5", tip: "H1 tag presence and uniqueness." },
-                    { label: "HTTPS", value: `${httpsStatus}%`, color: httpsStatus === 100 ? "text-geo" : "text-destructive", border: httpsStatus === 100 ? "border-geo/20" : "border-destructive/20", bg: httpsStatus === 100 ? "bg-geo/5" : "bg-destructive/5", tip: "Security coverage." },
-                    { label: "Avg Response", value: `${analysisData.structuralData?.responseTime ?? 0}ms`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", tip: "Page load speed." },
+                    { label: "Metadata Health", value: `${metaHealth}%`, color: metaHealth === 100 ? "text-geo" : metaHealth === 50 ? "text-yellow-600" : "text-destructive", border: metaHealth === 100 ? "border-geo/30" : metaHealth === 50 ? "border-yellow-500/30" : "border-destructive/30", bg: metaHealth === 100 ? "bg-geo/5" : metaHealth === 50 ? "bg-yellow-500/5" : "bg-destructive/5", tip: "Title (30-60 chars) and description (50-160 chars) optimization." },
+                    { label: "H1 Tag", value: h1Count === 1 ? "✓" : h1Count === 0 ? "✗" : `${h1Count}`, color: h1Count === 1 ? "text-geo" : "text-destructive", border: h1Count === 1 ? "border-geo/20" : "border-destructive/20", bg: h1Count === 1 ? "bg-geo/5" : "bg-destructive/5", tip: "H1 tag presence and uniqueness (should be exactly 1)." },
+                    { label: "HTTPS", value: httpsStatus === 100 ? "✓" : "✗", color: httpsStatus === 100 ? "text-geo" : "text-destructive", border: httpsStatus === 100 ? "border-geo/20" : "border-destructive/20", bg: httpsStatus === 100 ? "bg-geo/5" : "bg-destructive/5", tip: "Secure HTTPS connection." },
+                    { label: "Response Time", value: `${analysisData.structuralData?.responseTime ?? 0}ms`, color: (analysisData.structuralData?.responseTime ?? 0) < 1000 ? "text-geo" : "text-yellow-600", border: (analysisData.structuralData?.responseTime ?? 0) < 1000 ? "border-geo/30" : "border-yellow-500/30", bg: (analysisData.structuralData?.responseTime ?? 0) < 1000 ? "bg-geo/5" : "bg-yellow-500/5", tip: "Page load speed (under 1000ms is good)." },
                   ]
                   
                   return (
-                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
                       {statCards.map(stat => (
                         <Card key={stat.label} className={cn("col-span-1 flex flex-col", stat.border, stat.bg)}>
                           <CardHeader className="pb-2 pt-3 px-3 flex-1 flex flex-col justify-between">
