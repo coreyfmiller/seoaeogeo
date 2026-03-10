@@ -203,7 +203,9 @@ export function calculateBrandConsistency(pages: Array<{
 
   if (brandNames.size === 0) {
     schemaNameScore = 0;
-    schemaNameIssues.push('No Organization or LocalBusiness schema found with name property');
+    schemaNameIssues.push('No Organization or LocalBusiness schema detected');
+    schemaNameIssues.push('RECOMMENDATION: Add Organization schema with your brand name for enhanced search presence');
+    schemaNameIssues.push('NOTE: This is a technical SEO opportunity, not a brand consistency issue');
   } else if (brandNames.size === 1) {
     schemaNameScore = 100;
     schemaNameStrengths.push(`Consistent brand name across all pages: "${Array.from(brandNames.keys())[0]}"`);
@@ -312,12 +314,22 @@ export function calculateBrandConsistency(pages: Array<{
     }
   }
 
-  // Calculate weighted score
-  const finalScore = Math.round(
-    (schemaNameScore * 0.4) + 
-    (titleScore * 0.3) + 
-    (descScore * 0.3)
-  );
+  // Calculate weighted score with adjusted formula
+  // If schema is missing, don't penalize brand consistency - schema is a separate technical issue
+  // Only penalize if schema EXISTS but has INCONSISTENT names
+  let finalScore: number;
+  
+  if (brandNames.size === 0) {
+    // No schema found - calculate brand consistency from titles and descriptions only
+    finalScore = Math.round((titleScore * 0.6) + (descScore * 0.4));
+  } else {
+    // Schema exists - include it in the calculation
+    finalScore = Math.round(
+      (schemaNameScore * 0.4) + 
+      (titleScore * 0.3) + 
+      (descScore * 0.3)
+    );
+  }
 
   return {
     score: finalScore,
