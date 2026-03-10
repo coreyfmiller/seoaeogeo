@@ -499,8 +499,8 @@ export default function MergedDashboard() {
                     </Tabs>
                   </div>
 
-                  {/* Deep Crawler Sections */}
-                  {analysisData && (() => {
+                  {/* Deep Crawler Sections - Only show for multi-page crawls */}
+                  {analysisData && analysisData.pagesCrawled > 1 && (() => {
                     // Computed variables for Deep Crawler sections
                     const pages = analysisData.pages || []
                     
