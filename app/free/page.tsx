@@ -21,7 +21,6 @@ import {
   AlertTriangle,
   XCircle
 } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 export default function FreeDashboard() {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -126,7 +125,7 @@ export default function FreeDashboard() {
               </Card>
             )}
 
-            {!analysisData && !isAnalyzing && (
+            {!analysisData && !isAnalyzing && !error && (
               <Card className="border-border/50">
                 <CardContent className="p-12 text-center">
                   <div className="mx-auto h-16 w-16 bg-seo/10 rounded-2xl flex items-center justify-center mb-4">
@@ -175,21 +174,22 @@ export default function FreeDashboard() {
                 </div>
 
                 {/* Issues Found - Free Tier (Generic) */}
-                <Card className="border-yellow-500/20 bg-yellow-500/5">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="flex items-center gap-2">
-                          <AlertTriangle className="h-5 w-5 text-yellow-600" />
-                          Issues Detected
-                        </CardTitle>
-                        <CardDescription>
-                          {getIssueCount('seo') + getIssueCount('aeo') + getIssueCount('geo')} optimization opportunities found
-                        </CardDescription>
+                {(getIssueCount('seo') + getIssueCount('aeo') + getIssueCount('geo')) > 0 ? (
+                  <Card className="border-yellow-500/20 bg-yellow-500/5">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="flex items-center gap-2">
+                            <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                            Issues Detected
+                          </CardTitle>
+                          <CardDescription>
+                            {getIssueCount('seo') + getIssueCount('aeo') + getIssueCount('geo')} optimization opportunities found
+                          </CardDescription>
+                        </div>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
+                    </CardHeader>
+                    <CardContent className="space-y-4">
                     {/* SEO Issues */}
                     {analysisData.seo?.recommendations?.length > 0 && (
                       <div className="space-y-2">
@@ -251,6 +251,17 @@ export default function FreeDashboard() {
                     )}
                   </CardContent>
                 </Card>
+                ) : (
+                  <Card className="border-border/50">
+                    <CardContent className="p-8 text-center">
+                      <CheckCircle2 className="h-12 w-12 text-geo mx-auto mb-4" />
+                      <h3 className="text-xl font-bold mb-2">No Critical Issues Found</h3>
+                      <p className="text-muted-foreground">
+                        Your page looks good! Upgrade to Pro for detailed optimization opportunities.
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Upgrade CTA */}
                 <Card className="border-geo/30 bg-gradient-to-br from-geo/10 to-aeo/10">
