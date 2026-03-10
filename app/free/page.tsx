@@ -17,8 +17,22 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertTriangle,
-  XCircle
+  XCircle,
+  Info
 } from "lucide-react"
+import { cn } from "@/lib/utils"
+
+// Simple tooltip component for stat cards
+function StatTooltip({ text }: { text: string }) {
+  return (
+    <div className="group relative inline-flex">
+      <Info className="h-3 w-3 text-muted-foreground/50 hover:text-muted-foreground cursor-help transition-colors" />
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 px-3 py-2 bg-popover border border-border rounded-lg text-xs text-muted-foreground shadow-2xl z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150 leading-relaxed ring-1 ring-border/50">
+        {text}
+      </div>
+    </div>
+  )
+}
 
 export default function FreeDashboard() {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -178,152 +192,39 @@ export default function FreeDashboard() {
                   />
                 </div>
 
-                {/* Technical Metrics Overview */}
-                <Card className="border-border/50">
-                  <CardHeader>
-                    <CardTitle className="text-lg">Technical Metrics</CardTitle>
-                    <CardDescription>Key indicators from your page analysis</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {/* HTTPS */}
-                      <div className="flex flex-col gap-1">
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider">HTTPS</div>
-                        <div className="flex items-center gap-2">
-                          {analysisData.structuralData?.https ? (
-                            <>
-                              <CheckCircle2 className="h-4 w-4 text-geo" />
-                              <span className="text-sm font-medium">Secure</span>
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="h-4 w-4 text-destructive" />
-                              <span className="text-sm font-medium">Not Secure</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Response Time */}
-                      <div className="flex flex-col gap-1">
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider">Response Time</div>
-                        <div className="text-sm font-medium">
-                          {analysisData.structuralData?.responseTime 
-                            ? `${analysisData.structuralData.responseTime}ms`
-                            : 'N/A'}
-                        </div>
-                      </div>
-
-                      {/* H1 Coverage */}
-                      <div className="flex flex-col gap-1">
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider">H1 Tags</div>
-                        <div className="flex items-center gap-2">
-                          {analysisData.structuralData?.semanticTags?.h1Count === 1 ? (
-                            <>
-                              <CheckCircle2 className="h-4 w-4 text-geo" />
-                              <span className="text-sm font-medium">1 (Good)</span>
-                            </>
-                          ) : analysisData.structuralData?.semanticTags?.h1Count === 0 ? (
-                            <>
-                              <XCircle className="h-4 w-4 text-destructive" />
-                              <span className="text-sm font-medium">Missing</span>
-                            </>
-                          ) : (
-                            <>
-                              <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                              <span className="text-sm font-medium">{analysisData.structuralData?.semanticTags?.h1Count} (Multiple)</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Schema Coverage */}
-                      <div className="flex flex-col gap-1">
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider">Schema Types</div>
-                        <div className="flex items-center gap-2">
-                          {analysisData.schemas?.length > 0 ? (
-                            <>
-                              <CheckCircle2 className="h-4 w-4 text-geo" />
-                              <span className="text-sm font-medium">{analysisData.schemas.length} Found</span>
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="h-4 w-4 text-destructive" />
-                              <span className="text-sm font-medium">None</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Schema Quality */}
-                      <div className="flex flex-col gap-1">
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider">Schema Quality</div>
-                        <div className="text-sm font-medium">
-                          {analysisData.ai?.schemaQuality?.score 
-                            ? `${analysisData.ai.schemaQuality.score}/100`
-                            : 'N/A'}
-                        </div>
-                      </div>
-
-                      {/* Metadata Health */}
-                      <div className="flex flex-col gap-1">
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider">Meta Description</div>
-                        <div className="flex items-center gap-2">
-                          {analysisData.description && analysisData.description.length >= 50 && analysisData.description.length <= 160 ? (
-                            <>
-                              <CheckCircle2 className="h-4 w-4 text-geo" />
-                              <span className="text-sm font-medium">Good</span>
-                            </>
-                          ) : analysisData.description ? (
-                            <>
-                              <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                              <span className="text-sm font-medium">Needs Work</span>
-                            </>
-                          ) : (
-                            <>
-                              <XCircle className="h-4 w-4 text-destructive" />
-                              <span className="text-sm font-medium">Missing</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Word Count */}
-                      <div className="flex flex-col gap-1">
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider">Word Count</div>
-                        <div className="text-sm font-medium">
-                          {analysisData.structuralData?.wordCount?.toLocaleString() ?? 'N/A'}
-                        </div>
-                      </div>
-
-                      {/* Image Alt Coverage */}
-                      <div className="flex flex-col gap-1">
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider">Image Alt Text</div>
-                        <div className="flex items-center gap-2">
-                          {analysisData.structuralData?.media?.totalImages > 0 ? (
-                            <>
-                              {analysisData.structuralData.media.imagesWithAlt === analysisData.structuralData.media.totalImages ? (
-                                <>
-                                  <CheckCircle2 className="h-4 w-4 text-geo" />
-                                  <span className="text-sm font-medium">100%</span>
-                                </>
-                              ) : (
-                                <>
-                                  <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                                  <span className="text-sm font-medium">
-                                    {Math.round((analysisData.structuralData.media.imagesWithAlt / analysisData.structuralData.media.totalImages) * 100)}%
-                                  </span>
-                                </>
-                              )}
-                            </>
-                          ) : (
-                            <span className="text-sm font-medium text-muted-foreground">No Images</span>
-                          )}
-                        </div>
-                      </div>
+                {/* Technical Metrics - Stat Cards */}
+                {(() => {
+                  const schemaScore = analysisData.ai?.schemaQuality?.score ?? 0
+                  const h1Count = analysisData.structuralData?.semanticTags?.h1Count ?? 0
+                  const h1Status = h1Count === 1 ? 100 : 0
+                  const httpsStatus = analysisData.structuralData?.https ? 100 : 0
+                  const metaLength = analysisData.description?.length ?? 0
+                  const metaHealth = (metaLength >= 50 && metaLength <= 160) ? 100 : metaLength > 0 ? 50 : 0
+                  
+                  const statCards = [
+                    { label: "Schema Quality", value: `${schemaScore}%`, color: schemaScore >= 70 ? "text-geo" : schemaScore >= 40 ? "text-yellow-600" : "text-destructive", border: schemaScore >= 70 ? "border-geo/30" : schemaScore >= 40 ? "border-yellow-500/30" : "border-destructive/30", bg: schemaScore >= 70 ? "bg-geo/5" : schemaScore >= 40 ? "bg-yellow-500/5" : "bg-destructive/5", tip: "Quality and completeness of structured data implementation." },
+                    { label: "Metadata Health", value: `${metaHealth}%`, color: metaHealth === 100 ? "text-geo" : metaHealth === 50 ? "text-yellow-600" : "text-destructive", border: metaHealth === 100 ? "border-geo/30" : metaHealth === 50 ? "border-yellow-500/30" : "border-destructive/30", bg: metaHealth === 100 ? "bg-geo/5" : metaHealth === 50 ? "bg-yellow-500/5" : "bg-destructive/5", tip: "Description and Title tag completeness." },
+                    { label: "H1 Coverage", value: h1Count === 1 ? "✓ Good" : h1Count === 0 ? "Missing" : `${h1Count} Tags`, color: h1Count === 1 ? "text-geo" : "text-destructive", border: h1Count === 1 ? "border-geo/20" : "border-destructive/20", bg: h1Count === 1 ? "bg-geo/5" : "bg-destructive/5", tip: "H1 tag presence and uniqueness." },
+                    { label: "HTTPS", value: httpsStatus === 100 ? "Secure" : "Not Secure", color: httpsStatus === 100 ? "text-geo" : "text-destructive", border: httpsStatus === 100 ? "border-geo/20" : "border-destructive/20", bg: httpsStatus === 100 ? "bg-geo/5" : "bg-destructive/5", tip: "Security coverage." },
+                    { label: "Response Time", value: `${analysisData.structuralData?.responseTime ?? 0}ms`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", tip: "Page load speed." },
+                  ]
+                  
+                  return (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                      {statCards.map(stat => (
+                        <Card key={stat.label} className={cn("col-span-1 flex flex-col", stat.border, stat.bg)}>
+                          <CardHeader className="pb-3 pt-4 px-4 flex-1 flex flex-col justify-between">
+                            <CardDescription className="text-[10px] font-bold uppercase tracking-tighter leading-tight flex items-center gap-1 h-8 mb-1">
+                              <span className="line-clamp-2">{stat.label}</span>
+                              <StatTooltip text={stat.tip} />
+                            </CardDescription>
+                            <CardTitle className={cn("text-2xl font-black leading-none", stat.color)}>{stat.value}</CardTitle>
+                          </CardHeader>
+                        </Card>
+                      ))}
                     </div>
-                  </CardContent>
-                </Card>
+                  )
+                })()}
 
                 {/* Issues Found - Free Tier (Generic) */}
                 {getIssueCount() > 0 ? (
