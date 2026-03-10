@@ -79,6 +79,25 @@ export function validateRecommendation(rec: any): PriorityRecommendation | null 
     impactScore = impactMap[rec.impact.toLowerCase()] || 50
   }
 
+  // Normalize priority field for UI components (high/medium/low)
+  let priority: 'high' | 'medium' | 'low' = 'medium'
+  if (rec.priority) {
+    const normalizedPriority = rec.priority.toLowerCase()
+    if (['high', 'critical', 'urgent'].includes(normalizedPriority)) {
+      priority = 'high'
+    } else if (['low', 'minor'].includes(normalizedPriority)) {
+      priority = 'low'
+    } else {
+      priority = 'medium'
+    }
+  } else if (rec.roi) {
+    // Map ROI to priority
+    const roiUpper = rec.roi.toUpperCase()
+    if (['HIGH', 'CRITICAL'].includes(roiUpper)) priority = 'high'
+    else if (['LOW', 'MINOR'].includes(roiUpper)) priority = 'low'
+    else priority = 'medium'
+  }
+
   // Calculate ROI score if missing
   let roiScore = 50
   if (typeof rec.roiScore === 'number' && !isNaN(rec.roiScore)) {
@@ -101,6 +120,7 @@ export function validateRecommendation(rec: any): PriorityRecommendation | null 
     id,
     title: rec.title,
     category,
+    priority, // Add normalized priority field
     effortScore,
     impactScore,
     roiScore,

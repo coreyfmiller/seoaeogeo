@@ -137,7 +137,14 @@ const CategoryBadge = ({ category }: { category: string }) => {
 function RecommendationItem({ rec }: { rec: Recommendation }) {
   const [expanded, setExpanded] = useState(false)
   const [copied, setCopied] = useState(false)
-  const config = priorityConfig[rec.priority]
+  
+  // Normalize priority to valid values with fallback
+  const normalizedPriority = (rec.priority?.toLowerCase() as Priority) || "medium"
+  const validPriority: Priority = ["high", "medium", "low"].includes(normalizedPriority) 
+    ? normalizedPriority 
+    : "medium"
+  
+  const config = priorityConfig[validPriority]
   const PriorityIcon = config.icon
 
   const handleCopy = () => {

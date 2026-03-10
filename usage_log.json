@@ -673,5 +673,23 @@
     "url": "pizzatwice.com",
     "timestamp": "2026-03-10T17:09:28.168Z",
     "cost": 0.0010863
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 2536,
+    "outputTokens": 2852,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-10T17:11:07.510Z",
+    "cost": 0.0010458
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 2536,
+    "outputTokens": 3153,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-10T17:12:12.872Z",
+    "cost": 0.0011361
   }
 ]
