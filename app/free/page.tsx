@@ -10,8 +10,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import {
   Search,
-  Sparkles,
-  Bot,
   Loader2,
   Activity,
   Lock,
@@ -79,11 +77,9 @@ export default function FreeDashboard() {
     }
   }
 
-  const getIssueCount = (category: 'seo' | 'aeo' | 'geo') => {
-    if (!analysisData) return 0
-    const data = analysisData[category]
-    if (!data?.recommendations) return 0
-    return data.recommendations.length
+  const getIssueCount = () => {
+    if (!analysisData?.ai?.recommendations) return 0
+    return analysisData.ai.recommendations.length
   }
 
   return (
@@ -155,26 +151,26 @@ export default function FreeDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <ScoreCard
                     title="SEO Score"
-                    score={analysisData.seo?.score ?? 0}
+                    score={analysisData.ai?.scores?.seo ?? 0}
                     variant="seo"
                     description="Technical optimization"
                   />
                   <ScoreCard
                     title="AEO Score"
-                    score={analysisData.aeo?.score ?? 0}
+                    score={analysisData.ai?.scores?.aeo ?? 0}
                     variant="aeo"
                     description="AI engine readiness"
                   />
                   <ScoreCard
                     title="GEO Score"
-                    score={analysisData.geo?.score ?? 0}
+                    score={analysisData.ai?.scores?.geo ?? 0}
                     variant="geo"
                     description="Generative engine optimization"
                   />
                 </div>
 
                 {/* Issues Found - Free Tier (Generic) */}
-                {(getIssueCount('seo') + getIssueCount('aeo') + getIssueCount('geo')) > 0 ? (
+                {getIssueCount() > 0 ? (
                   <Card className="border-yellow-500/20 bg-yellow-500/5">
                     <CardHeader>
                       <div className="flex items-center justify-between">
@@ -184,71 +180,34 @@ export default function FreeDashboard() {
                             Issues Detected
                           </CardTitle>
                           <CardDescription>
-                            {getIssueCount('seo') + getIssueCount('aeo') + getIssueCount('geo')} optimization opportunities found
+                            {getIssueCount()} optimization opportunities found
                           </CardDescription>
                         </div>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                    {/* SEO Issues */}
-                    {analysisData.seo?.recommendations?.length > 0 && (
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-bold flex items-center gap-2">
-                          <Search className="h-4 w-4 text-seo" />
-                          SEO Issues ({analysisData.seo.recommendations.length})
-                        </h4>
-                        {analysisData.seo.recommendations.slice(0, 3).map((rec: any, i: number) => (
-                          <div key={i} className="p-3 rounded-lg border border-border/50 bg-background/50 flex items-start gap-3">
-                            <XCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">{rec.title}</p>
-                              <p className="text-xs text-muted-foreground mt-1">{rec.description}</p>
-                            </div>
-                            <Lock className="h-4 w-4 text-muted-foreground/50 shrink-0" />
+                    {/* Display all recommendations */}
+                    {analysisData.ai?.recommendations?.map((rec: any, i: number) => (
+                      <div key={i} className="p-3 rounded-lg border border-border/50 bg-background/50 flex items-start gap-3">
+                        <XCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="text-sm font-medium">{rec.title}</p>
+                            {rec.priority && (
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${
+                                rec.priority === 'high' ? 'bg-destructive/20 text-destructive' :
+                                rec.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-600' :
+                                'bg-muted text-muted-foreground'
+                              }`}>
+                                {rec.priority}
+                              </span>
+                            )}
                           </div>
-                        ))}
+                          <p className="text-xs text-muted-foreground">{rec.description}</p>
+                        </div>
+                        <Lock className="h-4 w-4 text-muted-foreground/50 shrink-0" />
                       </div>
-                    )}
-
-                    {/* AEO Issues */}
-                    {analysisData.aeo?.recommendations?.length > 0 && (
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-bold flex items-center gap-2">
-                          <Sparkles className="h-4 w-4 text-aeo" />
-                          AEO Issues ({analysisData.aeo.recommendations.length})
-                        </h4>
-                        {analysisData.aeo.recommendations.slice(0, 3).map((rec: any, i: number) => (
-                          <div key={i} className="p-3 rounded-lg border border-border/50 bg-background/50 flex items-start gap-3">
-                            <XCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">{rec.title}</p>
-                              <p className="text-xs text-muted-foreground mt-1">{rec.description}</p>
-                            </div>
-                            <Lock className="h-4 w-4 text-muted-foreground/50 shrink-0" />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* GEO Issues */}
-                    {analysisData.geo?.recommendations?.length > 0 && (
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-bold flex items-center gap-2">
-                          <Bot className="h-4 w-4 text-geo" />
-                          GEO Issues ({analysisData.geo.recommendations.length})
-                        </h4>
-                        {analysisData.geo.recommendations.slice(0, 3).map((rec: any, i: number) => (
-                          <div key={i} className="p-3 rounded-lg border border-border/50 bg-background/50 flex items-start gap-3">
-                            <XCircle className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">{rec.title}</p>
-                              <p className="text-xs text-muted-foreground mt-1">{rec.description}</p>
-                            </div>
-                            <Lock className="h-4 w-4 text-muted-foreground/50 shrink-0" />
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    ))}
                   </CardContent>
                 </Card>
                 ) : (
