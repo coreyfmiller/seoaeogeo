@@ -106,6 +106,13 @@ function IssueCard({ issue }: { issue: SiteWideIssue }) {
   const [isExpanded, setIsExpanded] = useState(false)
   const config = issueConfig[issue.type]
   const severity = severityConfig[issue.severity]
+  
+  // Safety check - if config or severity is undefined, skip rendering
+  if (!config || !severity || !config.icon || !severity.bg) {
+    console.warn('[IssueCard] Invalid config for issue:', issue)
+    return null
+  }
+  
   const Icon = config.icon
 
   return (

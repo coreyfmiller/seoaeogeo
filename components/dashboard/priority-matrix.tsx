@@ -132,6 +132,12 @@ export function PriorityMatrix({ recommendations, onRecommendationClick }: Prior
                 const pos = getPosition(rec)
                 const config = categoryConfig[rec.category]
                 
+                // Safety check - skip if config is undefined
+                if (!config || !config.bg || !config.border || !config.color) {
+                  console.warn('[PriorityMatrix] Invalid category config for:', rec)
+                  return null
+                }
+                
                 return (
                   <button
                     key={rec.id}
