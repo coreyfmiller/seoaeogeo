@@ -948,6 +948,33 @@ export default function SiteAnalysis() {
                                                     <CardDescription>Detailed analysis of structured data issues and fixes</CardDescription>
                                                 </CardHeader>
                                                 <CardContent className="space-y-4">
+                                                    {/* Schema Type Distribution */}
+                                                    <div className="p-4 rounded-xl bg-gradient-to-br from-seo/10 to-seo/5 border border-seo/30">
+                                                        <div className="flex items-center justify-between mb-3">
+                                                            <div className="flex items-center gap-2">
+                                                                <Code2 className="h-4 w-4 text-seo" />
+                                                                <h4 className="text-sm font-black uppercase tracking-wider text-seo">Schema Type Distribution</h4>
+                                                            </div>
+                                                            <Badge className="bg-seo/20 text-seo border-seo/40 text-xs font-black">
+                                                                {pagesWithSchema.length} / {pages.length} Pages
+                                                            </Badge>
+                                                        </div>
+                                                        <p className="text-xs text-muted-foreground mb-3">Structured data fingerprints detected across your site architecture</p>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {[...new Set(pages.flatMap((p: any) => p.schemaTypes || []))].map((type: any) => (
+                                                                <Badge key={type} variant="outline" className="border-seo/30 text-seo bg-background font-bold text-xs px-3 py-1 shadow-sm">
+                                                                    {type}
+                                                                </Badge>
+                                                            ))}
+                                                            {pages.flatMap((p: any) => p.schemaTypes || []).length === 0 && (
+                                                                <div className="flex flex-col items-center py-4 w-full text-center">
+                                                                    <AlertCircle className="h-6 w-6 text-muted-foreground/30 mb-2" />
+                                                                    <p className="text-xs text-muted-foreground italic">No structured data found. You are missing out on rich results and AI-engine knowledge graph inclusion.</p>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
                                                     {/* Schema Breakdown Mini Stats */}
                                                     <div className="grid grid-cols-3 gap-3 p-3 rounded-xl bg-background/60 border border-border/40">
                                                         <div className="text-center">
@@ -1108,6 +1135,36 @@ export default function SiteAnalysis() {
                                                     <CardDescription>Brand identity consistency across all crawled pages</CardDescription>
                                                 </CardHeader>
                                                 <CardContent className="space-y-4">
+                                                    {/* AI Verdict Summary */}
+                                                    {ai?.brandClarityVerdict && (
+                                                        <div className="p-4 rounded-xl bg-gradient-to-br from-aeo/10 to-aeo/5 border border-aeo/30">
+                                                            <div className="flex items-start gap-3 mb-3">
+                                                                <Sparkles className="h-5 w-5 text-aeo shrink-0 mt-0.5" />
+                                                                <div className="flex-1">
+                                                                    <h4 className="text-sm font-black uppercase tracking-wider text-aeo mb-2">AI Brand Cohesion Verdict</h4>
+                                                                    <p className="text-sm font-medium leading-relaxed italic text-foreground/90">
+                                                                        &ldquo;{ai.brandClarityVerdict}&rdquo;
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            {/* Topical Clusters */}
+                                                            {ai?.topicalClusters && ai.topicalClusters.length > 0 && (
+                                                                <div className="pt-3 border-t border-aeo/20">
+                                                                    <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground mb-2">Detected Topic Clusters</p>
+                                                                    <div className="flex flex-wrap gap-2">
+                                                                        {ai.topicalClusters.map((topic: string) => (
+                                                                            <div key={topic} className="flex items-center gap-1.5 bg-aeo/10 border border-aeo/20 rounded-full px-3 py-1 text-[10px] font-black text-aeo uppercase tracking-widest">
+                                                                                <Zap className="h-2.5 w-2.5" />
+                                                                                {topic}
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+
                                                     {/* Brand Breakdown Mini Stats */}
                                                     <div className="grid grid-cols-3 gap-3 p-3 rounded-xl bg-background/60 border border-border/40">
                                                         <div className="text-center">
@@ -1328,22 +1385,30 @@ export default function SiteAnalysis() {
                                                     <CardDescription>Pages competing against each other for the same topic</CardDescription>
                                                 </CardHeader>
                                                 <CardContent className="min-w-0 overflow-hidden">
-                                                    {ai?.cannibalizationRisks?.length > 0 ? (
+                                                    {ai?.cannibalizationRisks && ai.cannibalizationRisks.length > 0 ? (
                                                         <div className="space-y-3">
                                                             {ai.cannibalizationRisks.map((risk: any, i: number) => (
                                                                 <div key={i} className="p-3 rounded-lg border border-destructive/20 bg-destructive/5 space-y-2 min-w-0 overflow-hidden">
-                                                                    <Badge variant="outline" className="border-destructive/40 text-destructive text-xs truncate max-w-full">{risk.conflictingTopic}</Badge>
+                                                                    <Badge variant="outline" className="border-destructive/40 text-destructive text-xs truncate max-w-full">{risk.conflictingTopic || 'Competing Topic'}</Badge>
                                                                     <div className="flex flex-col gap-1 min-w-0">
                                                                         <p className="text-xs text-muted-foreground font-mono truncate hover:text-foreground transition-colors cursor-help" title={risk.pageA}>{risk.pageA}</p>
                                                                         <p className="text-xs text-muted-foreground font-mono truncate hover:text-foreground transition-colors cursor-help" title={risk.pageB}>{risk.pageB}</p>
                                                                     </div>
+                                                                    {risk.recommendation && (
+                                                                        <p className="text-xs text-foreground/80 leading-relaxed pt-2 border-t border-destructive/20">
+                                                                            💡 {risk.recommendation}
+                                                                        </p>
+                                                                    )}
                                                                 </div>
                                                             ))}
                                                         </div>
                                                     ) : (
-                                                        <div className="flex items-center gap-2 text-geo">
-                                                            <CheckCircle2 className="h-5 w-5" />
-                                                            <p className="text-sm font-medium">No cannibalization risks detected.</p>
+                                                        <div className="flex flex-col items-center gap-2 py-6 text-center">
+                                                            <CheckCircle2 className="h-8 w-8 text-geo" />
+                                                            <div>
+                                                                <p className="text-sm font-semibold text-geo">No Cannibalization Detected</p>
+                                                                <p className="text-xs text-muted-foreground mt-1">Your pages have distinct topics and aren't competing for the same keywords.</p>
+                                                            </div>
                                                         </div>
                                                     )}
                                                 </CardContent>
@@ -1517,75 +1582,7 @@ export default function SiteAnalysis() {
                                         {/* ── Row 5: Brand Consistency Analysis + Architecture + Schema ── */}
                                         {/* ── Expert Audits: Brand & Semantic Architecture ── */}
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-30">
-                                            <Card className="border-aeo/20 bg-aeo/5 lg:col-span-1">
-                                                <CardHeader>
-                                                    <CardTitle className="flex items-center gap-2 text-aeo">
-                                                        <Sparkles className="h-5 w-5" />
-                                                        Brand & Topic Cohesion Verdict
-                                                        <Badge className="ml-auto bg-aeo/10 text-aeo border-aeo/30 text-xs font-black">{ai?.consistencyScore ?? "–"}%</Badge>
-                                                    </CardTitle>
-                                                    <CardDescription>
-                                                        AI-measured brand consistency across all pages
-                                                        {ai?.consistencyScore < 100 && (
-                                                            <span className="block mt-1 text-yellow-600 text-xs font-semibold">
-                                                                ⚠️ See "Brand Consistency Audit" below for detailed breakdown
-                                                            </span>
-                                                        )}
-                                                    </CardDescription>
-                                                </CardHeader>
-                                                <CardContent className="space-y-4">
-                                                    <p className="text-sm font-medium leading-relaxed italic border-l-2 border-aeo/30 pl-4 py-1">
-                                                        &ldquo;{ai?.brandClarityVerdict || "Analysis pending full scan completion."}&rdquo;
-                                                    </p>
-                                                    
-                                                    {/* Quick breakdown if not perfect */}
-                                                    {ai?.brandConsistencyBreakdown && ai?.consistencyScore < 100 && (
-                                                        <div className="p-3 rounded-lg bg-yellow-500/5 border border-yellow-500/20">
-                                                            <p className="text-[10px] font-black uppercase tracking-wider text-yellow-600 mb-2">Score Breakdown</p>
-                                                            <div className="grid grid-cols-3 gap-2 text-center">
-                                                                <div>
-                                                                    <p className="text-xs text-muted-foreground">Schema Names</p>
-                                                                    <p className={cn("text-sm font-black", 
-                                                                        ai.brandConsistencyBreakdown.schemaNameConsistency.score === 100 ? "text-geo" : "text-yellow-600"
-                                                                    )}>{ai.brandConsistencyBreakdown.schemaNameConsistency.score}%</p>
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-xs text-muted-foreground">Title Terms</p>
-                                                                    <p className={cn("text-sm font-black", 
-                                                                        ai.brandConsistencyBreakdown.titleConsistency.score === 100 ? "text-geo" : "text-yellow-600"
-                                                                    )}>{ai.brandConsistencyBreakdown.titleConsistency.score}%</p>
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-xs text-muted-foreground">Descriptions</p>
-                                                                    <p className={cn("text-sm font-black", 
-                                                                        ai.brandConsistencyBreakdown.descriptionConsistency.score === 100 ? "text-geo" : "text-yellow-600"
-                                                                    )}>{ai.brandConsistencyBreakdown.descriptionConsistency.score}%</p>
-                                                                </div>
-                                                            </div>
-                                                            <p className="text-xs text-muted-foreground mt-2 text-center">
-                                                                Scroll down to "Brand Consistency Audit" for fixes
-                                                            </p>
-                                                        </div>
-                                                    )}
-                                                    
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {ai?.topicalClusters?.map((topic: string) => (
-                                                            <div key={topic} className="flex items-center gap-1.5 bg-aeo/10 border border-aeo/20 rounded-full px-3 py-1 text-[10px] font-black text-aeo uppercase tracking-widest">
-                                                                <Zap className="h-2.5 w-2.5" />
-                                                                {topic}
-                                                            </div>
-                                                        ))}
-                                                        {(!ai?.topicalClusters || ai?.topicalClusters.length === 0) && (
-                                                            <div className="flex items-center gap-2 text-xs text-aeo font-bold">
-                                                                <CheckCircle2 className="h-3 w-3" />
-                                                                Core topic focus: {ai?.aeoReadiness?.signals?.hasClearTopicFocus ? "DETECTED" : "DILUTED"}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-
-                                            <Card className="border-geo/20 bg-geo/5 lg:col-span-1">
+                                            <Card className="border-geo/20 bg-geo/5 lg:col-span-2">
                                                 <CardHeader>
                                                     <CardTitle className="flex items-center gap-2 text-geo">
                                                         <Target className="h-5 w-5" />
@@ -1600,33 +1597,6 @@ export default function SiteAnalysis() {
                                                 </CardContent>
                                             </Card>
                                         </div>
-
-                                        {/* ── Schema Type Coverage (Detailed View) ── */}
-                                        <Card className="border-seo/20 bg-seo/5">
-                                            <CardHeader>
-                                                <CardTitle className="flex items-center gap-2 text-seo">
-                                                    <Code2 className="h-5 w-5" />
-                                                    Schema Type Distribution
-                                                    <Badge className="ml-auto bg-seo/10 text-seo border-seo/30 text-xs font-black">{pagesWithSchema.length} / {pages.length} Pages</Badge>
-                                                </CardTitle>
-                                                <CardDescription>Structured data fingerprints detected across your site architecture</CardDescription>
-                                            </CardHeader>
-                                            <CardContent>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {[...new Set(pages.flatMap((p: any) => p.schemaTypes || []))].map((type: any) => (
-                                                        <Badge key={type} variant="outline" className="border-seo/30 text-seo bg-background font-bold text-xs px-3 py-1 shadow-sm">
-                                                            {type}
-                                                        </Badge>
-                                                    ))}
-                                                    {pages.flatMap((p: any) => p.schemaTypes || []).length === 0 && (
-                                                        <div className="flex flex-col items-center py-6 w-full text-center">
-                                                            <AlertCircle className="h-8 w-8 text-muted-foreground/30 mb-2" />
-                                                            <p className="text-sm text-muted-foreground italic">No structured data found. You are missing out on rich results and AI-engine knowledge graph inclusion.</p>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </CardContent>
-                                        </Card>
 
                                         {/* ── Robots.txt & Sitemap Status ── */}
                                         <Card className="border-border/50">

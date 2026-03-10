@@ -1,0 +1,88 @@
+[2026-03-10T12:07:04.719Z] [API PRO] Starting Deep Site Audit
+{
+  "url": "https://fundylogic.com",
+  "maxPages": 20
+}
+[2026-03-10T12:07:08.801Z] [GEMINI-SITEWIDE] Starting AI analysis
+{
+  "domain": "fundylogic.com",
+  "pageCount": 16
+}
+[2026-03-10T12:07:08.801Z] [GEMINI-SITEWIDE] Schema health score
+{
+  "score": 100
+}
+[2026-03-10T12:07:08.802Z] [GEMINI-SITEWIDE] Brand consistency score
+{
+  "score": 100
+}
+[2026-03-10T12:07:08.803Z] [GEMINI-SITEWIDE] Calling Gemini API
+[2026-03-10T12:08:07.456Z] [GEMINI-SITEWIDE] Received response
+{
+  "length": 16723,
+  "preview": "{\n  \"domainHealthScore\": 90,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 95,\n    \"schemaQuality\": 65,\n    \"metadataQuality\": 98,\n    \"technicalHealth\": 100,\n    \"architectureHealth\": 90\n  },\n  "
+}
+[2026-03-10T12:08:07.460Z] [GEMINI-SITEWIDE] Parsed AI result
+{
+  "domainHealthScore": 90,
+  "recommendationsCount": 6,
+  "keys": [
+    "domainHealthScore",
+    "domainHealthBreakdown",
+    "domainHealthExplanations",
+    "authorityMetrics",
+    "sitewideInsights",
+    "contentGapAnalysis",
+    "cannibalizationRisks",
+    "internalLinkLeaders",
+    "orphanPageRisks",
+    "navigationAnalysis",
+    "brandClarityVerdict",
+    "aeoReadiness",
+    "socialProofSignals",
+    "topicalClusters",
+    "inventoryEvidence",
+    "recommendations"
+  ]
+}
+[2026-03-10T12:08:07.460Z] [GEMINI-SITEWIDE] Final result assembled
+{
+  "domainHealthScore": 90,
+  "consistencyScore": 100,
+  "schemaScore": 100
+}
+[2026-03-10T12:08:07.462Z] [API PRO] AI analysis complete
+{
+  "domainHealthScore": 90,
+  "keys": [
+    "domainHealthScore",
+    "domainHealthBreakdown",
+    "domainHealthExplanations",
+    "authorityMetrics",
+    "sitewideInsights",
+    "contentGapAnalysis",
+    "cannibalizationRisks",
+    "internalLinkLeaders",
+    "orphanPageRisks",
+    "navigationAnalysis",
+    "brandClarityVerdict",
+    "aeoReadiness",
+    "socialProofSignals",
+    "topicalClusters",
+    "inventoryEvidence",
+    "recommendations",
+    "consistencyScore",
+    "brandConsistencyBreakdown",
+    "schemaHealthAudit",
+    "_metadata"
+  ],
+  "hasRecommendations": true,
+  "recommendationsCount": 6
+}
+[2026-03-10T12:08:07.462Z] [API PRO] Final data assembled
+{
+  "pagesCrawled": 16,
+  "globalTechScore": 100,
+  "aiDomainHealthScore": 90,
+  "aiConsistencyScore": 100
+}
