@@ -158,7 +158,7 @@ function SchemaIssueCard({ issue, index }: { issue: any; index: number }) {
     );
 }
 
-export default function MergedDashboard() {
+export default function SiteAnalysis() {
     const [isAnalyzing, setIsAnalyzing] = useState(false)
     const [url, setUrl] = useState("")
     const [analysisData, setAnalysisData] = useState<any>(null)
@@ -166,7 +166,6 @@ export default function MergedDashboard() {
     const [apiStatus, setApiStatus] = useState<"healthy" | "error" | "idle">("idle")
     const [isAuthorized, setIsAuthorized] = useState(false)
     const [isCheckingAuth, setIsCheckingAuth] = useState(true)
-    const [scanMode, setScanMode] = useState<"quick" | "deep">("quick") // Quick/Deep scan toggle
     const [saveTestSnapshot, setSaveTestSnapshot] = useState(false) // For testing variance
     const [crawlConfig, setCrawlConfig] = useState({
         maxPages: 20,
@@ -190,11 +189,9 @@ export default function MergedDashboard() {
             }
             setIsCheckingAuth(false)
 
-            const savedUrl = sessionStorage.getItem("merged_url")
-            const savedData = sessionStorage.getItem("merged_data")
-            const savedMode = sessionStorage.getItem("merged_scan_mode")
+            const savedUrl = sessionStorage.getItem("pro_url")
+            const savedData = sessionStorage.getItem("pro_data")
             if (savedUrl) setUrl(savedUrl)
-            if (savedMode) setScanMode(savedMode as "quick" | "deep")
             if (savedData) {
                 const parsed = JSON.parse(savedData)
                 // Backwards compatibility: map prioritizedFixes to recommendations
@@ -208,19 +205,16 @@ export default function MergedDashboard() {
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            if (url) sessionStorage.setItem("merged_url", url)
-            if (analysisData) sessionStorage.setItem("merged_data", JSON.stringify(analysisData))
+            if (url) sessionStorage.setItem("pro_url", url)
+            if (analysisData) sessionStorage.setItem("pro_data", JSON.stringify(analysisData))
         }
-    , scanMode])
-            sessionStorage.setItem("merged_scan_mode", scanMode)
+    }, [url, analysisData])
 
     const handleDeepAudit = async (targetUrl: string, config?: typeof crawlConfig) => {
         setIsAnalyzing(true)
         setError(null)
         setApiStatus("idle")
-        // Use scan mode to determine maxPages
-        const maxPages = scanMode === "quick" ? 1 : (config?.maxPages || 20)
-        setCrawlProgress({ current: 0, total: maxPages, stage: 'crawling' })
+        setCrawlProgress({ current: 0, total: config?.maxPages || 20, stage: 'crawling' })
 
         try {
             const response = await fetch('/api/analyze-site', {
@@ -228,7 +222,7 @@ export default function MergedDashboard() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     url: targetUrl, 
-                    maxPages,
+                    maxPages: config?.maxPages || 20,
                     competitorUrls: config?.competitorUrls || [],
                     respectRobotsTxt: config?.respectRobotsTxt ?? true,
                     saveSnapshot: saveTestSnapshot // Pass snapshot flag
@@ -442,13 +436,10 @@ export default function MergedDashboard() {
                                 <div>
                                     <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
                                         <ShieldCheck className="h-8 w-8 text-geo" />
-                                        Merged Dashboard
-                                        <Badge variant="secondary" className="bg-geo/10 text-geo border-geo/20 px-3 py-1">
-                                            BETA
-                                        </Badge>
+                                        PRO: Deep Crawler
                                     </h1>
                                     <p className="text-muted-foreground mt-2 max-w-2xl">
-                                        Unified intelligence analysis — choose Quick Scan (1 page) or Deep Scan (10-20 pages) for comprehensive insights.
+                                        Full domain authority audit — sitewide schema coverage, content gaps, cannibalization detection, and internal link architecture.
                                     </p>
                                     {analysisData && (
                                         <div className="flex items-center gap-3 mt-4 text-sm text-muted-foreground animate-in fade-in slide-in-from-left-4">

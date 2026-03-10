@@ -1,0 +1,25 @@
+This file contains all the sections that need to be added to the merged dashboard.
+The sections are from app/site-analysis/page.tsx lines 1200-1880.
+
+Sections to add:
+1. Domain Health Breakdown (already in deep crawler, need to copy)
+2. Schema Health Audit (already in deep crawler, need to copy)
+3. Brand Consistency Audit (already in deep crawler, need to copy)
+4. Sitewide Strategic Insights
+5. Content Gap Analysis
+6. Competitor Gap Analysis
+7. Internal Link Leaders
+8. Potential Orphan Pages
+9. Semantic Map
+10. Page Speed Breakdown
+11. Page Health Matrix
+12. HTTPS Violations
+13. Navigation & Semantic Architecture
+14. Robots.txt & Sitemap Status
+15. Heading Structure Analysis
+16. Image Alt Text Coverage
+17. Duplicate Title & Meta Detection
+18. AEO Citation Readiness Score
+19. E-E-A-T Trust Signals
+
+These need to be inserted after the Keyword Cannibalization section in the merged page.
