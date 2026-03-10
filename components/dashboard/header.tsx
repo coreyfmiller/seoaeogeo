@@ -108,8 +108,7 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" 
             disabled={!url || isAnalyzing}
             className={cn(
               "absolute right-1.5 top-1/2 -translate-y-1/2 overflow-hidden",
-              "bg-seo hover:bg-seo/90 text-seo-foreground",
-              isAnalyzing && "animate-scan-glow animate-pulse"
+              "bg-seo hover:bg-seo/90 text-seo-foreground"
             )}
           >
             {isAnalyzing ? (

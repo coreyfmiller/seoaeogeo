@@ -23,6 +23,7 @@ import {
   Tooltip,
   Cell,
 } from "recharts"
+import { InfoTooltip } from "@/components/ui/info-tooltip"
 
 const aiCitations = [
   {
@@ -260,7 +261,8 @@ export function GEOTab({ data }: GEOTabProps) {
         <CardHeader className="pb-2">
           <CardTitle className="text-lg flex items-center gap-2 text-foreground">
             <ImageIcon className="h-5 w-5 text-geo" />
-            Media Context & Brand Visiblity
+            Media Context & Brand Visibility
+            <InfoTooltip content="Multi-modal AI models (ChatGPT, Claude, Gemini) use image alt text to understand visual content. Without alt text, AI cannot 'see' your images or associate them with your brand." />
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -274,15 +276,23 @@ export function GEOTab({ data }: GEOTabProps) {
               <p className="mt-1 text-3xl font-bold font-mono text-geo">{struct?.media?.imagesWithAlt || 0}</p>
             </div>
             <div className="rounded-lg border border-geo/20 bg-geo-muted/20 p-4">
-              <span className="text-sm font-medium text-muted-foreground">AI Blindspot Ratio</span>
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-medium text-muted-foreground">AI Blindspot Ratio</span>
+                <InfoTooltip content="Percentage of images without alt text. High ratio = AI cannot understand your visual content. Fix: Add descriptive alt text to all images explaining what they show and how they relate to your brand." />
+              </div>
               <p className="mt-1 text-3xl font-bold font-mono text-destructive">
                 {struct?.media?.totalImages ? Math.round(((struct.media.totalImages - struct.media.imagesWithAlt) / struct.media.totalImages) * 100) : 0}%
               </p>
             </div>
           </div>
-          <p className="mt-4 text-sm text-muted-foreground">
-            Current multi-modal LLMs (like ChatGPT and Claude) rely heavily on image alt text to establish entity relationships. A high blindspot ratio means conversational AIs cannot "see" your brand.
-          </p>
+          <div className="mt-4 p-3 rounded-lg bg-geo/10 border border-geo/20">
+            <p className="text-xs text-muted-foreground">
+              <strong>Why this matters:</strong> Current multi-modal LLMs (like ChatGPT and Claude) rely heavily on image alt text to establish entity relationships. A high blindspot ratio means conversational AIs cannot "see" your brand.
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              <strong>How to fix:</strong> Add descriptive alt text to every image. Format: "Description of image - Brand Name". Example: "Modern office workspace with collaborative team - FundyLogic"
+            </p>
+          </div>
         </CardContent>
       </Card>
 

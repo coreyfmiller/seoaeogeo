@@ -8,3 +8,6 @@ node_modules/
 .next/
 .env*.local
 .DS_Store
+
+# Test data snapshots (local testing only)
+test-data/

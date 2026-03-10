@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
+import { logUsage } from "./usage";
 
 /**
- * Prompt to analyze website data for SEO, AEO, and GEO.
+ * Prompt to analyze website data for SEO, AEO, and GEO using MODERN 2026 STANDARDS.
  * Returns a strictly typed JSON object.
  */
 export async function analyzeWithGemini(context: {
@@ -23,18 +24,26 @@ export async function analyzeWithGemini(context: {
   });
 
   const prompt = `
-    You are a ruthless, highly-critical Search Intelligence Analyst evaluating a website for SEO, AEO (Answer Engine Optimization), and GEO (Generative Engine Optimization).
+    You are a Search Intelligence Analyst evaluating a website using MODERN CRAWLER STANDARDS (Google 2026, Bing 2026).
     
-    CRITICAL EXTRACTION RULES - DO NOT IGNORE:
-    1. You are no longer responsible for scoring or generating penalties. You are purely a Semantic Data Extractor.
-    2. Answer the semantic boolean flags completely objectively (true/false) based on the content.
-    3. Generate the remaining qualitative analysis data for the dashboard UI (recommendations, gaps, opportunities).
-
+    MODERN SCHEMA EVALUATION STANDARDS:
+    - JSON-LD arrays at root level are VALID and PREFERRED
+    - @graph structures are VALID and should be parsed correctly
+    - Multiple schema blocks per page are VALID
+    - Only penalize: missing required properties, placeholder data (000-0000, example@example.com), invalid JSON
+    - DO NOT penalize: arrays, @graph, distributed schema patterns
+    
+    CRITICAL EXTRACTION RULES:
+    1. You are a Semantic Data Extractor providing objective analysis
+    2. Answer semantic boolean flags objectively (true/false) based on content
+    3. Evaluate schema quality using modern standards (not legacy parser rules)
+    4. Generate qualitative analysis for dashboard UI
+    
     Analyze the following extracted data:
     
     WEBSITE TITLE: ${context.title}
     METADATA: ${context.description}
-    LD+JSON SCHEMAS: ${JSON.stringify(context.schemas)}
+    LD+JSON SCHEMAS (Normalized): ${JSON.stringify(context.schemas, null, 2)}
     
     STRUCTURAL DATA (Extracted from DOM):
     ${context.structuralData ? JSON.stringify(context.structuralData, null, 2) : "Not available"}
@@ -60,6 +69,13 @@ export async function analyzeWithGemini(context: {
         "heavyFirstPersonUsage": boolean,
         "unsubstantiatedClaims": boolean
       },
+      "schemaQuality": {
+        "score": number (0-100, quality of schema implementation using modern standards),
+        "hasSchema": boolean,
+        "schemaTypes": string[] (types found, e.g. ["Organization", "LocalBusiness"]),
+        "issues": string[] (specific problems found, e.g. "Missing required 'address' property in LocalBusiness"),
+        "strengths": string[] (what's implemented well)
+      },
       "seoAnalysis": {
         "onPageIssues": string[],
         "keywordOpportunities": string[],
@@ -79,20 +95,37 @@ export async function analyzeWithGemini(context: {
         "llmContextClarity": number (0-100),
         "visibilityGaps": string[]
       },
-      "recommendations": Array<{
-        "title": string,
-        "description": string,
+      "recommendations": Array of exactly 6 objects: {
+        "rank": number (1-6),
+        "title": string (RUTHLESS ACTION - e.g. "Fix H1 Tag Hierarchy"),
+        "description": string (THE WHY/IMPACT REASONING),
         "priority": "high" | "medium" | "low",
-        "category": "seo" | "aeo" | "geo",
-        "impact": string
-      }>
+        "category": "Schema" | "Content" | "AEO" | "Trust",
+        "impact": "High" | "Medium"
+      }
     }
+    
+    IMPORTANT: 
+    - You MUST generate EXACTLY 6 recommendations
+    - Evaluate schema using modern 2026 standards (arrays and @graph are valid)
+    - Only flag real problems, not implementation style choices
   `;
 
 
   try {
     const result = await model.generateContent(prompt);
     const responseText = result.response.text();
+
+    // Log Usage
+    if (result.response.usageMetadata) {
+      logUsage({
+        model: "gemini-2.5-flash",
+        type: "Single Page Audit",
+        inputTokens: result.response.usageMetadata.promptTokenCount || 0,
+        outputTokens: result.response.usageMetadata.candidatesTokenCount || 0,
+        url: context.title
+      });
+    }
 
     // Extract JSON from potential markdown code blocks
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);

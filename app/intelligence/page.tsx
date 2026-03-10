@@ -89,14 +89,17 @@ export default function SiteVsSite() {
             <AppSidebar />
 
             <div className="flex-1 flex flex-col overflow-hidden">
-                <Header apiStatus={apiStatus} />
+                <Header
+                    onAnalyze={(url) => window.location.href = `/?url=${encodeURIComponent(url)}`}
+                    apiStatus={apiStatus}
+                />
 
                 <main className="flex-1 overflow-y-auto p-6">
                     <div className="max-w-6xl mx-auto">
                         <div className="mb-10 text-center sm:text-left">
                             <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-seo via-aeo to-geo flex items-center gap-4 mb-4">
                                 <Swords className="h-10 w-10 text-aeo animate-pulse" />
-                                Site Vs Site
+                                Competitor Comparison
                             </h1>
                             <p className="text-muted-foreground mt-2 max-w-2xl text-lg">
                                 Benchmark SEO, AEO, and GEO citation metrics between your brand and a competitor.
@@ -179,8 +182,8 @@ export default function SiteVsSite() {
                                             isAnalyzing && "opacity-70 pointer-events-none"
                                         )}
                                     >
-                                        Start The Clash
-                                        <Zap className="inline-block ml-3 h-6 w-6 animate-pulse" />
+                                        Compare Now
+                                        <Zap className="inline-block ml-3 h-6 w-6" />
                                     </button>
                                 </div>
 
@@ -309,39 +312,50 @@ export default function SiteVsSite() {
                                     </Card>
                                 </div>
 
-                                {/* Stolen Opportunities */}
-                                <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
+                                {/* Stolen Opportunities & Strategic Gaps */}
+                                <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 mb-8 relative z-20">
                                     <div className="space-y-6">
                                         <Card className="border-aeo/20 bg-aeo/5">
-                                            <CardHeader>
-                                                <CardTitle className="flex items-center gap-2">
-                                                    <Zap className="h-5 w-5 text-aeo" />
-                                                    Stolen Opportunities: How they are winning
-                                                </CardTitle>
-                                                <CardDescription>
-                                                    Specific insights where the AI recommends adopting competitor strategies to regain authority.
-                                                </CardDescription>
+                                            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                                <div>
+                                                    <CardTitle className="flex items-center gap-2 text-foreground">
+                                                        <Zap className="h-5 w-5 text-aeo" />
+                                                        Stolen Opportunities
+                                                    </CardTitle>
+                                                    <CardDescription>Strategies where they are winning LLM citations</CardDescription>
+                                                </div>
+                                                <button
+                                                    onClick={() => {
+                                                        const text = comparisonData.stolenOpportunities.map((o: any) => `[${o.category.toUpperCase()}] ${o.title}\n${o.description}`).join('\n\n');
+                                                        navigator.clipboard.writeText(text);
+                                                        alert("Opportunities copied!");
+                                                    }}
+                                                    className="bg-muted/50 hover:bg-muted border border-border/50 px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider transition-colors"
+                                                >
+                                                    Copy Insights
+                                                </button>
                                             </CardHeader>
                                             <CardContent>
                                                 <div className="space-y-4">
                                                     {comparisonData.stolenOpportunities.map((opp: any, i: number) => (
-                                                        <div key={i} className="bg-background/80 border border-border/50 rounded-xl p-4 flex gap-4">
+                                                        <div key={i} className="bg-background/80 border border-border/50 rounded-xl p-4 flex gap-4 hover:border-aeo/30 transition-colors min-w-0 overflow-hidden">
                                                             <div className={cn(
                                                                 "h-10 w-10 shrink-0 rounded-lg flex items-center justify-center",
                                                                 opp.category === 'seo' ? "bg-seo/10 text-seo" : opp.category === 'aeo' ? "bg-aeo/10 text-aeo" : "bg-geo/10 text-geo"
                                                             )}>
                                                                 {opp.category === 'seo' ? <Search className="h-5 w-5" /> : opp.category === 'aeo' ? <Sparkles className="h-5 w-5" /> : <Bot className="h-5 w-5" />}
                                                             </div>
-                                                            <div>
+                                                            <div className="flex-1 min-w-0">
                                                                 <div className="flex items-center gap-2 mb-1">
-                                                                    <h4 className="font-bold text-foreground">{opp.title}</h4>
+                                                                    <h4 className="font-bold text-foreground text-sm truncate">{opp.title}</h4>
                                                                     <Badge className={cn(
+                                                                        "text-[10px]",
                                                                         opp.priority === 'high' ? "bg-destructive/20 text-destructive" : "bg-muted text-muted-foreground"
                                                                     )}>
                                                                         {opp.priority}
                                                                     </Badge>
                                                                 </div>
-                                                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                                                <p className="text-xs text-muted-foreground leading-relaxed">
                                                                     {opp.description}
                                                                 </p>
                                                             </div>
@@ -352,11 +366,10 @@ export default function SiteVsSite() {
                                         </Card>
                                     </div>
 
-                                    {/* Strategic Gaps */}
                                     <div className="space-y-6">
                                         <Card className="border-geo/20 bg-geo/5 h-full">
                                             <CardHeader>
-                                                <CardTitle className="flex items-center gap-2">
+                                                <CardTitle className="flex items-center gap-2 text-foreground">
                                                     <ShieldAlert className="h-5 w-5 text-geo" />
                                                     Critical Strategic Gaps
                                                 </CardTitle>
@@ -364,7 +377,7 @@ export default function SiteVsSite() {
                                             <CardContent>
                                                 <div className="space-y-4">
                                                     {comparisonData.strategicGaps.map((gap: string, i: number) => (
-                                                        <div key={i} className="flex items-start gap-3 text-sm border-b border-border/30 pb-3 last:border-0 italic">
+                                                        <div key={i} className="flex items-start gap-3 text-xs border-b border-border/30 pb-3 last:border-0 italic">
                                                             <CheckCircle2 className="h-4 w-4 mt-0.5 text-geo" />
                                                             {gap}
                                                         </div>
@@ -389,6 +402,100 @@ export default function SiteVsSite() {
                                         </Card>
                                     </div>
                                 </div>
+
+                                {/* ── Top 6 Strategic Fixes (Battle Recommendations) ── */}
+                                {comparisonData.recommendations?.length > 0 && (
+                                    <Card className="border-geo/30 bg-gradient-to-br from-geo/5 to-aeo/5 relative z-10 mb-10">
+                                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                            <div>
+                                                <CardTitle className="flex items-center gap-2">
+                                                    <Zap className="h-5 w-5 text-geo" />
+                                                    Top 6 Counter-Strategies
+                                                </CardTitle>
+                                                <CardDescription>AI-generated plan to outmaneuver this competitor in AI search rankings</CardDescription>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <Badge variant="outline" className="border-geo/30 text-geo font-black text-[10px] tracking-widest uppercase px-3 py-1 bg-geo/5">
+                                                    Intelligence Battle Plan
+                                                </Badge>
+                                                <button
+                                                    onClick={() => {
+                                                        const text = comparisonData.recommendations.map((f: any) => `[RANK ${f.rank}] ${f.title}\nACTION: ${f.description}\nIMPACT: ${f.impact}`).join('\n\n');
+                                                        navigator.clipboard.writeText(text);
+                                                        alert("Battle Plan copied!");
+                                                    }}
+                                                    className="bg-background/50 hover:bg-background/80 border border-border/50 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+                                                >
+                                                    Copy Plan
+                                                </button>
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                {comparisonData.recommendations.map((fix: any, i: number) => (
+                                                    <div key={i} className="flex flex-col p-5 rounded-2xl border border-border/40 bg-background/70 hover:border-geo/30 transition-all relative group overflow-hidden">
+                                                        <div className="flex items-center justify-between mb-4">
+                                                            <div className="flex gap-2 flex-wrap">
+                                                                <Badge className="bg-muted text-muted-foreground text-[8px] font-black uppercase tracking-tighter px-1.5 py-0">
+                                                                    {fix.category}
+                                                                </Badge>
+                                                                <Badge 
+                                                                    className={cn(
+                                                                        "text-[8px] font-black uppercase tracking-tighter px-1.5 py-0",
+                                                                        (fix.priority || fix.roi) === 'CRITICAL' ? "bg-destructive/20 text-destructive border-destructive/20" : 
+                                                                        (fix.priority || fix.roi) === 'HIGH' ? "bg-yellow-500/20 text-yellow-600 border-yellow-500/20" :
+                                                                        "bg-geo/20 text-geo border-geo/20"
+                                                                    )}
+                                                                    title={
+                                                                        (fix.priority || fix.roi) === 'CRITICAL' ? "Urgent - Fix immediately for maximum impact" :
+                                                                        (fix.priority || fix.roi) === 'HIGH' ? "High priority - Address soon for significant gains" :
+                                                                        "Quick win - Easy implementation with steady results"
+                                                                    }
+                                                                >
+                                                                    {(fix.priority || fix.roi) === 'CRITICAL' ? '🔥 URGENT' : 
+                                                                     (fix.priority || fix.roi) === 'HIGH' ? '⚡ HIGH PRIORITY' : 
+                                                                     '✓ QUICK WIN'}
+                                                                </Badge>
+                                                            </div>
+                                                            <div className="h-6 w-6 rounded-full bg-muted/50 flex items-center justify-center text-[10px] font-black text-muted-foreground ring-1 ring-border/50">
+                                                                {fix.rank}
+                                                            </div>
+                                                        </div>
+
+                                                        <h5 className="font-bold text-sm mb-3 group-hover:text-geo transition-colors leading-tight">{fix.title}</h5>
+
+                                                        <p className="text-xs text-muted-foreground leading-relaxed italic mb-6">
+                                                            &ldquo;{fix.description}&rdquo;
+                                                        </p>
+
+                                                        <div className="mt-auto pt-4 border-t border-border/20 flex items-end justify-between">
+                                                            <div className="space-y-1">
+                                                                <p className="text-[9px] font-black uppercase tracking-tighter text-muted-foreground/50">Impacts</p>
+                                                                <p className="text-[10px] font-bold text-foreground/80">{fix.impactedScores || fix.category}</p>
+                                                            </div>
+                                                            <div className="text-right space-y-1">
+                                                                <p className="text-[9px] font-black uppercase tracking-tighter text-muted-foreground/50">Effort</p>
+                                                                <div className="flex gap-0.5">
+                                                                    {[1, 2, 3].map(level => (
+                                                                        <div key={level} className={cn(
+                                                                            "h-1 w-3 rounded-full",
+                                                                            level <= (fix.effort || 2)
+                                                                                ? (fix.effort >= 3 ? "bg-destructive" : fix.effort === 2 ? "bg-aeo" : "bg-geo")
+                                                                                : "bg-muted"
+                                                                        )} />
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Accent glow on hover */}
+                                                        <div className="absolute inset-0 bg-gradient-to-br from-geo/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                )}
                             </div>
                         )}
                     </div>

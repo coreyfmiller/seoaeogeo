@@ -29,6 +29,29 @@ export function thinHtml(html: string): string {
 }
 
 /**
+ * Normalize schema structures for easier analysis.
+ * Flattens @graph arrays and root-level arrays into a single array of schema objects.
+ */
+export function normalizeSchema(schemas: any[]): any[] {
+  const normalized: any[] = [];
+  
+  schemas.forEach(schema => {
+    if (Array.isArray(schema)) {
+      // Root-level array: flatten it
+      normalized.push(...schema);
+    } else if (schema['@graph']) {
+      // @graph structure: extract entities
+      normalized.push(...schema['@graph']);
+    } else {
+      // Single object: add as-is
+      normalized.push(schema);
+    }
+  });
+  
+  return normalized;
+}
+
+/**
  * Extract structured data (JSON-LD)
  */
 export function extractSchema(html: string): any[] {
@@ -44,5 +67,6 @@ export function extractSchema(html: string): any[] {
     }
   });
 
-  return schemas;
+  // Normalize before returning
+  return normalizeSchema(schemas);
 }

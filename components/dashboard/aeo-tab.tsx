@@ -20,6 +20,7 @@ import {
   ResponsiveContainer,
   PolarAngleAxis,
 } from "recharts"
+import { InfoTooltip } from "@/components/ui/info-tooltip"
 
 const schemaTypes = [
   { name: "FAQ Schema", status: "valid", coverage: 95 },
@@ -190,6 +191,7 @@ export function AEOTab({ data }: AEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Code2 className="h-5 w-5 text-aeo" />
               Real-time Schema Audit
+              <InfoTooltip content="Schema markup (structured data) helps search engines and AI understand your content. Different schema types enable different rich results like FAQs, products, recipes, etc." />
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -225,6 +227,12 @@ export function AEOTab({ data }: AEOTabProps) {
                           <XCircle className="h-4 w-4 text-destructive" />
                         )}
                         <span className="text-sm font-medium text-foreground">{schema.name}</span>
+                        {schema.name === "Product Schema" && schema.status === "warning" && (
+                          <InfoTooltip content="Product schema is incomplete. Ensure all required fields are present: name, image, description, offers (price, availability). This enables rich product cards in search results." />
+                        )}
+                        {schema.name === "BreadcrumbList" && schema.status === "error" && (
+                          <InfoTooltip content="BreadcrumbList schema is missing or invalid. Add breadcrumb navigation with proper schema markup to show your site hierarchy in search results. This improves navigation and SEO." />
+                        )}
                       </div>
                     </div>
                   </div>
@@ -241,6 +249,7 @@ export function AEOTab({ data }: AEOTabProps) {
           <CardTitle className="text-lg flex items-center gap-2 text-foreground">
             <HelpCircle className="h-5 w-5 text-aeo" />
             Question-Based Content Analysis
+            <InfoTooltip content="Measures how well your content answers common question types (Who, What, Where, Why, How). Answer engines like ChatGPT and Google's AI Overviews prioritize content that directly answers questions. Higher percentages = better AI visibility." />
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -281,6 +290,11 @@ export function AEOTab({ data }: AEOTabProps) {
                 </div>
               )
             })}
+          </div>
+          <div className="mt-4 p-3 rounded-lg bg-aeo/10 border border-aeo/20">
+            <p className="text-xs text-muted-foreground">
+              <strong>How to improve:</strong> Add FAQ sections, use question-format headings (H2/H3), provide direct answers in the first sentence, and structure content with clear "Who/What/Where/Why/How" sections.
+            </p>
           </div>
         </CardContent>
       </Card>

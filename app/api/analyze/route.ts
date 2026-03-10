@@ -45,7 +45,8 @@ export async function POST(req: Request) {
             scanResult.schemas,
             aiAnalysis.semanticFlags,
             scanResult.title.length,
-            scanResult.description.length
+            scanResult.description.length,
+            aiAnalysis.schemaQuality // Pass Gemini's schema quality evaluation
         );
 
         console.log(`[API] Deterministic Scoring Complete.`);

@@ -39,6 +39,15 @@ export default function Dashboard() {
       const savedData = sessionStorage.getItem("dashboard_data")
       if (savedUrl) setCurrentUrl(savedUrl)
       if (savedData) setAnalysisData(JSON.parse(savedData))
+
+      // Check for URL parameter in query string
+      const params = new URLSearchParams(window.location.search)
+      const urlParam = params.get('url')
+      if (urlParam && urlParam !== savedUrl) {
+        handleAnalyze(urlParam)
+        // Clean up the URL
+        window.history.replaceState({}, '', window.location.pathname)
+      }
     }
   }, [])
 
@@ -195,10 +204,7 @@ export default function Dashboard() {
                   <button
                     type="submit"
                     disabled={isAnalyzing}
-                    className={cn(
-                      "absolute right-2 top-1/2 -translate-y-1/2 bg-seo text-seo-foreground px-6 py-2 rounded-xl font-bold hover:bg-seo/90 transition-all",
-                      isAnalyzing && "animate-scan-glow opacity-70"
-                    )}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-seo text-seo-foreground px-6 py-2 rounded-xl font-bold hover:bg-seo/90 transition-all"
                   >
                     {isAnalyzing ? (
                       <div className="flex items-center gap-2">
@@ -251,28 +257,27 @@ export default function Dashboard() {
                 <div className={cn("flex flex-col xl:flex-row gap-6", isAnalyzing && "opacity-40 grayscale-[0.5] transition-all duration-700")}>
                   {/* Main Content Area */}
                   <div className="flex-1 min-w-0">
-                    {/* Score Cards */}
                     <div className="grid gap-4 sm:grid-cols-3 mb-6">
                       <ScoreCard
-                        title="SEO Visibility"
+                        title="SEO Score"
                         score={scores.seo}
                         change={analysisData ? 0 : 0}
                         variant="seo"
-                        description="Crawlability & Authority"
+                        description="Global Connectivity"
                       />
                       <ScoreCard
-                        title="AEO Readiness"
+                        title="AEO Score"
                         score={scores.aeo}
                         change={analysisData ? 0 : 0}
                         variant="aeo"
-                        description="Snippets & Knowledge Graph"
+                        description="Snippet Coverage"
                       />
                       <ScoreCard
-                        title="GEO Presence"
+                        title="GEO Score"
                         score={scores.geo}
                         change={analysisData ? 0 : 0}
                         variant="geo"
-                        description="Citations & LLM Context"
+                        description="Citation Visibility"
                       />
                     </div>
 

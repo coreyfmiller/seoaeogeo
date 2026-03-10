@@ -1,0 +1,389 @@
+[
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 3985,
+    "outputTokens": 1281,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-09T13:17:51.280Z",
+    "cost": 0.0006831750000000001
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 2946,
+    "outputTokens": 1977,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T13:23:17.040Z",
+    "cost": 0.00081405
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 730,
+    "outputTokens": 490,
+    "url": "https://fundylogic.com ",
+    "timestamp": "2026-03-09T14:05:58.819Z",
+    "cost": 0.00020175
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 3986,
+    "outputTokens": 1302,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-09T14:06:08.180Z",
+    "cost": 0.0006895499999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Competitive Battle",
+    "inputTokens": 4448,
+    "outputTokens": 1469,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB vs Valley Marketing - Branding And Marketing | Video | Photo",
+    "timestamp": "2026-03-09T14:10:17.286Z",
+    "cost": 0.0007742999999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 2956,
+    "outputTokens": 2183,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T14:16:55.223Z",
+    "cost": 0.0008766
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 2956,
+    "outputTokens": 2229,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T14:23:52.810Z",
+    "cost": 0.0008904
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 3317,
+    "outputTokens": 2306,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T14:45:55.035Z",
+    "cost": 0.0009405749999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 3375,
+    "outputTokens": 2664,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T14:48:07.242Z",
+    "cost": 0.001052325
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 3374,
+    "outputTokens": 2330,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T14:51:51.334Z",
+    "cost": 0.00095205
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 8076,
+    "outputTokens": 2140,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T15:39:05.257Z",
+    "cost": 0.0012477
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 8075,
+    "outputTokens": 2675,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T15:40:13.685Z",
+    "cost": 0.001408125
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 732,
+    "outputTokens": 480,
+    "url": "https://www.fundylogic.com ",
+    "timestamp": "2026-03-09T16:13:24.508Z",
+    "cost": 0.0001989
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 3986,
+    "outputTokens": 1393,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-09T16:13:38.851Z",
+    "cost": 0.00071685
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 732,
+    "outputTokens": 471,
+    "url": "https://www.fundylogic.com ",
+    "timestamp": "2026-03-09T16:17:19.410Z",
+    "cost": 0.0001962
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 3986,
+    "outputTokens": 1526,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-09T16:17:34.671Z",
+    "cost": 0.0007567499999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 8420,
+    "outputTokens": 2940,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T16:18:53.158Z",
+    "cost": 0.0015135
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 8420,
+    "outputTokens": 3148,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T16:43:49.456Z",
+    "cost": 0.0015758999999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 732,
+    "outputTokens": 471,
+    "url": "https://www.fundylogic.com ",
+    "timestamp": "2026-03-09T16:56:25.244Z",
+    "cost": 0.0001962
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 3986,
+    "outputTokens": 1394,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-09T16:56:34.103Z",
+    "cost": 0.00071715
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 8420,
+    "outputTokens": 3824,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T16:57:43.020Z",
+    "cost": 0.0017786999999999998
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 8434,
+    "outputTokens": 3537,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T17:08:24.427Z",
+    "cost": 0.00169365
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 9471,
+    "outputTokens": 3386,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T17:18:21.713Z",
+    "cost": 0.0017261250000000002
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 28701,
+    "outputTokens": 3469,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T17:22:17.094Z",
+    "cost": 0.0031932749999999998
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 28343,
+    "outputTokens": 3177,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T17:39:19.670Z",
+    "cost": 0.003078825
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 28345,
+    "outputTokens": 8509,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T17:39:26.281Z",
+    "cost": 0.004678574999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 28358,
+    "outputTokens": 4489,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T17:43:01.632Z",
+    "cost": 0.0034735499999999997
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 28343,
+    "outputTokens": 3508,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T17:45:29.810Z",
+    "cost": 0.0031781249999999995
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 28075,
+    "outputTokens": 2696,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T17:48:52.606Z",
+    "cost": 0.002914425
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 28074,
+    "outputTokens": 2754,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T17:53:49.170Z",
+    "cost": 0.00293175
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 28089,
+    "outputTokens": 2336,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T17:58:51.024Z",
+    "cost": 0.002807475
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 28074,
+    "outputTokens": 2633,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T18:02:45.455Z",
+    "cost": 0.00289545
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 28074,
+    "outputTokens": 2572,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T18:47:35.561Z",
+    "cost": 0.0028771499999999998
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 28074,
+    "outputTokens": 2910,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T19:50:52.948Z",
+    "cost": 0.00297855
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 26893,
+    "outputTokens": 2653,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T20:03:48.594Z",
+    "cost": 0.002812875
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 27151,
+    "outputTokens": 2959,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T22:36:55.550Z",
+    "cost": 0.002924025
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 27176,
+    "outputTokens": 2862,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T22:40:31.597Z",
+    "cost": 0.0028967999999999997
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 37975,
+    "outputTokens": 3393,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T22:51:57.037Z",
+    "cost": 0.003866025
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 37960,
+    "outputTokens": 2722,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T22:52:11.595Z",
+    "cost": 0.0036636000000000004
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 464,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-09T22:52:52.376Z",
+    "cost": 0.00019387499999999998
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 5016,
+    "outputTokens": 1494,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-09T22:53:03.189Z",
+    "cost": 0.0008244
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 5699,
+    "outputTokens": 3152,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-09T23:26:00.477Z",
+    "cost": 0.001373025
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 37960,
+    "outputTokens": 3351,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-09T23:29:54.741Z",
+    "cost": 0.0038523000000000003
+  }
+]

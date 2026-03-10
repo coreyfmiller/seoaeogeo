@@ -30,17 +30,126 @@ import {
     Info,
     Code2,
 } from "lucide-react"
+import { SemanticMap } from "@/components/dashboard/semantic-map"
+import { CrawlConfig } from "@/components/dashboard/crawl-config"
+import { SiteTypeBadge } from "@/components/dashboard/site-type-badge"
+import { MultiPageDashboard } from "@/components/dashboard/multi-page-dashboard"
+import { PageComparisonTable } from "@/components/dashboard/page-comparison-table"
+import { PriorityMatrix } from "@/components/dashboard/priority-matrix"
+import { FixInstructionCard } from "@/components/dashboard/fix-instruction-card"
+import { CompetitorGapView } from "@/components/dashboard/competitor-gap-view"
+import { CrawlProgress } from "@/components/dashboard/crawl-progress"
 
-// Simple tooltip component
+// Enhanced tooltip component with better visibility
+function InfoTooltip({ text, title }: { text: string; title?: string }) {
+    return (
+        <div className="group relative inline-flex">
+            <Info className="h-3.5 w-3.5 text-muted-foreground/60 hover:text-aeo cursor-help transition-colors" />
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 px-3 py-2 bg-popover border border-border rounded-lg text-xs shadow-2xl z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150 ring-1 ring-border/50">
+                {title && <p className="font-bold text-foreground mb-1">{title}</p>}
+                <p className="text-muted-foreground leading-relaxed">{text}</p>
+            </div>
+        </div>
+    )
+}
+
+// Simple tooltip component (kept for backward compatibility)
 function StatTooltip({ text }: { text: string }) {
     return (
         <div className="group relative inline-flex">
             <Info className="h-3 w-3 text-muted-foreground/50 hover:text-muted-foreground cursor-help transition-colors" />
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 px-3 py-2 bg-popover border border-border rounded-lg text-xs text-muted-foreground shadow-xl z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150 leading-relaxed">
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 px-3 py-2 bg-popover border border-border rounded-lg text-xs text-muted-foreground shadow-2xl z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150 leading-relaxed ring-1 ring-border/50">
                 {text}
             </div>
         </div>
     )
+}
+
+// Schema Issue Component
+function SchemaIssueCard({ issue, index }: { issue: any; index: number }) {
+    const [isExpanded, setIsExpanded] = useState(false);
+    
+    const severityConfig = {
+        critical: { bg: "bg-destructive/10", text: "text-destructive", border: "border-destructive/30", label: "CRITICAL" },
+        high: { bg: "bg-yellow-500/10", text: "text-yellow-600", border: "border-yellow-500/30", label: "HIGH" },
+        medium: { bg: "bg-blue-500/10", text: "text-blue-600", border: "border-blue-500/30", label: "MEDIUM" }
+    };
+    const config = severityConfig[issue.severity as keyof typeof severityConfig] || severityConfig.medium;
+
+    const impactConfig = {
+        high: { bg: "bg-destructive/10", text: "text-destructive", label: "High Impact" },
+        medium: { bg: "bg-yellow-500/10", text: "text-yellow-600", label: "Medium Impact" },
+        low: { bg: "bg-blue-500/10", text: "text-blue-600", label: "Low Impact" }
+    };
+    const impact = impactConfig[issue.modernCrawlerImpact as keyof typeof impactConfig] || impactConfig.medium;
+
+    return (
+        <div className={cn("p-4 rounded-xl border bg-background/60 transition-all", config.border)}>
+            <div className="flex items-start gap-3">
+                <div className={cn("px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider shrink-0", config.bg, config.text)}>
+                    {config.label}
+                </div>
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex-1">
+                            <h5 className="font-bold text-sm mb-1">{issue.issue}</h5>
+                            {issue.modernCrawlerImpact && (
+                                <div className="flex items-center gap-2">
+                                    <Badge variant="outline" className={cn("text-[9px] font-bold", impact.bg, impact.text)}>
+                                        {impact.label}
+                                    </Badge>
+                                </div>
+                            )}
+                        </div>
+                        <Badge variant="outline" className="shrink-0 text-[10px] font-mono">
+                            -{issue.pointsDeducted ?? 0} pts
+                        </Badge>
+                    </div>
+                    
+                    <p className="text-xs text-muted-foreground mb-3 leading-relaxed">{issue.explanation}</p>
+                    
+                    {/* Affected Pages */}
+                    <div className="mb-3">
+                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1.5">
+                            Affected Pages ({issue.affectedCount ?? issue.affectedPages?.length ?? 0})
+                        </p>
+                        <div className="space-y-1">
+                            {issue.affectedPages?.slice(0, isExpanded ? undefined : 3).map((url: string, idx: number) => (
+                                <div key={idx} className="text-xs font-mono text-muted-foreground/80 truncate bg-muted/30 px-2 py-1 rounded">
+                                    {url}
+                                </div>
+                            ))}
+                            {issue.affectedPages?.length > 3 && (
+                                <button
+                                    onClick={() => setIsExpanded(!isExpanded)}
+                                    className="text-[10px] font-bold text-seo hover:underline uppercase tracking-wider"
+                                >
+                                    {isExpanded ? "Show Less" : `Show ${issue.affectedPages.length - 3} More`}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* How to Fix */}
+                    <div className="p-3 rounded-lg bg-muted/30 border border-border/40">
+                        <div className="flex items-center justify-between mb-2">
+                            <p className="text-[10px] font-bold uppercase text-muted-foreground">How to Fix</p>
+                            <button
+                                onClick={() => {
+                                    navigator.clipboard.writeText(issue.howToFix);
+                                    alert("Fix instructions copied!");
+                                }}
+                                className="text-[9px] font-bold text-seo hover:underline uppercase tracking-wider"
+                            >
+                                Copy
+                            </button>
+                        </div>
+                        <p className="text-xs text-foreground/90 leading-relaxed">{issue.howToFix}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default function SiteAnalysis() {
@@ -51,6 +160,17 @@ export default function SiteAnalysis() {
     const [apiStatus, setApiStatus] = useState<"healthy" | "error" | "idle">("idle")
     const [isAuthorized, setIsAuthorized] = useState(false)
     const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+    const [saveTestSnapshot, setSaveTestSnapshot] = useState(false) // For testing variance
+    const [crawlConfig, setCrawlConfig] = useState({
+        maxPages: 20,
+        competitorUrls: [] as string[],
+        respectRobotsTxt: true
+    })
+    const [crawlProgress, setCrawlProgress] = useState({
+        current: 0,
+        total: 0,
+        stage: 'idle' as 'idle' | 'crawling' | 'analyzing' | 'complete'
+    })
     const router = useRouter()
     const reportRef = useRef<HTMLDivElement>(null)
 
@@ -66,7 +186,14 @@ export default function SiteAnalysis() {
             const savedUrl = sessionStorage.getItem("pro_url")
             const savedData = sessionStorage.getItem("pro_data")
             if (savedUrl) setUrl(savedUrl)
-            if (savedData) setAnalysisData(JSON.parse(savedData))
+            if (savedData) {
+                const parsed = JSON.parse(savedData)
+                // Backwards compatibility: map prioritizedFixes to recommendations
+                if (parsed.ai && parsed.ai.prioritizedFixes && !parsed.ai.recommendations) {
+                    parsed.ai.recommendations = parsed.ai.prioritizedFixes
+                }
+                setAnalysisData(parsed)
+            }
         }
     }, [])
 
@@ -77,31 +204,49 @@ export default function SiteAnalysis() {
         }
     }, [url, analysisData])
 
-    const handleDeepAudit = async (targetUrl: string) => {
+    const handleDeepAudit = async (targetUrl: string, config?: typeof crawlConfig) => {
         setIsAnalyzing(true)
         setError(null)
         setApiStatus("idle")
+        setCrawlProgress({ current: 0, total: config?.maxPages || 20, stage: 'crawling' })
 
         try {
             const response = await fetch('/api/analyze-site', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: targetUrl, maxPages: 20 })
+                body: JSON.stringify({ 
+                    url: targetUrl, 
+                    maxPages: config?.maxPages || 20,
+                    competitorUrls: config?.competitorUrls || [],
+                    respectRobotsTxt: config?.respectRobotsTxt ?? true,
+                    saveSnapshot: saveTestSnapshot // Pass snapshot flag
+                })
             })
+
+            setCrawlProgress(prev => ({ ...prev, stage: 'analyzing' }))
 
             const result = await response.json()
 
             if (result.success) {
-                setAnalysisData(result.data)
+                const data = result.data
+                // Backwards compatibility for data returned from API
+                if (data.ai && data.ai.prioritizedFixes && !data.ai.recommendations) {
+                    data.ai.recommendations = data.ai.prioritizedFixes
+                }
+                setAnalysisData(data)
                 setApiStatus("healthy")
+                setCrawlProgress(prev => ({ ...prev, stage: 'complete' }))
             } else {
                 setError(result.error || 'Deep audit failed. Site might be blocking crawlers.')
                 setApiStatus("error")
+                setCrawlProgress({ current: 0, total: 0, stage: 'idle' })
             }
         } catch (err: any) {
             setError('Connection failed. Server timeout or offline.')
             setApiStatus("error")
+            setCrawlProgress({ current: 0, total: 0, stage: 'idle' })
         } finally {
+            console.log(`[DeepAudit] Finished for ${targetUrl}`);
             setIsAnalyzing(false)
         }
     }
@@ -242,7 +387,12 @@ export default function SiteAnalysis() {
             <AppSidebar />
 
             <div className="flex-1 flex flex-col overflow-hidden">
-                <Header apiStatus={apiStatus} />
+                <Header
+                    onAnalyze={handleDeepAudit}
+                    isAnalyzing={isAnalyzing}
+                    currentUrl={url}
+                    apiStatus={apiStatus}
+                />
 
                 <main className="flex-1 overflow-y-auto p-6">
                     {!isAuthorized ? (
@@ -280,6 +430,21 @@ export default function SiteAnalysis() {
                                                 <Activity className="h-3 w-3 mr-1.5" />
                                                 {analysisData.pagesCrawled} Pages Scanned
                                             </Badge>
+                                            {analysisData.siteType && (
+                                                <SiteTypeBadge
+                                                    siteType={{
+                                                        primaryType: analysisData.siteType.type,
+                                                        confidence: analysisData.siteType.confidence * 100
+                                                    }}
+                                                    onConfirm={() => {}}
+                                                    onManualSelect={(type) => {
+                                                        setAnalysisData({
+                                                            ...analysisData,
+                                                            siteType: { ...analysisData.siteType, type, confidence: 1.0 }
+                                                        })
+                                                    }}
+                                                />
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -301,30 +466,46 @@ export default function SiteAnalysis() {
                             {/* Input State */}
                             {!analysisData && !isAnalyzing ? (
                                 <div className="bg-card/50 border border-border/50 rounded-3xl p-12 flex flex-col items-center animate-in fade-in zoom-in-95">
-                                    <div className="max-w-xl w-full text-center space-y-6">
-                                        <div className="mx-auto h-16 w-16 bg-geo/10 rounded-2xl flex items-center justify-center mb-4">
-                                            <Search className="h-8 w-8 text-geo" />
+                                    <div className="max-w-2xl w-full space-y-6">
+                                        <div className="text-center space-y-4">
+                                            <div className="mx-auto h-16 w-16 bg-geo/10 rounded-2xl flex items-center justify-center mb-4">
+                                                <Search className="h-8 w-8 text-geo" />
+                                            </div>
+                                            <h2 className="text-2xl font-bold">Launch Full Domain Scan</h2>
+                                            <p className="text-muted-foreground">
+                                                Configure your crawl settings and analyze up to 50 pages with competitor comparison.
+                                            </p>
                                         </div>
-                                        <h2 className="text-2xl font-bold">Launch Full Domain Scan</h2>
-                                        <p className="text-muted-foreground">
-                                            Enter a domain to crawl 20+ pages and generate a full Pro authority report.
-                                        </p>
-                                        <div className="flex gap-2 p-2 bg-background border border-border/50 rounded-2xl focus-within:ring-2 focus-within:ring-geo/20 transition-all shadow-lg">
+
+                                        <CrawlConfig
+                                            onStartCrawl={(config) => {
+                                                setUrl(config.url)
+                                                setCrawlConfig({
+                                                    maxPages: config.pageCount,
+                                                    competitorUrls: config.competitorUrls,
+                                                    respectRobotsTxt: config.respectRobotsTxt
+                                                })
+                                                handleDeepAudit(config.url, {
+                                                    maxPages: config.pageCount,
+                                                    competitorUrls: config.competitorUrls,
+                                                    respectRobotsTxt: config.respectRobotsTxt
+                                                })
+                                            }}
+                                            isAnalyzing={isAnalyzing}
+                                        />
+                                        
+                                        {/* Test Mode Toggle */}
+                                        <div className="flex items-center gap-2 px-2">
                                             <input
-                                                type="text"
-                                                placeholder="e.g. fundylogic.com"
-                                                className="flex-1 bg-transparent border-none focus:outline-none px-4 py-3"
-                                                value={url}
-                                                onChange={(e) => setUrl(e.target.value)}
-                                                onKeyDown={(e) => e.key === 'Enter' && url && handleDeepAudit(url)}
+                                                type="checkbox"
+                                                id="saveSnapshot"
+                                                checked={saveTestSnapshot}
+                                                onChange={(e) => setSaveTestSnapshot(e.target.checked)}
+                                                className="h-4 w-4 rounded border-border/50 text-geo focus:ring-geo/20"
                                             />
-                                            <button
-                                                onClick={() => url && handleDeepAudit(url)}
-                                                className="bg-geo text-geo-foreground px-6 py-3 rounded-xl font-bold hover:bg-geo/90 transition-all flex items-center gap-2"
-                                            >
-                                                Analyze Site
-                                                <Zap className="h-4 w-4" />
-                                            </button>
+                                            <label htmlFor="saveSnapshot" className="text-xs text-muted-foreground cursor-pointer">
+                                                Save test snapshot (for variance testing)
+                                            </label>
                                         </div>
                                     </div>
 
@@ -345,10 +526,28 @@ export default function SiteAnalysis() {
                                 </div>
 
                             ) : isAnalyzing ? (
-                                <div className="flex flex-col items-center justify-center py-20 animate-in fade-in zoom-in-95">
-                                    <div className="h-20 w-20 rounded-full border-4 border-t-geo border-r-aeo border-b-seo border-l-transparent animate-spin mb-6"></div>
-                                    <h2 className="text-2xl font-bold">Deep Domain Scan in Progress...</h2>
-                                    <p className="text-muted-foreground mt-2 italic animate-pulse">Crawling 20 pages — this usually takes 45-90 seconds.</p>
+                                <div className="relative">
+                                    <div className="absolute inset-0 z-50 bg-background/20 backdrop-blur-[1px] flex items-center justify-center">
+                                        <CrawlProgress
+                                            currentPage={crawlProgress.current}
+                                            totalPages={crawlProgress.total}
+                                            currentStage={crawlProgress.stage === 'crawling' ? 'crawling' : crawlProgress.stage === 'analyzing' ? 'analyzing' : 'discovering'}
+                                        />
+                                    </div>
+                                    <div className="opacity-40 grayscale-[0.5] transition-all duration-700 min-h-[400px]">
+                                        {/* Placeholder content */}
+                                        <div className="bg-card/50 border border-border/50 rounded-3xl p-12 flex flex-col items-center">
+                                            <div className="max-w-xl w-full text-center space-y-6">
+                                                <div className="mx-auto h-16 w-16 bg-geo/10 rounded-2xl flex items-center justify-center mb-4">
+                                                    <Search className="h-8 w-8 text-geo" />
+                                                </div>
+                                                <h2 className="text-2xl font-bold">Launch Full Domain Scan</h2>
+                                                <p className="text-muted-foreground">
+                                                    Enter a domain to crawl 20+ pages and generate a full Pro authority report.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                             ) : (
@@ -366,32 +565,161 @@ export default function SiteAnalysis() {
                                         {(() => {
                                             const h1Pct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.hasH1).length / pages.length) * 100) : 0
                                             const httpsPct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.isHttps).length / pages.length) * 100) : 0
-                                            const stats = [
-                                                { label: "Pages Scanned", value: analysisData.pagesCrawled, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", tip: "Total number of unique internal pages the crawler successfully visited on this domain." },
-                                                { label: "Domain Health", value: `${ai?.domainHealthScore ?? "–"}%`, color: "text-geo", border: "border-geo/20", bg: "bg-geo/5", tip: "AI-generated composite score (0-100) measuring the overall structural and content health of the domain." },
-                                                { label: "Brand Consistency", value: `${ai?.consistencyScore ?? "–"}%`, color: "text-aeo", border: "border-aeo/20", bg: "bg-aeo/5", tip: "How consistently the brand message, tone, and topic focus is maintained across all crawled pages." },
-                                                { label: "Schema Coverage", value: `${ai?.authorityMetrics?.schemaCoverage ?? "–"}%`, color: "text-seo", border: "border-seo/20", bg: "bg-seo/5", tip: "Percentage of pages that include at least one valid JSON-LD structured data block. Critical for AI citation visibility." },
-                                                { label: "Metadata Opt.", value: `${ai?.authorityMetrics?.metadataOptimization ?? "–"}%`, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", tip: "Percentage of pages that have both a title tag and a meta description present and non-empty." },
-                                                { label: "H1 Coverage", value: `${h1Pct}%`, color: h1Pct >= 90 ? "text-geo" : "text-destructive", border: h1Pct >= 90 ? "border-geo/20" : "border-destructive/20", bg: h1Pct >= 90 ? "bg-geo/5" : "bg-destructive/5", tip: "Percentage of pages with a valid H1 heading tag. Missing H1s are a direct SEO penalty signal." },
-                                                { label: "HTTPS", value: `${httpsPct}%`, color: httpsPct === 100 ? "text-geo" : "text-destructive", border: httpsPct === 100 ? "border-geo/20" : "border-destructive/20", bg: httpsPct === 100 ? "bg-geo/5" : "bg-destructive/5", tip: "Percentage of crawled pages served over a secure HTTPS connection. Any HTTP pages are a trust and ranking risk." },
-                                                { label: "Avg Response", value: `${avgResponseTime}ms`, color: avgResponseTime < 1500 ? "text-geo" : "text-destructive", border: "border-border/50", bg: "bg-muted/30", tip: "Average server response time across all crawled pages. Under 1500ms is healthy. Over 2000ms risks ranking demotion." },
+                                            const statCards = [
+                                                { label: "Pages Scanned", value: analysisData.pagesCrawled, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", tip: "Unique pages crawled during session." },
+                                                { label: "Domain Health", value: `${ai?.domainHealthScore ?? 0}%`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", tip: "Aggregate domain authority score." },
+                                                { label: "Brand Consistency", value: `${ai?.consistencyScore ?? 0}%`, color: "text-aeo", border: "border-aeo/30", bg: "bg-aeo/5", tip: "Brand cohesion across all crawled pages." },
+                                                { label: "Schema Coverage", value: `${ai?.authorityMetrics?.schemaCoverage ?? 0}%`, color: "text-seo", border: "border-seo/30", bg: "bg-seo/5", tip: "Percentage of pages with structured data present." },
+                                                { label: "Schema Quality", value: `${ai?.schemaHealthAudit?.overallScore ?? 0}%`, color: ai?.schemaHealthAudit?.overallScore >= 70 ? "text-geo" : ai?.schemaHealthAudit?.overallScore >= 40 ? "text-yellow-600" : "text-destructive", border: ai?.schemaHealthAudit?.overallScore >= 70 ? "border-geo/30" : ai?.schemaHealthAudit?.overallScore >= 40 ? "border-yellow-500/30" : "border-destructive/30", bg: ai?.schemaHealthAudit?.overallScore >= 70 ? "bg-geo/5" : ai?.schemaHealthAudit?.overallScore >= 40 ? "bg-yellow-500/5" : "bg-destructive/5", tip: "Quality and completeness of structured data implementation." },
+                                                { label: "Metadata Health", value: `${ai?.authorityMetrics?.metadataOptimization ?? 0}%`, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", tip: "Description and Title tag completeness." },
+                                                { label: "H1 Coverage", value: `${h1Pct}%`, color: h1Pct >= 90 ? "text-geo" : "text-destructive", border: h1Pct >= 90 ? "border-geo/20" : "border-destructive/20", bg: h1Pct >= 90 ? "bg-geo/5" : "bg-destructive/5", tip: "Percentage of pages with a valid H1 tag." },
+                                                { label: "HTTPS", value: `${httpsPct}%`, color: httpsPct === 100 ? "text-geo" : "text-destructive", border: httpsPct === 100 ? "border-geo/20" : "border-destructive/20", bg: httpsPct === 100 ? "bg-geo/5" : "bg-destructive/5", tip: "Security coverage across domain." },
+                                                { label: "Avg Response", value: `${Math.round(analysisData.avgResponseTime)}ms`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", tip: "Avg response time across all pages." },
                                             ]
                                             return (
-                                                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
-                                                    {stats.map(stat => (
-                                                        <Card key={stat.label} className={cn("col-span-1", stat.border, stat.bg)}>
-                                                            <CardHeader className="pb-1 pt-4 px-4">
-                                                                <CardDescription className="text-[10px] font-bold uppercase tracking-tighter leading-tight flex items-center gap-1">
-                                                                    {stat.label}
-                                                                    <StatTooltip text={stat.tip} />
-                                                                </CardDescription>
-                                                                <CardTitle className={cn("text-2xl font-black", stat.color)}>{stat.value}</CardTitle>
-                                                            </CardHeader>
-                                                        </Card>
-                                                    ))}
+                                                <div className="space-y-6">
+                                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-9 gap-3 relative z-50">
+                                                        {statCards.map(stat => (
+                                                            <Card key={stat.label} className={cn("col-span-1", stat.border, stat.bg)}>
+                                                                <CardHeader className="pb-1 pt-4 px-4">
+                                                                    <CardDescription className="text-[10px] font-bold uppercase tracking-tighter leading-tight flex items-center gap-1">
+                                                                        {stat.label}
+                                                                        <StatTooltip text={stat.tip} />
+                                                                    </CardDescription>
+                                                                    <CardTitle className={cn("text-2xl font-black", stat.color)}>{stat.value}</CardTitle>
+                                                                    {/* Hidden in screenshot but kept for data integrity as smaller label if nested, or just removed if strict to screenshot */}
+                                                                </CardHeader>
+                                                            </Card>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* ── New: Domain Forensic Inventory (Evidence Row) ── */}
+                                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-muted/20 p-4 rounded-2xl border border-border/50">
+                                                        <div className="flex flex-col">
+                                                            <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">Total Word Count</p>
+                                                            <p className="text-sm font-bold font-mono">{analysisData.totalWords?.toLocaleString() || "0"} Content Signals</p>
+                                                        </div>
+                                                        <div className="flex flex-col border-l border-border/50 pl-4">
+                                                            <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">Sitewide Schemas</p>
+                                                            <p className="text-sm font-bold font-mono">{analysisData.schemaCount || 0} JSON-LD Blocks</p>
+                                                        </div>
+                                                        <div className="flex flex-col border-l border-border/50 pl-4">
+                                                            <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">Internal Link Leaders</p>
+                                                            <p className="text-sm font-bold font-mono">{ai?.topicalClusters?.length || 0} Core Clusters</p>
+                                                        </div>
+                                                        <div className="flex flex-col border-l border-border/50 pl-4">
+                                                            <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">Global Images</p>
+                                                            <p className="text-sm font-bold font-mono">{totalImgs} Visual Assets</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             )
                                         })()}
+
+                                        {/* ── Multi-Page Dashboard (when crawl depth > 1) ── */}
+                                        {analysisData.pagesCrawled > 1 && analysisData.siteWideIssues && (
+                                            <MultiPageDashboard
+                                                pagesCrawled={analysisData.pagesCrawled}
+                                                aggregateScores={{
+                                                    seo: Math.round(pages.reduce((sum: number, p: any) => sum + (p.seoScore || 0), 0) / pages.length),
+                                                    aeo: Math.round(pages.reduce((sum: number, p: any) => sum + (p.aeoScore || 0), 0) / pages.length),
+                                                    geo: Math.round(pages.reduce((sum: number, p: any) => sum + (p.geoScore || 0), 0) / pages.length)
+                                                }}
+                                                siteWideIssues={analysisData.siteWideIssues}
+                                                totalWords={analysisData.totalWords || 0}
+                                                schemaCount={analysisData.schemaCount || 0}
+                                                orphanCount={ai?.orphanPageRisks?.length || 0}
+                                                duplicateCount={0}
+                                            />
+                                        )}
+
+                                        {/* ── Page Comparison Table (when crawl depth > 1) ── */}
+                                        {analysisData.pagesCrawled > 1 && pages.length > 0 && (
+                                            <PageComparisonTable
+                                                pages={pages.map((p: any) => ({
+                                                    url: p.url,
+                                                    seoScore: p.seoScore || 0,
+                                                    aeoScore: p.aeoScore || 0,
+                                                    geoScore: p.geoScore || 0,
+                                                    wordCount: p.wordCount || 0,
+                                                    issueCount: (p.issues || []).length,
+                                                    hasH1: p.hasH1 || false,
+                                                    hasSchema: (p.schemas || []).length > 0,
+                                                    responseTime: p.responseTimeMs || 0
+                                                }))}
+                                            />
+                                        )}
+
+                                        {/* ── Top 6 Strategic Fixes (Deep Recommendations) ── */}
+                                        {ai?.recommendations?.length > 0 && (
+                                            <>
+                                                {/* Priority Matrix Visualization */}
+                                                <PriorityMatrix
+                                                    recommendations={ai.recommendations.map((rec: any) => ({
+                                                        id: rec.rank?.toString() || Math.random().toString(),
+                                                        title: rec.title,
+                                                        effort: rec.effort || 2,
+                                                        impact: rec.impact === 'high' ? 3 : rec.impact === 'medium' ? 2 : 1,
+                                                        category: rec.category || 'improvement',
+                                                        roi: rec.roi || rec.priority || 'MEDIUM'
+                                                    }))}
+                                                />
+
+                                                <Card className="border-geo/30 bg-gradient-to-br from-geo/5 to-aeo/5 relative z-10">
+                                                    <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                                        <div>
+                                                            <CardTitle className="flex items-center gap-2">
+                                                                <Zap className="h-5 w-5 text-geo" />
+                                                                Prioritized Site Improvements
+                                                            </CardTitle>
+                                                            <CardDescription>Sitewide actions to unify authority, prune crawl issues, and expand semantic reach</CardDescription>
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            <Badge variant="outline" className="border-geo/30 text-geo font-black text-[10px] tracking-widest uppercase px-3 py-1 bg-geo/5">
+                                                                Strategic Roadmap
+                                                            </Badge>
+                                                            <button
+                                                                onClick={() => {
+                                                                    const text = ai.recommendations.map((f: any) => `[RANK ${f.rank}] ${f.title}\nACTION: ${f.description}\nIMPACT: ${f.impact}`).join('\n\n');
+                                                                    navigator.clipboard.writeText(text);
+                                                                    alert("Roadmap copied to clipboard!");
+                                                                }}
+                                                                className="bg-background/50 hover:bg-background/80 border border-border/50 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+                                                            >
+                                                                Copy Plan
+                                                            </button>
+                                                        </div>
+                                                    </CardHeader>
+                                                    <CardContent>
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                            {ai.recommendations.map((fix: any, i: number) => (
+                                                                <FixInstructionCard
+                                                                    key={i}
+                                                                    title={fix.title}
+                                                                    category={fix.category || 'Medium Priority'}
+                                                                    priority={fix.priority || fix.roi || 'MEDIUM'}
+                                                                    steps={fix.steps || [{ step: 1, title: fix.title, description: fix.description }]}
+                                                                    code={fix.code}
+                                                                    platform={fix.platform || 'general'}
+                                                                    estimatedTime={fix.estimatedTime || '30 minutes'}
+                                                                    difficulty={fix.effort === 1 ? 'easy' : fix.effort === 3 ? 'difficult' : 'moderate'}
+                                                                    impact={fix.impact || 'medium'}
+                                                                    affectedPages={fix.affectedPages || 1}
+                                                                    validationLinks={fix.validationLinks || []}
+                                                                    onMarkComplete={() => {
+                                                                        // Mark as complete
+                                                                        const updated = { ...analysisData }
+                                                                        updated.ai.recommendations[i].completed = true
+                                                                        setAnalysisData(updated)
+                                                                    }}
+                                                                    isCompleted={fix.completed || false}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+                                            </>
+                                        )}
 
                                         {/* ── Domain Health Breakdown ── */}
                                         <Card className="border-geo/20 bg-geo/5">
@@ -399,90 +727,481 @@ export default function SiteAnalysis() {
                                                 <CardTitle className="flex items-center gap-2 text-geo">
                                                     <ShieldCheck className="h-5 w-5" />
                                                     Domain Health Breakdown
+                                                    <InfoTooltip 
+                                                        title="What is Domain Health?"
+                                                        text="Aggregate score measuring overall site quality across 5 key areas: content depth, schema implementation, metadata optimization, technical performance, and site architecture. This is the foundation of your SEO authority."
+                                                    />
                                                     <Badge className="ml-auto bg-geo/10 text-geo border-geo/30 text-xs font-black">{ai?.domainHealthScore ?? "–"} / 100</Badge>
                                                 </CardTitle>
-                                                <CardDescription>How the composite Domain Health score was calculated across crawled pages</CardDescription>
+                                                <CardDescription>Detailed breakdown of what's affecting your domain authority score</CardDescription>
                                             </CardHeader>
-                                            <CardContent>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                                                    {[
-                                                        {
-                                                            label: "Content Quality",
-                                                            desc: "Pages with 300+ words of substantive body text",
-                                                            pct: pages.length > 0 ? Math.round((pages.filter((p: any) => p.wordCount >= 300).length / pages.length) * 100) : 0,
-                                                            color: "text-geo",
-                                                            bar: "bg-geo"
-                                                        },
-                                                        {
-                                                            label: "Schema Deployment",
-                                                            desc: "Pages with valid JSON-LD structured data",
-                                                            pct: pages.length > 0 ? Math.round((pages.filter((p: any) => p.schemas?.length > 0).length / pages.length) * 100) : 0,
-                                                            color: "text-seo",
-                                                            bar: "bg-seo"
-                                                        },
-                                                        {
-                                                            label: "Metadata Completeness",
-                                                            desc: "Pages with both a title tag and meta description",
-                                                            pct: pages.length > 0 ? Math.round((pages.filter((p: any) => p.title && p.description).length / pages.length) * 100) : 0,
-                                                            color: "text-aeo",
-                                                            bar: "bg-aeo"
-                                                        },
-                                                        {
-                                                            label: "H1 Compliance",
-                                                            desc: "Pages with at least one H1 heading tag",
-                                                            pct: pages.length > 0 ? Math.round((pages.filter((p: any) => p.hasH1).length / pages.length) * 100) : 0,
-                                                            color: "text-geo",
-                                                            bar: "bg-geo"
-                                                        },
-                                                        {
-                                                            label: "Site Security",
-                                                            desc: "Pages served over a secure HTTPS connection",
-                                                            pct: pages.length > 0 ? Math.round((pages.filter((p: any) => p.isHttps).length / pages.length) * 100) : 0,
-                                                            color: "text-geo",
-                                                            bar: "bg-geo"
-                                                        },
-                                                    ].map(factor => (
-                                                        <div key={factor.label} className="p-3 rounded-xl border border-border/40 bg-background/60 space-y-2">
+                                            <CardContent className="space-y-4">
+                                                {[
+                                                    {
+                                                        label: "Content Quality",
+                                                        desc: "Depth, substance, and value of page content",
+                                                        pct: ai?.domainHealthBreakdown?.contentQuality ?? 0,
+                                                        color: "text-geo",
+                                                        bar: "bg-geo",
+                                                        key: "contentQuality"
+                                                    },
+                                                    {
+                                                        label: "Schema Quality",
+                                                        desc: "Completeness and correctness of structured data",
+                                                        pct: ai?.domainHealthBreakdown?.schemaQuality ?? 0,
+                                                        color: "text-seo",
+                                                        bar: "bg-seo",
+                                                        key: "schemaQuality"
+                                                    },
+                                                    {
+                                                        label: "Metadata Quality",
+                                                        desc: "Optimization of titles and meta descriptions",
+                                                        pct: ai?.domainHealthBreakdown?.metadataQuality ?? 0,
+                                                        color: "text-aeo",
+                                                        bar: "bg-aeo",
+                                                        key: "metadataQuality"
+                                                    },
+                                                    {
+                                                        label: "Technical Health",
+                                                        desc: "H1 tags, HTTPS, and response performance",
+                                                        pct: ai?.domainHealthBreakdown?.technicalHealth ?? 0,
+                                                        color: "text-geo",
+                                                        bar: "bg-geo",
+                                                        key: "technicalHealth"
+                                                    },
+                                                    {
+                                                        label: "Architecture",
+                                                        desc: "Internal linking and navigation structure",
+                                                        pct: ai?.domainHealthBreakdown?.architectureHealth ?? 0,
+                                                        color: "text-geo",
+                                                        bar: "bg-geo",
+                                                        key: "architectureHealth"
+                                                    },
+                                                ].map(factor => {
+                                                    const explanation = ai?.domainHealthExplanations?.[factor.key as keyof typeof ai.domainHealthExplanations];
+                                                    const hasIssues = explanation?.issues && explanation.issues.length > 0;
+                                                    
+                                                    return (
+                                                        <div key={factor.label} className="p-4 rounded-xl border border-border/40 bg-background/60 space-y-3">
+                                                            {/* Header with score */}
                                                             <div className="flex items-center justify-between">
-                                                                <p className="text-xs font-bold">{factor.label}</p>
-                                                                <span className={cn("text-sm font-black", factor.color)}>{factor.pct}%</span>
+                                                                <div className="flex-1">
+                                                                    <div className="flex items-center gap-2 mb-1">
+                                                                        <p className="text-sm font-bold">{factor.label}</p>
+                                                                        <span className={cn("text-lg font-black", factor.color)}>{factor.pct}%</span>
+                                                                    </div>
+                                                                    <p className="text-[10px] text-muted-foreground leading-snug">{factor.desc}</p>
+                                                                </div>
                                                             </div>
-                                                            <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                                                                <div className={cn("h-full rounded-full", factor.bar)} style={{ width: `${factor.pct}%` }} />
+                                                            
+                                                            {/* Progress bar */}
+                                                            <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                                                <div className={cn("h-full rounded-full transition-all", factor.bar)} style={{ width: `${factor.pct}%` }} />
                                                             </div>
-                                                            <p className="text-[10px] text-muted-foreground leading-snug">{factor.desc}</p>
+                                                            
+                                                            {/* Detailed explanation */}
+                                                            {explanation && (
+                                                                <div className="space-y-2 pt-2 border-t border-border/30">
+                                                                    {/* Issues */}
+                                                                    {hasIssues && (
+                                                                        <div className="space-y-1.5">
+                                                                            <p className="text-[10px] font-black uppercase tracking-wider text-destructive flex items-center gap-1">
+                                                                                <AlertTriangle className="h-3 w-3" />
+                                                                                Issues Found ({explanation.issues.length})
+                                                                            </p>
+                                                                            {explanation.issues.map((issue: string, idx: number) => (
+                                                                                <p key={idx} className="text-xs text-muted-foreground leading-relaxed pl-4 border-l-2 border-destructive/30">
+                                                                                    • {issue}
+                                                                                </p>
+                                                                            ))}
+                                                                        </div>
+                                                                    )}
+                                                                    
+                                                                    {/* Recommendations */}
+                                                                    {explanation.recommendations && explanation.recommendations.length > 0 && (
+                                                                        <div className="space-y-1.5">
+                                                                            <p className="text-[10px] font-black uppercase tracking-wider text-geo flex items-center gap-1">
+                                                                                <Target className="h-3 w-3" />
+                                                                                How to Fix
+                                                                            </p>
+                                                                            {explanation.recommendations.map((rec: string, idx: number) => (
+                                                                                <p key={idx} className="text-xs text-foreground/90 leading-relaxed pl-4 border-l-2 border-geo/30 bg-geo/5 py-1 rounded-r">
+                                                                                    {rec}
+                                                                                </p>
+                                                                            ))}
+                                                                        </div>
+                                                                    )}
+                                                                    
+                                                                    {/* Impact */}
+                                                                    {explanation.impact && (
+                                                                        <div className="p-2 rounded-lg bg-muted/50 border border-border/30">
+                                                                            <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground mb-1">Why This Matters</p>
+                                                                            <p className="text-xs text-foreground/80 leading-relaxed italic">
+                                                                                {explanation.impact}
+                                                                            </p>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                    ))}
-                                                </div>
+                                                    );
+                                                })}
                                             </CardContent>
                                         </Card>
 
-                                        {/* ── Row 2: Sitewide Insights + Content Gap ── */}
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                            <Card className="border-border/50">
+                                        {/* ── Schema Health Audit ── */}
+                                        {ai?.schemaHealthAudit && (
+                                            <Card className="border-seo/20 bg-seo/5">
                                                 <CardHeader>
-                                                    <CardTitle className="flex items-center gap-2">
-                                                        <TrendingUp className="h-5 w-5 text-geo" />
-                                                        Sitewide Strategic Insights
-                                                    </CardTitle>
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center gap-2">
+                                                            <Code2 className="h-5 w-5 text-seo" />
+                                                            <CardTitle className="text-seo">Schema Health Audit</CardTitle>
+                                                            <InfoTooltip 
+                                                                title="What is Schema Health?"
+                                                                text="Schema markup (JSON-LD) helps search engines understand your content. This score measures completeness, correctness, and quality of your structured data implementation. Higher scores improve rich result eligibility and AI citation likelihood."
+                                                            />
+                                                            <Badge className="bg-seo/10 text-seo border-seo/30 text-xs font-black">
+                                                                {ai.schemaHealthAudit.overallScore ?? ai.authorityMetrics?.schemaCoverage ?? 0} / 100
+                                                            </Badge>
+                                                        </div>
+                                                        {ai.schemaHealthAudit.issues && ai.schemaHealthAudit.issues.length > 0 && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    const text = ai.schemaHealthAudit.issues.map((issue: any) => {
+                                                                        const pages = issue.affectedPages?.slice(0, 5).join('\n  - ') || 'N/A';
+                                                                        const morePages = issue.affectedPages?.length > 5 ? `\n  - ...and ${issue.affectedPages.length - 5} more` : '';
+                                                                        return `[${issue.severity.toUpperCase()}] ${issue.issue} (-${issue.pointsDeducted ?? 0} pts)\n\nExplanation:\n${issue.explanation}\n\nAffected Pages (${issue.affectedCount ?? issue.affectedPages?.length ?? 0}):\n  - ${pages}${morePages}\n\nHow to Fix:\n${issue.howToFix}`;
+                                                                    }).join('\n\n' + '='.repeat(80) + '\n\n');
+                                                                    navigator.clipboard.writeText(text);
+                                                                    alert("All schema issues copied to clipboard!");
+                                                                }}
+                                                                className="bg-muted/50 hover:bg-muted border border-border/50 px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider transition-colors"
+                                                            >
+                                                                Copy All Issues
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                    <CardDescription>Detailed analysis of structured data issues and fixes</CardDescription>
+                                                </CardHeader>
+                                                <CardContent className="space-y-4">
+                                                    {/* Schema Breakdown Mini Stats */}
+                                                    <div className="grid grid-cols-3 gap-3 p-3 rounded-xl bg-background/60 border border-border/40">
+                                                        <div className="text-center">
+                                                            <div className="flex items-center justify-center gap-1 mb-1">
+                                                                <p className="text-[10px] font-bold uppercase text-muted-foreground">Coverage</p>
+                                                                <InfoTooltip text="Percentage of pages with schema markup present. Higher coverage = more pages eligible for rich results." />
+                                                            </div>
+                                                            <p className="text-lg font-black text-seo">{ai.schemaHealthAudit.breakdown?.coverage ?? 0}%</p>
+                                                        </div>
+                                                        <div className="text-center border-l border-border/40">
+                                                            <div className="flex items-center justify-center gap-1 mb-1">
+                                                                <p className="text-[10px] font-bold uppercase text-muted-foreground">Quality</p>
+                                                                <InfoTooltip text="Completeness and correctness of schema implementation. Checks for required properties, placeholder data, and validation errors." />
+                                                            </div>
+                                                            <p className="text-lg font-black text-seo">{ai.schemaHealthAudit.breakdown?.quality ?? 0}%</p>
+                                                        </div>
+                                                        <div className="text-center border-l border-border/40">
+                                                            <div className="flex items-center justify-center gap-1 mb-1">
+                                                                <p className="text-[10px] font-bold uppercase text-muted-foreground">Diversity</p>
+                                                                <InfoTooltip text="Variety of schema types used (Organization, FAQPage, HowTo, etc.). More types = better coverage of different content types." />
+                                                            </div>
+                                                            <p className="text-lg font-black text-seo">{ai.schemaHealthAudit.breakdown?.diversity ?? 0}%</p>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Priority Fixes Section */}
+                                                    {ai.schemaHealthAudit.issues && ai.schemaHealthAudit.issues.length > 0 && (() => {
+                                                        const topIssues = [...ai.schemaHealthAudit.issues]
+                                                            .sort((a, b) => (b.pointsDeducted ?? 0) - (a.pointsDeducted ?? 0))
+                                                            .slice(0, 3);
+                                                        const totalPointsRecoverable = topIssues.reduce((sum, issue) => sum + (issue.pointsDeducted ?? 0), 0);
+                                                        
+                                                        return (
+                                                            <div className="p-4 rounded-xl bg-gradient-to-br from-seo/10 to-geo/5 border border-seo/30">
+                                                                <div className="flex items-center justify-between mb-3">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <h4 className="text-sm font-black uppercase tracking-wider text-seo flex items-center gap-2">
+                                                                            <Zap className="h-4 w-4" />
+                                                                            Priority Fixes
+                                                                        </h4>
+                                                                        <Badge className="bg-geo/20 text-geo border-geo/40 text-xs font-black">
+                                                                            +{totalPointsRecoverable} pts available
+                                                                        </Badge>
+                                                                    </div>
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            const text = topIssues.map((issue, idx) => {
+                                                                                const pages = issue.affectedPages?.slice(0, 3).join('\n  - ') || 'N/A';
+                                                                                const morePages = issue.affectedPages?.length > 3 ? `\n  - ...and ${issue.affectedPages.length - 3} more` : '';
+                                                                                return `Priority ${idx + 1}: ${issue.issue} (-${issue.pointsDeducted ?? 0} pts)\n\nSeverity: ${issue.severity.toUpperCase()}\nAffected Pages: ${issue.affectedCount ?? issue.affectedPages?.length ?? 0}\n\nExplanation:\n${issue.explanation}\n\nAffected Pages:\n  - ${pages}${morePages}\n\nHow to Fix:\n${issue.howToFix}`;
+                                                                            }).join('\n\n' + '='.repeat(80) + '\n\n');
+                                                                            navigator.clipboard.writeText(`PRIORITY FIXES - Top ${topIssues.length} Issues\nPotential Score Recovery: +${totalPointsRecoverable} points\n\n${'='.repeat(80)}\n\n${text}`);
+                                                                            alert("Priority fixes copied to clipboard!");
+                                                                        }}
+                                                                        className="bg-muted/50 hover:bg-muted border border-border/50 px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider transition-colors"
+                                                                    >
+                                                                        Copy All
+                                                                    </button>
+                                                                </div>
+                                                                <p className="text-xs text-muted-foreground mb-4">Fix these top issues to maximize your schema quality score</p>
+                                                                <div className="space-y-3">
+                                                                    {topIssues.map((issue, idx) => {
+                                                                        const severityColors = {
+                                                                            critical: "text-destructive",
+                                                                            high: "text-yellow-600",
+                                                                            medium: "text-blue-600"
+                                                                        };
+                                                                        const color = severityColors[issue.severity as keyof typeof severityColors] || "text-muted-foreground";
+                                                                        
+                                                                        return (
+                                                                            <div key={idx} className="flex gap-3 p-3 rounded-lg bg-background/80 border border-border/50">
+                                                                                <div className="flex items-center justify-center h-6 w-6 rounded-full bg-seo/20 text-seo text-xs font-black shrink-0">
+                                                                                    {idx + 1}
+                                                                                </div>
+                                                                                <div className="flex-1 min-w-0">
+                                                                                    <div className="flex items-start justify-between gap-2 mb-1">
+                                                                                        <h5 className={cn("text-sm font-bold", color)}>{issue.issue}</h5>
+                                                                                        <div className="flex items-center gap-2 shrink-0">
+                                                                                            <Badge variant="outline" className="text-[10px] font-mono">
+                                                                                                -{issue.pointsDeducted ?? 0} pts
+                                                                                            </Badge>
+                                                                                            <button
+                                                                                                onClick={() => {
+                                                                                                    const pages = issue.affectedPages?.slice(0, 5).join('\n  - ') || 'N/A';
+                                                                                                    const morePages = issue.affectedPages?.length > 5 ? `\n  - ...and ${issue.affectedPages.length - 5} more` : '';
+                                                                                                    const text = `Priority ${idx + 1}: ${issue.issue}\n\nSeverity: ${issue.severity.toUpperCase()}\nPoints Deducted: -${issue.pointsDeducted ?? 0}\nAffected Pages: ${issue.affectedCount ?? issue.affectedPages?.length ?? 0}\n\nExplanation:\n${issue.explanation}\n\nAffected Pages:\n  - ${pages}${morePages}\n\nHow to Fix:\n${issue.howToFix}`;
+                                                                                                    navigator.clipboard.writeText(text);
+                                                                                                    alert(`Priority ${idx + 1} copied!`);
+                                                                                                }}
+                                                                                                className="text-[9px] font-bold text-seo hover:underline uppercase tracking-wider"
+                                                                                            >
+                                                                                                Copy
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <p className="text-xs text-muted-foreground mb-2">
+                                                                                        {issue.affectedCount ?? issue.affectedPages?.length ?? 0} pages affected
+                                                                                    </p>
+                                                                                    <div className="flex items-start gap-2 p-2 rounded bg-muted/50 border border-border/30">
+                                                                                        <Target className="h-3 w-3 text-geo shrink-0 mt-0.5" />
+                                                                                        <p className="text-xs text-foreground/90 leading-relaxed">
+                                                                                            <span className="font-semibold text-geo">Quick Fix:</span> {issue.howToFix.split('.')[0]}.
+                                                                                        </p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })()}
+
+                                                    {/* Divider */}
+                                                    {ai.schemaHealthAudit.issues && ai.schemaHealthAudit.issues.length > 0 && (
+                                                        <div className="flex items-center gap-3 py-2">
+                                                            <div className="flex-1 h-px bg-border/50"></div>
+                                                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">All Issues</p>
+                                                            <div className="flex-1 h-px bg-border/50"></div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Issues List */}
+                                                    {ai.schemaHealthAudit.issues && ai.schemaHealthAudit.issues.length > 0 ? (
+                                                        <div className="space-y-3">
+                                                            {ai.schemaHealthAudit.issues.map((issue: any, i: number) => (
+                                                                <SchemaIssueCard key={i} issue={issue} index={i} />
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <div className="text-center py-8 text-muted-foreground">
+                                                            <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-geo" />
+                                                            <p className="text-sm font-semibold">No schema issues detected</p>
+                                                            <p className="text-xs mt-1">Your structured data implementation looks solid!</p>
+                                                        </div>
+                                                    )}
+                                                </CardContent>
+                                            </Card>
+                                        )}
+
+                                        {/* ── Brand Health Audit ── */}
+                                        {ai?.brandConsistencyBreakdown && (
+                                            <Card className="border-aeo/20 bg-aeo/5">
+                                                <CardHeader>
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center gap-2">
+                                                            <Sparkles className="h-5 w-5 text-aeo" />
+                                                            <CardTitle className="text-aeo">Brand Consistency Audit</CardTitle>
+                                                            <InfoTooltip 
+                                                                title="What is Brand Consistency?"
+                                                                text="Measures how consistently your brand identity appears across all pages. Includes schema names (40%), title terms (30%), and description consistency (30%). Higher scores improve brand recognition and search engine trust."
+                                                            />
+                                                            <Badge className="bg-aeo/10 text-aeo border-aeo/30 text-xs font-black">
+                                                                {ai.consistencyScore ?? 0} / 100
+                                                            </Badge>
+                                                        </div>
+                                                    </div>
+                                                    <CardDescription>Brand identity consistency across all crawled pages</CardDescription>
+                                                </CardHeader>
+                                                <CardContent className="space-y-4">
+                                                    {/* Brand Breakdown Mini Stats */}
+                                                    <div className="grid grid-cols-3 gap-3 p-3 rounded-xl bg-background/60 border border-border/40">
+                                                        <div className="text-center">
+                                                            <div className="flex items-center justify-center gap-1 mb-1">
+                                                                <p className="text-[10px] font-bold uppercase text-muted-foreground">Schema Names</p>
+                                                                <InfoTooltip text="Consistency of brand names in Organization/LocalBusiness schema across all pages. 100% = same name everywhere." />
+                                                            </div>
+                                                            <p className="text-lg font-black text-aeo">{ai.brandConsistencyBreakdown.schemaNameConsistency.score}%</p>
+                                                        </div>
+                                                        <div className="text-center border-l border-border/40">
+                                                            <div className="flex items-center justify-center gap-1 mb-1">
+                                                                <p className="text-[10px] font-bold uppercase text-muted-foreground">Title Terms</p>
+                                                                <InfoTooltip text="Common brand terms appearing in 50%+ of page titles. More consistent terms = stronger brand recognition." />
+                                                            </div>
+                                                            <p className="text-lg font-black text-aeo">{ai.brandConsistencyBreakdown.titleConsistency.score}%</p>
+                                                        </div>
+                                                        <div className="text-center border-l border-border/40">
+                                                            <div className="flex items-center justify-center gap-1 mb-1">
+                                                                <p className="text-[10px] font-bold uppercase text-muted-foreground">Descriptions</p>
+                                                                <InfoTooltip text="Consistency of meta description lengths across pages. Lower variance = more professional appearance in search results." />
+                                                            </div>
+                                                            <p className="text-lg font-black text-aeo">{ai.brandConsistencyBreakdown.descriptionConsistency.score}%</p>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Issues and Strengths */}
+                                                    {(() => {
+                                                        const allIssues = [
+                                                            ...ai.brandConsistencyBreakdown.schemaNameConsistency.issues.map((i: string) => ({ category: 'Schema Names', issue: i })),
+                                                            ...ai.brandConsistencyBreakdown.titleConsistency.issues.map((i: string) => ({ category: 'Page Titles', issue: i })),
+                                                            ...ai.brandConsistencyBreakdown.descriptionConsistency.issues.map((i: string) => ({ category: 'Meta Descriptions', issue: i }))
+                                                        ];
+                                                        
+                                                        const allStrengths = [
+                                                            ...ai.brandConsistencyBreakdown.schemaNameConsistency.strengths.map((s: string) => ({ category: 'Schema Names', strength: s })),
+                                                            ...ai.brandConsistencyBreakdown.titleConsistency.strengths.map((s: string) => ({ category: 'Page Titles', strength: s })),
+                                                            ...ai.brandConsistencyBreakdown.descriptionConsistency.strengths.map((s: string) => ({ category: 'Meta Descriptions', strength: s }))
+                                                        ];
+
+                                                        return (
+                                                            <>
+                                                                {allIssues.length > 0 && (
+                                                                    <div className="space-y-3">
+                                                                        <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
+                                                                            <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                                                                            Issues Found
+                                                                        </h4>
+                                                                        {allIssues.map((item, idx) => (
+                                                                            <div key={idx} className="p-3 rounded-lg border border-yellow-500/30 bg-yellow-500/5">
+                                                                                <div className="flex items-start gap-2">
+                                                                                    <Badge variant="outline" className="text-[9px] font-bold bg-yellow-500/10 text-yellow-600 border-yellow-500/30 shrink-0">
+                                                                                        {item.category}
+                                                                                    </Badge>
+                                                                                    <p className="text-xs text-foreground/90 leading-relaxed">{item.issue}</p>
+                                                                                </div>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+
+                                                                {allStrengths.length > 0 && (
+                                                                    <div className="space-y-3">
+                                                                        <h4 className="text-sm font-bold text-foreground flex items-center gap-2">
+                                                                            <CheckCircle2 className="h-4 w-4 text-geo" />
+                                                                            What's Working Well
+                                                                        </h4>
+                                                                        {allStrengths.map((item, idx) => (
+                                                                            <div key={idx} className="p-3 rounded-lg border border-geo/30 bg-geo/5">
+                                                                                <div className="flex items-start gap-2">
+                                                                                    <Badge variant="outline" className="text-[9px] font-bold bg-geo/10 text-geo border-geo/30 shrink-0">
+                                                                                        {item.category}
+                                                                                    </Badge>
+                                                                                    <p className="text-xs text-foreground/90 leading-relaxed">{item.strength}</p>
+                                                                                </div>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+
+                                                                {allIssues.length === 0 && allStrengths.length === 0 && (
+                                                                    <div className="text-center py-8 text-muted-foreground">
+                                                                        <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-geo" />
+                                                                        <p className="text-sm font-semibold">Perfect Brand Consistency</p>
+                                                                        <p className="text-xs mt-1">Your brand identity is consistent across all pages!</p>
+                                                                    </div>
+                                                                )}
+                                                            </>
+                                                        );
+                                                    })()}
+                                                </CardContent>
+                                            </Card>
+                                        )}
+
+                                        {/* ── Row 2: Sitewide Insights + Content Gap ── */}
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-40">
+                                            <Card className="border-border/50 bg-background/50">
+                                                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                                    <div>
+                                                        <CardTitle className="flex items-center gap-2">
+                                                            <TrendingUp className="h-5 w-5 text-geo" />
+                                                            Sitewide Strategic Insights
+                                                        </CardTitle>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => {
+                                                            const text = ai.sitewideInsights.map((i: any) => `[${i.impact.toUpperCase()}] ${i.title}\n${i.description}`).join('\n\n');
+                                                            navigator.clipboard.writeText(text);
+                                                            alert("Insights copied to clipboard!");
+                                                        }}
+                                                        className="bg-muted/50 hover:bg-muted border border-border/50 px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider transition-colors"
+                                                    >
+                                                        Copy Insights
+                                                    </button>
                                                 </CardHeader>
                                                 <CardContent>
                                                     <div className="space-y-3">
-                                                        {ai?.sitewideInsights?.map((insight: any, i: number) => (
-                                                            <div key={i} className="p-4 rounded-xl border border-border/40 bg-background/50 flex gap-4">
-                                                                <div className={cn(
-                                                                    "h-8 w-8 shrink-0 rounded-lg flex items-center justify-center text-xs font-bold uppercase",
-                                                                    insight.impact === 'critical' ? "bg-destructive/10 text-destructive" :
-                                                                        insight.impact === 'high' ? "bg-aeo/10 text-aeo" : "bg-muted text-muted-foreground"
-                                                                )}>
-                                                                    {insight.impact[0]}
-                                                                </div>
-                                                                <div>
+                                                        {ai?.sitewideInsights?.map((insight: any, i: number) => {
+                                                            const impactConfig = {
+                                                                critical: { 
+                                                                    label: "CRITICAL", 
+                                                                    bg: "bg-destructive/10", 
+                                                                    text: "text-destructive", 
+                                                                    ring: "ring-destructive/20",
+                                                                    tooltip: "Urgent issue that significantly impacts SEO performance"
+                                                                },
+                                                                high: { 
+                                                                    label: "HIGH", 
+                                                                    bg: "bg-yellow-500/10", 
+                                                                    text: "text-yellow-600", 
+                                                                    ring: "ring-yellow-500/20",
+                                                                    tooltip: "Important issue that should be addressed soon"
+                                                                },
+                                                                medium: { 
+                                                                    label: "MEDIUM", 
+                                                                    bg: "bg-blue-500/10", 
+                                                                    text: "text-blue-600", 
+                                                                    ring: "ring-blue-500/20",
+                                                                    tooltip: "Moderate issue that can be addressed in regular maintenance"
+                                                                }
+                                                            };
+                                                            const config = impactConfig[insight.impact as keyof typeof impactConfig] || impactConfig.medium;
+                                                            
+                                                            return (
+                                                                <div key={i} className="p-4 rounded-xl border border-border/40 bg-background/50 hover:border-geo/30 transition-colors">
+                                                                    <div className="flex items-start gap-3 mb-2">
+                                                                        <div className={cn(
+                                                                            "px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider shrink-0 ring-1 ring-inset",
+                                                                            config.bg, config.text, config.ring
+                                                                        )} title={config.tooltip}>
+                                                                            {config.label} PRIORITY
+                                                                        </div>
+                                                                    </div>
                                                                     <h5 className="font-bold text-sm mb-1">{insight.title}</h5>
                                                                     <p className="text-xs text-muted-foreground leading-relaxed">{insight.description}</p>
                                                                 </div>
-                                                            </div>
-                                                        ))}
+                                                            );
+                                                        })}
                                                     </div>
                                                 </CardContent>
                                             </Card>
@@ -515,9 +1234,23 @@ export default function SiteAnalysis() {
                                             </Card>
                                         </div>
 
+                                        {/* ── Competitor Gap Analysis (when competitor data exists) ── */}
+                                        {analysisData.competitorAnalysis && (
+                                            <CompetitorGapView
+                                                gaps={analysisData.competitorAnalysis.gaps?.schemaGaps?.concat(
+                                                    analysisData.competitorAnalysis.gaps?.contentGaps || [],
+                                                    analysisData.competitorAnalysis.gaps?.structuralGaps || []
+                                                ) || []}
+                                                strengths={analysisData.competitorAnalysis.strengths || []}
+                                                advantageScore={analysisData.competitorAnalysis.advantageScore || 50}
+                                                quickWins={analysisData.competitorAnalysis.quickWins || []}
+                                                competitorCount={analysisData.competitorAnalysis.competitors?.length || 0}
+                                            />
+                                        )}
+
                                         {/* ── Row 3: Cannibalization + Internal Link Leaders ── */}
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                            <Card className="border-destructive/20">
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-30">
+                                            <Card className="border-destructive/20 min-w-0">
                                                 <CardHeader>
                                                     <CardTitle className="flex items-center gap-2 text-destructive">
                                                         <AlertTriangle className="h-5 w-5" />
@@ -525,15 +1258,15 @@ export default function SiteAnalysis() {
                                                     </CardTitle>
                                                     <CardDescription>Pages competing against each other for the same topic</CardDescription>
                                                 </CardHeader>
-                                                <CardContent>
+                                                <CardContent className="min-w-0 overflow-hidden">
                                                     {ai?.cannibalizationRisks?.length > 0 ? (
                                                         <div className="space-y-3">
                                                             {ai.cannibalizationRisks.map((risk: any, i: number) => (
-                                                                <div key={i} className="p-3 rounded-lg border border-destructive/20 bg-destructive/5 space-y-2">
-                                                                    <Badge variant="outline" className="border-destructive/40 text-destructive text-xs">{risk.conflictingTopic}</Badge>
-                                                                    <div className="flex flex-col gap-1">
-                                                                        <p className="text-xs text-muted-foreground font-mono truncate">{risk.pageA}</p>
-                                                                        <p className="text-xs text-muted-foreground font-mono truncate">{risk.pageB}</p>
+                                                                <div key={i} className="p-3 rounded-lg border border-destructive/20 bg-destructive/5 space-y-2 min-w-0 overflow-hidden">
+                                                                    <Badge variant="outline" className="border-destructive/40 text-destructive text-xs truncate max-w-full">{risk.conflictingTopic}</Badge>
+                                                                    <div className="flex flex-col gap-1 min-w-0">
+                                                                        <p className="text-xs text-muted-foreground font-mono truncate hover:text-foreground transition-colors cursor-help" title={risk.pageA}>{risk.pageA}</p>
+                                                                        <p className="text-xs text-muted-foreground font-mono truncate hover:text-foreground transition-colors cursor-help" title={risk.pageB}>{risk.pageB}</p>
                                                                     </div>
                                                                 </div>
                                                             ))}
@@ -547,29 +1280,54 @@ export default function SiteAnalysis() {
                                                 </CardContent>
                                             </Card>
 
-                                            <Card className="border-border/50">
-                                                <CardHeader>
-                                                    <CardTitle className="flex items-center gap-2">
-                                                        <Link2 className="h-5 w-5 text-seo" />
-                                                        Internal Link Leaders
-                                                    </CardTitle>
-                                                    <CardDescription>Pages receiving the most internal equity — prioritized by Google</CardDescription>
-                                                </CardHeader>
-                                                <CardContent>
-                                                    <div className="space-y-2">
-                                                        {ai?.internalLinkLeaders?.map((link: string, i: number) => (
-                                                            <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg border border-seo/20 bg-seo/5">
-                                                                <span className="text-xs font-black text-seo w-5 shrink-0">#{i + 1}</span>
-                                                                <span className="text-xs font-mono text-muted-foreground truncate">{link}</span>
+                                            <div className="space-y-6">
+                                                <Card className="border-border/50 min-w-0">
+                                                    <CardHeader>
+                                                        <CardTitle className="flex items-center gap-2">
+                                                            <Link2 className="h-5 w-5 text-seo" />
+                                                            Internal Link Leaders
+                                                        </CardTitle>
+                                                        <CardDescription>Pages receiving the most internal equity</CardDescription>
+                                                    </CardHeader>
+                                                    <CardContent>
+                                                        <div className="space-y-2">
+                                                            {ai?.internalLinkLeaders?.map((link: string, i: number) => (
+                                                                <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg border border-seo/20 bg-seo/5 min-w-0 overflow-hidden">
+                                                                    <span className="text-xs font-black text-seo w-5 shrink-0">#{i + 1}</span>
+                                                                    <span className="text-xs font-mono text-muted-foreground truncate flex-1">{link}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+
+                                                {ai?.orphanPageRisks?.length > 0 && (
+                                                    <Card className="border-border/50 bg-muted/20 min-w-0">
+                                                        <CardHeader className="py-3 px-4">
+                                                            <CardTitle className="text-sm flex items-center gap-2 text-muted-foreground">
+                                                                <AlertCircle className="h-4 w-4" />
+                                                                Potential Orphan Pages
+                                                            </CardTitle>
+                                                        </CardHeader>
+                                                        <CardContent className="py-0 px-4 pb-4">
+                                                            <div className="space-y-1">
+                                                                {ai.orphanPageRisks.map((url: string, i: number) => (
+                                                                    <div key={i} className="text-[10px] font-mono text-muted-foreground truncate py-1 border-b border-border/20 last:border-0 hover:text-foreground transition-colors">
+                                                                        {url}
+                                                                    </div>
+                                                                ))}
                                                             </div>
-                                                        ))}
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
+                                                        </CardContent>
+                                                    </Card>
+                                                )}
+                                            </div>
                                         </div>
 
+                                        {/* ── New: Global Semantic Map (Architecture visualization) ── */}
+                                        <SemanticMap pages={pages} clusters={ai?.topicalClusters || []} />
+
                                         {/* ── Row 4: Page-level Speed + Orphan Risks ── */}
-                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-20">
                                             <Card className="border-border/50">
                                                 <CardHeader>
                                                     <CardTitle className="flex items-center gap-2">
@@ -688,55 +1446,118 @@ export default function SiteAnalysis() {
                                         })()}
 
                                         {/* ── Row 5: Brand Consistency Analysis + Architecture + Schema ── */}
-                                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                        {/* ── Expert Audits: Brand & Semantic Architecture ── */}
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-30">
                                             <Card className="border-aeo/20 bg-aeo/5 lg:col-span-1">
                                                 <CardHeader>
                                                     <CardTitle className="flex items-center gap-2 text-aeo">
                                                         <Sparkles className="h-5 w-5" />
-                                                        Brand Consistency Analysis
+                                                        Brand & Topic Cohesion Verdict
                                                         <Badge className="ml-auto bg-aeo/10 text-aeo border-aeo/30 text-xs font-black">{ai?.consistencyScore ?? "–"}%</Badge>
                                                     </CardTitle>
-                                                    <CardDescription>AI-measured brand cohesion across all crawled pages</CardDescription>
+                                                    <CardDescription>
+                                                        AI-measured brand consistency across all pages
+                                                        {ai?.consistencyScore < 100 && (
+                                                            <span className="block mt-1 text-yellow-600 text-xs font-semibold">
+                                                                ⚠️ See "Brand Consistency Audit" below for detailed breakdown
+                                                            </span>
+                                                        )}
+                                                    </CardDescription>
                                                 </CardHeader>
-                                                <CardContent>
-                                                    <p className="text-sm font-medium leading-relaxed">{ai?.brandClarityVerdict}</p>
-                                                </CardContent>
-                                            </Card>
-
-                                            <Card className="border-border/50 lg:col-span-1">
-                                                <CardHeader>
-                                                    <CardTitle className="flex items-center gap-2">
-                                                        <Target className="h-5 w-5 text-geo" />
-                                                        Navigation & Architecture
-                                                    </CardTitle>
-                                                </CardHeader>
-                                                <CardContent>
-                                                    <p className="text-sm leading-relaxed text-foreground/80 italic">
-                                                        &ldquo;{ai?.navigationAnalysis}&rdquo;
+                                                <CardContent className="space-y-4">
+                                                    <p className="text-sm font-medium leading-relaxed italic border-l-2 border-aeo/30 pl-4 py-1">
+                                                        &ldquo;{ai?.brandClarityVerdict || "Analysis pending full scan completion."}&rdquo;
                                                     </p>
-                                                </CardContent>
-                                            </Card>
-
-                                            <Card className="border-border/50 lg:col-span-1">
-                                                <CardHeader>
-                                                    <CardTitle className="flex items-center gap-2">
-                                                        <Code2 className="h-5 w-5 text-seo" />
-                                                        Schema Type Coverage
-                                                    </CardTitle>
-                                                    <CardDescription>{pagesWithSchema.length} of {pages.length} pages have structured data</CardDescription>
-                                                </CardHeader>
-                                                <CardContent>
+                                                    
+                                                    {/* Quick breakdown if not perfect */}
+                                                    {ai?.brandConsistencyBreakdown && ai?.consistencyScore < 100 && (
+                                                        <div className="p-3 rounded-lg bg-yellow-500/5 border border-yellow-500/20">
+                                                            <p className="text-[10px] font-black uppercase tracking-wider text-yellow-600 mb-2">Score Breakdown</p>
+                                                            <div className="grid grid-cols-3 gap-2 text-center">
+                                                                <div>
+                                                                    <p className="text-xs text-muted-foreground">Schema Names</p>
+                                                                    <p className={cn("text-sm font-black", 
+                                                                        ai.brandConsistencyBreakdown.schemaNameConsistency.score === 100 ? "text-geo" : "text-yellow-600"
+                                                                    )}>{ai.brandConsistencyBreakdown.schemaNameConsistency.score}%</p>
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-xs text-muted-foreground">Title Terms</p>
+                                                                    <p className={cn("text-sm font-black", 
+                                                                        ai.brandConsistencyBreakdown.titleConsistency.score === 100 ? "text-geo" : "text-yellow-600"
+                                                                    )}>{ai.brandConsistencyBreakdown.titleConsistency.score}%</p>
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-xs text-muted-foreground">Descriptions</p>
+                                                                    <p className={cn("text-sm font-black", 
+                                                                        ai.brandConsistencyBreakdown.descriptionConsistency.score === 100 ? "text-geo" : "text-yellow-600"
+                                                                    )}>{ai.brandConsistencyBreakdown.descriptionConsistency.score}%</p>
+                                                                </div>
+                                                            </div>
+                                                            <p className="text-xs text-muted-foreground mt-2 text-center">
+                                                                Scroll down to "Brand Consistency Audit" for fixes
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                    
                                                     <div className="flex flex-wrap gap-2">
-                                                        {[...new Set(pages.flatMap((p: any) => p.schemaTypes || []))].map((type: any) => (
-                                                            <Badge key={type} variant="outline" className="border-seo/30 text-seo bg-seo/5 text-xs">{type}</Badge>
+                                                        {ai?.topicalClusters?.map((topic: string) => (
+                                                            <div key={topic} className="flex items-center gap-1.5 bg-aeo/10 border border-aeo/20 rounded-full px-3 py-1 text-[10px] font-black text-aeo uppercase tracking-widest">
+                                                                <Zap className="h-2.5 w-2.5" />
+                                                                {topic}
+                                                            </div>
                                                         ))}
-                                                        {pages.flatMap((p: any) => p.schemaTypes || []).length === 0 && (
-                                                            <p className="text-sm text-muted-foreground italic">No structured data found across crawled pages.</p>
+                                                        {(!ai?.topicalClusters || ai?.topicalClusters.length === 0) && (
+                                                            <div className="flex items-center gap-2 text-xs text-aeo font-bold">
+                                                                <CheckCircle2 className="h-3 w-3" />
+                                                                Core topic focus: {ai?.aeoReadiness?.signals?.hasClearTopicFocus ? "DETECTED" : "DILUTED"}
+                                                            </div>
                                                         )}
                                                     </div>
                                                 </CardContent>
                                             </Card>
+
+                                            <Card className="border-geo/20 bg-geo/5 lg:col-span-1">
+                                                <CardHeader>
+                                                    <CardTitle className="flex items-center gap-2 text-geo">
+                                                        <Target className="h-5 w-5" />
+                                                        Navigation & Semantic Architecture
+                                                    </CardTitle>
+                                                    <CardDescription>Document hierarchy and internal linking flow audit</CardDescription>
+                                                </CardHeader>
+                                                <CardContent>
+                                                    <p className="text-sm leading-relaxed text-foreground/80 italic border-l-2 border-geo/30 pl-4 py-1">
+                                                        &ldquo;{ai?.navigationAnalysis || "Architecture audit underway."}&rdquo;
+                                                    </p>
+                                                </CardContent>
+                                            </Card>
                                         </div>
+
+                                        {/* ── Schema Type Coverage (Detailed View) ── */}
+                                        <Card className="border-seo/20 bg-seo/5">
+                                            <CardHeader>
+                                                <CardTitle className="flex items-center gap-2 text-seo">
+                                                    <Code2 className="h-5 w-5" />
+                                                    Schema Type Distribution
+                                                    <Badge className="ml-auto bg-seo/10 text-seo border-seo/30 text-xs font-black">{pagesWithSchema.length} / {pages.length} Pages</Badge>
+                                                </CardTitle>
+                                                <CardDescription>Structured data fingerprints detected across your site architecture</CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {[...new Set(pages.flatMap((p: any) => p.schemaTypes || []))].map((type: any) => (
+                                                        <Badge key={type} variant="outline" className="border-seo/30 text-seo bg-background font-bold text-xs px-3 py-1 shadow-sm">
+                                                            {type}
+                                                        </Badge>
+                                                    ))}
+                                                    {pages.flatMap((p: any) => p.schemaTypes || []).length === 0 && (
+                                                        <div className="flex flex-col items-center py-6 w-full text-center">
+                                                            <AlertCircle className="h-8 w-8 text-muted-foreground/30 mb-2" />
+                                                            <p className="text-sm text-muted-foreground italic">No structured data found. You are missing out on rich results and AI-engine knowledge graph inclusion.</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
 
                                         {/* ── Robots.txt & Sitemap Status ── */}
                                         <Card className="border-border/50">
@@ -894,6 +1715,10 @@ export default function SiteAnalysis() {
                                                     <CardTitle className="flex items-center gap-2 text-aeo">
                                                         <Sparkles className="h-5 w-5" />
                                                         AEO Citation Readiness Score
+                                                        <InfoTooltip 
+                                                            title="What is AEO?"
+                                                            text="Answer Engine Optimization - how ready your site is to be cited by AI assistants like ChatGPT, Perplexity, and Gemini. Measures presence of FAQ content, structured Q&A, expert signals, and clear topic focus."
+                                                        />
                                                         <Badge className="ml-auto bg-aeo/10 text-aeo border-aeo/30 text-xs font-black">{ai.aeoReadiness.score} / 100</Badge>
                                                     </CardTitle>
                                                     <CardDescription>How ready this domain is to be cited by ChatGPT, Perplexity, and Gemini</CardDescription>
@@ -919,14 +1744,14 @@ export default function SiteAnalysis() {
                                             </Card>
                                         )}
 
-                                        {/* ── Social Proof Signals ── */}
+                                        {/* ── E-E-A-T & Trust Audit ── */}
                                         {ai?.socialProofSignals && (
-                                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-30">
                                                 <Card className="border-border/50">
                                                     <CardHeader>
                                                         <CardTitle className="flex items-center gap-2">
-                                                            <CheckCircle2 className="h-5 w-5 text-geo" />
-                                                            Social Proof Signals Found
+                                                            <ShieldCheck className="h-5 w-5 text-geo" />
+                                                            E-E-A-T: Trust Signals Found
                                                         </CardTitle>
                                                         <CardDescription>Trust signals Google and AI models use to verify authority</CardDescription>
                                                     </CardHeader>
@@ -974,37 +1799,6 @@ export default function SiteAnalysis() {
                                             </div>
                                         )}
 
-                                        {/* ── Prioritized Fix List ── */}
-                                        {ai?.prioritizedFixes?.length > 0 && (
-                                            <Card className="border-geo/30 bg-gradient-to-br from-geo/5 to-aeo/5">
-                                                <CardHeader>
-                                                    <CardTitle className="flex items-center gap-2">
-                                                        <Zap className="h-5 w-5 text-geo" />
-                                                        Top 3 Prioritized Fixes
-                                                    </CardTitle>
-                                                    <CardDescription>If you could only fix 3 things this month, fix these — ordered by ROI</CardDescription>
-                                                </CardHeader>
-                                                <CardContent>
-                                                    <div className="space-y-4">
-                                                        {ai.prioritizedFixes.map((fix: any, i: number) => (
-                                                            <div key={i} className="flex gap-4 p-4 rounded-xl border border-border/40 bg-background/70">
-                                                                <div className="h-10 w-10 shrink-0 rounded-full bg-geo/10 border border-geo/30 flex items-center justify-center text-lg font-black text-geo">
-                                                                    {fix.rank}
-                                                                </div>
-                                                                <div className="flex-1">
-                                                                    <div className="flex items-center gap-2 mb-1">
-                                                                        <h5 className="font-bold text-sm">{fix.title}</h5>
-                                                                        <Badge variant="outline" className="text-[10px] border-border/50 text-muted-foreground">{fix.category}</Badge>
-                                                                        <Badge className={cn("text-[10px] ml-auto", fix.estimatedImpact === 'High' ? "bg-geo/10 text-geo border-geo/30" : "bg-aeo/10 text-aeo border-aeo/30")}>{fix.estimatedImpact} Impact</Badge>
-                                                                    </div>
-                                                                    <p className="text-xs text-muted-foreground leading-relaxed">{fix.action}</p>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-                                        )}
 
                                         {/* Start Over + PDF Export */}
                                         <div className="flex justify-between items-center pt-4 border-t border-border/50 no-print">

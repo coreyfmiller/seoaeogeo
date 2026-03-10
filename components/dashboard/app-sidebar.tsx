@@ -27,6 +27,7 @@ const mainNav: NavItem[] = [
   { name: "Dashboard", icon: LayoutDashboard, href: "/" },
   { name: "Site Vs Site", icon: Globe, href: "/intelligence" },
   { name: "Deep Crawler", icon: Search, href: "/site-analysis", badge: "PRO" },
+  { name: "Usage & Costs", icon: BarChart3, href: "/usage" },
 ]
 
 const comingSoonNav: NavItem[] = [

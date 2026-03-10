@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { logUsage } from "./usage";
 
 /**
  * Live Interrogation Engine: 
@@ -55,6 +56,17 @@ export async function performLiveInterrogation(context: {
     try {
         const result = await model.generateContent(prompt);
         const responseText = result.response.text();
+
+        // Log Usage
+        if (result.response.usageMetadata) {
+            logUsage({
+                model: "gemini-2.5-flash",
+                type: "Live Interrogation",
+                inputTokens: result.response.usageMetadata.promptTokenCount || 0,
+                outputTokens: result.response.usageMetadata.candidatesTokenCount || 0,
+                url: context.domain
+            });
+        }
 
         const jsonMatch = responseText.match(/\{[\s\S]*\}/);
         if (!jsonMatch) throw new Error("Could not parse AI response as JSON");

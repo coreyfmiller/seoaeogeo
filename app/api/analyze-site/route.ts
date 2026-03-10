@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
 import { performDeepScan } from '@/lib/crawler-deep';
 import { analyzeSitewideIntelligence } from '@/lib/gemini-sitewide';
+import { saveTestSnapshot } from '@/lib/test-data-store';
 
 /**
  * Deep Site Analysis API (PRO Feature)
  */
 export async function POST(req: Request) {
     try {
-        const { url, maxPages = 10 } = await req.json();
+        const { url, maxPages = 10, saveSnapshot = false } = await req.json();
 
         if (!url) {
             return NextResponse.json({ error: 'No URL provided' }, { status: 400 });
@@ -58,19 +59,75 @@ export async function POST(req: Request) {
                 h3Count: p.h3Count,
                 imgTotal: p.imgTotal,
                 imgWithAlt: p.imgWithAlt,
+                outboundLinks: p.outboundLinks,
             }))
         });
 
+        // 4. Calculate Aggregate Metrics for Dashboard
+        const totalWords = scanResults.pages.reduce((acc, p) => acc + (p.wordCount || 0), 0);
+        const schemaCount = scanResults.pages.reduce((acc, p) => acc + (p.schemas?.length || 0), 0);
+        const avgResponseTime = scanResults.pages.reduce((acc, p) => acc + (p.responseTimeMs || 0), 0) / (scanResults.pagesCrawled || 1);
+
+        // Final tech score (weighted: 33% https, 33% H1s, 33% performance)
+        const httpsPct = scanResults.pages.filter(p => p.isHttps).length / (scanResults.pagesCrawled || 1);
+        const h1Pct = scanResults.pages.filter(p => p.hasH1).length / (scanResults.pagesCrawled || 1);
+        const perfPct = scanResults.pages.filter(p => p.responseTimeMs < 1500).length / (scanResults.pagesCrawled || 1);
+        const globalTechScore = Math.round((httpsPct * 30) + (h1Pct * 30) + (perfPct * 40));
+
         console.log(`[API PRO] Deep Audit complete.`);
+
+        const finalData = {
+            ...scanResults,
+            robotsTxt,
+            sitemap,
+            totalWords,
+            schemaCount,
+            avgResponseTime,
+            globalTechScore,
+            ai: aiAnalysis
+        };
+
+        // Save test snapshot if requested (for variance testing)
+        if (saveSnapshot) {
+            try {
+                saveTestSnapshot({
+                    timestamp: new Date().toISOString(),
+                    url: scanResults.domain,
+                    type: 'deep-site',
+                    crawlData: {
+                        pages: scanResults.pages,
+                        totalWords,
+                        schemaCount,
+                        avgResponseTime,
+                        pagesCrawled: scanResults.pagesCrawled,
+                    },
+                    aiResponses: {
+                        raw: JSON.stringify(aiAnalysis),
+                        parsed: aiAnalysis,
+                        model: aiAnalysis._metadata?.model || 'gemini-2.5-flash',
+                        inputTokens: aiAnalysis._metadata?.inputTokens || 0,
+                        outputTokens: aiAnalysis._metadata?.outputTokens || 0,
+                    },
+                    scores: {
+                        deterministic: {
+                            schemaQuality: aiAnalysis.schemaHealthAudit?.overallScore || 0,
+                            brandConsistency: aiAnalysis.consistencyScore || 0,
+                            schemaValidation: aiAnalysis.schemaHealthAudit,
+                            brandBreakdown: aiAnalysis.brandConsistencyBreakdown,
+                        },
+                        final: finalData,
+                    },
+                });
+                console.log(`[API PRO] Test snapshot saved for ${scanResults.domain}`);
+            } catch (snapshotError) {
+                console.error('[API PRO] Failed to save snapshot:', snapshotError);
+                // Don't fail the request if snapshot fails
+            }
+        }
 
         return NextResponse.json({
             success: true,
-            data: {
-                ...scanResults,
-                robotsTxt,
-                sitemap,
-                ai: aiAnalysis
-            }
+            data: finalData
         });
 
     } catch (error: any) {

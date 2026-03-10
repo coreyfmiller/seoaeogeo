@@ -20,6 +20,7 @@ export interface PageScan {
     h3Count: number;
     imgTotal: number;
     imgWithAlt: number;
+    outboundLinks: string[]; // Actual internal URLs found on this page
 }
 
 interface DeepSiteScanResult {
@@ -167,7 +168,15 @@ async function extractPageData(page: Page, domain: string, responseTimeMs: numbe
         const allImgs = Array.from(document.querySelectorAll('img')) as HTMLImageElement[];
         const imgTotal = allImgs.length;
         const imgWithAlt = allImgs.filter(img => img.alt && img.alt.trim().length > 0).length;
-        return { wordCount: words.length, internalLinks, externalLinks, hasH1, h2Count, h3Count, imgTotal, imgWithAlt };
+
+        // NEW: Get actual internal URLs for mapping
+        const internalUrls = Array.from(new Set(
+            allLinks
+                .map(a => a.href.split('#')[0].replace(/\/$/, ""))
+                .filter(href => href.includes(domainStr) && !href.match(/\.(jpg|jpeg|png|gif|pdf|zip|css|js)$/i))
+        ));
+
+        return { wordCount: words.length, internalLinks, externalLinks, hasH1, h2Count, h3Count, imgTotal, imgWithAlt, internalUrls };
     }, domain);
 
     return {
@@ -186,6 +195,7 @@ async function extractPageData(page: Page, domain: string, responseTimeMs: numbe
         h3Count: pageSignals.h3Count,
         imgTotal: pageSignals.imgTotal,
         imgWithAlt: pageSignals.imgWithAlt,
+        outboundLinks: pageSignals.internalUrls,
         isHttps: url.startsWith('https://'),
         responseTimeMs,
     };
