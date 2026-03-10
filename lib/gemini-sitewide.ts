@@ -33,8 +33,12 @@ export async function analyzeSitewideIntelligence(context: {
   
   // 1. Schema Quality (deterministic validation)
   const schemaValidations = context.pages.map(p => validateSchemas(p.schemas));
-  const avgSchemaScore = schemaValidations.reduce((sum, v) => sum + v.score, 0) / context.pages.length;
-  const schemaCoverage = (schemaValidations.filter(v => v.hasSchema).length / context.pages.length) * 100;
+  const avgSchemaScore = context.pages.length > 0 
+    ? schemaValidations.reduce((sum, v) => sum + v.score, 0) / context.pages.length 
+    : 0;
+  const schemaCoverage = context.pages.length > 0 
+    ? (schemaValidations.filter(v => v.hasSchema).length / context.pages.length) * 100 
+    : 0;
   
   // Aggregate all schema issues
   const allSchemaIssues = schemaValidations.flatMap((v, idx) => 

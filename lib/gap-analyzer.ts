@@ -181,13 +181,17 @@ export function identifyContentGaps(
   const gaps: CompetitorGap[] = [];
   
   // Average word count comparison
-  const targetAvgWords = targetSite.pages.reduce((sum, p) => sum + p.wordCount, 0) / targetSite.pages.length;
+  const targetAvgWords = targetSite.pages.length > 0 
+    ? targetSite.pages.reduce((sum, p) => sum + p.wordCount, 0) / targetSite.pages.length 
+    : 0;
   const competitorAvgWords = competitors.map(c => 
-    c.pages.reduce((sum, p) => sum + p.wordCount, 0) / c.pages.length
+    c.pages.length > 0 ? c.pages.reduce((sum, p) => sum + p.wordCount, 0) / c.pages.length : 0
   );
-  const avgCompetitorWords = competitorAvgWords.reduce((sum, w) => sum + w, 0) / competitors.length;
+  const avgCompetitorWords = competitors.length > 0 
+    ? competitorAvgWords.reduce((sum, w) => sum + w, 0) / competitors.length 
+    : 0;
   
-  if (targetAvgWords < avgCompetitorWords * 0.7) {
+  if (targetAvgWords < avgCompetitorWords * 0.7 && avgCompetitorWords > 0) {
     gaps.push({
       type: 'content',
       category: 'Content Depth',
@@ -204,7 +208,9 @@ export function identifyContentGaps(
   const competitorFAQPages = competitors.map(c => 
     c.pages.filter(p => /faq|question/i.test(p.url)).length
   );
-  const avgCompetitorFAQ = competitorFAQPages.reduce((sum, n) => sum + n, 0) / competitors.length;
+  const avgCompetitorFAQ = competitors.length > 0 
+    ? competitorFAQPages.reduce((sum, n) => sum + n, 0) / competitors.length 
+    : 0;
   
   if (targetFAQPages === 0 && avgCompetitorFAQ > 0) {
     gaps.push({
@@ -290,17 +296,24 @@ export function calculateAdvantageScore(
   }
   
   // Page count advantage
-  if (targetSite.pagesCrawled > competitors.reduce((sum, c) => sum + c.pagesCrawled, 0) / competitors.length) {
+  const avgCompetitorPages = competitors.length > 0 
+    ? competitors.reduce((sum, c) => sum + c.pagesCrawled, 0) / competitors.length 
+    : 0;
+  if (targetSite.pagesCrawled > avgCompetitorPages) {
     score += 5;
   }
   
   // Content depth advantage
-  const targetAvgWords = targetSite.pages.reduce((sum, p) => sum + p.wordCount, 0) / targetSite.pages.length;
-  const avgCompetitorWords = competitors.reduce((sum, c) => 
-    c.pages.reduce((s, p) => s + p.wordCount, 0) / c.pages.length, 0
-  ) / competitors.length;
+  const targetAvgWords = targetSite.pages.length > 0 
+    ? targetSite.pages.reduce((sum, p) => sum + p.wordCount, 0) / targetSite.pages.length 
+    : 0;
+  const avgCompetitorWords = competitors.length > 0 
+    ? competitors.reduce((sum, c) => 
+        c.pages.length > 0 ? c.pages.reduce((s, p) => s + p.wordCount, 0) / c.pages.length : 0, 0
+      ) / competitors.length 
+    : 0;
   
-  if (targetAvgWords > avgCompetitorWords * 1.2) {
+  if (targetAvgWords > avgCompetitorWords * 1.2 && avgCompetitorWords > 0) {
     score += 10;
   }
   
@@ -318,11 +331,13 @@ export function identifyStrengths(
   
   // Schema diversity strength
   const targetSchemaTypes = new Set(targetSite.pages.flatMap(p => p.schemaTypes));
-  const avgCompetitorSchemaTypes = competitors.reduce((sum, c) => 
-    sum + new Set(c.pages.flatMap(p => p.schemaTypes)).size, 0
-  ) / competitors.length;
+  const avgCompetitorSchemaTypes = competitors.length > 0 
+    ? competitors.reduce((sum, c) => 
+        sum + new Set(c.pages.flatMap(p => p.schemaTypes)).size, 0
+      ) / competitors.length 
+    : 0;
   
-  if (targetSchemaTypes.size > avgCompetitorSchemaTypes * 1.2) {
+  if (targetSchemaTypes.size > avgCompetitorSchemaTypes * 1.2 && avgCompetitorSchemaTypes > 0) {
     strengths.push({
       category: 'Schema Diversity',
       description: `You have ${targetSchemaTypes.size} schema types, competitors average ${Math.round(avgCompetitorSchemaTypes)}`,
@@ -332,10 +347,14 @@ export function identifyStrengths(
   }
   
   // Content depth strength
-  const targetAvgWords = targetSite.pages.reduce((sum, p) => sum + p.wordCount, 0) / targetSite.pages.length;
-  const avgCompetitorWords = competitors.reduce((sum, c) => 
-    c.pages.reduce((s, p) => s + p.wordCount, 0) / c.pages.length, 0
-  ) / competitors.length;
+  const targetAvgWords = targetSite.pages.length > 0 
+    ? targetSite.pages.reduce((sum, p) => sum + p.wordCount, 0) / targetSite.pages.length 
+    : 0;
+  const avgCompetitorWords = competitors.length > 0 
+    ? competitors.reduce((sum, c) => 
+        c.pages.length > 0 ? c.pages.reduce((s, p) => s + p.wordCount, 0) / c.pages.length : 0, 0
+      ) / competitors.length 
+    : 0;
   
   if (targetAvgWords > avgCompetitorWords * 1.2) {
     strengths.push({

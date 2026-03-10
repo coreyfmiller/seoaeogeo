@@ -563,7 +563,7 @@ export default function SiteAnalysis() {
                                 analysisData && (
                                     <div ref={reportRef} data-report className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                                         {/* Error boundary - if data is malformed, show error */}
-                                        {!analysisData.ai && !analysisData.pages ? (
+                                        {(!analysisData.ai && (!analysisData.pages || analysisData.pages.length === 0)) ? (
                                             <Card className="border-destructive/50 bg-destructive/10">
                                                 <CardContent className="p-6">
                                                     <div className="flex items-center gap-3">
