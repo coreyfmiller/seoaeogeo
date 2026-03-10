@@ -178,6 +178,12 @@ export function PriorityMatrix({ recommendations, onRecommendationClick }: Prior
           {/* Legend */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {Object.entries(categoryConfig).map(([category, config]) => {
+              // Safety check - skip if config is invalid
+              if (!config || !config.border || !config.bg || !config.label) {
+                console.warn('[PriorityMatrix] Invalid config in legend for category:', category)
+                return null
+              }
+              
               const count = recommendations.filter(r => r.category === category).length
               if (count === 0) return null
               
@@ -196,7 +202,7 @@ export function PriorityMatrix({ recommendations, onRecommendationClick }: Prior
           {/* Category Breakdown */}
           <div className="space-y-3">
             {/* Quick Wins */}
-            {quickWins.length > 0 && (
+            {quickWins.length > 0 && categoryConfig['Quick Win'] && (
               <div className={cn("p-4 rounded-xl border", categoryConfig['Quick Win'].border, categoryConfig['Quick Win'].bg)}>
                 <div className="flex items-center gap-2 mb-3">
                   <Zap className={cn("h-4 w-4", categoryConfig['Quick Win'].color)} />
@@ -225,7 +231,7 @@ export function PriorityMatrix({ recommendations, onRecommendationClick }: Prior
             )}
 
             {/* High Priority */}
-            {highPriority.length > 0 && (
+            {highPriority.length > 0 && categoryConfig['High Priority'] && (
               <div className={cn("p-4 rounded-xl border", categoryConfig['High Priority'].border, categoryConfig['High Priority'].bg)}>
                 <div className="flex items-center gap-2 mb-3">
                   <TrendingUp className={cn("h-4 w-4", categoryConfig['High Priority'].color)} />
