@@ -39,6 +39,7 @@ import { PriorityMatrix } from "@/components/dashboard/priority-matrix"
 import { FixInstructionCard } from "@/components/dashboard/fix-instruction-card"
 import { CompetitorGapView } from "@/components/dashboard/competitor-gap-view"
 import { CrawlProgress } from "@/components/dashboard/crawl-progress"
+import { validateAnalysisData } from "@/lib/data-validator"
 
 // Enhanced tooltip component with better visibility
 function InfoTooltip({ text, title }: { text: string; title?: string }) {
@@ -249,7 +250,13 @@ export default function SiteAnalysis() {
                     throw new Error('Invalid response: missing required data')
                 }
                 
-                setAnalysisData(data)
+                // VALIDATE AND SANITIZE ALL DATA
+                const validatedData = validateAnalysisData(data)
+                if (!validatedData) {
+                    throw new Error('Data validation failed')
+                }
+                
+                setAnalysisData(validatedData)
                 setApiStatus("healthy")
                 setCrawlProgress(prev => ({ ...prev, stage: 'complete' }))
             } else {
