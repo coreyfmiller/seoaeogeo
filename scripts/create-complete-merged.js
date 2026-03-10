@@ -35,9 +35,14 @@ content = content.replace(
 
 // 5. Add scanMode to sessionStorage save
 content = content.replace(
-  '}, [url, analysisData])',
-  `, scanMode])
-            sessionStorage.setItem("merged_scan_mode", scanMode)`
+  '    }, [url, analysisData])',
+  `    }, [url, analysisData, scanMode])
+    
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            sessionStorage.setItem("merged_scan_mode", scanMode)
+        }
+    }, [scanMode])`
 );
 
 // 6. Update maxPages to use scanMode

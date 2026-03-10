@@ -211,8 +211,13 @@ export default function MergedDashboard() {
             if (url) sessionStorage.setItem("merged_url", url)
             if (analysisData) sessionStorage.setItem("merged_data", JSON.stringify(analysisData))
         }
-    , scanMode])
+    }, [url, analysisData, scanMode])
+    
+    useEffect(() => {
+        if (typeof window !== "undefined") {
             sessionStorage.setItem("merged_scan_mode", scanMode)
+        }
+    }, [scanMode])
 
     const handleDeepAudit = async (targetUrl: string, config?: typeof crawlConfig) => {
         setIsAnalyzing(true)
