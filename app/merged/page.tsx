@@ -854,17 +854,17 @@ export default function MergedDashboard() {
                                                                 <h4 className="text-sm font-black uppercase tracking-wider text-seo">Schema Type Distribution</h4>
                                                             </div>
                                                             <Badge className="bg-seo/20 text-seo border-seo/40 text-xs font-black">
-                                                                {pagesWithSchema.length} / {analysisData.pages.length} Pages
+                                                                {pagesWithSchema.length} / {pages.length} Pages
                                                             </Badge>
                                                         </div>
                                                         <p className="text-xs text-muted-foreground mb-3">Structured data fingerprints detected across your site architecture</p>
                                                         <div className="flex flex-wrap gap-2">
-                                                            {[...new Set(analysisData.pages.flatMap((p: any) => p.schemaTypes || []))].map((type: any) => (
+                                                            {[...new Set(pages.flatMap((p: any) => p.schemaTypes || []))].map((type: any) => (
                                                                 <Badge key={type} variant="outline" className="border-seo/30 text-seo bg-background font-bold text-xs px-3 py-1 shadow-sm">
                                                                     {type}
                                                                 </Badge>
                                                             ))}
-                                                            {analysisData.pages.flatMap((p: any) => p.schemaTypes || []).length === 0 && (
+                                                            {pages.flatMap((p: any) => p.schemaTypes || []).length === 0 && (
                                                                 <div className="flex flex-col items-center py-4 w-full text-center">
                                                                     <AlertCircle className="h-6 w-6 text-muted-foreground/30 mb-2" />
                                                                     <p className="text-xs text-muted-foreground italic">No structured data found. You are missing out on rich results and AI-engine knowledge graph inclusion.</p>
@@ -1374,7 +1374,7 @@ export default function MergedDashboard() {
                                                 </CardHeader>
                                                 <CardContent>
                                                     <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-                                                        {analysisData.pages.map((p: any, i: number) => {
+                                                        {pages.map((p: any, i: number) => {
                                                             const ms = p.responseTimeMs || 0
                                                             const pct = Math.min((ms / 4000) * 100, 100)
                                                             const color = ms < 1000 ? "bg-geo" : ms < 2000 ? "bg-aeo" : "bg-destructive"
@@ -1422,7 +1422,7 @@ export default function MergedDashboard() {
                                                                 </tr>
                                                             </thead>
                                                             <tbody className="divide-y divide-border/30">
-                                                                {analysisData.pages.slice(0, 12).map((p: any, i: number) => (
+                                                                {pages.slice(0, 12).map((p: any, i: number) => (
                                                                     <tr key={i} className="hover:bg-muted/30 transition-colors">
                                                                         <td className="py-2 font-mono truncate max-w-[120px]">{new URL(p.url).pathname || "/"}</td>
                                                                         <td className="py-2 text-center">
@@ -1455,7 +1455,7 @@ export default function MergedDashboard() {
 
                                         {/* ── HTTPS Violations (conditional) ── */}
                                         {(() => {
-                                            const httpViolations = analysisData.pages.filter((p: any) => !p.isHttps)
+                                            const httpViolations = pages.filter((p: any) => !p.isHttps)
                                             if (httpViolations.length === 0) return null
                                             return (
                                                 <Card className="border-destructive/30 bg-destructive/5">
@@ -1542,14 +1542,14 @@ export default function MergedDashboard() {
                                                 <CardContent>
                                                     <div className="space-y-4">
                                                         {[
-                                                            { label: "H1 Coverage", pct: Math.round((analysisData.pages.filter((p: any) => p.hasH1).length / Math.max(analysisData.pages.length, 1)) * 100), count: analysisData.pages.filter((p: any) => p.hasH1).length, color: "bg-geo", textColor: "text-geo", desc: "pages have an H1 heading" },
-                                                            { label: "H2 Coverage", pct: Math.round((pagesWithH2 / Math.max(analysisData.pages.length, 1)) * 100), count: pagesWithH2, color: "bg-aeo", textColor: "text-aeo", desc: "pages have H2 subheadings" },
-                                                            { label: "H3 Coverage", pct: Math.round((pagesWithH3 / Math.max(analysisData.pages.length, 1)) * 100), count: pagesWithH3, color: "bg-seo", textColor: "text-seo", desc: "pages have H3 subheadings" },
+                                                            { label: "H1 Coverage", pct: Math.round((pages.filter((p: any) => p.hasH1).length / Math.max(pages.length, 1)) * 100), count: pages.filter((p: any) => p.hasH1).length, color: "bg-geo", textColor: "text-geo", desc: "pages have an H1 heading" },
+                                                            { label: "H2 Coverage", pct: Math.round((pagesWithH2 / Math.max(pages.length, 1)) * 100), count: pagesWithH2, color: "bg-aeo", textColor: "text-aeo", desc: "pages have H2 subheadings" },
+                                                            { label: "H3 Coverage", pct: Math.round((pagesWithH3 / Math.max(pages.length, 1)) * 100), count: pagesWithH3, color: "bg-seo", textColor: "text-seo", desc: "pages have H3 subheadings" },
                                                         ].map(h => (
                                                             <div key={h.label} className="space-y-1.5">
                                                                 <div className="flex items-center justify-between text-xs">
                                                                     <span className="font-bold">{h.label}</span>
-                                                                    <span className={cn("font-black", h.textColor)}>{h.count} / {analysisData.pages.length} pages</span>
+                                                                    <span className={cn("font-black", h.textColor)}>{h.count} / {pages.length} pages</span>
                                                                 </div>
                                                                 <div className="h-2 bg-muted rounded-full overflow-hidden">
                                                                     <div className={cn("h-full rounded-full", h.color)} style={{ width: `${h.pct}%` }} />
@@ -1586,7 +1586,7 @@ export default function MergedDashboard() {
                                                         </div>
                                                     </div>
                                                     <div className="space-y-2 max-h-44 overflow-y-auto pr-1">
-                                                        {analysisData.pages.filter((p: any) => (p.imgTotal || 0) > 0).map((p: any, i: number) => {
+                                                        {pages.filter((p: any) => (p.imgTotal || 0) > 0).map((p: any, i: number) => {
                                                             const pct = p.imgTotal > 0 ? Math.round((p.imgWithAlt / p.imgTotal) * 100) : 100
                                                             return (
                                                                 <div key={i} className="flex items-center gap-2 text-xs">
@@ -1640,11 +1640,11 @@ export default function MergedDashboard() {
                                                 </CardContent>
                                             </Card>
                                         )}
-                                        {(duplicateTitles.length === 0 && duplicateMetas.length === 0 && analysisData.pages.length > 0) && (
+                                        {(duplicateTitles.length === 0 && duplicateMetas.length === 0 && pages.length > 0) && (
                                             <Card className="border-geo/20 bg-geo/5">
                                                 <CardContent className="flex items-center gap-3 py-4">
                                                     <CheckCircle2 className="h-5 w-5 text-geo shrink-0" />
-                                                    <p className="text-sm font-medium text-geo">No duplicate titles or meta descriptions detected across {analysisData.pages.length} analysisData.pages.</p>
+                                                    <p className="text-sm font-medium text-geo">No duplicate titles or meta descriptions detected across {pages.length} pages.</p>
                                                 </CardContent>
                                             </Card>
                                         )}
