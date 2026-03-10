@@ -84,6 +84,11 @@ export async function analyzeSitewideIntelligence(context: {
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
+  console.log('[GEMINI-SITEWIDE] Starting AI analysis for:', context.domain);
+  console.log('[GEMINI-SITEWIDE] Analyzing', context.pages.length, 'pages');
+  console.log('[GEMINI-SITEWIDE] Schema health score:', schemaHealthAudit.overallScore);
+  console.log('[GEMINI-SITEWIDE] Brand consistency score:', brandConsistency);
+
   const pagesSummary = context.pages.map(p => `
   - URL: ${p.url}
   - Title: ${p.title || "MISSING"}
@@ -300,8 +305,10 @@ export async function analyzeSitewideIntelligence(context: {
     `;
 
   try {
+    console.log('[GEMINI-SITEWIDE] Calling Gemini API...');
     const result = await model.generateContent(prompt);
     const responseText = result.response.text();
+    console.log('[GEMINI-SITEWIDE] Received response, length:', responseText.length);
 
     // Log Usage
     if (result.response.usageMetadata) {
@@ -315,12 +322,17 @@ export async function analyzeSitewideIntelligence(context: {
     }
 
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("Could not parse AI response as JSON");
+    if (!jsonMatch) {
+      console.error('[GEMINI-SITEWIDE] Failed to extract JSON from response');
+      throw new Error("Could not parse AI response as JSON");
+    }
 
     const aiResult = JSON.parse(jsonMatch[0]);
+    console.log('[GEMINI-SITEWIDE] Parsed AI result, domainHealthScore:', aiResult.domainHealthScore);
+    console.log('[GEMINI-SITEWIDE] AI recommendations count:', aiResult.recommendations?.length || 0);
     
     // Merge deterministic calculations with AI analysis
-    return {
+    const finalResult = {
       ...aiResult,
       consistencyScore: brandConsistency, // Override AI's brand consistency with deterministic value
       brandConsistencyBreakdown: brandConsistencyResult.breakdown, // Add detailed breakdown
@@ -339,8 +351,11 @@ export async function analyzeSitewideIntelligence(context: {
         model: "gemini-2.5-flash"
       }
     };
+    
+    console.log('[GEMINI-SITEWIDE] Final result assembled, returning to API');
+    return finalResult;
   } catch (error) {
-    console.error("Gemini Sitewide Analysis Error:", error);
+    console.error("[GEMINI-SITEWIDE] Error:", error);
     throw error;
   }
 }

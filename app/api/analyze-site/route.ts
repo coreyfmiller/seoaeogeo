@@ -62,6 +62,8 @@ export async function POST(req: Request) {
                 outboundLinks: p.outboundLinks,
             }))
         });
+        console.log(`[API PRO] AI analysis complete. Domain health score:`, aiAnalysis.domainHealthScore);
+        console.log(`[API PRO] AI analysis keys:`, Object.keys(aiAnalysis));
 
         // 4. Calculate Aggregate Metrics for Dashboard
         const totalWords = scanResults.pages.reduce((acc, p) => acc + (p.wordCount || 0), 0);
