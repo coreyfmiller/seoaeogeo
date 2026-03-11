@@ -1,6 +1,7 @@
 import { chromium as playwright, type Browser, type Page } from 'playwright-core';
 import chromium from '@sparticuz/chromium';
 import { thinHtml, extractSchema } from './utils/cleaner';
+import { getCrawlerErrorMessage } from './utils/crawler-errors';
 
 export interface ScanResult {
     url: string;
@@ -140,7 +141,18 @@ export async function performScan(targetUrl: string): Promise<ScanResult> {
         };
     } catch (error: any) {
         console.error(`Crawler failed for ${targetUrl}:`, error);
-        throw error;
+        
+        // Get user-friendly error message
+        const crawlerError = getCrawlerErrorMessage(error);
+        
+        // Create enhanced error with user-friendly message
+        const enhancedError = new Error(crawlerError.userMessage);
+        (enhancedError as any).technicalMessage = crawlerError.technicalMessage;
+        (enhancedError as any).suggestion = crawlerError.suggestion;
+        (enhancedError as any).category = crawlerError.category;
+        (enhancedError as any).originalError = error.message;
+        
+        throw enhancedError;
     } finally {
         if (browser) await browser.close();
     }
