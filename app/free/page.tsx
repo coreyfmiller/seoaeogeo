@@ -238,17 +238,17 @@ export default function FreeDashboard() {
                   )
                 })()}
 
-                {/* Transition to Upgrade */}
-                <div className="text-center py-6">
-                  <p className="text-xl font-semibold text-foreground">
-                    Ready to fix these issues and boost your scores?
-                  </p>
-                </div>
-
                 {/* Upgrade CTA */}
                 <Card className="border-geo/30 bg-gradient-to-br from-geo/10 to-aeo/10 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-geo/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                  <CardContent className="p-8 relative">
+                  <CardContent className="p-6 relative">
+                    {/* Transition Question at Top */}
+                    <div className="text-center mb-4">
+                      <p className="text-lg font-semibold text-foreground">
+                        Ready to fix these issues and boost your scores?
+                      </p>
+                    </div>
+                    
                     <div className="flex flex-col md:flex-row items-center gap-6">
                       <div className="flex-1">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-geo/20 text-geo text-xs font-bold mb-3">
