@@ -155,7 +155,7 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" 
             <DialogTrigger asChild>
               <Button
                 size="sm"
-                className="bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 border border-yellow-500/30 font-semibold shadow-sm transition-all"
+                className="bg-green-500/10 text-green-500 hover:bg-green-500/20 border border-green-500/30 font-semibold shadow-sm transition-all"
               >
                 <Unlock className="h-4 w-4 mr-2" />
                 Go Pro
@@ -164,7 +164,7 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" 
             <DialogContent className="sm:max-w-md border-border/50 bg-background/95 backdrop-blur-md">
               <DialogHeader>
                 <DialogTitle className="text-xl flex items-center gap-2">
-                  <Lock className="h-5 w-5 text-yellow-500" />
+                  <Lock className="h-5 w-5 text-green-500" />
                   Enter Beta Authorization
                 </DialogTitle>
                 <p className="text-sm text-muted-foreground mt-2">
@@ -188,7 +188,7 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" 
                 {error && <p className="text-sm text-destructive font-medium animate-in fade-in">Invalid passcode. Please try again.</p>}
               </div>
               <DialogFooter>
-                <Button onClick={handleUnlock} className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold w-full">
+                <Button onClick={handleUnlock} className="bg-green-500 hover:bg-green-600 text-white font-bold w-full">
                   Unlock Pro Audit
                 </Button>
               </DialogFooter>

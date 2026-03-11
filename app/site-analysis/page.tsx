@@ -420,14 +420,14 @@ export default function SiteAnalysis() {
                 <main className="flex-1 overflow-y-auto p-6">
                     {!isAuthorized ? (
                         <div className="min-h-[70vh] flex flex-col items-center justify-center p-8 bg-card/50 border border-border/50 rounded-3xl animate-in zoom-in-95 mt-4 max-w-2xl mx-auto shadow-lg">
-                            <div className="h-16 w-16 bg-yellow-500/10 rounded-2xl flex items-center justify-center mb-6">
-                                <Lock className="h-8 w-8 text-yellow-500" />
+                            <div className="h-16 w-16 bg-green-500/10 rounded-2xl flex items-center justify-center mb-6">
+                                <Lock className="h-8 w-8 text-green-500" />
                             </div>
                             <h2 className="text-3xl font-bold mb-4 text-center">Pro Feature Locked</h2>
                             <p className="text-muted-foreground text-center text-lg mb-8 max-w-lg">
                                 Deep Domain Auditing is an advanced feature reserved for Pro members. Unlock the Deep Crawler to analyze up to 20 pages at once for sitewide brand intelligence, global schema coverage, and architectural health.
                             </p>
-                            <p className="text-sm font-semibold text-yellow-500 animate-pulse tracking-wider uppercase border border-yellow-500/30 bg-yellow-500/10 px-6 py-3 rounded-full">
+                            <p className="text-sm font-semibold text-green-500 animate-pulse tracking-wider uppercase border border-green-500/30 bg-green-500/10 px-6 py-3 rounded-full">
                                 ↑ Click &ldquo;Go Pro&rdquo; in the top right to unlock
                             </p>
                         </div>
@@ -439,11 +439,11 @@ export default function SiteAnalysis() {
                                     <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
                                         <Activity className="h-6 w-6 text-seo" />
                                         Deep Crawler
-                                        <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20 px-3 py-1">
+                                        <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-green-500/20 px-3 py-1">
                                             PRO
                                         </Badge>
                                     </h1>
-                                    <p className="text-muted-foreground mt-2 max-w-2xl">
+                                    <p className="text-sm text-muted-foreground mt-2">
                                         Full domain authority audit — sitewide schema coverage, content gaps, cannibalization detection, and internal link architecture.
                                     </p>
                                     {analysisData && (

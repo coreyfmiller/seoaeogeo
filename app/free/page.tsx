@@ -128,7 +128,7 @@ export default function FreeDashboard() {
                     </span>
                   </div>
                 ) : (
-                  <p className="text-muted-foreground mt-2">
+                  <p className="text-sm text-muted-foreground mt-2">
                     Free 5-page site scan with domain-level insights
                   </p>
                 )}

@@ -26,6 +26,8 @@ import {
   Download,
   Copy,
   Check,
+  Lock,
+  Zap,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -38,10 +40,12 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null)
   const [apiStatus, setApiStatus] = useState<"healthy" | "error" | "idle">("idle")
   const [reportCopied, setReportCopied] = useState(false)
+  const [isProUnlocked, setIsProUnlocked] = useState(false)
 
   // Restore state from sessionStorage on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
+      setIsProUnlocked(localStorage.getItem("isProUnlocked") === "true")
       const savedUrl = sessionStorage.getItem("dashboard_url")
       const savedData = sessionStorage.getItem("dashboard_data")
       if (savedUrl) setCurrentUrl(savedUrl)
@@ -177,8 +181,22 @@ export default function Dashboard() {
         />
 
         {/* Dashboard Content */}
-        <main className="flex-1 overflow-y-auto">
-          <div className="p-6">
+        <main className="flex-1 overflow-y-auto p-6">
+          {!isProUnlocked ? (
+            <div className="min-h-[70vh] flex flex-col items-center justify-center p-8 bg-card/50 border border-border/50 rounded-3xl animate-in zoom-in-95 mt-4 max-w-2xl mx-auto shadow-lg">
+              <div className="h-16 w-16 bg-green-500/10 rounded-2xl flex items-center justify-center mb-6">
+                <Lock className="h-8 w-8 text-green-500" />
+              </div>
+              <h2 className="text-3xl font-bold mb-4 text-center">Pro Feature Locked</h2>
+              <p className="text-muted-foreground text-center text-lg mb-8 max-w-lg">
+                Pro Audit provides detailed fix instructions, priority scoring, and comprehensive single-page analysis with AI-powered recommendations.
+              </p>
+              <p className="text-sm font-semibold text-green-500 animate-pulse tracking-wider uppercase border border-green-500/30 bg-green-500/10 px-6 py-3 rounded-full">
+                ↑ Click &ldquo;Go Pro&rdquo; in the top right to unlock
+              </p>
+            </div>
+          ) : (
+          <div className="max-w-7xl mx-auto">
             {/* Page Header */}
             <div className="mb-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -186,7 +204,7 @@ export default function Dashboard() {
                   <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
                     <Activity className="h-6 w-6 text-seo" />
                     Pro Audit
-                    <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20 px-3 py-1">
+                    <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-green-500/20 px-3 py-1">
                       PRO
                     </Badge>
                   </h1>
@@ -410,6 +428,7 @@ export default function Dashboard() {
               </div>
             )}
           </div>
+          )}
         </main>
       </div>
     </div>

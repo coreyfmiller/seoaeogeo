@@ -96,14 +96,14 @@ export default function SiteVsSite() {
                 />
 
                 <main className="flex-1 overflow-y-auto p-6">
-                    <div className="max-w-6xl mx-auto">
+                    <div className="max-w-7xl mx-auto">
                         <div className="mb-10 flex items-start justify-between gap-4">
                             <div className="text-center sm:text-left">
                                 <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
                                     <Activity className="h-6 w-6 text-seo" />
                                     Competitive Intel
                                 </h1>
-                                <p className="text-muted-foreground mt-2 max-w-2xl text-lg">
+                                <p className="text-sm text-muted-foreground mt-2">
                                     Benchmark SEO, AEO, and GEO citation metrics between your brand and a competitor.
                                     Identify exactly how they are winning and how to reclaim your visibility.
                                 </p>

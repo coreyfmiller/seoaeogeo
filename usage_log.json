@@ -1267,5 +1267,23 @@
     "url": "pizzatwice.com",
     "timestamp": "2026-03-11T16:50:23.458Z",
     "cost": 0.042831425
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 3501,
+    "outputTokens": 3102,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-11T18:35:43.101Z",
+    "cost": 0.036192975
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 3999,
+    "outputTokens": 2492,
+    "url": "www.fundylogic.com",
+    "timestamp": "2026-03-11T18:36:03.043Z",
+    "cost": 0.031774924999999996
   }
 ]
