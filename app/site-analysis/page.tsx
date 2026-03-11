@@ -29,6 +29,7 @@ import {
     Map,
     Info,
     Code2,
+    RefreshCw,
 } from "lucide-react"
 import { SemanticMap } from "@/components/dashboard/semantic-map"
 import { CrawlConfig } from "@/components/dashboard/crawl-config"
@@ -38,6 +39,7 @@ import { PageComparisonTable } from "@/components/dashboard/page-comparison-tabl
 import { FixInstructionCard } from "@/components/dashboard/fix-instruction-card"
 import { CompetitorGapView } from "@/components/dashboard/competitor-gap-view"
 import { CrawlProgress } from "@/components/dashboard/crawl-progress"
+import { ProLockScreen } from "@/components/dashboard/pro-lock-screen"
 import { validateAnalysisData } from "@/lib/data-validator"
 
 // Enhanced tooltip component with better visibility

@@ -204,8 +204,23 @@
     }
   }
 
+  @keyframes progress-slow {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(200%);
+    }
+  }
+
   .animate-progress-fast {
     animation: progress-fast 1.5s infinite linear;
+    width: 100%;
+  }
+
+  .animate-progress-slow {
+    animation: progress-slow 20s ease-in-out infinite;
     width: 100%;
   }
 }

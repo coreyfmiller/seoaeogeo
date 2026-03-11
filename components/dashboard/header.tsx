@@ -189,7 +189,7 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" 
               </div>
               <DialogFooter>
                 <Button onClick={handleUnlock} className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold w-full">
-                  Unlock Pro Dashboard
+                  Unlock Pro Audit
                 </Button>
               </DialogFooter>
             </DialogContent>

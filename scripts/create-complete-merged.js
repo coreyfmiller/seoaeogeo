@@ -33,7 +33,7 @@ content = content.replace(
             if (savedMode) setScanMode(savedMode as "quick" | "deep")`
 );
 
-// 5. Add scanMode to sessionStorage save
+// 5. Add scanMode to sessionStorage save`
 content = content.replace(
   '    }, [url, analysisData])',
   `    }, [url, analysisData, scanMode])

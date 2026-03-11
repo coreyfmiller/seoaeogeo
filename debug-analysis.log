@@ -1,30 +1,55 @@
-[2026-03-11T01:18:00.686Z] [API PRO] Starting Deep Site Audit
+[2026-03-11T14:46:05.960Z] [API PRO] Starting Deep Site Audit
 {
   "url": "pizzatwice.com",
-  "maxPages": 1
+  "maxPages": 10
 }
-[2026-03-11T01:18:02.664Z] [GEMINI-SITEWIDE] Starting AI analysis
+[2026-03-11T14:46:08.557Z] [API PRO] Grader V2 aggregation
+{
+  "seo": 79,
+  "aeo": 73,
+  "geo": 100,
+  "averages": {
+    "seo": 78,
+    "aeo": 70,
+    "geo": 100
+  },
+  "range": {
+    "seo": {
+      "min": 72,
+      "max": 84
+    },
+    "aeo": {
+      "min": 60,
+      "max": 100
+    },
+    "geo": {
+      "min": 100,
+      "max": 100
+    }
+  }
+}
+[2026-03-11T14:46:09.037Z] [GEMINI-SITEWIDE] Starting AI analysis
 {
   "domain": "pizzatwice.com",
-  "pageCount": 1
+  "pageCount": 8
 }
-[2026-03-11T01:18:02.664Z] [GEMINI-SITEWIDE] Schema health score
+[2026-03-11T14:46:09.038Z] [GEMINI-SITEWIDE] Schema health score
+{
+  "score": 25
+}
+[2026-03-11T14:46:09.048Z] [GEMINI-SITEWIDE] Brand consistency score
 {
   "score": 100
 }
-[2026-03-11T01:18:02.665Z] [GEMINI-SITEWIDE] Brand consistency score
+[2026-03-11T14:46:09.052Z] [GEMINI-SITEWIDE] Calling Gemini API
+[2026-03-11T14:46:46.737Z] [GEMINI-SITEWIDE] Received response
 {
-  "score": 100
+  "length": 14892,
+  "preview": "```json\n{\n  \"domainHealthScore\": 68,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 70,\n    \"schemaQuality\": 20,\n    \"metadataQuality\": 95,\n    \"technicalHealth\": 85,\n    \"architectureHealth\": 90\n"
 }
-[2026-03-11T01:18:02.666Z] [GEMINI-SITEWIDE] Calling Gemini API
-[2026-03-11T01:18:48.168Z] [GEMINI-SITEWIDE] Received response
+[2026-03-11T14:46:46.739Z] [GEMINI-SITEWIDE] Parsed AI result
 {
-  "length": 13265,
-  "preview": "```json\n{\n  \"domainHealthScore\": 86,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 70,\n    \"schemaQuality\": 70,\n    \"metadataQuality\": 100,\n    \"technicalHealth\": 90,\n    \"architectureHealth\": 10"
-}
-[2026-03-11T01:18:48.182Z] [GEMINI-SITEWIDE] Parsed AI result
-{
-  "domainHealthScore": 86,
+  "domainHealthScore": 68,
   "recommendationsCount": 6,
   "keys": [
     "domainHealthScore",
@@ -45,15 +70,15 @@
     "recommendations"
   ]
 }
-[2026-03-11T01:18:48.183Z] [GEMINI-SITEWIDE] Final result assembled
+[2026-03-11T14:46:46.739Z] [GEMINI-SITEWIDE] Final result assembled
 {
-  "domainHealthScore": 86,
+  "domainHealthScore": 68,
   "consistencyScore": 100,
-  "schemaScore": 100
+  "schemaScore": 25
 }
-[2026-03-11T01:18:48.186Z] [API PRO] AI analysis complete
+[2026-03-11T14:46:46.740Z] [API PRO] AI analysis complete
 {
-  "domainHealthScore": 86,
+  "domainHealthScore": 68,
   "keys": [
     "domainHealthScore",
     "domainHealthBreakdown",
@@ -79,10 +104,13 @@
   "hasRecommendations": true,
   "recommendationsCount": 6
 }
-[2026-03-11T01:18:48.187Z] [API PRO] Final data assembled
+[2026-03-11T14:46:46.741Z] [API PRO] Final data assembled
 {
-  "pagesCrawled": 1,
+  "pagesCrawled": 8,
   "globalTechScore": 100,
-  "aiDomainHealthScore": 86,
+  "graderSEO": 79,
+  "graderAEO": 73,
+  "graderGEO": 100,
+  "aiDomainHealthScore": 68,
   "aiConsistencyScore": 100
 }
