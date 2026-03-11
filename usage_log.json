@@ -1258,5 +1258,14 @@
     "url": "fundylogic.com",
     "timestamp": "2026-03-11T16:05:15.619Z",
     "cost": 0.045347575
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 4223,
+    "outputTokens": 3651,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-11T16:50:23.458Z",
+    "cost": 0.042831425
   }
 ]
