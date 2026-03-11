@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { Header } from "@/components/dashboard/header"
+import { DualSearchInput } from "@/components/dashboard/search-input"
 import { Badge } from "@/components/ui/badge"
 import {
     Globe,
@@ -101,9 +102,6 @@ export default function SiteVsSite() {
                                 <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
                                     <Swords className="h-6 w-6 text-aeo" />
                                     Competitive Intel
-                                    <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20 px-3 py-1">
-                                        PRO
-                                    </Badge>
                                 </h1>
                                 <p className="text-muted-foreground mt-2 max-w-2xl text-lg">
                                     Benchmark SEO, AEO, and GEO citation metrics between your brand and a competitor.
@@ -154,63 +152,13 @@ export default function SiteVsSite() {
                                 <div className="absolute top-0 left-0 w-96 h-96 bg-seo/10 rounded-full blur-[100px] pointer-events-none" />
                                 <div className="absolute bottom-0 right-0 w-96 h-96 bg-aeo/10 rounded-full blur-[100px] pointer-events-none" />
 
-                                <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-6 w-full items-center relative z-10">
-                                    {/* Site A */}
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold text-muted-foreground ml-1 uppercase tracking-wider text-seo">Site 1</label>
-                                        <div className="relative group">
-                                            <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-seo transition-colors" />
-                                            <input
-                                                id="siteA"
-                                                type="text"
-                                                value={siteA}
-                                                onChange={(e) => setSiteA(e.target.value)}
-                                                placeholder="fundylogic.com"
-                                                className="w-full pl-10 pr-4 py-3 bg-muted/50 border border-border/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-seo/20 focus:border-seo/50 transition-all text-sm"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* VS Divider */}
-                                    <div className="flex flex-col items-center justify-center pt-6 md:pt-0">
-                                        <div className="h-12 w-px bg-border/50 hidden md:block" />
-                                        <div className="h-10 w-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center font-bold text-sm text-foreground italic z-10 shrink-0">
-                                            VS
-                                        </div>
-                                        <div className="h-12 w-px bg-border/50 hidden md:block" />
-                                    </div>
-
-                                    {/* Site B */}
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold text-muted-foreground ml-1 uppercase tracking-wider text-aeo">Site 2</label>
-                                        <div className="relative group">
-                                            <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-aeo transition-colors" />
-                                            <input
-                                                id="siteB"
-                                                type="text"
-                                                value={siteB}
-                                                onChange={(e) => setSiteB(e.target.value)}
-                                                placeholder="competitor.ca"
-                                                className="w-full pl-10 pr-4 py-3 bg-muted/50 border border-border/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-aeo/20 focus:border-aeo/50 transition-all text-sm"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-8 relative z-10">
-                                    <button
-                                        onClick={() => {
-                                            if (siteA && siteB) handleBattle(siteA, siteB);
-                                        }}
-                                        disabled={isAnalyzing}
-                                        className={cn(
-                                            "group relative flex items-center justify-center px-8 py-3 bg-foreground text-background rounded-lg font-bold text-base hover:scale-105 active:scale-95 transition-all shadow-md hover:shadow-lg ring-2 ring-transparent hover:ring-foreground/10",
-                                            isAnalyzing && "opacity-70 pointer-events-none"
-                                        )}
-                                    >
-                                        Compare Now
-                                        <Zap className="inline-block ml-2 h-5 w-5" />
-                                    </button>
+                                <div className="relative z-10 w-full">
+                                    <DualSearchInput
+                                        onSubmit={(urlA, urlB) => handleBattle(urlA, urlB)}
+                                        isAnalyzing={isAnalyzing}
+                                        placeholderA="fundylogic.com"
+                                        placeholderB="competitor.ca"
+                                    />
                                 </div>
 
                                 <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 w-full max-w-4xl text-center">

@@ -2,87 +2,32 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
 import {
-  Bot,
-  Quote,
-  TrendingUp,
-  Sparkles,
-  MessageCircle,
-  ExternalLink,
+  CheckCircle2,
   Shield,
   ImageIcon,
+  Sparkles,
+  Bot,
+  AlertTriangle,
+  Info,
+  ChevronDown,
+  Copy,
+  Check,
+  Zap,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import {
-  Bar,
-  BarChart,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Cell,
-} from "recharts"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
+import { useState } from "react"
 
-const aiCitations = [
-  {
-    llm: "ChatGPT",
-    query: "Best SEO analytics platforms",
-    context: "SearchIQ is mentioned as a leading search intelligence platform...",
-    sentiment: "positive",
-    date: "2 hours ago",
-  },
-  {
-    llm: "Claude",
-    query: "How to optimize for AI search",
-    context: "According to SearchIQ's methodology, answer engine optimization...",
-    sentiment: "positive",
-    date: "5 hours ago",
-  },
-  {
-    llm: "Gemini",
-    query: "Search intelligence tools comparison",
-    context: "When comparing tools, SearchIQ offers comprehensive GEO tracking...",
-    sentiment: "neutral",
-    date: "1 day ago",
-  },
-  {
-    llm: "Perplexity",
-    query: "What is GEO optimization?",
-    context: "SearchIQ defines Generative Engine Optimization as the process...",
-    sentiment: "positive",
-    date: "1 day ago",
-  },
-  {
-    llm: "ChatGPT",
-    query: "AI content optimization strategies",
-    context: "Experts at SearchIQ recommend focusing on structured data...",
-    sentiment: "positive",
-    date: "2 days ago",
-  },
-]
-
-const sentimentData = [
-  { name: "Positive", value: 68, color: "oklch(0.7 0.2 160)" },
-  { name: "Neutral", value: 24, color: "oklch(0.65 0 0)" },
-  { name: "Negative", value: 8, color: "oklch(0.55 0.22 25)" },
-]
-
-const shareOfVoiceData = [
-  { competitor: "SearchIQ (You)", share: 32 },
-  { competitor: "Competitor A", share: 24 },
-  { competitor: "Competitor B", share: 18 },
-  { competitor: "Competitor C", share: 14 },
-  { competitor: "Others", share: 12 },
-]
-
-const llmPresence = [
-  { name: "ChatGPT", citations: 45, trend: 12 },
-  { name: "Claude", citations: 38, trend: 8 },
-  { name: "Gemini", citations: 28, trend: 15 },
-  { name: "Perplexity", citations: 52, trend: 22 },
-]
+interface EnhancedPenalty {
+  category: 'SEO' | 'AEO' | 'GEO';
+  component: string;
+  penalty: string;
+  explanation: string;
+  fix: string;
+  pointsDeducted: number;
+  severity: 'critical' | 'warning' | 'info';
+}
 
 interface GEOTabProps {
   data?: {
@@ -93,254 +38,357 @@ interface GEOTabProps {
       wordCount: number;
     },
     ai?: {
-      penaltyLedger?: Array<{
-        category: "seo" | "aeo" | "geo",
-        penalty: string,
-        pointsDeducted: number
-      }>,
+      scores?: {
+        seo: number,
+        aeo: number,
+        geo: number
+      },
+      enhancedPenalties?: EnhancedPenalty[],
       geoAnalysis: {
         sentimentScore: number,
         brandPerception: "positive" | "neutral" | "negative",
         citationLikelihood: number,
         llmContextClarity: number,
         visibilityGaps: string[]
-      },
-      liveInterrogation?: {
-        identifiedQuery: string,
-        isRecommended: boolean,
-        shareOfVoiceData: Array<{ competitor: string, share: number }>,
-        aiCitations: Array<{ llm: string, query: string, context: string, sentiment: string, date: string }>
       }
     }
   }
 }
 
 export function GEOTab({ data }: GEOTabProps) {
+  const [expandedPenalty, setExpandedPenalty] = useState<number | null>(null);
+  const [copiedFix, setCopiedFix] = useState<number | null>(null);
+  const [severityFilter, setSeverityFilter] = useState<'all' | 'critical' | 'warning'>('all');
+  
   const geoData = data?.ai?.geoAnalysis
-  const penaltyLedger = (data?.ai?.penaltyLedger || []).filter(p => p.category === "geo")
   const struct = data?.structuralData
-  const liveInt = data?.ai?.liveInterrogation
+  
+  // Filter to only GEO penalties
+  const allGeoPenalties = (data?.ai?.enhancedPenalties || []).filter(p => p.category === 'GEO')
+  
+  // Calculate Quick Wins (GEO only)
+  const quickWins = allGeoPenalties
+    .filter(p => p.severity === 'warning' && Math.abs(p.pointsDeducted) <= 15)
+    .slice(0, 5)
+  
+  // Filter penalties by severity
+  const filteredPenalties = severityFilter === 'all' 
+    ? allGeoPenalties 
+    : allGeoPenalties.filter(p => p.severity === severityFilter)
 
-  const displayShareOfVoice = liveInt?.shareOfVoiceData || shareOfVoiceData
-  const displayAiCitations = liveInt?.aiCitations || aiCitations
-
-  const displaySentiment = geoData ? [
-    { name: "Positive", value: Math.max(0, geoData.sentimentScore), color: "oklch(0.7 0.2 160)" },
-    { name: "Neutral", value: geoData.sentimentScore === 0 ? 100 : 0, color: "oklch(0.65 0 0)" },
-    { name: "Negative", value: Math.max(0, -geoData.sentimentScore), color: "oklch(0.55 0.22 25)" },
-  ] : sentimentData
+  const handleCopyFix = (fix: string, index: number) => {
+    navigator.clipboard.writeText(fix)
+    setCopiedFix(index)
+    setTimeout(() => setCopiedFix(null), 2000)
+  }
 
   return (
     <div className="grid gap-6">
-      {/* Penalty Ledger Header (Only shows if GEO penalties exist) */}
-      {penaltyLedger.length > 0 && (
-        <Card className="border-destructive/30 bg-destructive/5 mb-2 shadow-sm">
-          <CardHeader className="pb-2">
+      {/* Roadmap to 100 - Intelligence Penalty Ledger (GEO) */}
+      {allGeoPenalties.length > 0 && (
+        <Card className="border-destructive/30 bg-destructive/5 shadow-sm">
+          <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2 text-destructive">
               <Shield className="h-5 w-5" />
-              Generative Engine Penalty Ledger
+              Roadmap to 100
             </CardTitle>
-            <p className="text-sm text-muted-foreground">The AI explicitly deducted points from this site for the following Generative Engine failures:</p>
+            <p className="text-sm text-muted-foreground">
+              Fix these Generative Engine Optimization issues to reach a perfect GEO score. Click any penalty for detailed explanation and fix instructions.
+            </p>
+            
+            {/* Filter Buttons */}
+            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-destructive/10">
+              <span className="text-xs font-bold uppercase text-muted-foreground mr-2">Filter:</span>
+              <button
+                onClick={() => setSeverityFilter('all')}
+                className={cn(
+                  "px-3 py-1 rounded-md text-xs font-medium transition-all",
+                  severityFilter === 'all' 
+                    ? "bg-foreground text-background" 
+                    : "bg-background/50 text-muted-foreground hover:bg-background/80"
+                )}
+              >
+                All ({allGeoPenalties.length})
+              </button>
+              <button
+                onClick={() => setSeverityFilter('critical')}
+                className={cn(
+                  "px-3 py-1 rounded-md text-xs font-medium transition-all",
+                  severityFilter === 'critical' 
+                    ? "bg-destructive text-white" 
+                    : "bg-destructive/10 text-destructive hover:bg-destructive/20"
+                )}
+              >
+                Critical ({allGeoPenalties.filter(p => p.severity === 'critical').length})
+              </button>
+              <button
+                onClick={() => setSeverityFilter('warning')}
+                className={cn(
+                  "px-3 py-1 rounded-md text-xs font-medium transition-all",
+                  severityFilter === 'warning' 
+                    ? "bg-yellow-500 text-white" 
+                    : "bg-yellow-500/10 text-yellow-600 hover:bg-yellow-500/20"
+                )}
+              >
+                Warning ({allGeoPenalties.filter(p => p.severity === 'warning').length})
+              </button>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {penaltyLedger.map((penalty, i) => (
-                <div key={i} className="flex items-start gap-3 rounded-lg border border-destructive/20 bg-background/50 p-3">
-                  <Badge variant="outline" className="border-destructive/50 text-destructive bg-destructive/10 shrink-0">
-                    {penalty.pointsDeducted} pts
-                  </Badge>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-[10px] font-bold uppercase text-muted-foreground mb-1">{penalty.category} Penalty</div>
-                    <div className="text-sm font-medium text-foreground leading-tight">{penalty.penalty}</div>
+              {filteredPenalties.map((penalty, i) => (
+                <div 
+                  key={i} 
+                  className={cn(
+                    "rounded-lg border transition-all cursor-pointer",
+                    penalty.severity === 'critical' ? "border-destructive/30 bg-destructive/5" : "border-yellow-500/30 bg-yellow-500/5",
+                    expandedPenalty === i && "ring-2 ring-offset-2 col-span-full",
+                    penalty.severity === 'critical' && expandedPenalty === i && "ring-destructive/50",
+                    penalty.severity === 'warning' && expandedPenalty === i && "ring-yellow-500/50"
+                  )}
+                  onClick={() => setExpandedPenalty(expandedPenalty === i ? null : i)}
+                >
+                  <div className="p-3">
+                    <div className="flex items-start gap-3">
+                      <Badge 
+                        variant="outline" 
+                        className={cn(
+                          "shrink-0 font-mono text-xs",
+                          penalty.severity === 'critical' ? "border-destructive/50 text-destructive bg-destructive/10" : "border-yellow-500/50 text-yellow-600 bg-yellow-500/10"
+                        )}
+                      >
+                        {penalty.pointsDeducted} pts
+                      </Badge>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                          <Badge 
+                            variant="outline" 
+                            className="text-[9px] font-black uppercase px-1.5 py-0.5 border-geo/50 text-geo bg-geo/10"
+                          >
+                            GEO
+                          </Badge>
+                          {penalty.severity === 'critical' && <AlertTriangle className="h-3 w-3 text-destructive" />}
+                        </div>
+                        <div className="text-[10px] font-bold uppercase text-muted-foreground mb-1">{penalty.component}</div>
+                        <p className="text-sm font-medium text-foreground leading-tight">{penalty.penalty}</p>
+                        
+                        {expandedPenalty === i && (
+                          <div className="mt-3 space-y-3 animate-in fade-in slide-in-from-top-2">
+                            <div className="p-3 rounded-lg bg-background/80 border border-border/50">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Info className="h-4 w-4 text-blue-500" />
+                                <span className="text-xs font-bold uppercase text-muted-foreground">Why This Matters</span>
+                              </div>
+                              <p className="text-sm text-foreground/80 leading-relaxed">{penalty.explanation}</p>
+                            </div>
+                            
+                            <div className="p-3 rounded-lg bg-geo/5 border border-geo/30">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle2 className="h-4 w-4 text-geo" />
+                                  <span className="text-xs font-bold uppercase text-geo">How To Fix</span>
+                                </div>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleCopyFix(penalty.fix, i)
+                                  }}
+                                  className="p-1.5 rounded-md hover:bg-geo/10 transition-colors"
+                                  title="Copy fix instructions"
+                                >
+                                  {copiedFix === i ? (
+                                    <Check className="h-3.5 w-3.5 text-geo" />
+                                  ) : (
+                                    <Copy className="h-3.5 w-3.5 text-muted-foreground hover:text-geo" />
+                                  )}
+                                </button>
+                              </div>
+                              <p className="text-sm text-foreground leading-relaxed">{penalty.fix}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <ChevronDown 
+                        className={cn(
+                          "h-4 w-4 text-muted-foreground transition-transform shrink-0 mt-0.5",
+                          expandedPenalty === i && "rotate-180"
+                        )}
+                      />
+                    </div>
                   </div>
                 </div>
               ))}
+            </div>
+            <p className="text-xs text-muted-foreground mt-4 italic">
+              Showing {filteredPenalties.length} GEO penalties{severityFilter !== 'all' ? ` (${severityFilter} only)` : ''}. Click any to expand.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Quick Wins Section */}
+      {quickWins.length > 0 && (
+        <Card className="border-geo/30 bg-geo/5 shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2 text-geo">
+              <Zap className="h-5 w-5" />
+              Quick Wins
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Easy GEO fixes with solid impact. Click any for detailed explanation and fix instructions.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {quickWins.map((penalty, i) => {
+                const quickWinIndex = allGeoPenalties.indexOf(penalty);
+                const isExpanded = expandedPenalty === quickWinIndex;
+                
+                return (
+                  <div 
+                    key={`quick-${i}`}
+                    className={cn(
+                      "rounded-lg border border-geo/20 bg-background/50 hover:bg-geo/5 transition-all cursor-pointer",
+                      isExpanded && "ring-2 ring-offset-2 ring-geo/50 col-span-full"
+                    )}
+                    onClick={() => setExpandedPenalty(isExpanded ? null : quickWinIndex)}
+                  >
+                    <div className="p-3">
+                      <div className="flex items-start gap-3">
+                        <Badge 
+                          variant="outline" 
+                          className="shrink-0 font-mono text-xs border-geo/50 text-geo bg-geo/10"
+                        >
+                          {penalty.pointsDeducted} pts
+                        </Badge>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <Badge 
+                              variant="outline" 
+                              className="text-[9px] font-black uppercase px-1.5 py-0.5 border-geo/50 text-geo bg-geo/10"
+                            >
+                              GEO
+                            </Badge>
+                            <span className="text-[10px] font-bold uppercase text-muted-foreground">{penalty.component}</span>
+                          </div>
+                          <p className="text-sm font-medium text-foreground leading-tight">{penalty.penalty}</p>
+                          
+                          {isExpanded && (
+                            <div className="mt-3 space-y-3 animate-in fade-in slide-in-from-top-2">
+                              <div className="p-3 rounded-lg bg-background/80 border border-border/50">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Info className="h-4 w-4 text-blue-500" />
+                                  <span className="text-xs font-bold uppercase text-muted-foreground">Why This Matters</span>
+                                </div>
+                                <p className="text-sm text-foreground/80 leading-relaxed">{penalty.explanation}</p>
+                              </div>
+                              
+                              <div className="p-3 rounded-lg bg-geo/5 border border-geo/30">
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="flex items-center gap-2">
+                                    <CheckCircle2 className="h-4 w-4 text-geo" />
+                                    <span className="text-xs font-bold uppercase text-geo">How To Fix</span>
+                                  </div>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      handleCopyFix(penalty.fix, quickWinIndex)
+                                    }}
+                                    className="p-1.5 rounded-md hover:bg-geo/10 transition-colors"
+                                    title="Copy fix instructions"
+                                  >
+                                    {copiedFix === quickWinIndex ? (
+                                      <Check className="h-3.5 w-3.5 text-geo" />
+                                    ) : (
+                                      <Copy className="h-3.5 w-3.5 text-muted-foreground hover:text-geo" />
+                                    )}
+                                  </button>
+                                </div>
+                                <p className="text-sm text-foreground leading-relaxed">{penalty.fix}</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <ChevronDown 
+                          className={cn(
+                            "h-4 w-4 text-geo transition-transform shrink-0 mt-0.5",
+                            isExpanded && "rotate-180"
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Brand Share of Voice */}
+      {/* Generative Engine Readiness */}
+      <h2 className="text-xl font-bold mt-4 flex items-center gap-2">
+        <Sparkles className="h-6 w-6 text-geo" />
+        Generative Engine Readiness
+      </h2>
+
       <div className="grid gap-6 lg:grid-cols-2">
+        {/* Media Context & Brand Visibility */}
         <Card className="border-geo/20 bg-geo-muted/10">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
-              <Sparkles className="h-5 w-5 text-geo" />
-              Live LLM Share of Voice {liveInt?.identifiedQuery && <span className="text-xs font-normal text-muted-foreground ml-2 p-1 bg-geo/10 rounded">Query: "{liveInt.identifiedQuery}"</span>}
+              <ImageIcon className="h-5 w-5 text-geo" />
+              Media Context & Brand Visibility
+              <InfoTooltip content="Multi-modal AI models (ChatGPT, Claude, Gemini) use image alt text to understand visual content. Without alt text, AI cannot 'see' your images or associate them with your brand." />
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[200px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={displayShareOfVoice}
-                  layout="vertical"
-                  margin={{ left: 0, right: 20 }}
-                >
-                  <XAxis
-                    type="number"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: "oklch(0.65 0 0)", fontSize: 12 }}
-                    domain={[0, 40]}
-                    tickFormatter={(value) => `${value}%`}
-                  />
-                  <YAxis
-                    type="category"
-                    dataKey="competitor"
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fill: "oklch(0.65 0 0)", fontSize: 11 }}
-                    width={100}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "oklch(0.13 0.01 260)",
-                      border: "1px solid oklch(0.25 0.01 260)",
-                      borderRadius: "8px",
-                      color: "oklch(0.95 0 0)",
-                    }}
-                    formatter={(value: number) => [`${value}%`, "Share"]}
-                  />
-                  <Bar dataKey="share" radius={[0, 4, 4, 0]}>
-                    {displayShareOfVoice.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={index === 0 ? "oklch(0.7 0.2 160)" : "oklch(0.3 0.05 160)"}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Sentiment Analysis */}
-        <Card className="border-geo/20 bg-geo-muted/10">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center gap-2 text-foreground">
-              <MessageCircle className="h-5 w-5 text-geo" />
-              LLM Sentiment Analysis
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {displaySentiment.map((item) => (
-                <div key={item.name} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-foreground">{item.name}</span>
-                    <span className="text-sm text-muted-foreground">{item.value}%</span>
-                  </div>
-                  <div className="h-3 w-full rounded-full bg-muted overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{
-                        width: `${item.value}%`,
-                        backgroundColor: item.color,
-                      }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-6 p-4 rounded-lg border border-geo/30 bg-geo-muted/20">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-geo" />
-                <span className="font-medium text-foreground">Overall Sentiment Score</span>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="rounded-lg border border-geo/20 bg-geo-muted/20 p-4">
+                <span className="text-sm font-medium text-muted-foreground">Total Brand Images</span>
+                <p className="mt-1 text-3xl font-bold font-mono">{struct?.media?.totalImages || 0}</p>
               </div>
-              <p className="mt-2 text-3xl font-bold text-geo">{geoData ? (geoData.sentimentScore > 0 ? `+${geoData.sentimentScore}` : geoData.sentimentScore) : "+78"}%</p>
-              <p className="text-sm text-muted-foreground">Positive perception across LLMs</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Media Context & Entity Module */}
-      <Card className="border-geo/20 bg-geo-muted/10">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg flex items-center gap-2 text-foreground">
-            <ImageIcon className="h-5 w-5 text-geo" />
-            Media Context & Brand Visibility
-            <InfoTooltip content="Multi-modal AI models (ChatGPT, Claude, Gemini) use image alt text to understand visual content. Without alt text, AI cannot 'see' your images or associate them with your brand." />
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-lg border border-geo/20 bg-geo-muted/20 p-4">
-              <span className="text-sm font-medium text-muted-foreground">Total Brand Images</span>
-              <p className="mt-1 text-3xl font-bold font-mono">{struct?.media?.totalImages || 0}</p>
-            </div>
-            <div className="rounded-lg border border-geo/20 bg-geo-muted/20 p-4">
-              <span className="text-sm font-medium text-muted-foreground">Images with AI Context (Alt text)</span>
-              <p className="mt-1 text-3xl font-bold font-mono text-geo">{struct?.media?.imagesWithAlt || 0}</p>
-            </div>
-            <div className="rounded-lg border border-geo/20 bg-geo-muted/20 p-4">
-              <div className="flex items-center gap-1">
+              <div className="rounded-lg border border-geo/20 bg-geo-muted/20 p-4">
+                <span className="text-sm font-medium text-muted-foreground">Images with AI Context</span>
+                <p className="mt-1 text-3xl font-bold font-mono text-geo">{struct?.media?.imagesWithAlt || 0}</p>
+              </div>
+              <div className="rounded-lg border border-geo/20 bg-geo-muted/20 p-4">
                 <span className="text-sm font-medium text-muted-foreground">AI Blindspot Ratio</span>
-                <InfoTooltip content="Percentage of images without alt text. High ratio = AI cannot understand your visual content. Fix: Add descriptive alt text to all images explaining what they show and how they relate to your brand." />
+                <p className="mt-1 text-3xl font-bold font-mono text-destructive">
+                  {struct?.media?.totalImages ? Math.round(((struct.media.totalImages - struct.media.imagesWithAlt) / struct.media.totalImages) * 100) : 0}%
+                </p>
               </div>
-              <p className="mt-1 text-3xl font-bold font-mono text-destructive">
-                {struct?.media?.totalImages ? Math.round(((struct.media.totalImages - struct.media.imagesWithAlt) / struct.media.totalImages) * 100) : 0}%
-              </p>
-            </div>
-          </div>
-          <div className="mt-4 p-3 rounded-lg bg-geo/10 border border-geo/20">
-            <p className="text-xs text-muted-foreground">
-              <strong>Why this matters:</strong> Current multi-modal LLMs (like ChatGPT and Claude) rely heavily on image alt text to establish entity relationships. A high blindspot ratio means conversational AIs cannot "see" your brand.
-            </p>
-            <p className="text-xs text-muted-foreground mt-2">
-              <strong>How to fix:</strong> Add descriptive alt text to every image. Format: "Description of image - Brand Name". Example: "Modern office workspace with collaborative team - FundyLogic"
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-
-      {/* Visibility Gaps & Clarity */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-geo/20 bg-geo-muted/10">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center gap-2 text-foreground">
-              <Bot className="h-5 w-5 text-geo" />
-              AI Visibility Gaps
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {geoData?.visibilityGaps && geoData.visibilityGaps.length > 0 ? (
-                geoData.visibilityGaps.map((gap: string) => (
-                  <div key={gap} className="flex items-start gap-2 text-sm text-foreground/80">
-                    <TrendingUp className="h-4 w-4 text-geo mt-0.5 shrink-0" />
-                    <span>{gap}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-muted-foreground italic">Run an analysis to identify visibility gaps...</p>
-              )}
             </div>
           </CardContent>
         </Card>
 
+        {/* LLM Context Clarity */}
         <Card className="border-geo/20 bg-geo-muted/10">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Sparkles className="h-5 w-5 text-geo" />
               LLM Context Clarity
+              <InfoTooltip content="Measures how clearly AI systems can understand and cite your content. Higher clarity = more frequent and accurate AI citations." />
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col items-center justify-center py-4">
-              <div className="relative h-24 w-full">
-                <Progress value={geoData?.citationLikelihood ?? 70} className="h-4 bg-muted" />
+              <div className="relative w-full">
+                <div className="h-4 w-full rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-500 bg-geo"
+                    style={{
+                      width: `${geoData?.citationLikelihood ?? 70}%`,
+                    }}
+                  />
+                </div>
                 <div className="mt-2 flex justify-between text-xs text-muted-foreground uppercase font-semibold">
-                  <span>Likelihood of Citation</span>
+                  <span>Citation Likelihood</span>
                   <span className="text-geo">{geoData?.citationLikelihood ?? 70}%</span>
                 </div>
               </div>
               <div className="mt-6 w-full p-4 rounded bg-geo-muted/30 border border-geo/10">
                 <p className="text-sm text-foreground/70 text-center italic">
-                  "Your site's context clarity is rated at {geoData?.citationLikelihood ?? 70}%. High clarity leads to more frequent and accurate AI citations."
+                  Your site's context clarity is rated at {geoData?.citationLikelihood ?? 70}%. High clarity leads to more frequent and accurate AI citations.
                 </p>
               </div>
             </div>
@@ -348,63 +396,94 @@ export function GEOTab({ data }: GEOTabProps) {
         </Card>
       </div>
 
-      {/* AI Citation Mentions */}
+      {/* AI Visibility Gaps */}
       <Card className="border-geo/20 bg-geo-muted/10">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg flex items-center gap-2 text-foreground">
-            <Quote className="h-5 w-5 text-geo" />
-            Recent AI Citation Mentions
+            <Bot className="h-5 w-5 text-geo" />
+            AI Visibility Gaps
+            <InfoTooltip content="Areas where your content could be more visible to AI systems. These are opportunities to improve how generative engines understand and cite your content." />
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {displayAiCitations.map((citation, index) => (
-              <div
-                key={index}
-                className="rounded-lg border border-border/50 bg-muted/20 p-4 hover:border-geo/30 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Badge
-                        variant="outline"
-                        className="border-geo/50 text-geo bg-geo/10"
-                      >
-                        {citation.llm}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
-                        {citation.date}
-                      </span>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          citation.sentiment === "positive" &&
-                          "border-geo/50 text-geo",
-                          citation.sentiment === "neutral" &&
-                          "border-muted-foreground/50 text-muted-foreground",
-                          citation.sentiment === "negative" &&
-                          "border-destructive/50 text-destructive"
-                        )}
-                      >
-                        {citation.sentiment}
-                      </Badge>
-                    </div>
-                    <p className="mt-2 text-sm font-medium text-foreground">
-                      {citation.query}
-                    </p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {citation.context}
-                    </p>
-                  </div>
-                  <button className="shrink-0 p-2 rounded-lg hover:bg-geo-muted/30 transition-colors">
-                    <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                  </button>
+          <div className="space-y-3">
+            {geoData?.visibilityGaps && geoData.visibilityGaps.length > 0 ? (
+              geoData.visibilityGaps.map((gap: string) => (
+                <div key={gap} className="flex items-start gap-2 text-sm text-foreground/80">
+                  <Sparkles className="h-4 w-4 text-geo mt-0.5 shrink-0" />
+                  <span>{gap}</span>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground italic">Run an analysis to identify visibility gaps...</p>
+            )}
           </div>
         </CardContent>
       </Card>
     </div>
   )
 }
+
+
+// TEMP: Sentiment section to be inserted after line 333
+/*
+      {geoData?.sentimentScore !== undefined && (
+        <Card className="border-geo/20 bg-geo-muted/10">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2 text-foreground">
+              <Sparkles className="h-5 w-5 text-geo" />
+              LLM Sentiment Analysis
+              <InfoTooltip content="Measures how AI systems perceive your content's tone and trustworthiness. Positive sentiment increases citation likelihood." />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {(() => {
+                const score = geoData.sentimentScore;
+                const positive = Math.max(0, score);
+                const negative = Math.max(0, -score);
+                const neutral = score === 0 ? 100 : 0;
+                
+                const sentimentData = [
+                  { name: "Positive", value: positive, color: "oklch(0.7 0.2 160)" },
+                  { name: "Neutral", value: neutral, color: "oklch(0.65 0 0)" },
+                  { name: "Negative", value: negative, color: "oklch(0.55 0.22 25)" },
+                ].filter(item => item.value > 0);
+
+                return sentimentData.map((item) => (
+                  <div key={item.name} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-foreground">{item.name}</span>
+                      <span className="text-sm text-muted-foreground">{item.value}%</span>
+                    </div>
+                    <div className="h-3 w-full rounded-full bg-muted overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                          width: `${item.value}%`,
+                          backgroundColor: item.color,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ));
+              })()}
+            </div>
+            <div className="mt-6 p-4 rounded-lg border border-geo/30 bg-geo-muted/20">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-geo" />
+                <span className="font-medium text-foreground">Overall Sentiment Score</span>
+              </div>
+              <p className="mt-2 text-3xl font-bold text-geo">
+                {geoData.sentimentScore > 0 ? `+${geoData.sentimentScore}` : geoData.sentimentScore}%
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {geoData.brandPerception === 'positive' && 'Positive perception across AI systems'}
+                {geoData.brandPerception === 'neutral' && 'Neutral perception - room for improvement'}
+                {geoData.brandPerception === 'negative' && 'Negative perception - needs attention'}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+*/

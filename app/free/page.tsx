@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { Header } from "@/components/dashboard/header"
 import { ScoreCard } from "@/components/dashboard/score-card"
+import { SearchInput } from "@/components/dashboard/search-input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -117,7 +118,7 @@ export default function FreeDashboard() {
               <div>
                 <h1 className="text-3xl font-bold flex items-center gap-3">
                   <Activity className="h-8 w-8 text-seo" />
-                  Quick Audit
+                  Free Audit
                 </h1>
                 {currentUrl && analysisData ? (
                   <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
@@ -177,34 +178,12 @@ export default function FreeDashboard() {
                     Get instant SEO, AEO, and GEO scores across 5 pages with domain-level insights
                   </p>
                   
-                  {/* Large URL Input */}
-                  <form 
-                    onSubmit={(e) => {
-                      e.preventDefault()
-                      const formData = new FormData(e.currentTarget)
-                      const url = formData.get('url') as string
-                      if (url) handleAnalyze(url)
-                    }}
-                    className="max-w-2xl mx-auto"
-                  >
-                    <div className="flex gap-3">
-                      <input
-                        type="url"
-                        name="url"
-                        placeholder="Enter your website URL (e.g., example.com)"
-                        className="flex-1 px-6 py-4 text-lg rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-seo focus:border-transparent"
-                        required
-                      />
-                      <Button 
-                        type="submit"
-                        size="lg"
-                        className="bg-seo hover:bg-seo/90 text-seo-foreground px-8 py-4 text-lg"
-                      >
-                        <Search className="h-5 w-5 mr-2" />
-                        Analyze
-                      </Button>
-                    </div>
-                  </form>
+                  <SearchInput
+                    onSubmit={handleAnalyze}
+                    isAnalyzing={isAnalyzing}
+                    variant="large"
+                    className="mx-auto"
+                  />
                 </CardContent>
               </Card>
             )}

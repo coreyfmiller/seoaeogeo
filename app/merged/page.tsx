@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { Header } from "@/components/dashboard/header"
 import { ScoreCard } from "@/components/dashboard/score-card"
+import { SearchInput } from "@/components/dashboard/search-input"
 import { SEOTab } from "@/components/dashboard/seo-tab"
 import { AEOTab } from "@/components/dashboard/aeo-tab"
 import { GEOTab } from "@/components/dashboard/geo-tab"
@@ -265,31 +266,12 @@ export default function MergedDashboard() {
                     ? "Quick scan analyzes a single page for immediate insights"
                     : "Deep scan crawls multiple pages for comprehensive site-wide analysis"}
                 </p>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.currentTarget);
-                    const url = formData.get('url') as string;
-                    if (url) handleAnalyze(url);
-                  }}
-                  className="w-full max-w-lg relative group"
-                >
-                  <Globe className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-seo transition-colors" />
-                  <input
-                    name="url"
-                    type="text"
-                    placeholder="https://your-website.com"
-                    className="w-full pl-12 pr-32 py-4 bg-muted/50 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-seo/20 focus:border-seo/50 transition-all text-lg"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    disabled={isAnalyzing}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-seo text-seo-foreground px-6 py-2 rounded-xl font-bold hover:bg-seo/90 transition-all"
-                  >
-                    Analyze
-                  </button>
-                </form>
+                <SearchInput
+                  onSubmit={handleAnalyze}
+                  isAnalyzing={isAnalyzing}
+                  variant="large"
+                  className="mx-auto"
+                />
                 {!isAnalyzing && (
                   <div className="mt-8 flex items-center gap-6">
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">

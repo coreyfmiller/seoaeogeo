@@ -24,17 +24,17 @@ interface NavItem {
 }
 
 const mainNav: NavItem[] = [
-  { name: "Free Scan", icon: Search, href: "/free" },
+  { name: "Free Audit", icon: Search, href: "/free" },
   { name: "Competitive Intel", icon: Globe, href: "/intelligence" },
   { name: "Pro Audit", icon: LayoutDashboard, href: "/", badge: "PRO" },
   { name: "Deep Crawler", icon: TrendingUp, href: "/site-analysis", badge: "PRO" },
-  { name: "Usage & Costs", icon: BarChart3, href: "/usage", badge: "ADMIN" },
 ]
 
 const comingSoonNav: NavItem[] = []
 
 const bottomNav: NavItem[] = [
   { name: "Our Standards", icon: FileText, href: "/standards" },
+  { name: "Usage & Costs", icon: BarChart3, href: "/usage", badge: "ADMIN" },
   { name: "Settings", icon: Settings, href: "#", badge: "SOON" },
   { name: "Help & Support", icon: HelpCircle, href: "#", badge: "SOON" },
 ]
@@ -76,7 +76,12 @@ export function AppSidebar() {
                   <item.icon className="h-4 w-4" />
                   <span className="flex-1">{item.name}</span>
                   {item.badge === "PRO" && (
-                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-600 border border-yellow-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                      {item.badge}
+                    </span>
+                  )}
+                  {item.badge === "ADMIN" && (
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-600 border border-purple-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       {item.badge}
                     </span>
                   )}
@@ -108,6 +113,16 @@ export function AppSidebar() {
               >
                 <item.icon className="h-4 w-4" />
                 {item.name}
+                {item.badge === "ADMIN" && (
+                  <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-600 border border-purple-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                    {item.badge}
+                  </span>
+                )}
+                {item.badge === "SOON" && (
+                  <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-green-500/10 text-green-600 border border-green-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                    {item.badge}
+                  </span>
+                )}
               </Link>
             </li>
           ))}
