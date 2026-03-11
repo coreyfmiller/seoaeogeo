@@ -174,6 +174,7 @@ export default function MergedDashboard() {
     const [isAuthorized, setIsAuthorized] = useState(false)
     const [isCheckingAuth, setIsCheckingAuth] = useState(true)
     const [scanMode, setScanMode] = useState<"quick" | "deep">("quick") // Quick/Deep scan toggle
+    const [activeTab, setActiveTab] = useState("seo") // Tab state for single-page view
     const [saveTestSnapshot, setSaveTestSnapshot] = useState(false) // For testing variance
     const [crawlConfig, setCrawlConfig] = useState({
         maxPages: 20,
@@ -622,7 +623,6 @@ export default function MergedDashboard() {
 
                                         {/* ── Single-Page Score Cards & Tabs (when pagesCrawled === 1) ── */}
                                         {analysisData.pagesCrawled === 1 && (() => {
-                                            const [activeTab, setActiveTab] = useState("seo")
                                             const scores = {
                                                 seo: ai?.domainHealthScore || 0,
                                                 aeo: ai?.aeoReadiness?.overallScore || 0,
