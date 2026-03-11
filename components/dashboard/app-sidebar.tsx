@@ -25,8 +25,8 @@ interface NavItem {
 
 const mainNav: NavItem[] = [
   { name: "Free Scan", icon: Search, href: "/free" },
-  { name: "Pro Dashboard", icon: LayoutDashboard, href: "/", badge: "PRO" },
-  { name: "Site Vs Site", icon: Globe, href: "/intelligence" },
+  { name: "Competitive Intel", icon: Globe, href: "/intelligence", badge: "PRO" },
+  { name: "Pro Audit", icon: LayoutDashboard, href: "/", badge: "PRO" },
   { name: "Deep Crawler", icon: TrendingUp, href: "/site-analysis", badge: "PRO" },
   { name: "Merged Dashboard", icon: Sparkles, href: "/merged", badge: "BETA" },
   { name: "Usage & Costs", icon: BarChart3, href: "/usage" },

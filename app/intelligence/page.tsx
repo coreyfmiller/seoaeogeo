@@ -100,7 +100,10 @@ export default function SiteVsSite() {
                             <div className="text-center sm:text-left">
                                 <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
                                     <Swords className="h-6 w-6 text-aeo" />
-                                    Competitive Intelligence
+                                    Competitive Intel
+                                    <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20 px-3 py-1">
+                                        PRO
+                                    </Badge>
                                 </h1>
                                 <p className="text-muted-foreground mt-2 max-w-2xl text-lg">
                                     Benchmark SEO, AEO, and GEO citation metrics between your brand and a competitor.
