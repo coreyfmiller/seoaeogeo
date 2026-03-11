@@ -1,61 +1,51 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { Header } from "@/components/dashboard/header"
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import {
+    ShieldCheck,
+    Search,
+    Activity,
+    Globe,
+    CheckCircle2,
+    XCircle,
+    Loader2,
+    AlertCircle,
+    TrendingUp,
+    Target,
+    Zap,
+    Lock,
+    Sparkles,
+    FileText,
+    Link2,
+    AlarmClock,
+    LayoutDashboard,
+    AlertTriangle,
+    Map,
+    Info,
+    Code2,
+    Bot,
+} from "lucide-react"
+import { SemanticMap } from "@/components/dashboard/semantic-map"
+import { CrawlConfig } from "@/components/dashboard/crawl-config"
+import { SiteTypeBadge } from "@/components/dashboard/site-type-badge"
+import { MultiPageDashboard } from "@/components/dashboard/multi-page-dashboard"
+import { PageComparisonTable } from "@/components/dashboard/page-comparison-table"
+import { FixInstructionCard } from "@/components/dashboard/fix-instruction-card"
+import { CompetitorGapView } from "@/components/dashboard/competitor-gap-view"
+import { CrawlProgress } from "@/components/dashboard/crawl-progress"
 import { ScoreCard } from "@/components/dashboard/score-card"
 import { SEOTab } from "@/components/dashboard/seo-tab"
 import { AEOTab } from "@/components/dashboard/aeo-tab"
 import { GEOTab } from "@/components/dashboard/geo-tab"
 import { Recommendations } from "@/components/dashboard/recommendations"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import {
-  Search,
-  Sparkles,
-  Bot,
-  Clock,
-  RefreshCw,
-  XCircle,
-  Globe,
-  CheckCircle2,
-  Loader2,
-  Activity,
-,
-  ShieldCheck,
-,
-  TrendingUp,
-,
-  Target,
-,
-  Link2,
-,
-  AlarmClock,
-,
-  LayoutDashboard,
-,
-  FileText,
-,
-  Code2,
-,
-  Info,
-,
-  Map,
-,
-  AlertCircle,
-,
-  Zap,
-} from "lucide-react"
-import { SemanticMap } from "@/components/dashboard/semantic-map"
-import { CompetitorGapView } from "@/components/dashboard/competitor-gap-view"
-import { FixInstructionCard } from "@/components/dashboard/fix-instruction-card"
-import { PageComparisonTable } from "@/components/dashboard/page-comparison-table"
-import { MultiPageDashboard } from "@/components/dashboard/multi-page-dashboard"
-import { SiteTypeBadge } from "@/components/dashboard/site-type-badge"
-import { CrawlConfig } from "@/components/dashboard/crawl-config"
-import { CrawlProgress } from "@/components/dashboard/crawl-progress"
-import { cn } from "@/lib/utils"
-
+import { validateAnalysisData } from "@/lib/data-validator"
 
 // Enhanced tooltip component with better visibility
 function InfoTooltip({ text, title }: { text: string; title?: string }) {
@@ -83,341 +73,697 @@ function StatTooltip({ text }: { text: string }) {
 }
 
 // Schema Issue Component
+function SchemaIssueCard({ issue, index }: { issue: any; index: number }) {
+    const [isExpanded, setIsExpanded] = useState(false);
+    
+    const severityConfig = {
+        critical: { bg: "bg-destructive/10", text: "text-destructive", border: "border-destructive/30", label: "CRITICAL" },
+        high: { bg: "bg-yellow-500/10", text: "text-yellow-600", border: "border-yellow-500/30", label: "HIGH" },
+        medium: { bg: "bg-blue-500/10", text: "text-blue-600", border: "border-blue-500/30", label: "MEDIUM" }
+    };
+    const config = severityConfig[issue.severity as keyof typeof severityConfig] || severityConfig.medium;
+
+    const impactConfig = {
+        high: { bg: "bg-destructive/10", text: "text-destructive", label: "High Impact" },
+        medium: { bg: "bg-yellow-500/10", text: "text-yellow-600", label: "Medium Impact" },
+        low: { bg: "bg-blue-500/10", text: "text-blue-600", label: "Low Impact" }
+    };
+    const impact = impactConfig[issue.modernCrawlerImpact as keyof typeof impactConfig] || impactConfig.medium;
+
+    // Safety check - if config is invalid, skip rendering
+    if (!config || !config.bg || !impact || !impact.bg) {
+        console.warn('[SchemaIssueCard] Invalid config for issue:', issue);
+        return null;
+    }
+
+    return (
+        <div className={cn("p-4 rounded-xl border bg-background/60 transition-all", config.border)}>
+            <div className="flex items-start gap-3">
+                <div className={cn("px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider shrink-0", config.bg, config.text)}>
+                    {config.label}
+                </div>
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex-1">
+                            <h5 className="font-bold text-sm mb-1">{issue.issue}</h5>
+                            {issue.modernCrawlerImpact && (
+                                <div className="flex items-center gap-2">
+                                    <Badge variant="outline" className={cn("text-[9px] font-bold", impact.bg, impact.text)}>
+                                        {impact.label}
+                                    </Badge>
+                                </div>
+                            )}
+                        </div>
+                        <Badge variant="outline" className="shrink-0 text-[10px] font-mono">
+                            -{issue.pointsDeducted ?? 0} pts
+                        </Badge>
+                    </div>
+                    
+                    <p className="text-xs text-muted-foreground mb-3 leading-relaxed">{issue.explanation}</p>
+                    
+                    {/* Affected Pages */}
+                    <div className="mb-3">
+                        <p className="text-[10px] font-bold uppercase text-muted-foreground mb-1.5">
+                            Affected Pages ({issue.affectedCount ?? issue.affectedPages?.length ?? 0})
+                        </p>
+                        <div className="space-y-1">
+                            {issue.affectedPages?.slice(0, isExpanded ? undefined : 3).map((url: string, idx: number) => (
+                                <div key={idx} className="text-xs font-mono text-muted-foreground/80 truncate bg-muted/30 px-2 py-1 rounded">
+                                    {url}
+                                </div>
+                            ))}
+                            {issue.affectedPages?.length > 3 && (
+                                <button
+                                    onClick={() => setIsExpanded(!isExpanded)}
+                                    className="text-[10px] font-bold text-seo hover:underline uppercase tracking-wider"
+                                >
+                                    {isExpanded ? "Show Less" : `Show ${issue.affectedPages.length - 3} More`}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* How to Fix */}
+                    <div className="p-3 rounded-lg bg-muted/30 border border-border/40">
+                        <div className="flex items-center justify-between mb-2">
+                            <p className="text-[10px] font-bold uppercase text-muted-foreground">How to Fix</p>
+                            <button
+                                onClick={() => {
+                                    navigator.clipboard.writeText(issue.howToFix);
+                                    alert("Fix instructions copied!");
+                                }}
+                                className="text-[9px] font-bold text-seo hover:underline uppercase tracking-wider"
+                            >
+                                Copy
+                            </button>
+                        </div>
+                        <p className="text-xs text-foreground/90 leading-relaxed">{issue.howToFix}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export default function MergedDashboard() {
-  const [activeTab, setActiveTab] = useState("seo")
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [currentUrl, setCurrentUrl] = useState("")
-  const [analysisData, setAnalysisData] = useState<any>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [apiStatus, setApiStatus] = useState<"healthy" | "error" | "idle">("idle")
-  const [scanMode, setScanMode] = useState<"quick" | "deep">("quick")
+    const [isAnalyzing, setIsAnalyzing] = useState(false)
+    const [url, setUrl] = useState("")
+    const [analysisData, setAnalysisData] = useState<any>(null)
+    const [error, setError] = useState<string | null>(null)
+    const [apiStatus, setApiStatus] = useState<"healthy" | "error" | "idle">("idle")
+    const [isAuthorized, setIsAuthorized] = useState(false)
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+    const [scanMode, setScanMode] = useState<"quick" | "deep">("quick") // Quick/Deep scan toggle
+    const [saveTestSnapshot, setSaveTestSnapshot] = useState(false) // For testing variance
+    const [crawlConfig, setCrawlConfig] = useState({
+        maxPages: 20,
+        competitorUrls: [] as string[],
+        respectRobotsTxt: true
+    })
+    const [crawlProgress, setCrawlProgress] = useState({
+        current: 0,
+        total: 0,
+        stage: 'idle' as 'idle' | 'crawling' | 'analyzing' | 'complete'
+    })
+    const router = useRouter()
+    const reportRef = useRef<HTMLDivElement>(null)
 
-  // Restore state from sessionStorage on mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedUrl = sessionStorage.getItem("merged_url")
-      const savedData = sessionStorage.getItem("merged_data")
-      const savedMode = sessionStorage.getItem("merged_scan_mode")
-      if (savedUrl) setCurrentUrl(savedUrl)
-      if (savedData) setAnalysisData(JSON.parse(savedData))
-      if (savedMode) setScanMode(savedMode as "quick" | "deep")
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            if (localStorage.getItem("isProUnlocked") === "true") {
+                setIsAuthorized(true)
+            } else {
+                setIsAuthorized(false)
+            }
+            setIsCheckingAuth(false)
 
-      // Check for URL parameter in query string
-      const params = new URLSearchParams(window.location.search)
-      const urlParam = params.get('url')
-      if (urlParam && urlParam !== savedUrl) {
-        handleAnalyze(urlParam)
-        // Clean up the URL
-        window.history.replaceState({}, '', window.location.pathname)
-      }
+            const savedUrl = sessionStorage.getItem("merged_url")
+            const savedData = sessionStorage.getItem("merged_data")
+            const savedMode = sessionStorage.getItem("merged_scan_mode")
+            if (savedUrl) setUrl(savedUrl)
+            if (savedMode) setScanMode(savedMode as "quick" | "deep")
+            if (savedData) {
+                const parsed = JSON.parse(savedData)
+                // Backwards compatibility: map prioritizedFixes to recommendations
+                if (parsed.ai && parsed.ai.prioritizedFixes && !parsed.ai.recommendations) {
+                    parsed.ai.recommendations = parsed.ai.prioritizedFixes
+                }
+                setAnalysisData(parsed)
+            }
+        }
+    }, [])
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            if (url) sessionStorage.setItem("merged_url", url)
+            if (analysisData) sessionStorage.setItem("merged_data", JSON.stringify(analysisData))
+        }
+    }, [url, analysisData, scanMode])
+    
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            sessionStorage.setItem("merged_scan_mode", scanMode)
+        }
+    }, [scanMode])
+
+    const handleDeepAudit = async (targetUrl: string, config?: typeof crawlConfig) => {
+        setIsAnalyzing(true)
+        setError(null)
+        setApiStatus("idle")
+        // Use scan mode to determine maxPages
+        const maxPages = scanMode === "quick" ? 1 : (config?.maxPages || 20)
+        setCrawlProgress({ current: 0, total: maxPages, stage: 'crawling' })
+
+        try {
+            const response = await fetch('/api/analyze-site', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    url: targetUrl, 
+                    maxPages,
+                    competitorUrls: config?.competitorUrls || [],
+                    respectRobotsTxt: config?.respectRobotsTxt ?? true,
+                    saveSnapshot: saveTestSnapshot // Pass snapshot flag
+                })
+            })
+
+            setCrawlProgress(prev => ({ ...prev, stage: 'analyzing' }))
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+            }
+
+            const result = await response.json()
+
+            if (result.success && result.data) {
+                const data = result.data
+                // Backwards compatibility for data returned from API
+                if (data.ai && data.ai.prioritizedFixes && !data.ai.recommendations) {
+                    data.ai.recommendations = data.ai.prioritizedFixes
+                }
+                
+                // Validate data structure
+                if (!data.ai && !data.pages) {
+                    throw new Error('Invalid response: missing required data')
+                }
+                
+                // VALIDATE AND SANITIZE ALL DATA
+                const validatedData = validateAnalysisData(data)
+                if (!validatedData) {
+                    throw new Error('Data validation failed')
+                }
+                
+                setAnalysisData(validatedData)
+                setApiStatus("healthy")
+                setCrawlProgress(prev => ({ ...prev, stage: 'complete' }))
+            } else {
+                throw new Error(result.error || 'Deep audit failed. Site might be blocking crawlers.')
+            }
+        } catch (err: any) {
+            console.error('[DeepAudit] Error:', err)
+            setError(err.message || 'Connection failed. Server timeout or offline.')
+            setApiStatus("error")
+            setCrawlProgress({ current: 0, total: 0, stage: 'idle' })
+        } finally {
+            console.log(`[DeepAudit] Finished for ${targetUrl}`);
+            setIsAnalyzing(false)
+        }
     }
-  }, [])
 
-  // Save state to sessionStorage when it changes
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (currentUrl) sessionStorage.setItem("merged_url", currentUrl)
-      if (analysisData) sessionStorage.setItem("merged_data", JSON.stringify(analysisData))
-    }
-  }, [currentUrl, analysisData, scanMode])
-  
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("merged_scan_mode", scanMode)
-    }
-  }, [scanMode])
-
-  const handleAnalyze = async (url: string) => {
-    setIsAnalyzing(true)
-    setError(null)
-    setCurrentUrl(url)
-
-    try {
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
-      })
-
-      const result = await response.json()
-
-      if (result.success) {
-        setAnalysisData(result.data)
-        setApiStatus("healthy")
-        console.log('Scan Successful:', result.data)
-      } else {
-        setError(result.error || 'Analysis failed. Please try again.')
-        setApiStatus("error")
-        console.error('Scan Error:', result.error)
-      }
-    } catch (err: any) {
-      setError('Connection failed. Ensure the server is running.')
-      setApiStatus("error")
-      console.error('Crawler failed:', err)
-    } finally {
-      setIsAnalyzing(false)
-    }
-  }
-
-  // Use real data scores or default to 0 for a clean start
-  const scores = analysisData?.ai?.scores || {
-    seo: 0,
-    aeo: 0,
-    geo: 0
-  }
-
-  return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-      <AppSidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header with Search */}
-        <Header
-          onAnalyze={handleAnalyze}
-          isAnalyzing={isAnalyzing}
-          currentUrl={currentUrl}
-          apiStatus={apiStatus}
-        />
-
-        {/* Dashboard Content */}
-        <main className="flex-1 overflow-y-auto">
-          <div className="p-6">
-            {/* Page Header */}
-            <div className="mb-6">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-                    Merged Dashboard
-                    <Badge variant="secondary" className="bg-geo/10 text-geo border-geo/20 px-3 py-1">
-                      BETA
-                    </Badge>
-                    <Badge variant="secondary" className="bg-geo/10 text-geo border-geo/20 px-3 py-1">
-                      PRO
-                    </Badge>
-                  </h1>
-                  <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
-                      <Search className="h-4 w-4" />
-                      {currentUrl || "No analysis active"}
-                    </span>
-                    {analysisData && (
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="border-geo/50 text-geo">
-                          <Clock className="h-3 w-3 mr-1" />
-                          Analysis Live
-                        </Badge>
-                        <Badge variant="outline" className="border-geo/50 text-geo bg-geo/5">
-                          <Activity className="h-3 w-3 mr-1.5" />
-                          1 Page Scanned
-                        </Badge>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {!analysisData && !isAnalyzing && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground italic">Ready to optimize?</span>
-                  </div>
-                )}
-                {analysisData && (
-                  <button
-                    onClick={() => handleAnalyze(currentUrl)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 text-sm text-muted-foreground hover:text-foreground hover:border-seo/50 transition-colors"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                    Refresh Analysis
-                  </button>
-                )}
-              </div>
+    if (isCheckingAuth) {
+        return (
+            <div className="flex h-screen items-center justify-center bg-background">
+                <Loader2 className="h-8 w-8 text-geo animate-spin" />
             </div>
+        )
+    }
 
-            {/* Error Message */}
-            {error && (
-              <div className="mb-6 p-4 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
-                <XCircle className="h-5 w-5" />
-                <div className="flex-1 text-sm font-medium">{error}</div>
-                <button
-                  onClick={() => setError(null)}
-                  className="text-xs uppercase tracking-wider font-bold hover:underline"
-                >
-                  Dismiss
-                </button>
-              </div>
-            )}
+    const ai = analysisData?.ai
+    const pages = analysisData?.pages || []
 
-            {!analysisData && !isAnalyzing ? (
-              <div className="flex flex-col items-center justify-center py-20 animate-in fade-in zoom-in-95 duration-500">
-                <div className="h-20 w-20 bg-seo/10 rounded-full flex items-center justify-center mb-6">
-                  <Sparkles className="h-10 w-10 text-seo animate-pulse" />
-                </div>
-                <h2 className="text-3xl font-bold text-foreground mb-3 text-center">
-                  Generate Intelligence Report
-                </h2>
-                <p className="text-muted-foreground text-center max-w-lg mb-8 text-lg">
-                  Enter any website URL to perform a comprehensive SEO, AEO, and GEO audit powered by Gemini 2.5 Flash.
-                </p>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.currentTarget);
-                    const url = formData.get('url') as string;
-                    if (url) handleAnalyze(url);
-                  }}
-                  className="w-full max-w-lg relative group"
-                >
-                  <Globe className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-seo transition-colors" />
-                  <input
-                    name="url"
-                    type="text"
-                    placeholder="https://your-website.com"
-                    className="w-full pl-12 pr-32 py-4 bg-muted/50 border border-border/50 rounded-2xl focus:outline-none focus:ring-2 focus:ring-seo/20 focus:border-seo/50 transition-all text-lg"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    disabled={isAnalyzing}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-seo text-seo-foreground px-6 py-2 rounded-xl font-bold hover:bg-seo/90 transition-all"
-                  >
-                    {isAnalyzing ? (
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Scanning
-                      </div>
+    // Derived per-page metrics from actual crawl data
+    const avgResponseTime = pages.length > 0
+        ? Math.round(pages.reduce((s: number, p: any) => s + (p.responseTimeMs || 0), 0) / pages.length)
+        : 0
+    const slowPages = pages.filter((p: any) => p.responseTimeMs > 2000)
+    const thinPages = pages.filter((p: any) => p.wordCount < 300)
+    const missingH1 = pages.filter((p: any) => !p.hasH1)
+    const pagesWithSchema = pages.filter((p: any) => p.schemas?.length > 0)
+
+    // Duplicate title / meta detection
+    const titleGroups = pages.reduce((acc: Record<string, string[]>, p: any) => {
+        if (p.title) { acc[p.title] = [...(acc[p.title] || []), p.url] }
+        return acc
+    }, {})
+    const duplicateTitles: [string, string[]][] = (Object.entries(titleGroups) as [string, string[]][]).filter(([, urls]) => urls.length > 1)
+
+    const metaGroups = pages.reduce((acc: Record<string, string[]>, p: any) => {
+        if (p.description) { acc[p.description] = [...(acc[p.description] || []), p.url] }
+        return acc
+    }, {})
+    const duplicateMetas: [string, string[]][] = (Object.entries(metaGroups) as [string, string[]][]).filter(([, urls]) => urls.length > 1)
+
+    // Image alt coverage
+    const totalImgs = pages.reduce((s: number, p: any) => s + (p.imgTotal || 0), 0)
+    const imgsWithAlt = pages.reduce((s: number, p: any) => s + (p.imgWithAlt || 0), 0)
+    const imgAltPct = totalImgs > 0 ? Math.round((imgsWithAlt / totalImgs) * 100) : 100
+
+    // Heading depth
+    const pagesWithH2 = pages.filter((p: any) => (p.h2Count || 0) > 0).length
+    const pagesWithH3 = pages.filter((p: any) => (p.h3Count || 0) > 0).length
+    const flatPages = pages.filter((p: any) => (p.h2Count || 0) === 0 && p.hasH1)
+
+    // PDF Export
+    const handleExportPdf = () => {
+        const printStyles = `
+            @media print {
+                @page { size: auto; margin: 15mm; }
+
+                /* 1. Hide EVERYTHING */
+                body * { visibility: hidden !important; }
+
+                /* 2. Show only the report and all its descendants */
+                [data-report],
+                [data-report] * {
+                    visibility: visible !important;
+                }
+
+                /* 3. Pull report out of the dashboard layout */
+                [data-report] {
+                    position: absolute !important;
+                    left: 0 !important;
+                    top: 0 !important;
+                    width: 100% !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                }
+
+                /* 4. Unlock all parent scroll locks */
+                html, body,
+                body > div, body > div > div, body > div > div > div,
+                main, [class*="overflow"] {
+                    height: auto !important;
+                    max-height: none !important;
+                    overflow: visible !important;
+                    position: static !important;
+                }
+
+                /* 5. Preserve accent colours, but use light base for paper */
+                *, *::before, *::after {
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                    color-adjust: exact !important;
+                }
+
+                :root {
+                    --background: oklch(1 0 0) !important;
+                    --foreground: oklch(0.15 0 0) !important;
+                    --card: oklch(0.98 0 0) !important;
+                    --card-foreground: oklch(0.15 0 0) !important;
+                    --muted: oklch(0.94 0 0) !important;
+                    --muted-foreground: oklch(0.4 0 0) !important;
+                    --border: oklch(0.85 0 0) !important;
+                    --popover: oklch(0.98 0 0) !important;
+                    --popover-foreground: oklch(0.15 0 0) !important;
+                }
+
+                body {
+                    background: white !important;
+                }
+
+                /* 6. Prevent cards from being sliced */
+                [data-report] > div {
+                    break-inside: avoid;
+                    page-break-inside: avoid;
+                }
+
+                /* 7. Hide interactive-only elements */
+                .no-print { display: none !important; }
+
+                /* 8. Show print header */
+                .print-header { display: block !important; }
+            }
+        `
+        const styleEl = document.createElement('style')
+        styleEl.id = 'pdf-print-styles'
+        styleEl.innerHTML = printStyles
+        document.head.appendChild(styleEl)
+
+        const originalTitle = document.title
+        try {
+            const hostname = url.includes('://') ? new URL(url).hostname : url
+            document.title = `SiteAudit_Report_${hostname}`
+        } catch { document.title = 'SiteAudit_Report' }
+
+        window.print()
+
+        document.title = originalTitle
+        document.head.removeChild(styleEl)
+    }
+
+    return (
+        <div className="flex h-screen bg-background">
+            <AppSidebar />
+
+            <div className="flex-1 flex flex-col overflow-hidden">
+                <Header
+                    onAnalyze={handleDeepAudit}
+                    isAnalyzing={isAnalyzing}
+                    currentUrl={url}
+                    apiStatus={apiStatus}
+                />
+
+                <main className="flex-1 overflow-y-auto p-6">
+                    {!isAuthorized ? (
+                        <div className="min-h-[70vh] flex flex-col items-center justify-center p-8 bg-card/50 border border-border/50 rounded-3xl animate-in zoom-in-95 mt-4 max-w-2xl mx-auto shadow-lg">
+                            <div className="h-16 w-16 bg-yellow-500/10 rounded-2xl flex items-center justify-center mb-6">
+                                <Lock className="h-8 w-8 text-yellow-500" />
+                            </div>
+                            <h2 className="text-3xl font-bold mb-4 text-center">Pro Feature Locked</h2>
+                            <p className="text-muted-foreground text-center text-lg mb-8 max-w-lg">
+                                Deep Domain Auditing is an advanced feature reserved for Pro members. Unlock the Deep Crawler to analyze up to 20 pages at once for sitewide brand intelligence, global schema coverage, and architectural health.
+                            </p>
+                            <p className="text-sm font-semibold text-yellow-500 animate-pulse tracking-wider uppercase border border-yellow-500/30 bg-yellow-500/10 px-6 py-3 rounded-full">
+                                ↑ Click &ldquo;Go Pro&rdquo; in the top right to unlock
+                            </p>
+                        </div>
                     ) : (
-                      "Analyze"
-                    )}
-                  </button>
-                </form>
-                {isAnalyzing && (
-                  <p className="mt-4 text-sm text-seo animate-pulse font-medium">
-                    Our AI is currently crawling and analyzing {currentUrl}...
-                  </p>
-                )}
-                {!isAnalyzing && (
-                  <div className="mt-8 flex items-center gap-6">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <CheckCircle2 className="h-3 w-3 text-geo" />
-                      Real-time Crawling
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <CheckCircle2 className="h-3 w-3 text-aeo" />
-                      Gemini 2.5 Analysis
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <CheckCircle2 className="h-3 w-3 text-geo" />
-                      GEO/AEO Audits
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="relative">
-                {isAnalyzing && (
-                  <div className="absolute inset-0 z-50 bg-background/20 backdrop-blur-[1px] flex items-start justify-center pt-20">
-                    <div className="bg-card/90 border border-seo/30 p-6 rounded-2xl shadow-2xl flex flex-col items-center gap-4 animate-in fade-in zoom-in-95">
-                      <div className="h-12 w-12 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
-                      <div className="text-center">
-                        <h3 className="text-lg font-bold text-foreground">Deep Audit in Progress</h3>
-                        <p className="text-sm text-muted-foreground">Analyzing content, schemas, and AI visibility...</p>
-                      </div>
-                      <div className="w-48 h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-seo animate-progress-fast" style={{ width: '60%' }} />
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div className={cn("flex flex-col xl:flex-row gap-6", isAnalyzing && "opacity-40 grayscale-[0.5] transition-all duration-700")}>
-                  {/* Main Content Area */}
-                  <div className="flex-1 min-w-0">
-                    <div className="grid gap-4 sm:grid-cols-3 mb-6">
-                      <ScoreCard
-                        title="SEO Score"
-                        score={scores.seo}
-                        change={analysisData ? 0 : 0}
-                        variant="seo"
-                        description="Global Connectivity"
-                      />
-                      <ScoreCard
-                        title="AEO Score"
-                        score={scores.aeo}
-                        change={analysisData ? 0 : 0}
-                        variant="aeo"
-                        description="Snippet Coverage"
-                      />
-                      <ScoreCard
-                        title="GEO Score"
-                        score={scores.geo}
-                        change={analysisData ? 0 : 0}
-                        variant="geo"
-                        description="Citation Visibility"
-                      />
-                    </div>
+                        <div className="max-w-7xl mx-auto">
+                            {/* Pro Header */}
+                            <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div>
+                                    <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+                                        <ShieldCheck className="h-8 w-8 text-geo" />
+                                        Merged Dashboard
+                                        <Badge variant="secondary" className="bg-geo/10 text-geo border-geo/20 px-3 py-1">
+                                            BETA
+                                        </Badge>
+                                    </h1>
+                                    <p className="text-muted-foreground mt-2 max-w-2xl">
+                                        Unified intelligence analysis — choose Quick Scan (1 page) or Deep Scan (10-20 pages) for comprehensive insights.
+                                    </p>
+                                    {analysisData && (
+                                        <div className="flex items-center gap-3 mt-4 text-sm text-muted-foreground animate-in fade-in slide-in-from-left-4">
+                                            <span className="flex items-center gap-1.5 text-geo font-medium">
+                                                <Globe className="h-4 w-4" />
+                                                {url}
+                                            </span>
+                                            <Badge variant="outline" className="border-geo/50 text-geo bg-geo/5">
+                                                <Activity className="h-3 w-3 mr-1.5" />
+                                                {analysisData.pagesCrawled} Pages Scanned
+                                            </Badge>
+                                            {analysisData.siteType && (
+                                                <SiteTypeBadge
+                                                    siteType={{
+                                                        primaryType: analysisData.siteType.type,
+                                                        confidence: analysisData.siteType.confidence * 100
+                                                    }}
+                                                    onConfirm={() => {}}
+                                                    onManualSelect={(type) => {
+                                                        setAnalysisData({
+                                                            ...analysisData,
+                                                            siteType: { ...analysisData.siteType, type, confidence: 1.0 }
+                                                        })
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                                <Badge variant="secondary" className="bg-geo/10 text-geo border-geo/20 px-4 py-1 self-start sm:self-center">
+                                    <Lock className="h-3 w-3 mr-2" />
+                                    PROFESSIONAL PLAN
+                                </Badge>
+                            </div>
 
-                    {/* Tabbed Interface */}
-                    <Tabs
-                      value={activeTab}
-                      onValueChange={setActiveTab}
-                      className="w-full"
-                    >
-                      <TabsList className="w-full sm:w-auto bg-muted/50 p-1">
-                        <TabsTrigger
-                          value="seo"
-                          className={cn(
-                            "gap-2 border border-transparent transition-all duration-200",
-                            "hover:border-seo/30 hover:bg-seo/10 hover:text-seo cursor-pointer",
-                            "data-[state=active]:border-seo/50 data-[state=active]:bg-seo/20 data-[state=active]:text-seo data-[state=active]:shadow-sm"
-                          )}
-                        >
-                          <Search className="h-4 w-4" />
-                          <span className="hidden sm:inline">SEO Analysis</span>
-                          <span className="sm:hidden">SEO</span>
-                        </TabsTrigger>
-                        <TabsTrigger
-                          value="aeo"
-                          className={cn(
-                            "gap-2 border border-transparent transition-all duration-200",
-                            "hover:border-aeo/30 hover:bg-aeo/10 hover:text-aeo cursor-pointer",
-                            "data-[state=active]:border-aeo/50 data-[state=active]:bg-aeo/20 data-[state=active]:text-aeo data-[state=active]:shadow-sm"
-                          )}
-                        >
-                          <Sparkles className="h-4 w-4" />
-                          <span className="hidden sm:inline">AEO Analysis</span>
-                          <span className="sm:hidden">AEO</span>
-                        </TabsTrigger>
-                        <TabsTrigger
-                          value="geo"
-                          className={cn(
-                            "gap-2 border border-transparent transition-all duration-200",
-                            "hover:border-geo/30 hover:bg-geo/10 hover:text-geo cursor-pointer",
-                            "data-[state=active]:border-geo/50 data-[state=active]:bg-geo/20 data-[state=active]:text-geo data-[state=active]:shadow-sm"
-                          )}
-                        >
-                          <Bot className="h-4 w-4" />
-                          <span className="hidden sm:inline">GEO Analysis</span>
-                          <span className="sm:hidden">GEO</span>
-                        </TabsTrigger>
-                      </TabsList>
+                            {/* Error */}
+                            {error && (
+                                <div className="mb-8 p-4 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
+                                    <AlertCircle className="h-5 w-5" />
+                                    <div className="flex-1 text-sm font-medium">{error}</div>
+                                    <button onClick={() => setError(null)} className="text-xs uppercase tracking-wider font-bold hover:underline">Dismiss</button>
+                                </div>
+                            )}
 
-                      <div className="mt-6">
-                        <TabsContent value="seo" className="mt-0">
-                          <SEOTab data={analysisData} />
-                        </TabsContent>
-                        <TabsContent value="aeo" className="mt-0">
-                          <AEOTab data={analysisData} />
-                        </TabsContent>
-                        <TabsContent value="geo" className="mt-0">
-                          <GEOTab data={analysisData} />
-                        </TabsContent>
-                      </div>
-                    </Tabs>
-                  </div>
+                            {/* Input State */}
+                            {!analysisData && !isAnalyzing ? (
+                                <div className="bg-card/50 border border-border/50 rounded-3xl p-12 flex flex-col items-center animate-in fade-in zoom-in-95">
+                                    <div className="max-w-2xl w-full space-y-6">
+                                        <div className="text-center space-y-4">
+                                            <div className="mx-auto h-16 w-16 bg-geo/10 rounded-2xl flex items-center justify-center mb-4">
+                                                <Search className="h-8 w-8 text-geo" />
+                                            </div>
+                                            <h2 className="text-2xl font-bold">Launch Full Domain Scan</h2>
+                                            <p className="text-muted-foreground">
+                                                Configure your crawl settings and analyze up to 50 pages.
+                                            </p>
+                                        </div>
 
-                  {/* Deep Crawler Sections */}
-                  <div className="space-y-6 mt-6">
-{/* ── Prioritized Site Improvements ── */}
+                                        <CrawlConfig
+                                            onStartCrawl={(config) => {
+                                                setUrl(config.url)
+                                                setCrawlConfig({
+                                                    maxPages: config.pageCount,
+                                                    competitorUrls: config.competitorUrls,
+                                                    respectRobotsTxt: config.respectRobotsTxt
+                                                })
+                                                handleDeepAudit(config.url, {
+                                                    maxPages: config.pageCount,
+                                                    competitorUrls: config.competitorUrls,
+                                                    respectRobotsTxt: config.respectRobotsTxt
+                                                })
+                                            }}
+                                            isAnalyzing={isAnalyzing}
+                                        />
+                                        
+                                        {/* Test Mode Toggle */}
+                                        <div className="flex items-center gap-2 px-2">
+                                            <input
+                                                type="checkbox"
+                                                id="saveSnapshot"
+                                                checked={saveTestSnapshot}
+                                                onChange={(e) => setSaveTestSnapshot(e.target.checked)}
+                                                className="h-4 w-4 rounded border-border/50 text-geo focus:ring-geo/20"
+                                            />
+                                            <label htmlFor="saveSnapshot" className="text-xs text-muted-foreground cursor-pointer">
+                                                Save test snapshot (for variance testing)
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Feature Preview */}
+                                    <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-5xl">
+                                        {[
+                                            { icon: Map, color: "text-geo", label: "Site Architecture Map", desc: "Crawl Map with orphan page detection and internal link leaders" },
+                                            { icon: FileText, color: "text-aeo", label: "Content Gap Analysis", desc: "AI identifies missing pages that competitors have but you don't" },
+                                            { icon: AlertTriangle, color: "text-seo", label: "Cannibalization Risks", desc: "Detect pages competing for the same keywords and splitting authority" },
+                                        ].map(f => (
+                                            <div key={f.label} className="p-5 bg-background/50 border border-border/50 rounded-2xl">
+                                                <f.icon className={cn("h-5 w-5 mb-3", f.color)} />
+                                                <h4 className="font-bold text-sm mb-1">{f.label}</h4>
+                                                <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                            ) : isAnalyzing ? (
+                                <div className="relative">
+                                    <div className="absolute inset-0 z-50 bg-background/20 backdrop-blur-[1px] flex items-center justify-center">
+                                        <CrawlProgress
+                                            currentPage={crawlProgress.current}
+                                            totalPages={crawlProgress.total}
+                                            currentStage={crawlProgress.stage === 'crawling' ? 'crawling' : crawlProgress.stage === 'analyzing' ? 'analyzing' : 'discovering'}
+                                        />
+                                    </div>
+                                    <div className="opacity-40 grayscale-[0.5] transition-all duration-700 min-h-[400px]">
+                                        {/* Placeholder content */}
+                                        <div className="bg-card/50 border border-border/50 rounded-3xl p-12 flex flex-col items-center">
+                                            <div className="max-w-xl w-full text-center space-y-6">
+                                                <div className="mx-auto h-16 w-16 bg-geo/10 rounded-2xl flex items-center justify-center mb-4">
+                                                    <Search className="h-8 w-8 text-geo" />
+                                                </div>
+                                                <h2 className="text-2xl font-bold">Launch Full Domain Scan</h2>
+                                                <p className="text-muted-foreground">
+                                                    Enter a domain to crawl 20+ pages and generate a full Pro authority report.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            ) : (
+                                analysisData && (
+                                    <div ref={reportRef} data-report className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                                        {/* Error boundary - if data is malformed, show error */}
+                                        {(!analysisData.ai && (!analysisData.pages || analysisData.pages.length === 0)) ? (
+                                            <Card className="border-destructive/50 bg-destructive/10">
+                                                <CardContent className="p-6">
+                                                    <div className="flex items-center gap-3">
+                                                        <AlertCircle className="h-5 w-5 text-destructive" />
+                                                        <div>
+                                                            <h3 className="font-bold text-destructive">Analysis Data Error</h3>
+                                                            <p className="text-sm text-muted-foreground mt-1">
+                                                                The analysis completed but returned incomplete data. Please try again.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        ) : (
+                                            <>
+                                        {/* ── Print Header (Only visible in PDF) ── */}
+                                        <div className="hidden print-header">
+                                            <h1 className="text-3xl font-black mb-1">Intelligence Report</h1>
+                                            <p className="text-muted-foreground uppercase tracking-widest text-xs font-bold">
+                                                Domain Audit: {url} • Generated {new Date().toLocaleDateString()}
+                                            </p>
+                                        </div>
+
+                                        {/* ── Single-Page Score Cards & Tabs (when pagesCrawled === 1) ── */}
+                                        {analysisData.pagesCrawled === 1 && (() => {
+                                            const [activeTab, setActiveTab] = useState("seo")
+                                            const scores = {
+                                                seo: ai?.domainHealthScore || 0,
+                                                aeo: ai?.aeoReadiness?.overallScore || 0,
+                                                geo: ai?.consistencyScore || 0
+                                            }
+                                            
+                                            return (
+                                                <div className="space-y-6 mb-8">
+                                                    {/* Score Cards */}
+                                                    <div className="grid gap-4 sm:grid-cols-3">
+                                                        <ScoreCard
+                                                            title="SEO Score"
+                                                            score={scores.seo}
+                                                            change={0}
+                                                            variant="seo"
+                                                            description="Global Connectivity"
+                                                        />
+                                                        <ScoreCard
+                                                            title="AEO Score"
+                                                            score={scores.aeo}
+                                                            change={0}
+                                                            variant="aeo"
+                                                            description="Snippet Coverage"
+                                                        />
+                                                        <ScoreCard
+                                                            title="GEO Score"
+                                                            score={scores.geo}
+                                                            change={0}
+                                                            variant="geo"
+                                                            description="Citation Visibility"
+                                                        />
+                                                    </div>
+
+                                                    {/* Tabs */}
+                                                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                                                        <TabsList className="w-full sm:w-auto bg-muted/50 p-1">
+                                                            <TabsTrigger
+                                                                value="seo"
+                                                                className={cn(
+                                                                    "gap-2 border border-transparent transition-all duration-200",
+                                                                    "hover:border-seo/30 hover:bg-seo/10 hover:text-seo cursor-pointer",
+                                                                    "data-[state=active]:border-seo/50 data-[state=active]:bg-seo/20 data-[state=active]:text-seo data-[state=active]:shadow-sm"
+                                                                )}
+                                                            >
+                                                                <Search className="h-4 w-4" />
+                                                                SEO
+                                                            </TabsTrigger>
+                                                            <TabsTrigger
+                                                                value="aeo"
+                                                                className={cn(
+                                                                    "gap-2 border border-transparent transition-all duration-200",
+                                                                    "hover:border-aeo/30 hover:bg-aeo/10 hover:text-aeo cursor-pointer",
+                                                                    "data-[state=active]:border-aeo/50 data-[state=active]:bg-aeo/20 data-[state=active]:text-aeo data-[state=active]:shadow-sm"
+                                                                )}
+                                                            >
+                                                                <Sparkles className="h-4 w-4" />
+                                                                AEO
+                                                            </TabsTrigger>
+                                                            <TabsTrigger
+                                                                value="geo"
+                                                                className={cn(
+                                                                    "gap-2 border border-transparent transition-all duration-200",
+                                                                    "hover:border-geo/30 hover:bg-geo/10 hover:text-geo cursor-pointer",
+                                                                    "data-[state=active]:border-geo/50 data-[state=active]:bg-geo/20 data-[state=active]:text-geo data-[state=active]:shadow-sm"
+                                                                )}
+                                                            >
+                                                                <Bot className="h-4 w-4" />
+                                                                GEO
+                                                            </TabsTrigger>
+                                                        </TabsList>
+
+                                                        <TabsContent value="seo" className="mt-6">
+                                                            <SEOTab data={analysisData} />
+                                                        </TabsContent>
+                                                        <TabsContent value="aeo" className="mt-6">
+                                                            <AEOTab data={analysisData} />
+                                                        </TabsContent>
+                                                        <TabsContent value="geo" className="mt-6">
+                                                            <GEOTab data={analysisData} />
+                                                        </TabsContent>
+                                                    </Tabs>
+                                                </div>
+                                            )
+                                        })()}
+
+                                        {/* ── Row 1: Key Metrics ── */}
+                                        {(() => {
+                                            const h1Pct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.hasH1).length / pages.length) * 100) : 0
+                                            const httpsPct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.isHttps).length / pages.length) * 100) : 0
+                                            const schemaScore = ai?.schemaHealthAudit?.overallScore ?? 0
+                                            const statCards = [
+                                                { label: "Pages Scanned", value: analysisData.pagesCrawled, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", tip: "Unique pages crawled during session." },
+                                                { label: "Domain Health", value: `${ai?.domainHealthScore ?? 0}%`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", tip: "Aggregate domain authority score." },
+                                                { label: "Brand Consistency", value: `${ai?.consistencyScore ?? 0}%`, color: "text-aeo", border: "border-aeo/30", bg: "bg-aeo/5", tip: "Brand cohesion across all crawled pages." },
+                                                { label: "Schema Coverage", value: `${ai?.authorityMetrics?.schemaCoverage ?? 0}%`, color: "text-seo", border: "border-seo/30", bg: "bg-seo/5", tip: "Percentage of pages with structured data present." },
+                                                { label: "Schema Quality", value: `${schemaScore}%`, color: schemaScore >= 70 ? "text-geo" : schemaScore >= 40 ? "text-yellow-600" : "text-destructive", border: schemaScore >= 70 ? "border-geo/30" : schemaScore >= 40 ? "border-yellow-500/30" : "border-destructive/30", bg: schemaScore >= 70 ? "bg-geo/5" : schemaScore >= 40 ? "bg-yellow-500/5" : "bg-destructive/5", tip: "Quality and completeness of structured data implementation." },
+                                                { label: "Metadata Health", value: `${ai?.authorityMetrics?.metadataOptimization ?? 0}%`, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", tip: "Description and Title tag completeness." },
+                                                { label: "H1 Coverage", value: `${h1Pct}%`, color: h1Pct >= 90 ? "text-geo" : "text-destructive", border: h1Pct >= 90 ? "border-geo/20" : "border-destructive/20", bg: h1Pct >= 90 ? "bg-geo/5" : "bg-destructive/5", tip: "Percentage of pages with a valid H1 tag." },
+                                                { label: "HTTPS", value: `${httpsPct}%`, color: httpsPct === 100 ? "text-geo" : "text-destructive", border: httpsPct === 100 ? "border-geo/20" : "border-destructive/20", bg: httpsPct === 100 ? "bg-geo/5" : "bg-destructive/5", tip: "Security coverage across domain." },
+                                                { label: "Avg Response", value: `${Math.round(analysisData.avgResponseTime ?? 0)}ms`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", tip: "Avg response time across all pages." },
+                                            ]
+                                            return (
+                                                <div className="space-y-6">
+                                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-9 gap-3 relative z-50">
+                                                        {statCards.map(stat => (
+                                                            <Card key={stat.label} className={cn("col-span-1 flex flex-col", stat.border, stat.bg)}>
+                                                                <CardHeader className="pb-3 pt-4 px-4 flex-1 flex flex-col justify-between">
+                                                                    <CardDescription className="text-[10px] font-bold uppercase tracking-tighter leading-tight flex items-center gap-1 h-8 mb-1">
+                                                                        <span className="line-clamp-2">{stat.label}</span>
+                                                                        <StatTooltip text={stat.tip} />
+                                                                    </CardDescription>
+                                                                    <CardTitle className={cn("text-2xl font-black leading-none", stat.color)}>{stat.value}</CardTitle>
+                                                                </CardHeader>
+                                                            </Card>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* ── New: Domain Forensic Inventory (Evidence Row) ── */}
+                                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-muted/20 p-4 rounded-2xl border border-border/50">
+                                                        <div className="flex flex-col">
+                                                            <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">Total Word Count</p>
+                                                            <p className="text-sm font-bold font-mono">{analysisData.totalWords?.toLocaleString() || "0"} Content Signals</p>
+                                                        </div>
+                                                        <div className="flex flex-col border-l border-border/50 pl-4">
+                                                            <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">Sitewide Schemas</p>
+                                                            <p className="text-sm font-bold font-mono">{analysisData.schemaCount || 0} JSON-LD Blocks</p>
+                                                        </div>
+                                                        <div className="flex flex-col border-l border-border/50 pl-4">
+                                                            <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">Internal Link Leaders</p>
+                                                            <p className="text-sm font-bold font-mono">{ai?.topicalClusters?.length || 0} Core Clusters</p>
+                                                        </div>
+                                                        <div className="flex flex-col border-l border-border/50 pl-4">
+                                                            <p className="text-[9px] font-black uppercase text-muted-foreground/60 tracking-widest mb-1">Global Images</p>
+                                                            <p className="text-sm font-bold font-mono">{totalImgs} Visual Assets</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+                                        })()}
+
+                                        {/* ── Prioritized Site Improvements ── */}
                                         {ai?.recommendations?.length > 0 && (
                                             <Card className="border-geo/30 bg-gradient-to-br from-geo/5 to-aeo/5 relative z-10">
                                                 <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -1611,18 +1957,33 @@ export default function MergedDashboard() {
                                                 </Card>
                                             </div>
                                         )}
-                  </div>
 
-                  {/* Recommendations Sidebar */}
-                  <div className="w-full xl:w-80 shrink-0">
-                    <Recommendations data={analysisData?.ai?.recommendations} />
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </main>
-      </div>
-    </div>
-  )
+
+                                        {/* Start Over + PDF Export */}
+                                        <div className="flex justify-between items-center pt-4 border-t border-border/50 no-print">
+                                            <button
+                                                onClick={() => { setAnalysisData(null); setUrl(""); sessionStorage.removeItem("pro_url"); sessionStorage.removeItem("pro_data"); }}
+                                                className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
+                                            >
+                                                ← Start New Audit
+                                            </button>
+                                            <button
+                                                onClick={handleExportPdf}
+                                                className="flex items-center gap-2 bg-geo text-geo-foreground px-5 py-2.5 rounded-xl font-bold hover:bg-geo/90 transition-all text-sm shadow-md"
+                                            >
+                                                <FileText className="h-4 w-4" />
+                                                Export PDF Report
+                                            </button>
+                                        </div>
+                                        </>
+                                        )}
+                                    </div>
+                                )
+                            )}
+                        </div>
+                    )}
+                </main>
+            </div>
+        </div>
+    )
 }
