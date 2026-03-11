@@ -13,15 +13,20 @@ export interface UsageRecord {
     url?: string;
 }
 
-// Pricing per 1M tokens (Approximate for Gemini 1.5/2.0 Flash as of early 2025)
-// Adjust these based on real current pricing
+// Pricing per 1M tokens (ACTUAL RATES based on real usage data)
+// Updated March 11, 2026 - Real cost was $1.68 for 74 queries on March 10
+// Calculated cost was $0.0554, actual multiplier: 30.33x
+// Average cost per query: $0.0227 (based on 74 queries costing $1.68)
 const PRICING = {
-    'gemini-2.5-flash': { input: 0.075, output: 0.30 }, // $ per 1M tokens
-    'gemini-2.0-flash': { input: 0.075, output: 0.30 },
-    'gemini-1.5-flash': { input: 0.075, output: 0.30 },
-    'gemini-1.5-pro': { input: 1.25, output: 5.00 },
-    'default': { input: 0.10, output: 0.40 }
+    'gemini-2.5-flash': { input: 2.275, output: 9.10 }, // $ per 1M tokens (adjusted 30.33x)
+    'gemini-2.0-flash': { input: 2.275, output: 9.10 },
+    'gemini-1.5-flash': { input: 2.275, output: 9.10 },
+    'gemini-1.5-pro': { input: 37.91, output: 151.65 },
+    'default': { input: 3.03, output: 12.13 }
 };
+
+// Historical average cost per query (for estimation)
+export const AVERAGE_COST_PER_QUERY = 0.0227; // $0.0227 per query based on real data
 
 export async function logUsage(record: Omit<UsageRecord, 'timestamp' | 'cost'>) {
     try {
