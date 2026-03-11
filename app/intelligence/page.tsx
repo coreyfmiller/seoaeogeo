@@ -147,7 +147,7 @@ export default function SiteVsSite() {
 
                         {/* Battle Form */}
                         {!comparisonData && !isAnalyzing ? (
-                            <div className="bg-card/50 border border-border/50 rounded-3xl p-10 flex flex-col items-center animate-in fade-in zoom-in-95 animate-duration-500">
+                            <div className="bg-card/50 border-2 border-border rounded-3xl p-10 flex flex-col items-center animate-in fade-in zoom-in-95 animate-duration-500 shadow-lg relative overflow-hidden">
                                 {/* Ambient Background Glows */}
                                 <div className="absolute top-0 left-0 w-96 h-96 bg-seo/10 rounded-full blur-[100px] pointer-events-none" />
                                 <div className="absolute bottom-0 right-0 w-96 h-96 bg-aeo/10 rounded-full blur-[100px] pointer-events-none" />
