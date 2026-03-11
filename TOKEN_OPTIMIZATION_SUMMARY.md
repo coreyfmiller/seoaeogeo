@@ -1,20 +1,31 @@
 # Token Optimization Implementation
 
-## Changes Made
+## Changes Made (Updated)
 
 ### 1. Created Content Summarizer (`lib/utils/content-summarizer.ts`)
 **Purpose**: Extract only essential content for AI analysis
 
 **What it does**:
 - Extracts H1, H2, H3 headings (structure)
-- Captures first 300 words of main content (vs. entire page)
-- Pulls key bullet points from lists (max 10)
-- Extracts emphasized text (bold/strong - key points)
+- Captures first 500 words of main content (increased from 300 for better semantic analysis)
+- Pulls first 3 full paragraphs for tone/style analysis (critical for GEO scoring)
+- Extracts key bullet points from lists (max 10)
+- Captures emphasized text (bold/strong - key points)
 - Includes meta keywords if present
 
-**Token Reduction**: ~60-70% reduction in content tokens
+**Token Reduction**: ~50-60% reduction in content tokens
 - Before: 2000-3000 tokens of full page text
-- After: 500-800 tokens of structured summary
+- After: 700-1000 tokens of structured summary (adjusted for accuracy)
+
+### Why 500 words instead of 300?
+GEO scoring depends on detecting:
+- Promotional tone
+- Expertise signals
+- First-person usage
+- Unsubstantiated claims
+- Hard data presence
+
+300 words wasn't enough context for accurate semantic analysis. 500 words + sample paragraphs maintains scoring accuracy while still reducing tokens significantly.
 
 ### 2. Updated Crawler (`lib/crawler.ts`)
 - Added `summarizedContent` field to `ScanResult`
@@ -32,17 +43,17 @@
 
 ## Expected Impact
 
-### Token Reduction Estimates
+### Token Reduction Estimates (Updated)
 
 | Component | Before | After | Reduction |
 |-----------|--------|-------|-----------|
-| Content Text | 2000-3000 | 500-800 | ~65% |
+| Content Text | 2000-3000 | 700-1000 | ~55% |
 | Schema JSON | 200-500 | 200-500 | 0% (unchanged) |
 | Structural Data | 100-200 | 100-200 | 0% (unchanged) |
 | Prompt Instructions | 800-1000 | 800-1000 | 0% (unchanged) |
-| **Total Input** | **3100-4700** | **1600-2500** | **~45-50%** |
+| **Total Input** | **3100-4700** | **1800-2700** | **~40-42%** |
 
-### Cost Impact
+### Cost Impact (Adjusted)
 
 **Current Costs** (based on actual data):
 - Average cost per query: $0.0227
@@ -50,16 +61,16 @@
 - Output tokens: ~1,400 avg
 
 **Projected Costs** (after optimization):
-- Average cost per query: ~$0.0125 (45% reduction)
-- Input tokens: ~1,900 avg (45% reduction)
+- Average cost per query: ~$0.0135 (40% reduction)
+- Input tokens: ~2,100 avg (40% reduction)
 - Output tokens: ~1,400 avg (unchanged)
 
 **Daily Savings**:
 - Current: $1.68 for 74 queries
-- Projected: $0.93 for 74 queries
-- **Savings: $0.75/day (~45%)**
+- Projected: $1.00 for 74 queries
+- **Savings: $0.68/day (~40%)**
 
-**Monthly Savings**: ~$22.50/month
+**Monthly Savings**: ~$20/month
 
 ## What's Preserved
 

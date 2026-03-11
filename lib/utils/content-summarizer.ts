@@ -6,7 +6,8 @@ import * as cheerio from 'cheerio';
  * Extracts only the essential content needed for AI analysis,
  * dramatically reducing input tokens while maintaining quality.
  * 
- * Target: Reduce content from ~2000-3000 tokens to ~500-800 tokens
+ * Target: Reduce content from ~2000-3000 tokens to ~700-1000 tokens
+ * Increased from 300 to 500 words to preserve semantic analysis accuracy
  */
 
 export interface SummarizedContent {
@@ -15,10 +16,11 @@ export interface SummarizedContent {
     h2: string[];
     h3: string[];
   };
-  mainContent: string; // First 300 words of main content
+  mainContent: string; // First 500 words of main content (increased for semantic analysis)
   lists: string[]; // Key bullet points/lists (max 10 items)
   emphasis: string[]; // Bold/strong text (key points)
   metaKeywords: string[]; // If present
+  paragraphs: string[]; // First 3 full paragraphs for tone/style analysis
 }
 
 /**
@@ -47,13 +49,13 @@ export function summarizeContent(html: string): SummarizedContent {
     mainText = $('body').text();
   }
 
-  // Clean and limit to first 300 words
+  // Clean and limit to first 500 words (increased from 300 for better semantic analysis)
   const words = mainText
     .replace(/\s\s+/g, ' ')
     .trim()
     .split(/\s+/)
     .filter(word => word.length > 0)
-    .slice(0, 300);
+    .slice(0, 500); // Increased to capture more tone/style signals
   
   const mainContent = words.join(' ');
 
@@ -82,12 +84,24 @@ export function summarizeContent(html: string): SummarizedContent {
   // Extract meta keywords if present
   const metaKeywords = $('meta[name="keywords"]').attr('content')?.split(',').map(k => k.trim()) || [];
 
+  // Extract first 3 paragraphs for tone/style analysis (important for GEO scoring)
+  const paragraphs: string[] = [];
+  $('p').each((i, el) => {
+    if (i < 3) {
+      const text = $(el).text().trim();
+      if (text.length > 50) { // Only substantial paragraphs
+        paragraphs.push(text);
+      }
+    }
+  });
+
   return {
     headings: { h1, h2, h3 },
     mainContent,
     lists: lists.slice(0, 10),
     emphasis: emphasis.slice(0, 15),
-    metaKeywords: metaKeywords.slice(0, 10)
+    metaKeywords: metaKeywords.slice(0, 10),
+    paragraphs: paragraphs.slice(0, 3)
   };
 }
 
@@ -109,8 +123,13 @@ export function formatSummaryForAI(summary: SummarizedContent): string {
     parts.push(`H3: ${summary.headings.h3.join(' | ')}`);
   }
 
-  // Main content (first 300 words)
+  // Main content (first 500 words)
   parts.push(`\nCONTENT: ${summary.mainContent}`);
+
+  // Sample paragraphs for tone analysis
+  if (summary.paragraphs && summary.paragraphs.length > 0) {
+    parts.push(`\nSAMPLE PARAGRAPHS (for tone/style analysis):\n${summary.paragraphs.join('\n\n')}`);
+  }
 
   // Key points from lists
   if (summary.lists.length > 0) {
