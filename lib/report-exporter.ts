@@ -153,16 +153,30 @@ export function generateTextReport(data: ExportData): string {
  * Download report as text file
  */
 export function downloadReport(data: ExportData) {
-  const report = generateTextReport(data);
-  const blob = new Blob([report], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `seo-audit-${new URL(data.url).hostname}-${Date.now()}.txt`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  try {
+    const report = generateTextReport(data);
+    const blob = new Blob([report], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    
+    // Safe filename generation
+    let hostname = 'report';
+    try {
+      hostname = new URL(data.url.startsWith('http') ? data.url : `https://${data.url}`).hostname;
+    } catch {
+      hostname = data.url.replace(/[^a-z0-9]/gi, '-').substring(0, 50);
+    }
+    
+    a.download = `seo-audit-${hostname}-${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Download failed:', error);
+    throw error;
+  }
 }
 
 /**

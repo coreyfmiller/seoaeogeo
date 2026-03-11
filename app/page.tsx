@@ -134,16 +134,21 @@ export default function Dashboard() {
   const handleExportReport = () => {
     if (!analysisData) return;
     
-    const exportData = {
-      url: currentUrl,
-      timestamp: new Date().toLocaleString(),
-      scores: analysisData.ai?.scores || { seo: 0, aeo: 0, geo: 0 },
-      penalties: analysisData.ai?.enhancedPenalties || [],
-      technical: analysisData.technical,
-      structuralData: analysisData.structuralData
-    };
-    
-    downloadReport(exportData);
+    try {
+      const exportData = {
+        url: currentUrl,
+        timestamp: new Date().toLocaleString(),
+        scores: analysisData.ai?.scores || { seo: 0, aeo: 0, geo: 0 },
+        penalties: analysisData.ai?.enhancedPenalties || [],
+        technical: analysisData.technical,
+        structuralData: analysisData.structuralData
+      };
+      
+      downloadReport(exportData);
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Failed to export report. Please try again.');
+    }
   };
 
   const handleCopyReport = async () => {
