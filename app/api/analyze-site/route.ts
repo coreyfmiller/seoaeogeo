@@ -3,6 +3,8 @@ import { performDeepScan } from '@/lib/crawler-deep';
 import { analyzeSitewideIntelligence } from '@/lib/gemini-sitewide';
 import { saveTestSnapshot } from '@/lib/test-data-store';
 import { debugLog, clearDebugLog } from '@/lib/debug-logger';
+import { scoreAndAggregatePages } from '@/lib/grader-aggregator';
+import { validateAnalysisData } from '@/lib/data-validator';
 
 /**
  * Deep Site Analysis API (PRO Feature)
@@ -23,7 +25,19 @@ export async function POST(req: Request) {
         const scanResults = await performDeepScan(url, maxPages);
         console.log(`[API PRO] Crawled ${scanResults.pagesCrawled} pages.`);
 
-        // 2. Robots.txt & Sitemap check (simple fetch, no Playwright needed)
+        // 2. Run Grader V2 on each page and aggregate scores
+        console.log(`[API PRO] Running Grader V2 on ${scanResults.pages.length} pages...`);
+        const { pagesWithScores, aggregated } = scoreAndAggregatePages(scanResults.pages);
+        console.log(`[API PRO] Grader V2 complete. Aggregated SEO: ${aggregated.seo}, AEO: ${aggregated.aeo}, GEO: ${aggregated.geo}`);
+        debugLog('[API PRO] Grader V2 aggregation', {
+            seo: aggregated.seo,
+            aeo: aggregated.aeo,
+            geo: aggregated.geo,
+            averages: aggregated.averages,
+            range: aggregated.range
+        });
+
+        // 3. Robots.txt & Sitemap check (simple fetch, no Playwright needed)
         let robotsTxt = { exists: false, raw: '' };
         let sitemap = { exists: false };
         try {
@@ -43,11 +57,11 @@ export async function POST(req: Request) {
             console.warn('[API PRO] robots.txt/sitemap check failed:', e);
         }
 
-        // 3. Aggregate AI Analysis (Synthesis)
+        // 4. Aggregate AI Analysis (Synthesis)
         console.log(`[API PRO] Running AI synthesis...`);
         const aiAnalysis = await analyzeSitewideIntelligence({
             domain: scanResults.domain,
-            pages: scanResults.pages.map(p => ({
+            pages: pagesWithScores.map(p => ({
                 url: p.url,
                 title: p.title,
                 description: p.description,
@@ -74,35 +88,73 @@ export async function POST(req: Request) {
             recommendationsCount: aiAnalysis.recommendations?.length
         });
 
-        // 4. Calculate Aggregate Metrics for Dashboard
-        const totalWords = scanResults.pages.reduce((acc, p) => acc + (p.wordCount || 0), 0);
-        const schemaCount = scanResults.pages.reduce((acc, p) => acc + (p.schemas?.length || 0), 0);
-        const avgResponseTime = scanResults.pages.reduce((acc, p) => acc + (p.responseTimeMs || 0), 0) / (scanResults.pagesCrawled || 1);
+        // 5. Calculate Aggregate Metrics for Dashboard
+        const totalWords = pagesWithScores.reduce((acc, p) => acc + (p.wordCount || 0), 0);
+        const schemaCount = pagesWithScores.reduce((acc, p) => acc + (p.schemas?.length || 0), 0);
+        const avgResponseTime = pagesWithScores.reduce((acc, p) => acc + (p.responseTimeMs || 0), 0) / (scanResults.pagesCrawled || 1);
 
         // Final tech score (weighted: 33% https, 33% H1s, 33% performance)
-        const httpsPct = scanResults.pages.filter(p => p.isHttps).length / (scanResults.pagesCrawled || 1);
-        const h1Pct = scanResults.pages.filter(p => p.hasH1).length / (scanResults.pagesCrawled || 1);
-        const perfPct = scanResults.pages.filter(p => p.responseTimeMs < 1500).length / (scanResults.pagesCrawled || 1);
+        const httpsPct = pagesWithScores.filter(p => p.isHttps).length / (scanResults.pagesCrawled || 1);
+        const h1Pct = pagesWithScores.filter(p => p.hasH1).length / (scanResults.pagesCrawled || 1);
+        const perfPct = pagesWithScores.filter(p => p.responseTimeMs < 1500).length / (scanResults.pagesCrawled || 1);
         const globalTechScore = Math.round((httpsPct * 30) + (h1Pct * 30) + (perfPct * 40));
 
         console.log(`[API PRO] Deep Audit complete.`);
 
+        // 6. Standardize AI output format to match Pro Dashboard
+        const standardizedAI = {
+            ...aiAnalysis,
+            // Add standardized scores structure (using Grader V2 aggregated scores)
+            scores: {
+                seo: aggregated.seo,
+                aeo: aggregated.aeo,
+                geo: aggregated.geo,
+            },
+            // Keep original AI scores for reference
+            _originalScores: {
+                domainHealthScore: aiAnalysis.domainHealthScore,
+                consistencyScore: aiAnalysis.consistencyScore,
+                aeoReadinessScore: aiAnalysis.aeoReadiness?.overallScore || 0,
+            },
+            // Add grader metadata
+            _graderMetadata: {
+                version: 'v2',
+                aggregationMethod: 'weighted',
+                pagesScored: pagesWithScores.length,
+                scoreRanges: aggregated.range,
+                averages: aggregated.averages,
+                median: aggregated.median,
+            },
+        };
+
         const finalData = {
             ...scanResults,
+            pages: pagesWithScores, // Include per-page Grader V2 scores
             robotsTxt,
             sitemap,
             totalWords,
             schemaCount,
             avgResponseTime,
             globalTechScore,
-            ai: aiAnalysis
+            ai: standardizedAI,
         };
 
+        // 7. VALIDATE DATA STRUCTURE
+        console.log(`[API PRO] Validating data structure...`);
+        const validatedData = validateAnalysisData(finalData);
+        if (!validatedData) {
+            throw new Error('Data validation failed - AI returned incomplete data');
+        }
+        console.log(`[API PRO] Data validation passed.`);
+
         debugLog('[API PRO] Final data assembled', {
-            pagesCrawled: finalData.pagesCrawled,
-            globalTechScore: finalData.globalTechScore,
-            aiDomainHealthScore: finalData.ai?.domainHealthScore,
-            aiConsistencyScore: finalData.ai?.consistencyScore
+            pagesCrawled: validatedData.pagesCrawled,
+            globalTechScore: validatedData.globalTechScore,
+            graderSEO: validatedData.ai?.scores?.seo,
+            graderAEO: validatedData.ai?.scores?.aeo,
+            graderGEO: validatedData.ai?.scores?.geo,
+            aiDomainHealthScore: validatedData.ai?._originalScores?.domainHealthScore,
+            aiConsistencyScore: validatedData.ai?._originalScores?.consistencyScore,
         });
 
         // Save test snapshot if requested (for variance testing)
@@ -113,7 +165,7 @@ export async function POST(req: Request) {
                     url: scanResults.domain,
                     type: 'deep-site',
                     crawlData: {
-                        pages: scanResults.pages,
+                        pages: pagesWithScores,
                         totalWords,
                         schemaCount,
                         avgResponseTime,
@@ -128,12 +180,13 @@ export async function POST(req: Request) {
                     },
                     scores: {
                         deterministic: {
+                            graderV2: aggregated,
                             schemaQuality: aiAnalysis.schemaHealthAudit?.overallScore || 0,
                             brandConsistency: aiAnalysis.consistencyScore || 0,
                             schemaValidation: aiAnalysis.schemaHealthAudit,
                             brandBreakdown: aiAnalysis.brandConsistencyBreakdown,
                         },
-                        final: finalData,
+                        final: validatedData,
                     },
                 });
                 console.log(`[API PRO] Test snapshot saved for ${scanResults.domain}`);
@@ -145,7 +198,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({
             success: true,
-            data: finalData
+            data: validatedData
         });
 
     } catch (error: any) {
