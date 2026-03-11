@@ -34,6 +34,7 @@ const mainNav: NavItem[] = [
 const comingSoonNav: NavItem[] = []
 
 const bottomNav: NavItem[] = [
+  { name: "Our Standards", icon: FileText, href: "/standards" },
   { name: "Settings", icon: Settings, href: "#", badge: "SOON" },
   { name: "Help & Support", icon: HelpCircle, href: "#", badge: "SOON" },
 ]
