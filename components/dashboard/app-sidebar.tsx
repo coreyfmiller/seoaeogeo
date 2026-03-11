@@ -25,24 +25,17 @@ interface NavItem {
 
 const mainNav: NavItem[] = [
   { name: "Free Scan", icon: Search, href: "/free" },
-  { name: "Competitive Intel", icon: Globe, href: "/intelligence", badge: "PRO" },
   { name: "Pro Audit", icon: LayoutDashboard, href: "/", badge: "PRO" },
   { name: "Deep Crawler", icon: TrendingUp, href: "/site-analysis", badge: "PRO" },
-  { name: "Merged Dashboard", icon: Sparkles, href: "/merged", badge: "BETA" },
-  { name: "Usage & Costs", icon: BarChart3, href: "/usage" },
+  { name: "Competitive Intel", icon: Globe, href: "/intelligence", badge: "PRO" },
+  { name: "Usage & Costs", icon: BarChart3, href: "/usage", badge: "ADMIN" },
 ]
 
-const comingSoonNav: NavItem[] = [
-  { name: "Keywords", icon: FileText, href: "#", badge: "Soon" },
-  { name: "Backlinks", icon: TrendingUp, href: "#", badge: "Soon" },
-  { name: "SEO Insights", icon: BarChart3, href: "#", badge: "Soon" },
-  { name: "AEO Monitor", icon: Sparkles, href: "#", badge: "Soon" },
-  { name: "GEO Tracker", icon: Bot, href: "#", badge: "Soon" },
-]
+const comingSoonNav: NavItem[] = []
 
 const bottomNav: NavItem[] = [
-  { name: "Settings", icon: Settings, href: "#" },
-  { name: "Help & Support", icon: HelpCircle, href: "#" },
+  { name: "Settings", icon: Settings, href: "#", badge: "SOON" },
+  { name: "Help & Support", icon: HelpCircle, href: "#", badge: "SOON" },
 ]
 
 export function AppSidebar() {
@@ -92,29 +85,6 @@ export function AppSidebar() {
                     </span>
                   )}
                 </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <p className="px-3 mb-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-            Coming Soon
-          </p>
-          <ul className="space-y-1">
-            {comingSoonNav.map((item) => (
-              <li key={item.name}>
-                <div
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-muted-foreground/40 cursor-not-allowed select-none"
-                >
-                  <item.icon className="h-4 w-4" />
-                  <span className="flex-1">{item.name}</span>
-                  {item.badge && (
-                    <span className="flex items-center justify-center h-5 px-2.5 rounded-full bg-muted/50 text-muted-foreground/60 text-[10px] uppercase font-bold tracking-wider">
-                      {item.badge}
-                    </span>
-                  )}
-                </div>
               </li>
             ))}
           </ul>
