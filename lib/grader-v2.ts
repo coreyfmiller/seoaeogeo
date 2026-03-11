@@ -523,15 +523,20 @@ export function convertBreakdownToEnhancedPenalties(
     for (const category of seoBreakdown) {
         for (const component of category.components) {
             const pointsLost = component.maxScore - component.score;
-            if (pointsLost > 0 && component.issues && component.issues.length > 0) {
+            if (pointsLost > 0) {
+                // If there are explicit issues, use them
+                const issueText = component.issues && component.issues.length > 0 
+                    ? component.issues[0]
+                    : `Lost ${pointsLost} points in ${component.feedback}`;
+                    
                 penalties.push({
                     category: 'SEO',
-                    component: component.feedback,
-                    penalty: component.issues[0],
-                    explanation: getExplanation('SEO', component.feedback, component.issues[0]),
-                    fix: getFix('SEO', component.feedback, component.issues[0]),
+                    component: `SEO ${category.name} - ${component.feedback}`,
+                    penalty: issueText,
+                    explanation: getExplanation('SEO', component.feedback, issueText),
+                    fix: getFix('SEO', component.feedback, issueText),
                     pointsDeducted: -pointsLost,
-                    severity: component.status as 'critical' | 'warning' | 'info'
+                    severity: component.status === 'critical' ? 'critical' : component.status === 'warning' ? 'warning' : 'info'
                 });
             }
         }
@@ -541,15 +546,19 @@ export function convertBreakdownToEnhancedPenalties(
     for (const category of aeoBreakdown) {
         for (const component of category.components) {
             const pointsLost = component.maxScore - component.score;
-            if (pointsLost > 0 && component.issues && component.issues.length > 0) {
+            if (pointsLost > 0) {
+                const issueText = component.issues && component.issues.length > 0 
+                    ? component.issues[0]
+                    : `Lost ${pointsLost} points in ${component.feedback}`;
+                    
                 penalties.push({
                     category: 'AEO',
-                    component: component.feedback,
-                    penalty: component.issues[0],
-                    explanation: getExplanation('AEO', component.feedback, component.issues[0]),
-                    fix: getFix('AEO', component.feedback, component.issues[0]),
+                    component: `AEO ${category.name} - ${component.feedback}`,
+                    penalty: issueText,
+                    explanation: getExplanation('AEO', component.feedback, issueText),
+                    fix: getFix('AEO', component.feedback, issueText),
                     pointsDeducted: -pointsLost,
-                    severity: component.status as 'critical' | 'warning' | 'info'
+                    severity: component.status === 'critical' ? 'critical' : component.status === 'warning' ? 'warning' : 'info'
                 });
             }
         }
@@ -559,21 +568,34 @@ export function convertBreakdownToEnhancedPenalties(
     for (const category of geoBreakdown) {
         for (const component of category.components) {
             const pointsLost = component.maxScore - component.score;
-            if (pointsLost > 0 && component.issues && component.issues.length > 0) {
+            if (pointsLost > 0) {
+                const issueText = component.issues && component.issues.length > 0 
+                    ? component.issues[0]
+                    : `Lost ${pointsLost} points in ${component.feedback}`;
+                    
                 penalties.push({
                     category: 'GEO',
-                    component: component.feedback,
-                    penalty: component.issues[0],
-                    explanation: getExplanation('GEO', component.feedback, component.issues[0]),
-                    fix: getFix('GEO', component.feedback, component.issues[0]),
+                    component: `GEO ${category.name} - ${component.feedback}`,
+                    penalty: issueText,
+                    explanation: getExplanation('GEO', component.feedback, issueText),
+                    fix: getFix('GEO', component.feedback, issueText),
                     pointsDeducted: -pointsLost,
-                    severity: component.status as 'critical' | 'warning' | 'info'
+                    severity: component.status === 'critical' ? 'critical' : component.status === 'warning' ? 'warning' : 'info'
                 });
             }
         }
     }
     
-    return penalties;
+    // Sort by severity and points lost
+    return penalties.sort((a, b) => {
+        // Critical first, then warning, then info
+        if (a.severity !== b.severity) {
+            const severityOrder = { critical: 0, warning: 1, info: 2 };
+            return severityOrder[a.severity] - severityOrder[b.severity];
+        }
+        // Then by points lost (most first)
+        return a.pointsDeducted - b.pointsDeducted;
+    });
 }
 
 /**

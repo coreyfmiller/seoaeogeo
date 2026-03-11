@@ -62,26 +62,27 @@ export function SEOTabEnhanced({ data }: SEOTabProps) {
   ] : []
 
   const aiSeo = data?.ai?.seoAnalysis
-  const enhancedPenalties = data?.ai?.enhancedPenalties?.filter(p => p.category === 'SEO') || []
+  // Show ALL penalties from all categories in one unified ledger
+  const allPenalties = data?.ai?.enhancedPenalties || []
   const struct = data?.structuralData
 
   return (
     <div className="grid gap-6">
-      {/* Enhanced Penalty Ledger */}
-      {enhancedPenalties.length > 0 && (
+      {/* Unified Intelligence Penalty Ledger - ALL Categories */}
+      {allPenalties.length > 0 && (
         <Card className="border-destructive/30 bg-destructive/5 shadow-sm">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2 text-destructive">
               <Shield className="h-5 w-5" />
-              SEO Intelligence Penalty Ledger
+              Intelligence Penalty Ledger (SEO + AEO + GEO)
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              The AI explicitly deducted points from this site for the following structural failures. Click any penalty for detailed explanation and fix instructions.
+              All point deductions across SEO, AEO, and GEO categories. Click any penalty for detailed explanation and fix instructions.
             </p>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {enhancedPenalties.map((penalty, i) => (
+              {allPenalties.map((penalty, i) => (
                 <div 
                   key={i} 
                   className={cn(
@@ -106,6 +107,17 @@ export function SEOTabEnhanced({ data }: SEOTabProps) {
                       </Badge>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
+                          <Badge 
+                            variant="outline" 
+                            className={cn(
+                              "text-[9px] font-black uppercase px-2 py-0.5",
+                              penalty.category === 'SEO' && "border-seo/50 text-seo bg-seo/10",
+                              penalty.category === 'AEO' && "border-aeo/50 text-aeo bg-aeo/10",
+                              penalty.category === 'GEO' && "border-geo/50 text-geo bg-geo/10"
+                            )}
+                          >
+                            {penalty.category}
+                          </Badge>
                           <span className="text-[10px] font-bold uppercase text-muted-foreground">{penalty.component}</span>
                           {penalty.severity === 'critical' && <AlertTriangle className="h-3 w-3 text-destructive" />}
                         </div>
@@ -139,7 +151,7 @@ export function SEOTabEnhanced({ data }: SEOTabProps) {
               ))}
             </div>
             <p className="text-xs text-muted-foreground mt-4 italic">
-              Click any penalty to see detailed explanation and step-by-step fix instructions.
+              Showing {allPenalties.filter(p => p.category === 'SEO').length} SEO, {allPenalties.filter(p => p.category === 'AEO').length} AEO, and {allPenalties.filter(p => p.category === 'GEO').length} GEO penalties. Click any to expand.
             </p>
           </CardContent>
         </Card>
