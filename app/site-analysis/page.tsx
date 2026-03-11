@@ -434,9 +434,12 @@ export default function SiteAnalysis() {
                             {/* Pro Header */}
                             <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div>
-                                    <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
-                                        <ShieldCheck className="h-8 w-8 text-geo" />
-                                        PRO: Deep Crawler
+                                    <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
+                                        <ShieldCheck className="h-6 w-6 text-geo" />
+                                        Deep Crawler
+                                        <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20 px-3 py-1">
+                                            PRO
+                                        </Badge>
                                     </h1>
                                     <p className="text-muted-foreground mt-2 max-w-2xl">
                                         Full domain authority audit — sitewide schema coverage, content gaps, cannibalization detection, and internal link architecture.
@@ -469,10 +472,31 @@ export default function SiteAnalysis() {
                                         </div>
                                     )}
                                 </div>
-                                <Badge variant="secondary" className="bg-geo/10 text-geo border-geo/20 px-4 py-1 self-start sm:self-center">
-                                    <Lock className="h-3 w-3 mr-2" />
-                                    PROFESSIONAL PLAN
-                                </Badge>
+                                <div className="flex items-center gap-2 self-start sm:self-center">
+                                    {analysisData && !isAnalyzing && (
+                                        <button
+                                            onClick={() => {
+                                                setAnalysisData(null)
+                                                setUrl("")
+                                                setMaxPages(10)
+                                                setError(null)
+                                                if (typeof window !== "undefined") {
+                                                    sessionStorage.removeItem("deep_url")
+                                                    sessionStorage.removeItem("deep_maxPages")
+                                                    sessionStorage.removeItem("deep_data")
+                                                }
+                                            }}
+                                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 text-sm text-muted-foreground hover:text-foreground hover:border-geo/50 transition-colors"
+                                        >
+                                            <RefreshCw className="h-4 w-4" />
+                                            New Crawl
+                                        </button>
+                                    )}
+                                    <Badge variant="secondary" className="bg-geo/10 text-geo border-geo/20 px-4 py-1">
+                                        <Lock className="h-3 w-3 mr-2" />
+                                        PROFESSIONAL PLAN
+                                    </Badge>
+                                </div>
                             </div>
 
                             {/* Error */}

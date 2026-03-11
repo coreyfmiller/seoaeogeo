@@ -18,7 +18,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   XCircle,
-  Info
+  Info,
+  RefreshCw
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -131,9 +132,29 @@ export default function FreeDashboard() {
                   </p>
                 )}
               </div>
-              <Badge variant="secondary" className="bg-muted text-foreground border-border">
-                FREE TIER
-              </Badge>
+              <div className="flex items-center gap-3">
+                {analysisData && !isAnalyzing && (
+                  <Button
+                    onClick={() => {
+                      setAnalysisData(null)
+                      setCurrentUrl("")
+                      setError(null)
+                      if (typeof window !== "undefined") {
+                        sessionStorage.removeItem("free_dashboard_url")
+                        sessionStorage.removeItem("free_dashboard_data")
+                      }
+                    }}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                    New Scan
+                  </Button>
+                )}
+                <Badge variant="secondary" className="bg-muted text-foreground border-border">
+                  FREE TIER
+                </Badge>
+              </div>
             </div>
 
             {error && (
@@ -146,15 +167,44 @@ export default function FreeDashboard() {
             )}
 
             {!analysisData && !isAnalyzing && !error && (
-              <Card className="border-border/50">
+              <Card className="border-seo/20 bg-gradient-to-br from-seo/5 to-aeo/5">
                 <CardContent className="p-12 text-center">
-                  <div className="mx-auto h-16 w-16 bg-seo/10 rounded-2xl flex items-center justify-center mb-4">
+                  <div className="mx-auto h-16 w-16 bg-seo/10 rounded-2xl flex items-center justify-center mb-6">
                     <Search className="h-8 w-8 text-seo" />
                   </div>
-                  <h2 className="text-2xl font-bold mb-2">Enter a URL to analyze</h2>
-                  <p className="text-muted-foreground">
+                  <h2 className="text-3xl font-bold mb-3">Analyze Your Website</h2>
+                  <p className="text-muted-foreground mb-8 text-lg">
                     Get instant SEO, AEO, and GEO scores across 5 pages with domain-level insights
                   </p>
+                  
+                  {/* Large URL Input */}
+                  <form 
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      const formData = new FormData(e.currentTarget)
+                      const url = formData.get('url') as string
+                      if (url) handleAnalyze(url)
+                    }}
+                    className="max-w-2xl mx-auto"
+                  >
+                    <div className="flex gap-3">
+                      <input
+                        type="url"
+                        name="url"
+                        placeholder="Enter your website URL (e.g., example.com)"
+                        className="flex-1 px-6 py-4 text-lg rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-seo focus:border-transparent"
+                        required
+                      />
+                      <Button 
+                        type="submit"
+                        size="lg"
+                        className="bg-seo hover:bg-seo/90 text-seo-foreground px-8 py-4 text-lg"
+                      >
+                        <Search className="h-5 w-5 mr-2" />
+                        Analyze
+                      </Button>
+                    </div>
+                  </form>
                 </CardContent>
               </Card>
             )}
