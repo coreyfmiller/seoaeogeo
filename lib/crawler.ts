@@ -1,13 +1,15 @@
 import { chromium as playwright, type Browser, type Page } from 'playwright-core';
 import chromium from '@sparticuz/chromium';
 import { thinHtml, extractSchema } from './utils/cleaner';
+import { summarizeContent, formatSummaryForAI } from './utils/content-summarizer';
 import { getCrawlerErrorMessage } from './utils/crawler-errors';
 
 export interface ScanResult {
     url: string;
     title: string;
     description: string;
-    thinnedText: string;
+    thinnedText: string; // Kept for backward compatibility
+    summarizedContent: string; // NEW: Optimized content summary
     schemas: any[];
     structuralData: {
         semanticTags: { article: number, main: number, nav: number, aside: number, headers: number, h1Count: number };
@@ -125,12 +127,16 @@ export async function performScan(targetUrl: string): Promise<ScanResult> {
             };
         });
 
+        // 5. Optimize content for AI analysis
+        const contentSummary = summarizeContent(html);
+        const summarizedContent = formatSummaryForAI(contentSummary);
 
         return {
             url: targetUrl,
             title,
             description,
-            thinnedText: thinHtml(html),
+            thinnedText: thinHtml(html), // Kept for backward compatibility
+            summarizedContent, // NEW: Token-optimized content
             schemas: extractSchema(html),
             structuralData,
             technical: {

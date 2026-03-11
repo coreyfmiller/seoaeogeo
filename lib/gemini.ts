@@ -8,7 +8,8 @@ import { logUsage } from "./usage";
 export async function analyzeWithGemini(context: {
   title: string;
   description: string;
-  thinnedText: string;
+  thinnedText: string; // Deprecated but kept for compatibility
+  summarizedContent?: string; // NEW: Optimized content
   schemas: any[];
   structuralData?: any;
 }) {
@@ -22,6 +23,9 @@ export async function analyzeWithGemini(context: {
       responseMimeType: "application/json"
     }
   });
+
+  // Use summarized content if available, fallback to thinned text
+  const contentToAnalyze = context.summarizedContent || context.thinnedText;
 
   const prompt = `
     You are a Search Intelligence Analyst evaluating a website using MODERN CRAWLER STANDARDS (Google 2026, Bing 2026).
@@ -48,9 +52,9 @@ export async function analyzeWithGemini(context: {
     STRUCTURAL DATA (Extracted from DOM):
     ${context.structuralData ? JSON.stringify(context.structuralData, null, 2) : "Not available"}
     
-    BODY CONTENT (THINNED): 
+    CONTENT SUMMARY (Optimized Extract):
     ---
-    ${context.thinnedText}
+    ${contentToAnalyze}
     ---
 
     Return a JSON object exactly matching this structure:

@@ -33,6 +33,7 @@ export async function POST(req: Request) {
                 title: scanResult.title,
                 description: scanResult.description,
                 thinnedText: scanResult.thinnedText,
+                summarizedContent: scanResult.summarizedContent, // NEW: Use optimized content
                 schemas: scanResult.schemas,
                 structuralData: scanResult.structuralData
             }),
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
                 domain: scanResult.url,
                 title: scanResult.title,
                 description: scanResult.description,
-                contentSummary: scanResult.thinnedText,
+                contentSummary: scanResult.summarizedContent || scanResult.thinnedText, // Use optimized content
             })
         ]);
 
