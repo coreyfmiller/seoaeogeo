@@ -100,7 +100,7 @@ export default function SiteVsSite() {
                         <div className="mb-10 flex items-start justify-between gap-4">
                             <div className="text-center sm:text-left">
                                 <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-                                    <Swords className="h-6 w-6 text-aeo" />
+                                    <Activity className="h-6 w-6 text-seo" />
                                     Competitive Intel
                                 </h1>
                                 <p className="text-muted-foreground mt-2 max-w-2xl text-lg">

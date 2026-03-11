@@ -164,6 +164,7 @@ export default function MergedDashboard() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                   <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
+                    <Activity className="h-6 w-6 text-seo" />
                     Merged Dashboard
                     <Badge variant="secondary" className="bg-geo/10 text-geo border-geo/20 px-3 py-1">
                       BETA
@@ -251,44 +252,25 @@ export default function MergedDashboard() {
             )}
 
             {!analysisData && !isAnalyzing ? (
-              <div className="flex flex-col items-center justify-center py-20 animate-in fade-in zoom-in-95 duration-500">
-                <div className="h-20 w-20 bg-seo/10 rounded-full flex items-center justify-center mb-6">
-                  <Sparkles className="h-10 w-10 text-seo animate-pulse" />
-                </div>
-                <h2 className="text-3xl font-bold text-foreground mb-3 text-center">
-                  Generate Intelligence Report
-                </h2>
-                <p className="text-muted-foreground text-center max-w-lg mb-4 text-lg">
-                  Choose {scanMode === "quick" ? "Quick Scan (1 page)" : "Deep Scan (up to 10 pages)"} and enter any website URL to perform a comprehensive SEO, AEO, and GEO audit.
-                </p>
-                <p className="text-sm text-muted-foreground mb-8">
-                  {scanMode === "quick" 
-                    ? "Quick scan analyzes a single page for immediate insights"
-                    : "Deep scan crawls multiple pages for comprehensive site-wide analysis"}
-                </p>
-                <SearchInput
-                  onSubmit={handleAnalyze}
-                  isAnalyzing={isAnalyzing}
-                  variant="large"
-                  className="mx-auto"
-                />
-                {!isAnalyzing && (
-                  <div className="mt-8 flex items-center gap-6">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <CheckCircle2 className="h-3 w-3 text-geo" />
-                      Real-time Crawling
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <CheckCircle2 className="h-3 w-3 text-aeo" />
-                      Gemini 2.5 Analysis
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <CheckCircle2 className="h-3 w-3 text-geo" />
-                      GEO/AEO Audits
-                    </div>
+              <Card className="border-seo/20 bg-gradient-to-br from-seo/5 to-aeo/5">
+                <CardContent className="p-12 text-center">
+                  <div className="mx-auto h-16 w-16 bg-seo/10 rounded-2xl flex items-center justify-center mb-6">
+                    <Search className="h-8 w-8 text-seo" />
                   </div>
-                )}
-              </div>
+                  <h2 className="text-3xl font-bold mb-3">
+                    Generate Intelligence Report
+                  </h2>
+                  <p className="text-muted-foreground mb-8 text-lg">
+                    Choose {scanMode === "quick" ? "Quick Scan (1 page)" : "Deep Scan (up to 10 pages)"} and enter any website URL to perform a comprehensive SEO, AEO, and GEO audit.
+                  </p>
+                  <SearchInput
+                    onSubmit={handleAnalyze}
+                    isAnalyzing={isAnalyzing}
+                    variant="large"
+                    className="mx-auto"
+                  />
+                </CardContent>
+              </Card>
             ) : (
               <div className="relative">
                 {isAnalyzing && (

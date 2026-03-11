@@ -437,7 +437,7 @@ export default function SiteAnalysis() {
                             <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div>
                                     <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-                                        <ShieldCheck className="h-6 w-6 text-geo" />
+                                        <Activity className="h-6 w-6 text-seo" />
                                         Deep Crawler
                                         <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20 px-3 py-1">
                                             PRO
@@ -512,21 +512,15 @@ export default function SiteAnalysis() {
 
                             {/* Input State */}
                             {!analysisData && !isAnalyzing ? (
-                                <div className="bg-card/50 border border-border/50 rounded-3xl p-12 flex flex-col items-center animate-in fade-in zoom-in-95">
-                                    {/* Ambient Background Glows */}
-                                    <div className="absolute top-0 left-0 w-96 h-96 bg-seo/10 rounded-full blur-[100px] pointer-events-none" />
-                                    <div className="absolute bottom-0 right-0 w-96 h-96 bg-geo/10 rounded-full blur-[100px] pointer-events-none" />
-                                    
-                                    <div className="max-w-2xl w-full space-y-6 relative z-10">
-                                        <div className="text-center space-y-4">
-                                            <div className="mx-auto h-16 w-16 bg-seo/10 rounded-2xl flex items-center justify-center mb-4">
-                                                <Search className="h-8 w-8 text-seo" />
-                                            </div>
-                                            <h2 className="text-3xl font-bold">Launch Full Domain Scan</h2>
-                                            <p className="text-muted-foreground text-lg">
-                                                Configure your crawl settings and analyze up to 50 pages.
-                                            </p>
+                                <Card className="border-seo/20 bg-gradient-to-br from-seo/5 to-aeo/5">
+                                    <CardContent className="p-12 text-center">
+                                        <div className="mx-auto h-16 w-16 bg-seo/10 rounded-2xl flex items-center justify-center mb-6">
+                                            <Search className="h-8 w-8 text-seo" />
                                         </div>
+                                        <h2 className="text-3xl font-bold mb-3">Launch Full Domain Scan</h2>
+                                        <p className="text-muted-foreground mb-8 text-lg">
+                                            Configure your crawl settings and analyze up to 50 pages.
+                                        </p>
 
                                         <CrawlConfig
                                             onStartCrawl={(config) => {
@@ -546,7 +540,7 @@ export default function SiteAnalysis() {
                                         />
                                         
                                         {/* Test Mode Toggle */}
-                                        <div className="flex items-center gap-2 px-2">
+                                        <div className="flex items-center gap-2 px-2 mt-4">
                                             <input
                                                 type="checkbox"
                                                 id="saveSnapshot"
@@ -558,23 +552,8 @@ export default function SiteAnalysis() {
                                                 Save test snapshot (for variance testing)
                                             </label>
                                         </div>
-                                    </div>
-
-                                    {/* Feature Preview */}
-                                    <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-5xl relative z-10">
-                                        {[
-                                            { icon: Map, color: "text-seo", label: "Site Architecture Map", desc: "Crawl Map with orphan page detection and internal link leaders" },
-                                            { icon: FileText, color: "text-aeo", label: "Content Gap Analysis", desc: "AI identifies missing pages that competitors have but you don't" },
-                                            { icon: AlertTriangle, color: "text-geo", label: "Cannibalization Risks", desc: "Detect pages competing for the same keywords and splitting authority" },
-                                        ].map(f => (
-                                            <div key={f.label} className="p-5 bg-background/50 border border-border/50 rounded-2xl">
-                                                <f.icon className={cn("h-5 w-5 mb-3", f.color)} />
-                                                <h4 className="font-bold text-sm mb-1">{f.label}</h4>
-                                                <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
+                                    </CardContent>
+                                </Card>
 
                             ) : isAnalyzing ? (
                                 <div className="relative">

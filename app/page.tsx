@@ -9,6 +9,7 @@ import { SEOTabEnhanced } from "@/components/dashboard/seo-tab-enhanced"
 import { AEOTab } from "@/components/dashboard/aeo-tab"
 import { GEOTab } from "@/components/dashboard/geo-tab"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { downloadReport, copyReportToClipboard } from "@/lib/report-exporter"
 import {
@@ -183,7 +184,8 @@ export default function Dashboard() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                   <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-                    Audit Dashboard
+                    <Activity className="h-6 w-6 text-seo" />
+                    Pro Audit
                     <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/20 px-3 py-1">
                       PRO
                     </Badge>
@@ -285,44 +287,25 @@ export default function Dashboard() {
             )}
 
             {!analysisData && !isAnalyzing ? (
-              <div className="flex flex-col items-center justify-center py-20 animate-in fade-in zoom-in-95 duration-500">
-                <div className="h-20 w-20 bg-seo/10 rounded-full flex items-center justify-center mb-6">
-                  <Sparkles className="h-10 w-10 text-seo animate-pulse" />
-                </div>
-                <h2 className="text-3xl font-bold text-foreground mb-3 text-center">
-                  Generate Intelligence Report
-                </h2>
-                <p className="text-muted-foreground text-center max-w-lg mb-8 text-lg">
-                  Enter any website URL to perform a comprehensive SEO, AEO, and GEO audit powered by Gemini 2.5 Flash.
-                </p>
-                <SearchInput
-                  onSubmit={handleAnalyze}
-                  isAnalyzing={isAnalyzing}
-                  variant="large"
-                  className="mx-auto"
-                />
-                {isAnalyzing && (
-                  <p className="mt-4 text-sm text-seo animate-pulse font-medium">
-                    Our AI is currently crawling and analyzing {currentUrl}...
-                  </p>
-                )}
-                {!isAnalyzing && (
-                  <div className="mt-8 flex items-center gap-6">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <CheckCircle2 className="h-3 w-3 text-geo" />
-                      Real-time Crawling
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <CheckCircle2 className="h-3 w-3 text-aeo" />
-                      Gemini 2.5 Analysis
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <CheckCircle2 className="h-3 w-3 text-geo" />
-                      GEO/AEO Audits
-                    </div>
+              <Card className="border-seo/20 bg-gradient-to-br from-seo/5 to-aeo/5">
+                <CardContent className="p-12 text-center">
+                  <div className="mx-auto h-16 w-16 bg-seo/10 rounded-2xl flex items-center justify-center mb-6">
+                    <Search className="h-8 w-8 text-seo" />
                   </div>
-                )}
-              </div>
+                  <h2 className="text-3xl font-bold mb-3">
+                    Generate Intelligence Report
+                  </h2>
+                  <p className="text-muted-foreground mb-8 text-lg">
+                    Enter any website URL to perform a comprehensive SEO, AEO, and GEO audit powered by Gemini 2.5 Flash.
+                  </p>
+                  <SearchInput
+                    onSubmit={handleAnalyze}
+                    isAnalyzing={isAnalyzing}
+                    variant="large"
+                    className="mx-auto"
+                  />
+                </CardContent>
+              </Card>
             ) : (
               <div className="relative">
                 {isAnalyzing && (
