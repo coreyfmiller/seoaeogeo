@@ -18,8 +18,8 @@ export async function analyzeWithGemini(context: {
   const model = genAI.getGenerativeModel({
     model: "gemini-2.5-flash",
     generationConfig: {
-      temperature: 0.1,
-      topP: 0.1,
+      temperature: 0, // Deterministic mode for consistent scoring
+      topP: 1,
       responseMimeType: "application/json"
     }
   });
