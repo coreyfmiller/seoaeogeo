@@ -3,7 +3,7 @@ import { performScan } from '@/lib/crawler';
 import { analyzeWithGemini } from '@/lib/gemini';
 import { performLiveInterrogation } from '@/lib/gemini-interrogation';
 import { calculateDeterministicScores } from '@/lib/grader';
-import { calculateScoresV2, convertBreakdownToPenaltyLedger } from '@/lib/grader-v2';
+import { calculateScoresV2, convertBreakdownToPenaltyLedger, convertBreakdownToEnhancedPenalties } from '@/lib/grader-v2';
 import { validateAnalysisData } from '@/lib/data-validator';
 
 // Feature flag: Set to true to use new component-based scoring
@@ -72,6 +72,11 @@ export async function POST(req: Request) {
                     geo: v2Results.geoScore
                 },
                 penaltyLedger: convertBreakdownToPenaltyLedger(v2Results.breakdown.seo),
+                enhancedPenalties: convertBreakdownToEnhancedPenalties(
+                    v2Results.breakdown.seo,
+                    v2Results.breakdown.aeo,
+                    v2Results.breakdown.geo
+                ),
                 scoringVersion: 'v2',
                 breakdown: v2Results.breakdown,
                 overallFeedback: v2Results.overallFeedback,
