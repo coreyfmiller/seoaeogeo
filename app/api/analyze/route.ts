@@ -3,7 +3,7 @@ import { performScan } from '@/lib/crawler';
 import { analyzeWithGemini } from '@/lib/gemini';
 import { performLiveInterrogation } from '@/lib/gemini-interrogation';
 import { calculateDeterministicScores } from '@/lib/grader';
-import { calculateScoresV2 } from '@/lib/grader-v2';
+import { calculateScoresV2, convertBreakdownToPenaltyLedger } from '@/lib/grader-v2';
 
 // Feature flag: Set to true to use new component-based scoring
 const USE_GRADER_V2 = process.env.USE_GRADER_V2 === 'true' || true; // Default to V2
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
                     aeo: v2Results.aeoScore,
                     geo: v2Results.geoScore
                 },
-                penaltyLedger: [], // V2 uses breakdown instead
+                penaltyLedger: convertBreakdownToPenaltyLedger(v2Results.breakdown.seo),
                 scoringVersion: 'v2',
                 breakdown: v2Results.breakdown,
                 overallFeedback: v2Results.overallFeedback,

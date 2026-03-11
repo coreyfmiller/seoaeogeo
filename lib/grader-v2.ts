@@ -208,3 +208,31 @@ export function compareScores(v1Score: number, v2Score: number): {
         interpretation
     };
 }
+
+
+/**
+ * Convert V2 breakdown to V1-style penalty ledger for backwards compatibility
+ */
+export function convertBreakdownToPenaltyLedger(breakdown: CategoryScore[]): Array<{
+    category: string;
+    penalty: string;
+    pointsDeducted: number;
+}> {
+    const penalties: Array<{ category: string; penalty: string; pointsDeducted: number }> = [];
+    
+    for (const category of breakdown) {
+        for (const component of category.components) {
+            // Only include components that lost points
+            const pointsLost = component.maxScore - component.score;
+            if (pointsLost > 0 && component.issues && component.issues.length > 0) {
+                penalties.push({
+                    category: category.name.toUpperCase(),
+                    penalty: component.issues.join('; '),
+                    pointsDeducted: -pointsLost
+                });
+            }
+        }
+    }
+    
+    return penalties;
+}
