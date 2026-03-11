@@ -4,6 +4,7 @@ import { analyzeWithGemini } from '@/lib/gemini';
 import { performLiveInterrogation } from '@/lib/gemini-interrogation';
 import { calculateDeterministicScores } from '@/lib/grader';
 import { calculateScoresV2, convertBreakdownToPenaltyLedger } from '@/lib/grader-v2';
+import { validateAnalysisData } from '@/lib/data-validator';
 
 // Feature flag: Set to true to use new component-based scoring
 const USE_GRADER_V2 = process.env.USE_GRADER_V2 === 'true' || true; // Default to V2
@@ -91,16 +92,26 @@ export async function POST(req: Request) {
 
         console.log(`[API] Scoring Complete (${USE_GRADER_V2 ? 'V2' : 'V1'}).`);
 
+        const finalData = {
+            ...scanResult,
+            ai: {
+                ...aiAnalysis,
+                ...gradingResults,
+                liveInterrogation
+            }
+        };
+
+        // VALIDATE DATA STRUCTURE
+        console.log(`[API] Validating data structure...`);
+        const validatedData = validateAnalysisData(finalData);
+        if (!validatedData) {
+            throw new Error('Data validation failed - AI returned incomplete data');
+        }
+        console.log(`[API] Data validation passed.`);
+
         return NextResponse.json({
             success: true,
-            data: {
-                ...scanResult,
-                ai: {
-                    ...aiAnalysis,
-                    ...gradingResults,
-                    liveInterrogation
-                }
-            }
+            data: validatedData
         });
 
     } catch (error: any) {
