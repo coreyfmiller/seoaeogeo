@@ -237,8 +237,6 @@ export default function Dashboard() {
                     </button>
                   </div>
                 )}
-                  </button>
-                )}
                 {analysisData && (
                   <div className="flex items-center gap-2">
                     <button

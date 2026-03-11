@@ -5,11 +5,13 @@ import { logUsage } from "./usage";
  * Comparative Analysis: Compares two sites and identifies competitive gaps.
  */
 export async function analyzeCompetitive(siteA: {
+  url: string;
   title: string;
   description: string;
   thinnedText: string;
   schemas: any[];
 }, siteB: {
+  url: string;
   title: string;
   description: string;
   thinnedText: string;
@@ -34,17 +36,21 @@ export async function analyzeCompetitive(siteA: {
     - Focus on actual competitive advantages, not implementation style
     
     SITE A (TARGET):
+    - URL: ${siteA.url}
     - TITLE: ${siteA.title}
     - CONTENT: ${siteA.thinnedText.substring(0, 5000)}
     - SCHEMAS (Normalized): ${JSON.stringify(siteA.schemas)}
     
     SITE B (COMPETITOR):
+    - URL: ${siteB.url}
     - TITLE: ${siteB.title}
     - CONTENT: ${siteB.thinnedText.substring(0, 5000)}
     - SCHEMAS (Normalized): ${JSON.stringify(siteB.schemas)}
     
     Compare them across SEO, AEO (Answer Engine Optimization), and GEO (Generative Engine Optimization).
     Identify specific "Stolen Opportunities" where Site B is outperforming Site A in LLM citations or Answer Box presence.
+    
+    IMPORTANT FOR VERDICT: Use the actual site URLs (${siteA.url} and ${siteB.url}) in your winnerVerdict instead of generic terms like "Site A" or "Site B". Make it personal and specific.
     
     Return a JSON object exactly matching this structure:
     {

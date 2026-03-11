@@ -25,12 +25,14 @@ export async function POST(req: Request) {
         console.log(`[API] Starting Comparative Gemini analysis...`);
         const compareResult = await analyzeCompetitive(
             {
+                url: siteAUrl,
                 title: scanA.title,
                 description: scanA.description,
                 thinnedText: scanA.thinnedText,
                 schemas: scanA.schemas
             },
             {
+                url: siteBUrl,
                 title: scanB.title,
                 description: scanB.description,
                 thinnedText: scanB.thinnedText,
