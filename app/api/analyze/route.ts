@@ -41,7 +41,7 @@ export async function POST(req: Request) {
                 domain: scanResult.url,
                 title: scanResult.title,
                 description: scanResult.description,
-                contentSummary: scanResult.summarizedContent || scanResult.thinnedText, // Use optimized content
+                contentSummary: scanResult.thinnedText, // Use full content for consistency
             })
         ]);
 

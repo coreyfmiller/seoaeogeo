@@ -24,8 +24,9 @@ export async function analyzeWithGemini(context: {
     }
   });
 
-  // Use summarized content if available, fallback to thinned text
-  const contentToAnalyze = context.summarizedContent || context.thinnedText;
+  // Use full thinned text for now - summarized content causes score instability
+  // TODO: Revisit optimization after stabilizing scoring algorithm
+  const contentToAnalyze = context.thinnedText;
 
   const prompt = `
     You are a Search Intelligence Analyst evaluating a website using MODERN CRAWLER STANDARDS (Google 2026, Bing 2026).
