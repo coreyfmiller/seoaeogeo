@@ -65,6 +65,11 @@ export async function POST(req: Request) {
                 seoScore: v2Results.seoScore,
                 aeoScore: v2Results.aeoScore,
                 geoScore: v2Results.geoScore,
+                scores: {
+                    seo: v2Results.seoScore,
+                    aeo: v2Results.aeoScore,
+                    geo: v2Results.geoScore
+                },
                 penaltyLedger: [], // V2 uses breakdown instead
                 scoringVersion: 'v2',
                 breakdown: v2Results.breakdown,
