@@ -27,7 +27,7 @@ export async function performLiveInterrogation(context: {
     Target Website: ${context.domain}
     Title: ${context.title}
     Description: ${context.description}
-    Snippet: ${context.contentSummary.substring(0, 1500)}
+    Snippet: ${(context.contentSummary || '').substring(0, 1500)}
 
     Step 1: Determine the core service and location/industry of this website (e.g., "Pizza restaurant in Oromocto, NB" or "B2B SaaS for HR").
     Step 2: Formulate the exact prompt a user would type into an AI search engine to find this specific type of business (e.g., "What are the best pizza places in Oromocto?").

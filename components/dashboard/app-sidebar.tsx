@@ -13,6 +13,8 @@ import {
   Globe,
   Bot,
   TrendingUp,
+  Layers,
+  Play,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -28,6 +30,10 @@ const mainNav: NavItem[] = [
   { name: "Competitive Intel", icon: Globe, href: "/intelligence" },
   { name: "Pro Audit", icon: LayoutDashboard, href: "/", badge: "PRO" },
   { name: "Deep Crawler", icon: TrendingUp, href: "/site-analysis", badge: "PRO" },
+  { name: "V2.0 Beta", icon: Sparkles, href: "/v2", badge: "BETA" },
+  { name: "V3.0 Beta", icon: Bot, href: "/v3", badge: "BETA AI" },
+  { name: "V3 Deep Scan", icon: Layers, href: "/deep-v3", badge: "BETA AI" },
+  { name: "Animation", icon: Play, href: "/animation", badge: "DEV" },
 ]
 
 const comingSoonNav: NavItem[] = []
@@ -86,8 +92,18 @@ export function AppSidebar() {
                     </span>
                   )}
                   {item.badge === "BETA" && (
-                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-geo/10 text-geo border border-geo/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-600 border border-orange-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       {item.badge}
+                    </span>
+                  )}
+                  {item.badge === "BETA AI" && (
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-orange-500/10 to-purple-500/10 text-purple-600 border border-purple-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                      BETA AI
+                    </span>
+                  )}
+                  {item.badge === "DEV" && (
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-zinc-500/10 text-zinc-500 border border-zinc-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                      DEV
                     </span>
                   )}
                 </Link>
@@ -119,7 +135,7 @@ export function AppSidebar() {
                   </span>
                 )}
                 {item.badge === "SOON" && (
-                  <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-green-500/10 text-green-600 border border-green-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                  <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-zinc-500/10 text-zinc-500 border border-zinc-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                     {item.badge}
                   </span>
                 )}

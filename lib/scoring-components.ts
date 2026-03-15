@@ -4,6 +4,7 @@
  */
 
 import type { SiteType } from "./types/audit";
+import { getPenaltyWeight } from "./scoring-config-site-types";
 
 export interface ScoreComponent {
     name: string;
@@ -212,25 +213,38 @@ export const SEO_FOUNDATION_COMPONENTS: ScoreComponent[] = [
 export const SEO_CONTENT_COMPONENTS: ScoreComponent[] = [
     {
         name: "Content Depth",
-        maxPoints: 8,
+        maxPoints: 15,
         description: "Adequate word count for topic coverage",
         evaluate: (data) => {
             const { wordCount } = data.structuralData || {};
+            const siteType = data.siteType || 'general';
+            
+            // Get site-type-specific weight for thin content penalty
+            const penaltyWeight = getPenaltyWeight(siteType, 'thinContent');
             
             if (wordCount < 300) {
+                // Apply site-type-specific penalty
+                const basePenalty = 15;
+                const adjustedPenalty = Math.round(basePenalty * penaltyWeight);
+                const adjustedScore = 15 - adjustedPenalty;
+                
                 return {
-                    score: 2,
-                    maxScore: 8,
-                    status: 'critical',
+                    score: Math.max(0, adjustedScore),
+                    maxScore: 15,
+                    status: adjustedPenalty >= 12 ? 'critical' : 'warning',
                     feedback: "Thin content - needs substantial expansion",
                     issues: [`Only ${wordCount} words (recommended: 800+)`]
                 };
             }
             
             if (wordCount < 500) {
+                const basePenalty = 9;
+                const adjustedPenalty = Math.round(basePenalty * penaltyWeight);
+                const adjustedScore = 15 - adjustedPenalty;
+                
                 return {
-                    score: 4,
-                    maxScore: 8,
+                    score: Math.max(0, adjustedScore),
+                    maxScore: 15,
                     status: 'warning',
                     feedback: "Content is minimal - consider expanding",
                     issues: [`${wordCount} words (recommended: 800+)`]
@@ -238,9 +252,13 @@ export const SEO_CONTENT_COMPONENTS: ScoreComponent[] = [
             }
             
             if (wordCount < 800) {
+                const basePenalty = 4;
+                const adjustedPenalty = Math.round(basePenalty * penaltyWeight);
+                const adjustedScore = 15 - adjustedPenalty;
+                
                 return {
-                    score: 6,
-                    maxScore: 8,
+                    score: Math.max(0, adjustedScore),
+                    maxScore: 15,
                     status: 'good',
                     feedback: "Decent content length",
                     issues: [`${wordCount} words (optimal: 800+)`]
@@ -248,8 +266,8 @@ export const SEO_CONTENT_COMPONENTS: ScoreComponent[] = [
             }
             
             return {
-                score: 8,
-                maxScore: 8,
+                score: 15,
+                maxScore: 15,
                 status: 'excellent',
                 feedback: `Strong content depth (${wordCount} words)`
             };
@@ -261,6 +279,18 @@ export const SEO_CONTENT_COMPONENTS: ScoreComponent[] = [
         description: "Content is clear and easy to read",
         evaluate: (data) => {
             const { poorReadability } = data.semanticFlags || {};
+            const { wordCount } = data.structuralData || {};
+            
+            // Thin content can't be properly evaluated for readability
+            if (wordCount < 300) {
+                return {
+                    score: 0,
+                    maxScore: 7,
+                    status: 'critical',
+                    feedback: "Insufficient content to evaluate readability",
+                    issues: ["Need at least 300 words for meaningful content"]
+                };
+            }
             
             if (poorReadability) {
                 return {
@@ -282,92 +312,139 @@ export const SEO_CONTENT_COMPONENTS: ScoreComponent[] = [
     },
     {
         name: "Internal Linking",
-        maxPoints: 7,
-        description: "Internal links present for site navigation",
+        maxPoints: 10,
+        description: "Internal links present for site navigation and architecture",
         evaluate: (data) => {
             const { internal } = data.structuralData?.links || {};
+            const { wordCount } = data.structuralData || {};
             
             if (internal === 0) {
                 return {
                     score: 0,
-                    maxScore: 7,
+                    maxScore: 10,
                     status: 'critical',
                     feedback: "No internal links found",
                     issues: ["Add internal links to improve site structure"]
                 };
             }
             
-            if (internal < 3) {
+            // Check for link spam: too many links for content length
+            // Good ratio: 1 link per 50-100 words
+            // Spam ratio: >1 link per 20 words
+            if (wordCount > 0) {
+                const linkDensity = internal / wordCount;
+                if (linkDensity > 0.05) { // More than 1 link per 20 words
+                    return {
+                        score: 2,
+                        maxScore: 10,
+                        status: 'warning',
+                        feedback: "Excessive internal linking - appears spammy",
+                        issues: [`${internal} links in ${wordCount} words (${Math.round(linkDensity * 100)}% link density)`]
+                    };
+                }
+            }
+            
+            if (internal < 5) {
                 return {
-                    score: 4,
-                    maxScore: 7,
+                    score: 3,
+                    maxScore: 10,
                     status: 'warning',
-                    feedback: "Minimal internal linking",
-                    issues: [`Only ${internal} internal links (recommended: 5+)`]
+                    feedback: "Minimal internal linking - poor site architecture",
+                    issues: [`Only ${internal} internal links (recommended: 10+)`]
+                };
+            }
+            
+            if (internal < 10) {
+                return {
+                    score: 6,
+                    maxScore: 10,
+                    status: 'good',
+                    feedback: "Decent internal linking",
+                    issues: [`${internal} internal links (optimal: 10+)`]
+                };
+            }
+            
+            if (internal < 20) {
+                return {
+                    score: 8,
+                    maxScore: 10,
+                    status: 'excellent',
+                    feedback: `Good internal linking (${internal} links)`
                 };
             }
             
             return {
-                score: 7,
-                maxScore: 7,
+                score: 10,
+                maxScore: 10,
                 status: 'excellent',
-                feedback: `Good internal linking (${internal} links)`
+                feedback: `Strong internal linking architecture (${internal} links)`
             };
         }
     },
     {
         name: "Image Optimization",
-        maxPoints: 8,
+        maxPoints: 10,
         description: "Images have alt text for accessibility and SEO",
         evaluate: (data) => {
             const { totalImages, imagesWithAlt } = data.structuralData?.media || {};
             
             if (totalImages === 0) {
                 return {
-                    score: 8,
-                    maxScore: 8,
+                    score: 10,
+                    maxScore: 10,
                     status: 'excellent',
                     feedback: "No images to optimize"
                 };
             }
             
             const altCoverage = (imagesWithAlt / totalImages) * 100;
+            const missingCount = totalImages - imagesWithAlt;
             
             if (altCoverage === 0) {
                 return {
                     score: 0,
-                    maxScore: 8,
+                    maxScore: 10,
                     status: 'critical',
-                    feedback: "No images have alt text",
-                    issues: [`${totalImages} images missing alt text`]
+                    feedback: "No images have alt text - major accessibility issue",
+                    issues: [`All ${totalImages} images missing alt text`]
                 };
             }
             
             if (altCoverage < 50) {
                 return {
-                    score: 3,
-                    maxScore: 8,
-                    status: 'warning',
+                    score: 2,
+                    maxScore: 10,
+                    status: 'critical',
                     feedback: "Most images missing alt text",
-                    issues: [`${totalImages - imagesWithAlt} of ${totalImages} images missing alt text`]
+                    issues: [`${missingCount} of ${totalImages} images missing alt text (${Math.round(altCoverage)}% coverage)`]
+                };
+            }
+            
+            if (altCoverage < 80) {
+                return {
+                    score: 5,
+                    maxScore: 10,
+                    status: 'warning',
+                    feedback: "Many images missing alt text",
+                    issues: [`${missingCount} of ${totalImages} images missing alt text (${Math.round(altCoverage)}% coverage)`]
                 };
             }
             
             if (altCoverage < 100) {
                 return {
-                    score: 6,
-                    maxScore: 8,
+                    score: 8,
+                    maxScore: 10,
                     status: 'good',
                     feedback: "Most images have alt text",
-                    issues: [`${totalImages - imagesWithAlt} images still need alt text`]
+                    issues: [`${missingCount} image${missingCount > 1 ? 's' : ''} still need alt text`]
                 };
             }
             
             return {
-                score: 8,
-                maxScore: 8,
+                score: 10,
+                maxScore: 10,
                 status: 'excellent',
-                feedback: "All images have alt text"
+                feedback: "All images have alt text - excellent accessibility"
             };
         }
     }
@@ -376,43 +453,54 @@ export const SEO_CONTENT_COMPONENTS: ScoreComponent[] = [
 export const SEO_TECHNICAL_COMPONENTS: ScoreComponent[] = [
     {
         name: "Page Performance",
-        maxPoints: 8,
-        description: "Page loads quickly (estimated from response time)",
+        maxPoints: 10,
+        description: "Page loads quickly (response time)",
         evaluate: (data) => {
             const { responseTimeMs } = data;
             
             if (!responseTimeMs) {
                 return {
-                    score: 4,
-                    maxScore: 8,
-                    status: 'warning',
-                    feedback: "Unable to measure performance"
+                    score: 10,
+                    maxScore: 10,
+                    status: 'excellent',
+                    feedback: "Performance measurement unavailable"
                 };
             }
             
+            // Use broader buckets to reduce score variance from network fluctuations
             if (responseTimeMs > 3000) {
                 return {
-                    score: 2,
-                    maxScore: 8,
+                    score: 0,
+                    maxScore: 10,
                     status: 'critical',
-                    feedback: "Very slow page load time",
+                    feedback: "Very slow page load time - critical performance issue",
+                    issues: [`${responseTimeMs}ms response time (target: <1500ms)`]
+                };
+            }
+            
+            if (responseTimeMs > 2000) {
+                return {
+                    score: 3,
+                    maxScore: 10,
+                    status: 'warning',
+                    feedback: "Slow page load time",
                     issues: [`${responseTimeMs}ms response time (target: <1500ms)`]
                 };
             }
             
             if (responseTimeMs > 1500) {
                 return {
-                    score: 5,
-                    maxScore: 8,
-                    status: 'warning',
-                    feedback: "Page load time needs improvement",
-                    issues: [`${responseTimeMs}ms response time (target: <1500ms)`]
+                    score: 7,
+                    maxScore: 10,
+                    status: 'good',
+                    feedback: "Acceptable page load time",
+                    issues: [`${responseTimeMs}ms response time (optimal: <1500ms)`]
                 };
             }
             
             return {
-                score: 8,
-                maxScore: 8,
+                score: 10,
+                maxScore: 10,
                 status: 'excellent',
                 feedback: `Fast page load (${responseTimeMs}ms)`
             };
@@ -606,16 +694,15 @@ export const SEO_ADVANCED_COMPONENTS: ScoreComponent[] = [
     },
     {
         name: "Content Freshness",
-        maxPoints: 2,
+        maxPoints: 0,
         description: "Content appears current and up-to-date",
         evaluate: (data) => {
-            // This would require last-modified date or content analysis
-            // For now, give partial credit
+            // Removed penalty - this is a tool limitation, not a site issue
             return {
-                score: 1,
-                maxScore: 2,
-                status: 'good',
-                feedback: "Unable to verify content freshness"
+                score: 0,
+                maxScore: 0,
+                status: 'excellent',
+                feedback: "Content freshness not evaluated"
             };
         }
     }
@@ -625,22 +712,24 @@ export const SEO_ADVANCED_COMPONENTS: ScoreComponent[] = [
 export const SEO_CATEGORIES: ComponentCategory[] = [
     {
         name: "Foundation",
-        maxPoints: 40,
+        maxPoints: 40,  // Fixed: matches actual component total (10+8+8+7+7)
         components: SEO_FOUNDATION_COMPONENTS
     },
     {
         name: "Content Quality",
-        maxPoints: 30,
+        maxPoints: 42,  // Content Depth (15) + Readability (7) + Internal Linking (10) + Image Opt (10) = 42
         components: SEO_CONTENT_COMPONENTS
     },
     {
         name: "Technical Excellence",
-        maxPoints: 20,
+        maxPoints: 22,  // Page Performance (10) + Semantic HTML (6) + URL Structure (6) = 22
         components: SEO_TECHNICAL_COMPONENTS
     },
     {
         name: "Advanced Optimization",
-        maxPoints: 10,
+        maxPoints: 8,   // Schema Quality (5) + External Links (3) + Content Freshness (0) = 8
         components: SEO_ADVANCED_COMPONENTS
     }
 ];
+
+// Total: 28 + 42 + 22 + 8 = 100 points

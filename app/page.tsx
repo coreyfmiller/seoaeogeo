@@ -8,6 +8,7 @@ import { SearchInput } from "@/components/dashboard/search-input"
 import { SEOTabEnhanced } from "@/components/dashboard/seo-tab-enhanced"
 import { AEOTab } from "@/components/dashboard/aeo-tab"
 import { GEOTab } from "@/components/dashboard/geo-tab"
+import { AuditPageHeader } from "@/components/dashboard/audit-page-header"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -35,12 +36,13 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("seo")
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisPhase, setAnalysisPhase] = useState<string>("")
+  const [analysisProgress, setAnalysisProgress] = useState<number>(0)
   const [currentUrl, setCurrentUrl] = useState("")
   const [analysisData, setAnalysisData] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [apiStatus, setApiStatus] = useState<"healthy" | "error" | "idle">("idle")
   const [reportCopied, setReportCopied] = useState(false)
-  const [isProUnlocked, setIsProUnlocked] = useState(false)
+  const [isProUnlocked, setIsProUnlocked] = useState(true) // Temporarily unlocked for everyone
 
   // Restore state from sessionStorage on mount
   useEffect(() => {
@@ -74,25 +76,8 @@ export default function Dashboard() {
     setIsAnalyzing(true)
     setError(null)
     setCurrentUrl(url)
-    
-    // Simulate progress phases
-    const phases = [
-      { text: "Crawling page and extracting content...", duration: 3000 },
-      { text: "Analyzing schemas and structure...", duration: 5000 },
-      { text: "Running AI semantic analysis...", duration: 8000 },
-      { text: "Calculating SEO, AEO, and GEO scores...", duration: 12000 },
-      { text: "Finalizing audit report...", duration: 15000 }
-    ]
-    
-    let phaseIndex = 0
-    setAnalysisPhase(phases[0].text)
-    
-    const phaseInterval = setInterval(() => {
-      phaseIndex++
-      if (phaseIndex < phases.length) {
-        setAnalysisPhase(phases[phaseIndex].text)
-      }
-    }, 4000)
+    setAnalysisPhase("Initializing analysis...")
+    setAnalysisProgress(0)
 
     try {
       const response = await fetch('/api/analyze', {
@@ -101,26 +86,54 @@ export default function Dashboard() {
         body: JSON.stringify({ url }),
       })
 
-      clearInterval(phaseInterval)
-      const result = await response.json()
+      if (!response.body) {
+        throw new Error('No response stream')
+      }
 
-      if (result.success) {
-        setAnalysisData(result.data)
-        setApiStatus("healthy")
-        console.log('Scan Successful:', result.data)
-      } else {
-        setError(result.error || 'Analysis failed. Please try again.')
-        setApiStatus("error")
-        console.error('Scan Error:', result.error)
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n\n')
+        buffer = lines.pop() || ''
+
+        for (const line of lines) {
+          const dataLine = line.replace(/^data: /, '').trim()
+          if (!dataLine) continue
+
+          try {
+            const event = JSON.parse(dataLine)
+
+            if (event.type === 'progress') {
+              setAnalysisPhase(event.phase)
+              setAnalysisProgress(event.progress)
+            } else if (event.type === 'result' && event.success) {
+              setAnalysisData(event.data)
+              setApiStatus("healthy")
+              console.log('Scan Successful:', event.data)
+            } else if (event.type === 'error') {
+              setError(event.error || 'Analysis failed. Please try again.')
+              setApiStatus("error")
+              console.error('Scan Error:', event.error)
+            }
+          } catch {
+            // skip malformed chunks
+          }
+        }
       }
     } catch (err: any) {
-      clearInterval(phaseInterval)
       setError('Connection failed. Ensure the server is running.')
       setApiStatus("error")
       console.error('Crawler failed:', err)
     } finally {
       setIsAnalyzing(false)
       setAnalysisPhase("")
+      setAnalysisProgress(0)
     }
   }
 
@@ -203,97 +216,27 @@ export default function Dashboard() {
           ) : (
           <div className="max-w-7xl mx-auto">
             {/* Page Header */}
-            <div className="mb-6">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-                    <Activity className="h-6 w-6 text-seo" />
-                    Pro Audit
-                    <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-green-500/20 px-3 py-1">
-                      PRO
-                    </Badge>
-                  </h1>
-                  <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
-                      <Search className="h-4 w-4" />
-                      {currentUrl || "No analysis active"}
-                    </span>
-                    {analysisData && (
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="border-geo/50 text-geo">
-                          <Clock className="h-3 w-3 mr-1" />
-                          Analysis Live
-                        </Badge>
-                        <Badge variant="outline" className="border-geo/50 text-geo bg-geo/5">
-                          <Activity className="h-3 w-3 mr-1.5" />
-                          1 Page Scanned
-                        </Badge>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {!analysisData && !isAnalyzing && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground italic">Ready to optimize?</span>
-                  </div>
-                )}
-                {analysisData && (
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => {
-                        setAnalysisData(null)
-                        setCurrentUrl("")
-                        setError(null)
-                        if (typeof window !== "undefined") {
-                          sessionStorage.removeItem("dashboard_url")
-                          sessionStorage.removeItem("dashboard_data")
-                        }
-                      }}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 text-sm text-muted-foreground hover:text-foreground hover:border-seo/50 transition-colors"
-                    >
-                      <RefreshCw className="h-4 w-4" />
-                      New Audit
-                    </button>
-                    <button
-                      onClick={() => handleAnalyze(currentUrl)}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 text-sm text-muted-foreground hover:text-foreground hover:border-geo/50 transition-colors"
-                    >
-                      <RefreshCw className="h-4 w-4" />
-                      Refresh Analysis
-                    </button>
-                  </div>
-                )}
-                {analysisData && (
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={handleCopyReport}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 text-sm text-muted-foreground hover:text-foreground hover:border-geo/50 transition-colors"
-                      title="Copy report to clipboard"
-                    >
-                      {reportCopied ? (
-                        <>
-                          <Check className="h-4 w-4 text-geo" />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-4 w-4" />
-                          Copy Report
-                        </>
-                      )}
-                    </button>
-                    <button
-                      onClick={handleExportReport}
-                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
-                      title="Download report as text file"
-                    >
-                      <Download className="h-4 w-4" />
-                      Export Report
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+            <AuditPageHeader
+              title="Pro Audit"
+              description="Comprehensive single-page analysis with AI-powered recommendations and priority scoring."
+              badge="PRO"
+              badgeVariant="pro"
+              currentUrl={currentUrl}
+              hasResults={!!analysisData}
+              isAnalyzing={isAnalyzing}
+              onNewAudit={() => {
+                setAnalysisData(null)
+                setCurrentUrl("")
+                setError(null)
+                if (typeof window !== "undefined") {
+                  sessionStorage.removeItem("dashboard_url")
+                  sessionStorage.removeItem("dashboard_data")
+                }
+              }}
+              onRefreshAnalysis={() => handleAnalyze(currentUrl)}
+              analysisData={analysisData}
+              pageCount={1}
+            />
 
             {/* Error Message */}
             {error && (
@@ -335,13 +278,17 @@ export default function Dashboard() {
                   <div className="absolute inset-0 z-50 bg-background/20 backdrop-blur-[1px] flex items-start justify-center pt-20">
                     <div className="bg-card/90 border border-seo/30 p-6 rounded-2xl shadow-2xl flex flex-col items-center gap-4 animate-in fade-in zoom-in-95 min-w-[400px]">
                       <div className="h-12 w-12 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
-                      <div className="text-center">
+                      <div className="text-center min-h-[48px]">
                         <h3 className="text-lg font-bold text-foreground">Pro Audit in Progress</h3>
-                        <p className="text-sm text-muted-foreground mt-1">{analysisPhase || "Initializing analysis..."}</p>
+                        <p className="text-sm text-muted-foreground mt-1 transition-opacity duration-500">{analysisPhase || "Initializing analysis..."}</p>
                       </div>
                       <div className="w-64 h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-seo via-aeo to-geo animate-progress-slow" />
+                        <div
+                          className="h-full bg-gradient-to-r from-seo via-aeo to-geo transition-all duration-[1500ms] ease-in-out"
+                          style={{ width: `${analysisProgress}%` }}
+                        />
                       </div>
+                      <p className="text-xs text-muted-foreground">{analysisProgress}%</p>
                     </div>
                   </div>
                 )}

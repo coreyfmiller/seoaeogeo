@@ -1,0 +1,569 @@
+{
+  "id": "deep-v3-1773577623569",
+  "url": "fundylogic.com",
+  "timestamp": "2026-03-15T12:27:03.569Z",
+  "apiRoute": "/api/analyze-deep-v3",
+  "scores": {
+    "seo": 93,
+    "aeo": 91,
+    "geo": 86
+  },
+  "siteType": "local-business",
+  "rawAiScores": {
+    "seoScore": 99,
+    "aeoScore": 99,
+    "geoScore": 100,
+    "breakdown": {
+      "seo": [
+        {
+          "name": "Foundation",
+          "score": 33,
+          "maxScore": 40,
+          "percentage": 83,
+          "components": [
+            {
+              "score": 10,
+              "maxScore": 10,
+              "status": "excellent",
+              "feedback": "Title tag is well-optimized"
+            },
+            {
+              "score": 8,
+              "maxScore": 8,
+              "status": "excellent",
+              "feedback": "Meta description is well-optimized"
+            },
+            {
+              "score": 8,
+              "maxScore": 8,
+              "status": "excellent",
+              "feedback": "H1 heading is properly implemented"
+            },
+            {
+              "score": 7,
+              "maxScore": 7,
+              "status": "excellent",
+              "feedback": "HTTPS properly configured"
+            },
+            {
+              "score": 0,
+              "maxScore": 7,
+              "status": "critical",
+              "feedback": "Missing viewport meta tag - not mobile optimized",
+              "issues": [
+                "No viewport meta tag found"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Content Quality",
+          "score": 42,
+          "maxScore": 42,
+          "percentage": 100,
+          "components": [
+            {
+              "score": 15,
+              "maxScore": 15,
+              "status": "excellent",
+              "feedback": "Strong content depth (1514 words)"
+            },
+            {
+              "score": 7,
+              "maxScore": 7,
+              "status": "excellent",
+              "feedback": "Content is clear and readable"
+            },
+            {
+              "score": 10,
+              "maxScore": 10,
+              "status": "excellent",
+              "feedback": "Strong internal linking architecture (undefined links)"
+            },
+            {
+              "score": 10,
+              "maxScore": 10,
+              "status": "excellent",
+              "feedback": "All images have alt text - excellent accessibility"
+            }
+          ]
+        },
+        {
+          "name": "Technical Excellence",
+          "score": 16,
+          "maxScore": 22,
+          "percentage": 73,
+          "components": [
+            {
+              "score": 10,
+              "maxScore": 10,
+              "status": "excellent",
+              "feedback": "Fast page load (366ms)"
+            },
+            {
+              "score": 0,
+              "maxScore": 6,
+              "status": "warning",
+              "feedback": "No semantic HTML5 tags found",
+              "issues": [
+                "Consider using <main>, <nav>, <article>, <header>, <footer>"
+              ]
+            },
+            {
+              "score": 6,
+              "maxScore": 6,
+              "status": "excellent",
+              "feedback": "Clean URL structure"
+            }
+          ]
+        },
+        {
+          "name": "Advanced Optimization",
+          "score": 8,
+          "maxScore": 8,
+          "percentage": 100,
+          "components": [
+            {
+              "score": 5,
+              "maxScore": 5,
+              "status": "excellent",
+              "feedback": "High-quality schema implementation",
+              "issues": []
+            },
+            {
+              "score": 3,
+              "maxScore": 3,
+              "status": "excellent",
+              "feedback": "External links present (undefined)"
+            },
+            {
+              "score": 0,
+              "maxScore": 0,
+              "status": "excellent",
+              "feedback": "Content freshness not evaluated"
+            }
+          ]
+        }
+      ],
+      "aeo": [
+        {
+          "name": "AEO Readiness",
+          "score": 99,
+          "maxScore": 100,
+          "percentage": 99,
+          "components": [
+            {
+              "score": 20,
+              "maxScore": 20,
+              "status": "good",
+              "feedback": "Content Depth"
+            },
+            {
+              "score": 29,
+              "maxScore": 30,
+              "status": "good",
+              "feedback": "Schema Quality",
+              "issues": []
+            },
+            {
+              "score": 20,
+              "maxScore": 20,
+              "status": "good",
+              "feedback": "Question Answering"
+            },
+            {
+              "score": 15,
+              "maxScore": 15,
+              "status": "good",
+              "feedback": "Entity Density"
+            },
+            {
+              "score": 15,
+              "maxScore": 15,
+              "status": "good",
+              "feedback": "Formatting"
+            },
+            {
+              "score": 10,
+              "maxScore": 10,
+              "status": "good",
+              "feedback": "Definitions"
+            }
+          ]
+        }
+      ],
+      "geo": [
+        {
+          "name": "GEO Visibility",
+          "score": 100,
+          "maxScore": 100,
+          "percentage": 100,
+          "components": [
+            {
+              "score": 25,
+              "maxScore": 25,
+              "status": "good",
+              "feedback": "Image Accessibility"
+            },
+            {
+              "score": 20,
+              "maxScore": 20,
+              "status": "good",
+              "feedback": "Tone"
+            },
+            {
+              "score": 20,
+              "maxScore": 20,
+              "status": "good",
+              "feedback": "Expertise"
+            },
+            {
+              "score": 15,
+              "maxScore": 15,
+              "status": "good",
+              "feedback": "Data & Facts"
+            },
+            {
+              "score": 10,
+              "maxScore": 10,
+              "status": "good",
+              "feedback": "Objectivity"
+            },
+            {
+              "score": 10,
+              "maxScore": 10,
+              "status": "good",
+              "feedback": "Claims"
+            }
+          ]
+        }
+      ]
+    },
+    "overallFeedback": "Exceptional SEO for a local business - Your site follows modern best practices and is well-optimized for search engines.",
+    "criticalIssues": [
+      "No viewport meta tag found"
+    ],
+    "version": "v2",
+    "siteType": "local-business"
+  },
+  "graderBreakdown": {
+    "seo": [
+      {
+        "name": "Foundation",
+        "score": 33,
+        "maxScore": 40,
+        "percentage": 83,
+        "components": [
+          {
+            "score": 10,
+            "maxScore": 10,
+            "status": "excellent",
+            "feedback": "Title tag is well-optimized"
+          },
+          {
+            "score": 8,
+            "maxScore": 8,
+            "status": "excellent",
+            "feedback": "Meta description is well-optimized"
+          },
+          {
+            "score": 8,
+            "maxScore": 8,
+            "status": "excellent",
+            "feedback": "H1 heading is properly implemented"
+          },
+          {
+            "score": 7,
+            "maxScore": 7,
+            "status": "excellent",
+            "feedback": "HTTPS properly configured"
+          },
+          {
+            "score": 0,
+            "maxScore": 7,
+            "status": "critical",
+            "feedback": "Missing viewport meta tag - not mobile optimized",
+            "issues": [
+              "No viewport meta tag found"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Content Quality",
+        "score": 42,
+        "maxScore": 42,
+        "percentage": 100,
+        "components": [
+          {
+            "score": 15,
+            "maxScore": 15,
+            "status": "excellent",
+            "feedback": "Strong content depth (1514 words)"
+          },
+          {
+            "score": 7,
+            "maxScore": 7,
+            "status": "excellent",
+            "feedback": "Content is clear and readable"
+          },
+          {
+            "score": 10,
+            "maxScore": 10,
+            "status": "excellent",
+            "feedback": "Strong internal linking architecture (undefined links)"
+          },
+          {
+            "score": 10,
+            "maxScore": 10,
+            "status": "excellent",
+            "feedback": "All images have alt text - excellent accessibility"
+          }
+        ]
+      },
+      {
+        "name": "Technical Excellence",
+        "score": 16,
+        "maxScore": 22,
+        "percentage": 73,
+        "components": [
+          {
+            "score": 10,
+            "maxScore": 10,
+            "status": "excellent",
+            "feedback": "Fast page load (366ms)"
+          },
+          {
+            "score": 0,
+            "maxScore": 6,
+            "status": "warning",
+            "feedback": "No semantic HTML5 tags found",
+            "issues": [
+              "Consider using <main>, <nav>, <article>, <header>, <footer>"
+            ]
+          },
+          {
+            "score": 6,
+            "maxScore": 6,
+            "status": "excellent",
+            "feedback": "Clean URL structure"
+          }
+        ]
+      },
+      {
+        "name": "Advanced Optimization",
+        "score": 8,
+        "maxScore": 8,
+        "percentage": 100,
+        "components": [
+          {
+            "score": 5,
+            "maxScore": 5,
+            "status": "excellent",
+            "feedback": "High-quality schema implementation",
+            "issues": []
+          },
+          {
+            "score": 3,
+            "maxScore": 3,
+            "status": "excellent",
+            "feedback": "External links present (undefined)"
+          },
+          {
+            "score": 0,
+            "maxScore": 0,
+            "status": "excellent",
+            "feedback": "Content freshness not evaluated"
+          }
+        ]
+      }
+    ],
+    "aeo": [
+      {
+        "name": "AEO Readiness",
+        "score": 99,
+        "maxScore": 100,
+        "percentage": 99,
+        "components": [
+          {
+            "score": 20,
+            "maxScore": 20,
+            "status": "good",
+            "feedback": "Content Depth"
+          },
+          {
+            "score": 29,
+            "maxScore": 30,
+            "status": "good",
+            "feedback": "Schema Quality",
+            "issues": []
+          },
+          {
+            "score": 20,
+            "maxScore": 20,
+            "status": "good",
+            "feedback": "Question Answering"
+          },
+          {
+            "score": 15,
+            "maxScore": 15,
+            "status": "good",
+            "feedback": "Entity Density"
+          },
+          {
+            "score": 15,
+            "maxScore": 15,
+            "status": "good",
+            "feedback": "Formatting"
+          },
+          {
+            "score": 10,
+            "maxScore": 10,
+            "status": "good",
+            "feedback": "Definitions"
+          }
+        ]
+      }
+    ],
+    "geo": [
+      {
+        "name": "GEO Visibility",
+        "score": 100,
+        "maxScore": 100,
+        "percentage": 100,
+        "components": [
+          {
+            "score": 25,
+            "maxScore": 25,
+            "status": "good",
+            "feedback": "Image Accessibility"
+          },
+          {
+            "score": 20,
+            "maxScore": 20,
+            "status": "good",
+            "feedback": "Tone"
+          },
+          {
+            "score": 20,
+            "maxScore": 20,
+            "status": "good",
+            "feedback": "Expertise"
+          },
+          {
+            "score": 15,
+            "maxScore": 15,
+            "status": "good",
+            "feedback": "Data & Facts"
+          },
+          {
+            "score": 10,
+            "maxScore": 10,
+            "status": "good",
+            "feedback": "Objectivity"
+          },
+          {
+            "score": 10,
+            "maxScore": 10,
+            "status": "good",
+            "feedback": "Claims"
+          }
+        ]
+      }
+    ]
+  },
+  "enhancedPenalties": [
+    {
+      "category": "SEO",
+      "component": "SEO Foundation - Missing viewport meta tag - not mobile optimized",
+      "penalty": "No viewport meta tag found",
+      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
+      "fix": "Review and update this element following current best practices for search engines and AI systems.",
+      "pointsDeducted": -7,
+      "severity": "critical"
+    },
+    {
+      "category": "SEO",
+      "component": "SEO Technical Excellence - No semantic HTML5 tags found",
+      "penalty": "Consider using <main>, <nav>, <article>, <header>, <footer>",
+      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
+      "fix": "Review and update this element following current best practices for search engines and AI systems.",
+      "pointsDeducted": -6,
+      "severity": "warning"
+    },
+    {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Schema Quality",
+      "penalty": "Lost 1 points in Schema Quality",
+      "explanation": "Incomplete or incorrect schema markup confuses AI systems and prevents them from citing your content accurately.",
+      "fix": "Validate schema at schema.org/validator. Fix all errors. Add required properties: name, description, image, url. Remove placeholder data.",
+      "pointsDeducted": -1,
+      "severity": "info"
+    }
+  ],
+  "fullResult": {
+    "pagesCrawled": 10,
+    "perPageScores": [
+      {
+        "url": "https://fundylogic.com/",
+        "seo": 99,
+        "aeo": 99,
+        "geo": 100
+      },
+      {
+        "url": "https://fundylogic.com/services",
+        "seo": 96,
+        "aeo": 96,
+        "geo": 80
+      },
+      {
+        "url": "https://fundylogic.com/testimonials",
+        "seo": 90,
+        "aeo": 89,
+        "geo": 100
+      },
+      {
+        "url": "https://fundylogic.com/grants/cybersecure-nb",
+        "seo": 93,
+        "aeo": 89,
+        "geo": 80
+      },
+      {
+        "url": "https://fundylogic.com/faqs",
+        "seo": 88,
+        "aeo": 88,
+        "geo": 75
+      },
+      {
+        "url": "https://fundylogic.com/legal",
+        "seo": 92,
+        "aeo": 85,
+        "geo": 100
+      },
+      {
+        "url": "https://fundylogic.com/service-area/uptown-saint-john-startups",
+        "seo": 93,
+        "aeo": 78,
+        "geo": 45
+      },
+      {
+        "url": "https://fundylogic.com/service-area/saint-john-industrial-trades",
+        "seo": 93,
+        "aeo": 97,
+        "geo": 75
+      },
+      {
+        "url": "https://fundylogic.com/service-area/fredericton-tech-web-design",
+        "seo": 93,
+        "aeo": 96,
+        "geo": 100
+      },
+      {
+        "url": "https://fundylogic.com/service-area/fredericton-industrial-parks",
+        "seo": 93,
+        "aeo": 94,
+        "geo": 100
+      }
+    ]
+  }
+}

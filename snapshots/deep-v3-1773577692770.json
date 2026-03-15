@@ -1,0 +1,653 @@
+{
+  "id": "deep-v3-1773577692770",
+  "url": "https://valleymarketing.ca",
+  "timestamp": "2026-03-15T12:28:12.770Z",
+  "apiRoute": "/api/analyze-deep-v3",
+  "scores": {
+    "seo": 89,
+    "aeo": 60,
+    "geo": 57
+  },
+  "siteType": "local-business",
+  "rawAiScores": {
+    "seoScore": 93,
+    "aeoScore": 86,
+    "geoScore": 45,
+    "breakdown": {
+      "seo": [
+        {
+          "name": "Foundation",
+          "score": 33,
+          "maxScore": 40,
+          "percentage": 83,
+          "components": [
+            {
+              "score": 10,
+              "maxScore": 10,
+              "status": "excellent",
+              "feedback": "Title tag is well-optimized"
+            },
+            {
+              "score": 8,
+              "maxScore": 8,
+              "status": "excellent",
+              "feedback": "Meta description is well-optimized"
+            },
+            {
+              "score": 8,
+              "maxScore": 8,
+              "status": "excellent",
+              "feedback": "H1 heading is properly implemented"
+            },
+            {
+              "score": 7,
+              "maxScore": 7,
+              "status": "excellent",
+              "feedback": "HTTPS properly configured"
+            },
+            {
+              "score": 0,
+              "maxScore": 7,
+              "status": "critical",
+              "feedback": "Missing viewport meta tag - not mobile optimized",
+              "issues": [
+                "No viewport meta tag found"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Content Quality",
+          "score": 36,
+          "maxScore": 42,
+          "percentage": 86,
+          "components": [
+            {
+              "score": 9,
+              "maxScore": 15,
+              "status": "warning",
+              "feedback": "Content is minimal - consider expanding",
+              "issues": [
+                "367 words (recommended: 800+)"
+              ]
+            },
+            {
+              "score": 7,
+              "maxScore": 7,
+              "status": "excellent",
+              "feedback": "Content is clear and readable"
+            },
+            {
+              "score": 10,
+              "maxScore": 10,
+              "status": "excellent",
+              "feedback": "Strong internal linking architecture (undefined links)"
+            },
+            {
+              "score": 10,
+              "maxScore": 10,
+              "status": "excellent",
+              "feedback": "All images have alt text - excellent accessibility"
+            }
+          ]
+        },
+        {
+          "name": "Technical Excellence",
+          "score": 16,
+          "maxScore": 22,
+          "percentage": 73,
+          "components": [
+            {
+              "score": 10,
+              "maxScore": 10,
+              "status": "excellent",
+              "feedback": "Fast page load (692ms)"
+            },
+            {
+              "score": 0,
+              "maxScore": 6,
+              "status": "warning",
+              "feedback": "No semantic HTML5 tags found",
+              "issues": [
+                "Consider using <main>, <nav>, <article>, <header>, <footer>"
+              ]
+            },
+            {
+              "score": 6,
+              "maxScore": 6,
+              "status": "excellent",
+              "feedback": "Clean URL structure"
+            }
+          ]
+        },
+        {
+          "name": "Advanced Optimization",
+          "score": 8,
+          "maxScore": 8,
+          "percentage": 100,
+          "components": [
+            {
+              "score": 5,
+              "maxScore": 5,
+              "status": "excellent",
+              "feedback": "High-quality schema implementation",
+              "issues": [
+                "The 'Person' name 'jeremy' is informal and lacks a full name, potentially reducing authority signals for the author.",
+                "The 'Article' schema's 'keywords' property is very generic ('Branding and Marketing'), limiting its specificity for search engines."
+              ]
+            },
+            {
+              "score": 3,
+              "maxScore": 3,
+              "status": "excellent",
+              "feedback": "External links not critical for short pages"
+            },
+            {
+              "score": 0,
+              "maxScore": 0,
+              "status": "excellent",
+              "feedback": "Content freshness not evaluated"
+            }
+          ]
+        }
+      ],
+      "aeo": [
+        {
+          "name": "AEO Readiness",
+          "score": 86,
+          "maxScore": 100,
+          "percentage": 86,
+          "components": [
+            {
+              "score": 9,
+              "maxScore": 20,
+              "status": "warning",
+              "feedback": "Content Depth",
+              "issues": [
+                "367 words - aim for 800+ for comprehensive coverage"
+              ]
+            },
+            {
+              "score": 27,
+              "maxScore": 30,
+              "status": "good",
+              "feedback": "Schema Quality",
+              "issues": [
+                "The 'Person' name 'jeremy' is informal and lacks a full name, potentially reducing authority signals for the author.",
+                "The 'Article' schema's 'keywords' property is very generic ('Branding and Marketing'), limiting its specificity for search engines."
+              ]
+            },
+            {
+              "score": 20,
+              "maxScore": 20,
+              "status": "good",
+              "feedback": "Question Answering"
+            },
+            {
+              "score": 15,
+              "maxScore": 15,
+              "status": "good",
+              "feedback": "Entity Density"
+            },
+            {
+              "score": 15,
+              "maxScore": 15,
+              "status": "good",
+              "feedback": "Formatting"
+            },
+            {
+              "score": 10,
+              "maxScore": 10,
+              "status": "good",
+              "feedback": "Definitions"
+            }
+          ]
+        }
+      ],
+      "geo": [
+        {
+          "name": "GEO Visibility",
+          "score": 45,
+          "maxScore": 100,
+          "percentage": 45,
+          "components": [
+            {
+              "score": 25,
+              "maxScore": 25,
+              "status": "good",
+              "feedback": "Image Accessibility"
+            },
+            {
+              "score": 0,
+              "maxScore": 20,
+              "status": "warning",
+              "feedback": "Tone",
+              "issues": [
+                "Overly promotional tone reduces AI trust"
+              ]
+            },
+            {
+              "score": 20,
+              "maxScore": 20,
+              "status": "good",
+              "feedback": "Expertise"
+            },
+            {
+              "score": 0,
+              "maxScore": 15,
+              "status": "warning",
+              "feedback": "Data & Facts",
+              "issues": [
+                "Lacks specific data, statistics, and facts"
+              ]
+            },
+            {
+              "score": 0,
+              "maxScore": 10,
+              "status": "warning",
+              "feedback": "Objectivity",
+              "issues": [
+                "Heavy first-person usage reduces perceived objectivity"
+              ]
+            },
+            {
+              "score": 0,
+              "maxScore": 10,
+              "status": "warning",
+              "feedback": "Claims",
+              "issues": [
+                "Contains unsubstantiated claims"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "overallFeedback": "Exceptional SEO for a local business - Your site follows modern best practices and is well-optimized for search engines.",
+    "criticalIssues": [
+      "No viewport meta tag found"
+    ],
+    "version": "v2",
+    "siteType": "local-business"
+  },
+  "graderBreakdown": {
+    "seo": [
+      {
+        "name": "Foundation",
+        "score": 33,
+        "maxScore": 40,
+        "percentage": 83,
+        "components": [
+          {
+            "score": 10,
+            "maxScore": 10,
+            "status": "excellent",
+            "feedback": "Title tag is well-optimized"
+          },
+          {
+            "score": 8,
+            "maxScore": 8,
+            "status": "excellent",
+            "feedback": "Meta description is well-optimized"
+          },
+          {
+            "score": 8,
+            "maxScore": 8,
+            "status": "excellent",
+            "feedback": "H1 heading is properly implemented"
+          },
+          {
+            "score": 7,
+            "maxScore": 7,
+            "status": "excellent",
+            "feedback": "HTTPS properly configured"
+          },
+          {
+            "score": 0,
+            "maxScore": 7,
+            "status": "critical",
+            "feedback": "Missing viewport meta tag - not mobile optimized",
+            "issues": [
+              "No viewport meta tag found"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Content Quality",
+        "score": 36,
+        "maxScore": 42,
+        "percentage": 86,
+        "components": [
+          {
+            "score": 9,
+            "maxScore": 15,
+            "status": "warning",
+            "feedback": "Content is minimal - consider expanding",
+            "issues": [
+              "367 words (recommended: 800+)"
+            ]
+          },
+          {
+            "score": 7,
+            "maxScore": 7,
+            "status": "excellent",
+            "feedback": "Content is clear and readable"
+          },
+          {
+            "score": 10,
+            "maxScore": 10,
+            "status": "excellent",
+            "feedback": "Strong internal linking architecture (undefined links)"
+          },
+          {
+            "score": 10,
+            "maxScore": 10,
+            "status": "excellent",
+            "feedback": "All images have alt text - excellent accessibility"
+          }
+        ]
+      },
+      {
+        "name": "Technical Excellence",
+        "score": 16,
+        "maxScore": 22,
+        "percentage": 73,
+        "components": [
+          {
+            "score": 10,
+            "maxScore": 10,
+            "status": "excellent",
+            "feedback": "Fast page load (692ms)"
+          },
+          {
+            "score": 0,
+            "maxScore": 6,
+            "status": "warning",
+            "feedback": "No semantic HTML5 tags found",
+            "issues": [
+              "Consider using <main>, <nav>, <article>, <header>, <footer>"
+            ]
+          },
+          {
+            "score": 6,
+            "maxScore": 6,
+            "status": "excellent",
+            "feedback": "Clean URL structure"
+          }
+        ]
+      },
+      {
+        "name": "Advanced Optimization",
+        "score": 8,
+        "maxScore": 8,
+        "percentage": 100,
+        "components": [
+          {
+            "score": 5,
+            "maxScore": 5,
+            "status": "excellent",
+            "feedback": "High-quality schema implementation",
+            "issues": [
+              "The 'Person' name 'jeremy' is informal and lacks a full name, potentially reducing authority signals for the author.",
+              "The 'Article' schema's 'keywords' property is very generic ('Branding and Marketing'), limiting its specificity for search engines."
+            ]
+          },
+          {
+            "score": 3,
+            "maxScore": 3,
+            "status": "excellent",
+            "feedback": "External links not critical for short pages"
+          },
+          {
+            "score": 0,
+            "maxScore": 0,
+            "status": "excellent",
+            "feedback": "Content freshness not evaluated"
+          }
+        ]
+      }
+    ],
+    "aeo": [
+      {
+        "name": "AEO Readiness",
+        "score": 86,
+        "maxScore": 100,
+        "percentage": 86,
+        "components": [
+          {
+            "score": 9,
+            "maxScore": 20,
+            "status": "warning",
+            "feedback": "Content Depth",
+            "issues": [
+              "367 words - aim for 800+ for comprehensive coverage"
+            ]
+          },
+          {
+            "score": 27,
+            "maxScore": 30,
+            "status": "good",
+            "feedback": "Schema Quality",
+            "issues": [
+              "The 'Person' name 'jeremy' is informal and lacks a full name, potentially reducing authority signals for the author.",
+              "The 'Article' schema's 'keywords' property is very generic ('Branding and Marketing'), limiting its specificity for search engines."
+            ]
+          },
+          {
+            "score": 20,
+            "maxScore": 20,
+            "status": "good",
+            "feedback": "Question Answering"
+          },
+          {
+            "score": 15,
+            "maxScore": 15,
+            "status": "good",
+            "feedback": "Entity Density"
+          },
+          {
+            "score": 15,
+            "maxScore": 15,
+            "status": "good",
+            "feedback": "Formatting"
+          },
+          {
+            "score": 10,
+            "maxScore": 10,
+            "status": "good",
+            "feedback": "Definitions"
+          }
+        ]
+      }
+    ],
+    "geo": [
+      {
+        "name": "GEO Visibility",
+        "score": 45,
+        "maxScore": 100,
+        "percentage": 45,
+        "components": [
+          {
+            "score": 25,
+            "maxScore": 25,
+            "status": "good",
+            "feedback": "Image Accessibility"
+          },
+          {
+            "score": 0,
+            "maxScore": 20,
+            "status": "warning",
+            "feedback": "Tone",
+            "issues": [
+              "Overly promotional tone reduces AI trust"
+            ]
+          },
+          {
+            "score": 20,
+            "maxScore": 20,
+            "status": "good",
+            "feedback": "Expertise"
+          },
+          {
+            "score": 0,
+            "maxScore": 15,
+            "status": "warning",
+            "feedback": "Data & Facts",
+            "issues": [
+              "Lacks specific data, statistics, and facts"
+            ]
+          },
+          {
+            "score": 0,
+            "maxScore": 10,
+            "status": "warning",
+            "feedback": "Objectivity",
+            "issues": [
+              "Heavy first-person usage reduces perceived objectivity"
+            ]
+          },
+          {
+            "score": 0,
+            "maxScore": 10,
+            "status": "warning",
+            "feedback": "Claims",
+            "issues": [
+              "Contains unsubstantiated claims"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "enhancedPenalties": [
+    {
+      "category": "SEO",
+      "component": "SEO Foundation - Missing viewport meta tag - not mobile optimized",
+      "penalty": "No viewport meta tag found",
+      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
+      "fix": "Review and update this element following current best practices for search engines and AI systems.",
+      "pointsDeducted": -7,
+      "severity": "critical"
+    },
+    {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Tone",
+      "penalty": "Overly promotional tone reduces AI trust",
+      "explanation": "Overly promotional content is flagged as biased by AI systems. Neutral, informative tone increases trust and citation likelihood.",
+      "fix": "Remove promotional language (\"best\", \"amazing\", \"revolutionary\"). Use neutral, factual tone. Replace \"we offer\" with \"this includes\". Focus on information, not selling.",
+      "pointsDeducted": -20,
+      "severity": "warning"
+    },
+    {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Data & Facts",
+      "penalty": "Lacks specific data, statistics, and facts",
+      "explanation": "AI systems prioritize content with specific data, statistics, and facts. Vague claims without evidence are ignored.",
+      "fix": "Add specific statistics, percentages, and numbers. Cite sources for all data. Include dates for time-sensitive information. Use \"According to [source]\" format.",
+      "pointsDeducted": -15,
+      "severity": "warning"
+    },
+    {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Content Depth",
+      "penalty": "367 words - aim for 800+ for comprehensive coverage",
+      "explanation": "Thin content (under 300 words) rarely ranks. Search engines prefer comprehensive content that thoroughly covers topics. AI systems like ChatGPT, Gemini, and Perplexity need substantial content to cite and reference.",
+      "fix": "Expand content to at least 800 words. Add sections covering: what (define your topic), why (explain benefits), how (describe process), benefits (list advantages), examples (provide use cases), and FAQs (answer 5-10 common questions). Focus on depth and value over word count.",
+      "pointsDeducted": -11,
+      "severity": "warning"
+    },
+    {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Objectivity",
+      "penalty": "Heavy first-person usage reduces perceived objectivity",
+      "explanation": "Heavy first-person usage suggests opinion rather than fact. AI systems prefer objective, third-person content for citations.",
+      "fix": "Replace first-person (\"I think\", \"we believe\") with third-person or passive voice. Use \"research shows\" instead of \"I found\". Focus on facts, not opinions.",
+      "pointsDeducted": -10,
+      "severity": "warning"
+    },
+    {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Claims",
+      "penalty": "Contains unsubstantiated claims",
+      "explanation": "Unsubstantiated claims reduce content credibility. AI systems require evidence and sources to consider content trustworthy.",
+      "fix": "Add citations for all claims. Link to studies, reports, or authoritative sources. Use footnotes or inline citations. Format: \"According to [Source], [claim].\"",
+      "pointsDeducted": -10,
+      "severity": "warning"
+    },
+    {
+      "category": "SEO",
+      "component": "SEO Content Quality - Content is minimal - consider expanding",
+      "penalty": "367 words (recommended: 800+)",
+      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
+      "fix": "Review and update this element following current best practices for search engines and AI systems.",
+      "pointsDeducted": -6,
+      "severity": "warning"
+    },
+    {
+      "category": "SEO",
+      "component": "SEO Technical Excellence - No semantic HTML5 tags found",
+      "penalty": "Consider using <main>, <nav>, <article>, <header>, <footer>",
+      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
+      "fix": "Review and update this element following current best practices for search engines and AI systems.",
+      "pointsDeducted": -6,
+      "severity": "warning"
+    },
+    {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Schema Quality",
+      "penalty": "The 'Person' name 'jeremy' is informal and lacks a full name, potentially reducing authority signals for the author.",
+      "explanation": "Incomplete or incorrect schema markup confuses AI systems and prevents them from citing your content accurately.",
+      "fix": "Validate schema at schema.org/validator. Fix all errors. Add required properties: name, description, image, url. Remove placeholder data.",
+      "pointsDeducted": -3,
+      "severity": "info"
+    }
+  ],
+  "fullResult": {
+    "pagesCrawled": 7,
+    "perPageScores": [
+      {
+        "url": "https://valleymarketing.ca/",
+        "seo": 93,
+        "aeo": 86,
+        "geo": 45
+      },
+      {
+        "url": "https://valleymarketing.ca/culture/",
+        "seo": 91,
+        "aeo": 49,
+        "geo": 45
+      },
+      {
+        "url": "https://valleymarketing.ca/the-blog/",
+        "seo": 75,
+        "aeo": 50,
+        "geo": 75
+      },
+      {
+        "url": "https://valleymarketing.ca/commercial-photography/",
+        "seo": 93,
+        "aeo": 59,
+        "geo": 45
+      },
+      {
+        "url": "https://valleymarketing.ca/services/",
+        "seo": 91,
+        "aeo": 71,
+        "geo": 80
+      },
+      {
+        "url": "https://valleymarketing.ca/contact/",
+        "seo": 79,
+        "aeo": 29,
+        "geo": 65
+      },
+      {
+        "url": "https://valleymarketing.ca/search-engine-optimization/",
+        "seo": 99,
+        "aeo": 79,
+        "geo": 45
+      }
+    ]
+  }
+}

@@ -34,7 +34,7 @@ interface HeaderProps {
 
 export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" }: HeaderProps) {
   const [url, setUrl] = useState(currentUrl || "")
-  const [isProUnlocked, setIsProUnlocked] = useState(false)
+  const [isProUnlocked, setIsProUnlocked] = useState(true) // Temporarily unlocked for everyone
   const [showProModal, setShowProModal] = useState(false)
   const [password, setPassword] = useState("")
   const [error, setError] = useState(false)

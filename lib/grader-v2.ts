@@ -26,6 +26,7 @@ export interface GraderV2Result {
     overallFeedback: string;
     criticalIssues: string[];
     version: 'v2';
+    siteType?: SiteType;
 }
 
 /**
@@ -79,12 +80,31 @@ export function calculateSEOScore(data: {
         totalMaxScore += categoryMaxScore;
     }
 
-    const finalScore = Math.round(totalScore);
+    const finalScore = Math.min(Math.round(totalScore), 100);
 
     return {
         score: finalScore,
         breakdown: categoryScores
     };
+}
+
+/**
+ * Wrapper function to adapt ScanResult to V2 grader format
+ */
+export function calculateScoresFromScanResult(scanResult: any) {
+    return calculateScoresV2(
+        scanResult.structuralData,
+        scanResult.schemas || [],
+        scanResult.semanticFlags || {},
+        scanResult.title?.length || 0,
+        scanResult.description?.length || 0,
+        scanResult.url,
+        scanResult.title || '',
+        scanResult.description || '',
+        scanResult.schemaQuality,
+        scanResult.technical?.responseTimeMs,
+        scanResult.siteType
+    );
 }
 
 /**
@@ -139,7 +159,7 @@ export function calculateScoresV2(
     }
 
     // Generate overall feedback
-    const overallFeedback = generateOverallFeedback(seoResult.score, criticalIssues.length);
+    const overallFeedback = generateOverallFeedback(seoResult.score, criticalIssues.length, siteType);
 
     return {
         seoScore: seoResult.score,
@@ -152,7 +172,8 @@ export function calculateScoresV2(
         },
         overallFeedback,
         criticalIssues,
-        version: 'v2'
+        version: 'v2',
+        siteType
     };
 }
 
@@ -160,43 +181,77 @@ export function calculateScoresV2(
  * Calculate AEO score based on semantic flags and schema quality
  */
 function calculateAEOScore(data: any): { score: number; breakdown: CategoryScore[] } {
+    console.log('[Grader V2] Calculating AEO score...')
+    console.log('[Grader V2] Word count:', data.structuralData?.wordCount)
+    console.log('[Grader V2] Semantic flags:', JSON.stringify(data.semanticFlags, null, 2))
+    
     let score = 100;
     const components: ComponentResult[] = [];
 
-    // Schema presence and quality (40 points)
+    // Content depth (20 points) - NEW
+    const wordCount = data.structuralData?.wordCount || 0;
+    if (wordCount < 300) {
+        score -= 20;
+        components.push({
+            score: 0,
+            maxScore: 20,
+            status: 'critical',
+            feedback: 'Content Depth',
+            issues: [`Only ${wordCount} words - thin content is invisible to AI (need 800+ words)`]
+        });
+    } else if (wordCount < 800) {
+        const partialScore = Math.round((wordCount / 800) * 20);
+        score -= (20 - partialScore);
+        components.push({
+            score: partialScore,
+            maxScore: 20,
+            status: 'warning',
+            feedback: 'Content Depth',
+            issues: [`${wordCount} words - aim for 800+ for comprehensive coverage`]
+        });
+    } else {
+        components.push({
+            score: 20,
+            maxScore: 20,
+            status: 'good',
+            feedback: 'Content Depth'
+        });
+    }
+
+    // Schema presence and quality (30 points) - REDUCED from 40
     if (data.schemaQuality) {
         if (!data.schemaQuality.hasSchema) {
-            score -= 40;
+            score -= 30;
             components.push({
                 score: 0,
-                maxScore: 40,
+                maxScore: 30,
                 status: 'critical',
                 feedback: 'Schema Markup',
                 issues: ['No structured data found - critical for AI understanding']
             });
         } else {
-            const schemaScore = Math.round((data.schemaQuality.score / 100) * 40);
-            score -= (40 - schemaScore);
+            const schemaScore = Math.round((data.schemaQuality.score / 100) * 30);
+            score -= (30 - schemaScore);
             components.push({
                 score: schemaScore,
-                maxScore: 40,
-                status: schemaScore >= 30 ? 'good' : schemaScore >= 20 ? 'warning' : 'critical',
+                maxScore: 30,
+                status: schemaScore >= 22 ? 'good' : schemaScore >= 15 ? 'warning' : 'critical',
                 feedback: 'Schema Quality',
                 issues: data.schemaQuality.issues || []
             });
         }
-    } else if (data.schemas.length === 0) {
-        score -= 40;
+    } else if (data.schemas?.length === 0 || !data.schemas) {
+        score -= 30;
         components.push({
             score: 0,
-            maxScore: 40,
+            maxScore: 30,
             status: 'critical',
             feedback: 'Schema Markup',
             issues: ['No structured data found']
         });
     }
 
-    // Q&A matching (20 points)
+    // Q&A matching (15 points) - REDUCED from 20
     if (data.semanticFlags?.noDirectQnAMatching) {
         score -= 20;
         components.push({
@@ -274,14 +329,14 @@ function calculateAEOScore(data: any): { score: number; breakdown: CategoryScore
 
     const breakdown: CategoryScore[] = [{
         name: 'AEO Readiness',
-        score: Math.max(0, score),
+        score: Math.min(Math.max(0, score), 100),
         maxScore: 100,
-        percentage: Math.max(0, score),
+        percentage: Math.min(Math.max(0, score), 100),
         components
     }];
 
     return {
-        score: Math.max(0, score),
+        score: Math.min(Math.max(0, score), 100),
         breakdown
     };
 }
@@ -444,28 +499,48 @@ function calculateGEOScore(data: any): { score: number; breakdown: CategoryScore
 /**
  * Generate human-readable feedback based on score
  */
-function generateOverallFeedback(score: number, criticalIssueCount: number): string {
+function generateOverallFeedback(score: number, criticalIssueCount: number, siteType?: SiteType): string {
+    const siteTypeLabel = siteType ? ` for a ${formatSiteType(siteType)}` : '';
+    
     if (score >= 90) {
-        return "Exceptional SEO - Your site follows modern best practices and is well-optimized for search engines.";
+        return `Exceptional SEO${siteTypeLabel} - Your site follows modern best practices and is well-optimized for search engines.`;
     }
     
     if (score >= 75) {
-        return "Good SEO foundation - Your site has solid optimization with room for minor improvements.";
+        return `Good SEO foundation${siteTypeLabel} - Your site has solid optimization with room for minor improvements.`;
     }
     
     if (score >= 60) {
-        return "Average SEO - Basic elements are in place, but significant improvements are needed to compete effectively.";
+        return `Average SEO${siteTypeLabel} - Basic elements are in place, but significant improvements are needed to compete effectively.`;
     }
     
     if (score >= 40) {
-        return "Poor SEO - Major issues are holding your site back. Focus on addressing critical problems first.";
+        return `Poor SEO${siteTypeLabel} - Major issues are holding your site back. Focus on addressing critical problems first.`;
     }
     
     if (score >= 20) {
-        return "Critical SEO issues - Your site has fundamental problems that severely impact search visibility.";
+        return `Critical SEO issues${siteTypeLabel} - Your site has fundamental problems that severely impact search visibility.`;
     }
     
-    return "Severe SEO problems - Your site is not properly optimized for search engines and needs immediate attention.";
+    return `Severe SEO problems${siteTypeLabel} - Your site is not properly optimized for search engines and needs immediate attention.`;
+}
+
+function formatSiteType(siteType: SiteType): string {
+    const formatMap: Record<SiteType, string> = {
+        'e-commerce': 'e-commerce site',
+        'local-business': 'local business',
+        'blog': 'blog/content site',
+        'saas': 'SaaS product',
+        'portfolio': 'portfolio site',
+        'restaurant': 'restaurant',
+        'contractor': 'contractor/service provider',
+        'professional-services': 'professional services firm',
+        'news-media': 'news/media site',
+        'educational': 'educational site',
+        'general': 'website'
+    };
+    
+    return formatMap[siteType] || 'website';
 }
 
 /**
@@ -621,6 +696,8 @@ function getExplanation(category: string, component: string, issue: string): str
         'Content Freshness': 'Regularly updated content signals that your site is active and relevant, which can boost rankings.',
         
         // AEO Explanations
+        'Content Depth': 'Thin content (under 300 words) rarely ranks. Search engines prefer comprehensive content that thoroughly covers topics. AI systems like ChatGPT, Gemini, and Perplexity need substantial content to cite and reference.',
+        'Schema Markup': 'AI systems rely heavily on structured data to understand and cite content. Without schema, your content is invisible to AI.',
         'Schema Markup (AEO)': 'AI systems rely heavily on structured data to understand and cite content. Without schema, your content is invisible to AI.',
         'Schema Quality': 'Incomplete or incorrect schema markup confuses AI systems and prevents them from citing your content accurately.',
         'Question Answering': 'AI systems prioritize content that directly answers questions. Content without clear Q&A patterns gets ignored.',
@@ -663,6 +740,7 @@ function getFix(category: string, component: string, issue: string): string {
         'Content Freshness': 'Add "Last Updated" date. Update content quarterly. Add new sections, examples, or data. Update statistics and remove outdated information.',
         
         // AEO Fixes
+        'Content Depth': 'Expand content to at least 800 words. Add sections covering: what (define your topic), why (explain benefits), how (describe process), benefits (list advantages), examples (provide use cases), and FAQs (answer 5-10 common questions). Focus on depth and value over word count.',
         'Schema Markup (AEO)': 'Add JSON-LD schema to <head>. Start with Organization schema. For content pages, add Article, FAQPage, or HowTo schema as appropriate.',
         'Schema Quality': 'Validate schema at schema.org/validator. Fix all errors. Add required properties: name, description, image, url. Remove placeholder data.',
         'Question Answering': 'Add FAQ section with 5-10 common questions. Use <h3> for questions, <p> for answers. Start answers with direct responses (Yes/No, specific number).',

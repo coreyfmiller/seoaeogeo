@@ -40,6 +40,7 @@ import { FixInstructionCard } from "@/components/dashboard/fix-instruction-card"
 import { CompetitorGapView } from "@/components/dashboard/competitor-gap-view"
 import { CrawlProgress } from "@/components/dashboard/crawl-progress"
 import { ProLockScreen } from "@/components/dashboard/pro-lock-screen"
+import { AuditPageHeader } from "@/components/dashboard/audit-page-header"
 import { validateAnalysisData } from "@/lib/data-validator"
 
 // Enhanced tooltip component with better visibility
@@ -434,72 +435,31 @@ export default function SiteAnalysis() {
                     ) : (
                         <div className="max-w-7xl mx-auto">
                             {/* Pro Header */}
-                            <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                <div>
-                                    <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-                                        <Activity className="h-6 w-6 text-seo" />
-                                        Deep Crawler
-                                        <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-green-500/20 px-3 py-1">
-                                            PRO
-                                        </Badge>
-                                    </h1>
-                                    <p className="text-sm text-muted-foreground mt-2">
-                                        Full domain authority audit — sitewide schema coverage, content gaps, cannibalization detection, and internal link architecture.
-                                    </p>
-                                    {analysisData && (
-                                        <div className="flex items-center gap-3 mt-4 text-sm text-muted-foreground animate-in fade-in slide-in-from-left-4">
-                                            <span className="flex items-center gap-1.5 text-geo font-medium">
-                                                <Globe className="h-4 w-4" />
-                                                {url}
-                                            </span>
-                                            <Badge variant="outline" className="border-geo/50 text-geo bg-geo/5">
-                                                <Activity className="h-3 w-3 mr-1.5" />
-                                                {analysisData.pagesCrawled} Pages Scanned
-                                            </Badge>
-                                            {analysisData.siteType && (
-                                                <SiteTypeBadge
-                                                    siteType={{
-                                                        primaryType: analysisData.siteType.type,
-                                                        confidence: analysisData.siteType.confidence * 100
-                                                    }}
-                                                    onConfirm={() => {}}
-                                                    onManualSelect={(type) => {
-                                                        setAnalysisData({
-                                                            ...analysisData,
-                                                            siteType: { ...analysisData.siteType, type, confidence: 1.0 }
-                                                        })
-                                                    }}
-                                                />
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="flex items-center gap-2 self-start sm:self-center">
-                                    {analysisData && !isAnalyzing && (
-                                        <button
-                                            onClick={() => {
-                                                setAnalysisData(null)
-                                                setUrl("")
-                                                setMaxPages(10)
-                                                setError(null)
-                                                if (typeof window !== "undefined") {
-                                                    sessionStorage.removeItem("deep_url")
-                                                    sessionStorage.removeItem("deep_maxPages")
-                                                    sessionStorage.removeItem("deep_data")
-                                                }
-                                            }}
-                                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 text-sm text-muted-foreground hover:text-foreground hover:border-geo/50 transition-colors"
-                                        >
-                                            <RefreshCw className="h-4 w-4" />
-                                            New Crawl
-                                        </button>
-                                    )}
-                                    <Badge variant="secondary" className="bg-geo/10 text-geo border-geo/20 px-4 py-1">
-                                        <Lock className="h-3 w-3 mr-2" />
-                                        PROFESSIONAL PLAN
-                                    </Badge>
-                                </div>
-                            </div>
+                            <AuditPageHeader
+                                title="Deep Crawler"
+                                description="Full domain audit — schema coverage, content gaps, and link architecture."
+                                badge="PRO"
+                                badgeVariant="pro"
+                                currentUrl={url}
+                                hasResults={!!analysisData}
+                                isAnalyzing={isAnalyzing}
+                                onNewAudit={() => {
+                                    setAnalysisData(null)
+                                    setUrl("")
+                                    setError(null)
+                                    if (typeof window !== "undefined") {
+                                        sessionStorage.removeItem("pro_url")
+                                        sessionStorage.removeItem("pro_data")
+                                    }
+                                }}
+                                onRefreshAnalysis={() => handleDeepAudit(url, crawlConfig)}
+                                analysisData={analysisData}
+                                pageCount={analysisData?.pagesCrawled || 0}
+                                siteType={analysisData?.siteType ? {
+                                    primaryType: analysisData.siteType.type,
+                                    confidence: analysisData.siteType.confidence * 100
+                                } : undefined}
+                            />
 
                             {/* Error */}
                             {error && (
