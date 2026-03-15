@@ -3,8 +3,9 @@ import { crawlMultiplePages } from '@/lib/multi-page-crawler'
 import { detectSiteType } from '@/lib/site-type-detector'
 import { analyzeWithGemini } from '@/lib/gemini'
 import { calculateScoresFromScanResult, convertBreakdownToEnhancedPenalties } from '@/lib/grader-v2'
+import { analyzeSitewideIntelligence } from '@/lib/gemini-sitewide'
 import { saveScanSnapshot } from '@/lib/scan-snapshots'
-import { createSSEStream, SSE_HEADERS } from '@/lib/sse-helpers'
+import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers'
 
 export const maxDuration = 300
 
@@ -44,7 +45,7 @@ export async function POST(request: NextRequest) {
         const batch = crawlResult.pages.slice(batchStart, batchStart + BATCH_SIZE)
         const batchNum = Math.floor(batchStart / BATCH_SIZE) + 1
         const totalBatches = Math.ceil(crawlResult.pages.length / BATCH_SIZE)
-        send({ type: 'progress', phase: `Analyzing batch ${batchNum} of ${totalBatches} (${completed} of ${totalPages} pages done)...`, progress: Math.round(25 + (completed / totalPages) * 60) })
+        send({ type: 'progress', phase: `Analyzing batch ${batchNum} of ${totalBatches} (${completed} of ${totalPages} pages done)...`, progress: Math.round(25 + (completed / totalPages) * 40) })
 
         const batchResults = await Promise.all(
           batch.map(async (page) => {
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
         const validResults = batchResults.filter((r): r is NonNullable<typeof r> => r !== null)
         pageAnalyses.push(...validResults)
         completed += batch.length
-        send({ type: 'progress', phase: `${completed} of ${totalPages} pages analyzed...`, progress: Math.round(25 + (completed / totalPages) * 60) })
+        send({ type: 'progress', phase: `${completed} of ${totalPages} pages analyzed...`, progress: Math.round(25 + (completed / totalPages) * 40) })
       }
 
       if (pageAnalyses.length === 0) {

@@ -2678,5 +2678,41 @@
     "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
     "timestamp": "2026-03-15T13:35:13.404Z",
     "cost": 0.023625875
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 7926,
+    "outputTokens": 3621,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-15T13:39:34.896Z",
+    "cost": 0.05098274999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 4222,
+    "outputTokens": 3199,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-15T13:41:24.786Z",
+    "cost": 0.03871595
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 459,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-15T13:42:39.379Z",
+    "cost": 0.005835375
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 5017,
+    "outputTokens": 1380,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-15T13:42:49.168Z",
+    "cost": 0.023971674999999998
   }
 ]
