@@ -2498,5 +2498,185 @@
     "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
     "timestamp": "2026-03-15T12:44:45.211Z",
     "cost": 0.016814525
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 2031,
+    "outputTokens": 1342,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-15T13:06:58.472Z",
+    "cost": 0.016832725
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 2031,
+    "outputTokens": 1342,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-15T13:07:16.370Z",
+    "cost": 0.016832725
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 1316,
+    "outputTokens": 1310,
+    "url": "Pizza Twice | About Us",
+    "timestamp": "2026-03-15T13:07:31.984Z",
+    "cost": 0.014914899999999998
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 2239,
+    "outputTokens": 1253,
+    "url": "Pizza Twice | Locations",
+    "timestamp": "2026-03-15T13:07:45.392Z",
+    "cost": 0.016496024999999997
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 1429,
+    "outputTokens": 1226,
+    "url": "Pizza Twice | Pizza Twice Franchise",
+    "timestamp": "2026-03-15T13:07:59.202Z",
+    "cost": 0.014407575
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 1634,
+    "outputTokens": 1165,
+    "url": "Pizza Twice | Reviews",
+    "timestamp": "2026-03-15T13:08:18.199Z",
+    "cost": 0.01431885
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 1235,
+    "outputTokens": 1247,
+    "url": "Pizza Twice | Oromocto | Contact Us",
+    "timestamp": "2026-03-15T13:08:31.778Z",
+    "cost": 0.014157325
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 1481,
+    "outputTokens": 1271,
+    "url": "Pizzas In Oromocto | Menu | Pizza Twice",
+    "timestamp": "2026-03-15T13:08:47.070Z",
+    "cost": 0.014935374999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 2920,
+    "outputTokens": 1376,
+    "url": "Cybersecure NB Grant: Free AI Chatbot + Website | FundyLogic",
+    "timestamp": "2026-03-15T13:34:05.871Z",
+    "cost": 0.0191646
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 3697,
+    "outputTokens": 1550,
+    "url": "Client Testimonials & Performance Reviews | FundyLogic | FundyLogic",
+    "timestamp": "2026-03-15T13:34:09.178Z",
+    "cost": 0.022515675
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 3649,
+    "outputTokens": 1414,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-15T13:34:10.808Z",
+    "cost": 0.021168874999999997
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 3128,
+    "outputTokens": 1554,
+    "url": "AI & Web Services | FundyLogic New Brunswick | FundyLogic",
+    "timestamp": "2026-03-15T13:34:12.722Z",
+    "cost": 0.0212576
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 5548,
+    "outputTokens": 1714,
+    "url": "FAQs — AI-Ready Web Design & Local Digital Services | FundyLogic",
+    "timestamp": "2026-03-15T13:34:14.797Z",
+    "cost": 0.028219099999999997
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 3290,
+    "outputTokens": 1412,
+    "url": "Web Design & Digital Infrastructure for Saint John Industrial | FundyLogic",
+    "timestamp": "2026-03-15T13:34:34.963Z",
+    "cost": 0.02033395
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 3365,
+    "outputTokens": 1412,
+    "url": "AI Web Design & Automations for Uptown Saint John Startups | FundyLogic",
+    "timestamp": "2026-03-15T13:34:35.179Z",
+    "cost": 0.020504575
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 3283,
+    "outputTokens": 1345,
+    "url": "Automated Operations Design for Fredericton Heavy Trades | FundyLogic",
+    "timestamp": "2026-03-15T13:34:36.629Z",
+    "cost": 0.019708325
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 2798,
+    "outputTokens": 1535,
+    "url": "Legal — Privacy Policy, Terms & Security | FundyLogic",
+    "timestamp": "2026-03-15T13:34:38.817Z",
+    "cost": 0.020333949999999996
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 3341,
+    "outputTokens": 1496,
+    "url": "Web Applications & AI Automation for Fredericton Tech Startups | FundyLogic",
+    "timestamp": "2026-03-15T13:34:40.868Z",
+    "cost": 0.021214374999999997
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 481,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-15T13:35:04.929Z",
+    "cost": 0.006035575
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 5017,
+    "outputTokens": 1342,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-15T13:35:13.404Z",
+    "cost": 0.023625875
   }
 ]

@@ -10,6 +10,7 @@ import { CrawlConfig } from '@/components/dashboard/crawl-config'
 import { CrawlProgress } from '@/components/dashboard/crawl-progress'
 import { MultiPageDashboard } from '@/components/dashboard/multi-page-dashboard'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
+import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
 
 interface DeepScanResult {
   url: string
@@ -38,61 +39,20 @@ interface DeepScanResult {
 
 export default function DeepV3Page() {
   const [currentUrl, setCurrentUrl] = useState('')
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [result, setResult] = useState<DeepScanResult | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const sse = useSSEAnalysis<DeepScanResult>('/api/analyze-deep-v3')
   const [crawlConfig, setCrawlConfig] = useState({
     maxPages: 10,
     respectRobotsTxt: true
   })
-  const [crawlProgress, setCrawlProgress] = useState({
-    current: 0,
-    total: 0,
-    stage: 'idle' as 'idle' | 'crawling' | 'analyzing' | 'complete'
-  })
 
   const handleAnalyze = async (submittedUrl: string) => {
     setCurrentUrl(submittedUrl)
-    setIsAnalyzing(true)
-    setError(null)
-    setResult(null)
-    setCrawlProgress({ current: 0, total: crawlConfig.maxPages, stage: 'crawling' })
-    
-    try {
-      const response = await fetch('/api/analyze-deep-v3', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          url: submittedUrl,
-          maxPages: crawlConfig.maxPages
-        }),
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Analysis failed')
-      }
-
-      const data = await response.json()
-      
-      if (data.success) {
-        setResult(data.data)
-        setCrawlProgress({ 
-          current: data.data.pagesCrawled, 
-          total: data.data.pagesCrawled, 
-          stage: 'complete' 
-        })
-      } else {
-        throw new Error(data.error || 'Analysis failed')
-      }
-    } catch (error: any) {
-      console.error('Deep scan failed:', error)
-      setError(error.message)
-      setCrawlProgress({ current: 0, total: 0, stage: 'idle' })
-    } finally {
-      setIsAnalyzing(false)
-    }
+    await sse.startAnalysis(submittedUrl, { maxPages: crawlConfig.maxPages })
   }
+
+  const result = sse.data
+  const isAnalyzing = sse.isAnalyzing
+  const error = sse.error
 
   return (
     <div className="flex h-screen bg-background">
@@ -123,10 +83,8 @@ export default function DeepV3Page() {
               hasResults={!!result}
               isAnalyzing={isAnalyzing}
               onNewAudit={() => {
-                setResult(null)
+                sse.reset()
                 setCurrentUrl("")
-                setError(null)
-                setCrawlProgress({ current: 0, total: 0, stage: 'idle' })
               }}
               onRefreshAnalysis={() => handleAnalyze(currentUrl)}
               analysisData={result}
@@ -219,26 +177,19 @@ export default function DeepV3Page() {
             )}
 
             {/* Crawl Progress */}
-            {isAnalyzing && crawlProgress.stage !== 'idle' && (
-              <Card>
+            {isAnalyzing && (
+              <Card className="border-purple-500/30">
                 <CardContent className="pt-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">
-                        {crawlProgress.stage === 'crawling' && 'Crawling pages...'}
-                        {crawlProgress.stage === 'analyzing' && 'Analyzing with AI...'}
-                        {crawlProgress.stage === 'complete' && 'Analysis complete!'}
-                      </span>
-                      <span className="text-sm text-muted-foreground">
-                        {crawlProgress.current} / {crawlProgress.total}
-                      </span>
+                  <div className="flex flex-col items-center gap-4 py-8">
+                    <div className="h-12 w-12 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
+                    <div className="text-center min-h-[48px]">
+                      <h3 className="text-lg font-bold text-foreground">V3 Deep Scan in Progress</h3>
+                      <p className="text-sm text-muted-foreground mt-1 transition-opacity duration-500">{sse.phase || 'Initializing...'}</p>
                     </div>
-                    <div className="w-full bg-muted rounded-full h-2">
-                      <div 
-                        className="bg-purple-600 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${(crawlProgress.current / crawlProgress.total) * 100}%` }}
-                      />
+                    <div className="w-64 h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-seo via-aeo to-geo transition-all duration-[1500ms] ease-in-out" style={{ width: `${sse.progress}%` }} />
                     </div>
+                    <p className="text-xs text-muted-foreground">{sse.progress}%</p>
                   </div>
                 </CardContent>
               </Card>

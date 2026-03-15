@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { downloadReport, copyReportToClipboard } from "@/lib/report-exporter"
+import { useSSEAnalysis } from "@/hooks/use-sse-analysis"
 import {
   Search,
   Sparkles,
@@ -34,15 +35,29 @@ import { cn } from "@/lib/utils"
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("seo")
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [analysisPhase, setAnalysisPhase] = useState<string>("")
-  const [analysisProgress, setAnalysisProgress] = useState<number>(0)
   const [currentUrl, setCurrentUrl] = useState("")
   const [analysisData, setAnalysisData] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [apiStatus, setApiStatus] = useState<"healthy" | "error" | "idle">("idle")
   const [reportCopied, setReportCopied] = useState(false)
-  const [isProUnlocked, setIsProUnlocked] = useState(true) // Temporarily unlocked for everyone
+  const [isProUnlocked, setIsProUnlocked] = useState(true)
+  const sse = useSSEAnalysis('/api/analyze')
+
+  const isAnalyzing = sse.isAnalyzing
+  const analysisPhase = sse.phase
+  const analysisProgress = sse.progress // Temporarily unlocked for everyone
+
+  // Sync SSE results to local state
+  useEffect(() => {
+    if (sse.data) {
+      setAnalysisData(sse.data)
+      setApiStatus("healthy")
+    }
+    if (sse.error) {
+      setError(sse.error)
+      setApiStatus("error")
+    }
+  }, [sse.data, sse.error])
 
   // Restore state from sessionStorage on mount
   useEffect(() => {
@@ -73,68 +88,9 @@ export default function Dashboard() {
   }, [currentUrl, analysisData])
 
   const handleAnalyze = async (url: string) => {
-    setIsAnalyzing(true)
     setError(null)
     setCurrentUrl(url)
-    setAnalysisPhase("Initializing analysis...")
-    setAnalysisProgress(0)
-
-    try {
-      const response = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
-      })
-
-      if (!response.body) {
-        throw new Error('No response stream')
-      }
-
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ''
-
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n\n')
-        buffer = lines.pop() || ''
-
-        for (const line of lines) {
-          const dataLine = line.replace(/^data: /, '').trim()
-          if (!dataLine) continue
-
-          try {
-            const event = JSON.parse(dataLine)
-
-            if (event.type === 'progress') {
-              setAnalysisPhase(event.phase)
-              setAnalysisProgress(event.progress)
-            } else if (event.type === 'result' && event.success) {
-              setAnalysisData(event.data)
-              setApiStatus("healthy")
-              console.log('Scan Successful:', event.data)
-            } else if (event.type === 'error') {
-              setError(event.error || 'Analysis failed. Please try again.')
-              setApiStatus("error")
-              console.error('Scan Error:', event.error)
-            }
-          } catch {
-            // skip malformed chunks
-          }
-        }
-      }
-    } catch (err: any) {
-      setError('Connection failed. Ensure the server is running.')
-      setApiStatus("error")
-      console.error('Crawler failed:', err)
-    } finally {
-      setIsAnalyzing(false)
-      setAnalysisPhase("")
-      setAnalysisProgress(0)
-    }
+    await sse.startAnalysis(url)
   }
 
   // Use real data scores or default to 0 for a clean start

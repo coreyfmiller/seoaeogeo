@@ -14,7 +14,6 @@ import {
   Bot,
   TrendingUp,
   Layers,
-  Play,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -33,7 +32,6 @@ const mainNav: NavItem[] = [
   { name: "V2.0 Beta", icon: Sparkles, href: "/v2", badge: "BETA" },
   { name: "V3.0 Beta", icon: Bot, href: "/v3", badge: "BETA AI" },
   { name: "V3 Deep Scan", icon: Layers, href: "/deep-v3", badge: "BETA AI" },
-  { name: "Animation", icon: Play, href: "/animation", badge: "DEV" },
 ]
 
 const comingSoonNav: NavItem[] = []
@@ -99,11 +97,6 @@ export function AppSidebar() {
                   {item.badge === "BETA AI" && (
                     <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-orange-500/10 to-purple-500/10 text-purple-600 border border-purple-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       BETA AI
-                    </span>
-                  )}
-                  {item.badge === "DEV" && (
-                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-zinc-500/10 text-zinc-500 border border-zinc-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
-                      DEV
                     </span>
                   )}
                 </Link>

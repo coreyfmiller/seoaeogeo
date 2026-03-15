@@ -11,6 +11,7 @@ import { SiteTypeBadge } from '@/components/dashboard/site-type-badge'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { Header } from '@/components/dashboard/header'
 import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
+import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
 
 interface AnalysisResult {
   url: string
@@ -94,37 +95,16 @@ interface AnalysisResult {
 export default function V2Page() {
   const [url, setUrl] = useState('')
   const [currentUrl, setCurrentUrl] = useState('')
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [result, setResult] = useState<AnalysisResult | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const sse = useSSEAnalysis<AnalysisResult>('/api/analyze-v2')
 
   const handleAnalyze = async (submittedUrl: string) => {
     setCurrentUrl(submittedUrl)
-    setIsAnalyzing(true)
-    setError(null)
-    setResult(null)
-    
-    try {
-      const response = await fetch('/api/analyze-v2', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: submittedUrl }),
-      })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || 'Analysis failed')
-      }
-
-      const data = await response.json()
-      setResult(data)
-    } catch (error: any) {
-      console.error('Analysis failed:', error)
-      setError(error.message)
-    } finally {
-      setIsAnalyzing(false)
-    }
+    await sse.startAnalysis(submittedUrl)
   }
+
+  const result = sse.data
+  const isAnalyzing = sse.isAnalyzing
+  const error = sse.error
 
   const getCategoryColor = (category: string) => {
     if (category === 'FAST') return 'text-green-600'
@@ -167,9 +147,8 @@ export default function V2Page() {
         hasResults={!!result}
         isAnalyzing={isAnalyzing}
         onNewAudit={() => {
-          setResult(null)
+          sse.reset()
           setCurrentUrl("")
-          setError(null)
         }}
         onRefreshAnalysis={() => handleAnalyze(currentUrl)}
         analysisData={result}
@@ -180,8 +159,27 @@ export default function V2Page() {
         } : undefined}
       />
 
+      {/* Loading Overlay */}
+      {isAnalyzing && (
+        <Card className="border-seo/30">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center gap-4 py-8">
+              <div className="h-12 w-12 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
+              <div className="text-center min-h-[48px]">
+                <h3 className="text-lg font-bold text-foreground">V2 Audit in Progress</h3>
+                <p className="text-sm text-muted-foreground mt-1 transition-opacity duration-500">{sse.phase || 'Initializing...'}</p>
+              </div>
+              <div className="w-64 h-1.5 bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-seo via-aeo to-geo transition-all duration-[1500ms] ease-in-out" style={{ width: `${sse.progress}%` }} />
+              </div>
+              <p className="text-xs text-muted-foreground">{sse.progress}%</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Hero Section - Only show when no results */}
-      {!result && (
+      {!result && !isAnalyzing && (
       <Card className="border-2 border-seo/20 bg-gradient-to-br from-seo/5 to-transparent">
         <CardHeader className="text-center space-y-4 pb-8">
           <div className="mx-auto w-16 h-16 rounded-full bg-seo/10 flex items-center justify-center">
@@ -217,7 +215,7 @@ export default function V2Page() {
       )}
 
       {/* What's New Section */}
-      {!result && (
+      {!result && !isAnalyzing && (
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
             <CardHeader>
