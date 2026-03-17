@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useState } from "react"
 import {
   LayoutDashboard,
   Search,
@@ -14,6 +15,11 @@ import {
   Bot,
   TrendingUp,
   Layers,
+  Crown,
+  Home,
+  ChevronDown,
+  ChevronRight,
+  Archive,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -25,13 +31,19 @@ interface NavItem {
 }
 
 const mainNav: NavItem[] = [
-  { name: "Free Audit", icon: Search, href: "/free" },
+  { name: "Get Pro", icon: Crown, href: "/pro", badge: "PRO" },
   { name: "Competitive Intel", icon: Globe, href: "/intelligence" },
-  { name: "Pro Audit", icon: LayoutDashboard, href: "/", badge: "PRO" },
-  { name: "Deep Crawler", icon: TrendingUp, href: "/site-analysis", badge: "PRO" },
-  { name: "V2.0 Beta", icon: Sparkles, href: "/v2", badge: "BETA" },
-  { name: "V3.0 Beta", icon: Bot, href: "/v3", badge: "BETA AI" },
+  { name: "V3 Free Audit", icon: Sparkles, href: "/v2", badge: "BETA AI" },
+  { name: "V4 Free Audit", icon: Sparkles, href: "/v4", badge: "BETA AI" },
+  { name: "V3 Pro Audit", icon: Bot, href: "/v3", badge: "BETA AI" },
   { name: "V3 Deep Scan", icon: Layers, href: "/deep-v3", badge: "BETA AI" },
+  { name: "Dashboard", icon: Home, href: "/dashboard" },
+]
+
+const eolNav: NavItem[] = [
+  { name: "Free Audit EOL", icon: Search, href: "/free", badge: "EOL" },
+  { name: "Pro Audit EOL", icon: LayoutDashboard, href: "/", badge: "EOL" },
+  { name: "Deep Crawler EOL", icon: TrendingUp, href: "/site-analysis", badge: "EOL" },
 ]
 
 const comingSoonNav: NavItem[] = []
@@ -45,6 +57,7 @@ const bottomNav: NavItem[] = [
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const [eolOpen, setEolOpen] = useState(false)
 
   return (
     <aside className="hidden lg:flex flex-col w-64 border-r border-border/50 bg-sidebar">
@@ -84,6 +97,16 @@ export function AppSidebar() {
                       {item.badge}
                     </span>
                   )}
+                  {item.badge === "PRO AI" && (
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-green-500/10 to-purple-500/10 text-green-600 border border-green-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                      PRO AI
+                    </span>
+                  )}
+                  {item.badge === "FREE" && (
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 border border-blue-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                      FREE
+                    </span>
+                  )}
                   {item.badge === "ADMIN" && (
                     <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-600 border border-purple-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       {item.badge}
@@ -104,9 +127,42 @@ export function AppSidebar() {
             ))}
           </ul>
         </div>
-      </nav>
 
-      {/* Bottom Navigation */}
+        {/* EOL Section */}
+        <div>
+          <button
+            onClick={() => setEolOpen(!eolOpen)}
+            className="flex items-center gap-2 px-3 mb-2 w-full text-xs font-medium text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors"
+          >
+            {eolOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+            <Archive className="h-3 w-3" />
+            <span>EOL</span>
+          </button>
+          {eolOpen && (
+            <ul className="space-y-1">
+              {eolNav.map((item) => (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
+                      pathname === item.href
+                        ? "bg-seo/10 text-seo font-medium"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    )}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span className="flex-1">{item.name}</span>
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-red-500/10 text-red-500 border border-red-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                      EOL
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </nav>
       <div className="px-3 py-4 border-t border-border/50">
         <ul className="space-y-1">
           {bottomNav.map((item) => (

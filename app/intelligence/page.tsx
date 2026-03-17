@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { Header } from "@/components/dashboard/header"
+import { saveScanToHistory } from '@/lib/scan-history'
 import { DualSearchInput } from "@/components/dashboard/search-input"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -53,6 +54,19 @@ export default function SiteVsSite() {
             if (comparisonData) sessionStorage.setItem("competitor_data", JSON.stringify(comparisonData))
         }
     }, [siteA, siteB, comparisonData])
+
+    // Save to scan history for dashboard
+    useEffect(() => {
+        if (comparisonData && siteA && siteB) {
+            const c = comparisonData.comparison || comparisonData
+            saveScanToHistory({
+                url: `${siteA} vs ${siteB}`,
+                type: 'competitive',
+                scores: { seo: c.seo?.siteA || 0, aeo: c.aeo?.siteA || 0, geo: c.geo?.siteA || 0 },
+                timestamp: new Date().toISOString(),
+            })
+        }
+    }, [comparisonData, siteA, siteB])
 
     const handleBattle = async (urlA: string, urlB: string) => {
         setIsAnalyzing(true)

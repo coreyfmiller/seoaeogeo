@@ -40,7 +40,7 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null)
   const [apiStatus, setApiStatus] = useState<"healthy" | "error" | "idle">("idle")
   const [reportCopied, setReportCopied] = useState(false)
-  const [isProUnlocked, setIsProUnlocked] = useState(true)
+  const isProUnlocked = true // Pro lock removed for now
   const sse = useSSEAnalysis('/api/analyze')
 
   const isAnalyzing = sse.isAnalyzing
@@ -62,7 +62,6 @@ export default function Dashboard() {
   // Restore state from sessionStorage on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setIsProUnlocked(localStorage.getItem("isProUnlocked") === "true")
       const savedUrl = sessionStorage.getItem("dashboard_url")
       const savedData = sessionStorage.getItem("dashboard_data")
       if (savedUrl) setCurrentUrl(savedUrl)

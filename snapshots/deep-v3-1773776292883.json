@@ -1,18 +1,18 @@
 {
-  "id": "deep-v3-1773577395692",
-  "url": "https://pizzatwice.com",
-  "timestamp": "2026-03-15T12:23:15.692Z",
+  "id": "deep-v3-1773776292883",
+  "url": "https://fundylogic.com",
+  "timestamp": "2026-03-17T19:38:12.883Z",
   "apiRoute": "/api/analyze-deep-v3",
   "scores": {
-    "seo": 87,
-    "aeo": 32,
-    "geo": 64
+    "seo": 93,
+    "aeo": 90,
+    "geo": 85
   },
-  "siteType": "restaurant",
+  "siteType": "local-business",
   "rawAiScores": {
-    "seoScore": 90,
-    "aeoScore": 49,
-    "geoScore": 80,
+    "seoScore": 99,
+    "aeoScore": 99,
+    "geoScore": 100,
     "breakdown": {
       "seo": [
         {
@@ -58,27 +58,21 @@
         },
         {
           "name": "Content Quality",
-          "score": 27,
+          "score": 42,
           "maxScore": 42,
-          "percentage": 64,
+          "percentage": 100,
           "components": [
             {
-              "score": 7,
+              "score": 15,
               "maxScore": 15,
-              "status": "warning",
-              "feedback": "Thin content - needs substantial expansion",
-              "issues": [
-                "Only 282 words (recommended: 800+)"
-              ]
+              "status": "excellent",
+              "feedback": "Strong content depth (1514 words)"
             },
             {
-              "score": 0,
+              "score": 7,
               "maxScore": 7,
-              "status": "critical",
-              "feedback": "Insufficient content to evaluate readability",
-              "issues": [
-                "Need at least 300 words for meaningful content"
-              ]
+              "status": "excellent",
+              "feedback": "Content is clear and readable"
             },
             {
               "score": 10,
@@ -96,21 +90,24 @@
         },
         {
           "name": "Technical Excellence",
-          "score": 22,
+          "score": 16,
           "maxScore": 22,
-          "percentage": 100,
+          "percentage": 73,
           "components": [
             {
               "score": 10,
               "maxScore": 10,
               "status": "excellent",
-              "feedback": "Fast page load (723ms)"
+              "feedback": "Fast page load (353ms)"
             },
             {
-              "score": 6,
+              "score": 0,
               "maxScore": 6,
-              "status": "excellent",
-              "feedback": "Semantic structure not critical for short pages"
+              "status": "warning",
+              "feedback": "No semantic HTML5 tags found",
+              "issues": [
+                "Consider using <main>, <nav>, <article>, <header>, <footer>"
+              ]
             },
             {
               "score": 6,
@@ -131,15 +128,13 @@
               "maxScore": 5,
               "status": "excellent",
               "feedback": "High-quality schema implementation",
-              "issues": [
-                "'acceptsReservations' property uses string 'True' instead of boolean true"
-              ]
+              "issues": []
             },
             {
               "score": 3,
               "maxScore": 3,
               "status": "excellent",
-              "feedback": "External links not critical for short pages"
+              "feedback": "External links present (undefined)"
             },
             {
               "score": 0,
@@ -153,36 +148,28 @@
       "aeo": [
         {
           "name": "AEO Readiness",
-          "score": 49,
+          "score": 99,
           "maxScore": 100,
-          "percentage": 49,
+          "percentage": 99,
           "components": [
             {
-              "score": 0,
+              "score": 20,
               "maxScore": 20,
-              "status": "critical",
-              "feedback": "Content Depth",
-              "issues": [
-                "Only 282 words - thin content is invisible to AI (need 800+ words)"
-              ]
+              "status": "good",
+              "feedback": "Content Depth"
             },
             {
               "score": 29,
               "maxScore": 30,
               "status": "good",
               "feedback": "Schema Quality",
-              "issues": [
-                "'acceptsReservations' property uses string 'True' instead of boolean true"
-              ]
+              "issues": []
             },
             {
-              "score": 0,
+              "score": 20,
               "maxScore": 20,
-              "status": "warning",
-              "feedback": "Question Answering",
-              "issues": [
-                "Content does not directly answer common questions"
-              ]
+              "status": "good",
+              "feedback": "Question Answering"
             },
             {
               "score": 15,
@@ -197,13 +184,10 @@
               "feedback": "Formatting"
             },
             {
-              "score": 0,
+              "score": 10,
               "maxScore": 10,
-              "status": "warning",
-              "feedback": "Definitions",
-              "issues": [
-                "Missing clear definition statements"
-              ]
+              "status": "good",
+              "feedback": "Definitions"
             }
           ]
         }
@@ -211,9 +195,9 @@
       "geo": [
         {
           "name": "GEO Visibility",
-          "score": 80,
+          "score": 100,
           "maxScore": 100,
-          "percentage": 80,
+          "percentage": 100,
           "components": [
             {
               "score": 25,
@@ -222,13 +206,10 @@
               "feedback": "Image Accessibility"
             },
             {
-              "score": 0,
+              "score": 20,
               "maxScore": 20,
-              "status": "warning",
-              "feedback": "Tone",
-              "issues": [
-                "Overly promotional tone reduces AI trust"
-              ]
+              "status": "good",
+              "feedback": "Tone"
             },
             {
               "score": 20,
@@ -258,13 +239,12 @@
         }
       ]
     },
-    "overallFeedback": "Exceptional SEO for a restaurant - Your site follows modern best practices and is well-optimized for search engines.",
+    "overallFeedback": "Exceptional SEO for a local business - Your site follows modern best practices and is well-optimized for search engines.",
     "criticalIssues": [
-      "No viewport meta tag found",
-      "Need at least 300 words for meaningful content"
+      "No viewport meta tag found"
     ],
     "version": "v2",
-    "siteType": "restaurant"
+    "siteType": "local-business"
   },
   "graderBreakdown": {
     "seo": [
@@ -311,27 +291,21 @@
       },
       {
         "name": "Content Quality",
-        "score": 27,
+        "score": 42,
         "maxScore": 42,
-        "percentage": 64,
+        "percentage": 100,
         "components": [
           {
-            "score": 7,
+            "score": 15,
             "maxScore": 15,
-            "status": "warning",
-            "feedback": "Thin content - needs substantial expansion",
-            "issues": [
-              "Only 282 words (recommended: 800+)"
-            ]
+            "status": "excellent",
+            "feedback": "Strong content depth (1514 words)"
           },
           {
-            "score": 0,
+            "score": 7,
             "maxScore": 7,
-            "status": "critical",
-            "feedback": "Insufficient content to evaluate readability",
-            "issues": [
-              "Need at least 300 words for meaningful content"
-            ]
+            "status": "excellent",
+            "feedback": "Content is clear and readable"
           },
           {
             "score": 10,
@@ -349,21 +323,24 @@
       },
       {
         "name": "Technical Excellence",
-        "score": 22,
+        "score": 16,
         "maxScore": 22,
-        "percentage": 100,
+        "percentage": 73,
         "components": [
           {
             "score": 10,
             "maxScore": 10,
             "status": "excellent",
-            "feedback": "Fast page load (723ms)"
+            "feedback": "Fast page load (353ms)"
           },
           {
-            "score": 6,
+            "score": 0,
             "maxScore": 6,
-            "status": "excellent",
-            "feedback": "Semantic structure not critical for short pages"
+            "status": "warning",
+            "feedback": "No semantic HTML5 tags found",
+            "issues": [
+              "Consider using <main>, <nav>, <article>, <header>, <footer>"
+            ]
           },
           {
             "score": 6,
@@ -384,15 +361,13 @@
             "maxScore": 5,
             "status": "excellent",
             "feedback": "High-quality schema implementation",
-            "issues": [
-              "'acceptsReservations' property uses string 'True' instead of boolean true"
-            ]
+            "issues": []
           },
           {
             "score": 3,
             "maxScore": 3,
             "status": "excellent",
-            "feedback": "External links not critical for short pages"
+            "feedback": "External links present (undefined)"
           },
           {
             "score": 0,
@@ -406,36 +381,28 @@
     "aeo": [
       {
         "name": "AEO Readiness",
-        "score": 49,
+        "score": 99,
         "maxScore": 100,
-        "percentage": 49,
+        "percentage": 99,
         "components": [
           {
-            "score": 0,
+            "score": 20,
             "maxScore": 20,
-            "status": "critical",
-            "feedback": "Content Depth",
-            "issues": [
-              "Only 282 words - thin content is invisible to AI (need 800+ words)"
-            ]
+            "status": "good",
+            "feedback": "Content Depth"
           },
           {
             "score": 29,
             "maxScore": 30,
             "status": "good",
             "feedback": "Schema Quality",
-            "issues": [
-              "'acceptsReservations' property uses string 'True' instead of boolean true"
-            ]
+            "issues": []
           },
           {
-            "score": 0,
+            "score": 20,
             "maxScore": 20,
-            "status": "warning",
-            "feedback": "Question Answering",
-            "issues": [
-              "Content does not directly answer common questions"
-            ]
+            "status": "good",
+            "feedback": "Question Answering"
           },
           {
             "score": 15,
@@ -450,13 +417,10 @@
             "feedback": "Formatting"
           },
           {
-            "score": 0,
+            "score": 10,
             "maxScore": 10,
-            "status": "warning",
-            "feedback": "Definitions",
-            "issues": [
-              "Missing clear definition statements"
-            ]
+            "status": "good",
+            "feedback": "Definitions"
           }
         ]
       }
@@ -464,9 +428,9 @@
     "geo": [
       {
         "name": "GEO Visibility",
-        "score": 80,
+        "score": 100,
         "maxScore": 100,
-        "percentage": 80,
+        "percentage": 100,
         "components": [
           {
             "score": 25,
@@ -475,13 +439,10 @@
             "feedback": "Image Accessibility"
           },
           {
-            "score": 0,
+            "score": 20,
             "maxScore": 20,
-            "status": "warning",
-            "feedback": "Tone",
-            "issues": [
-              "Overly promotional tone reduces AI trust"
-            ]
+            "status": "good",
+            "feedback": "Tone"
           },
           {
             "score": 20,
@@ -513,15 +474,6 @@
   },
   "enhancedPenalties": [
     {
-      "category": "AEO",
-      "component": "AEO AEO Readiness - Content Depth",
-      "penalty": "Only 282 words - thin content is invisible to AI (need 800+ words)",
-      "explanation": "Thin content (under 300 words) rarely ranks. Search engines prefer comprehensive content that thoroughly covers topics. AI systems like ChatGPT, Gemini, and Perplexity need substantial content to cite and reference.",
-      "fix": "Expand content to at least 800 words. Add sections covering: what (define your topic), why (explain benefits), how (describe process), benefits (list advantages), examples (provide use cases), and FAQs (answer 5-10 common questions). Focus on depth and value over word count.",
-      "pointsDeducted": -20,
-      "severity": "critical"
-    },
-    {
       "category": "SEO",
       "component": "SEO Foundation - Missing viewport meta tag - not mobile optimized",
       "penalty": "No viewport meta tag found",
@@ -532,53 +484,17 @@
     },
     {
       "category": "SEO",
-      "component": "SEO Content Quality - Insufficient content to evaluate readability",
-      "penalty": "Need at least 300 words for meaningful content",
+      "component": "SEO Technical Excellence - No semantic HTML5 tags found",
+      "penalty": "Consider using <main>, <nav>, <article>, <header>, <footer>",
       "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
       "fix": "Review and update this element following current best practices for search engines and AI systems.",
-      "pointsDeducted": -7,
-      "severity": "critical"
-    },
-    {
-      "category": "AEO",
-      "component": "AEO AEO Readiness - Question Answering",
-      "penalty": "Content does not directly answer common questions",
-      "explanation": "AI systems prioritize content that directly answers questions. Content without clear Q&A patterns gets ignored.",
-      "fix": "Add FAQ section with 5-10 common questions. Use <h3> for questions, <p> for answers. Start answers with direct responses (Yes/No, specific number).",
-      "pointsDeducted": -20,
-      "severity": "warning"
-    },
-    {
-      "category": "GEO",
-      "component": "GEO GEO Visibility - Tone",
-      "penalty": "Overly promotional tone reduces AI trust",
-      "explanation": "Overly promotional content is flagged as biased by AI systems. Neutral, informative tone increases trust and citation likelihood.",
-      "fix": "Remove promotional language (\"best\", \"amazing\", \"revolutionary\"). Use neutral, factual tone. Replace \"we offer\" with \"this includes\". Focus on information, not selling.",
-      "pointsDeducted": -20,
-      "severity": "warning"
-    },
-    {
-      "category": "AEO",
-      "component": "AEO AEO Readiness - Definitions",
-      "penalty": "Missing clear definition statements",
-      "explanation": "Clear definition statements help AI systems understand and explain concepts. Missing definitions reduce citation likelihood.",
-      "fix": "Start with a clear definition: \"X is [category] that [key characteristic]\". Example: \"SEO is a marketing strategy that improves website visibility in search results.\"",
-      "pointsDeducted": -10,
-      "severity": "warning"
-    },
-    {
-      "category": "SEO",
-      "component": "SEO Content Quality - Thin content - needs substantial expansion",
-      "penalty": "Only 282 words (recommended: 800+)",
-      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
-      "fix": "Review and update this element following current best practices for search engines and AI systems.",
-      "pointsDeducted": -8,
+      "pointsDeducted": -6,
       "severity": "warning"
     },
     {
       "category": "AEO",
       "component": "AEO AEO Readiness - Schema Quality",
-      "penalty": "'acceptsReservations' property uses string 'True' instead of boolean true",
+      "penalty": "Lost 1 points in Schema Quality",
       "explanation": "Incomplete or incorrect schema markup confuses AI systems and prevents them from citing your content accurately.",
       "fix": "Validate schema at schema.org/validator. Fix all errors. Add required properties: name, description, image, url. Remove placeholder data.",
       "pointsDeducted": -1,
@@ -586,55 +502,67 @@
     }
   ],
   "fullResult": {
-    "pagesCrawled": 8,
+    "pagesCrawled": 10,
     "perPageScores": [
       {
-        "url": "https://www.pizzatwice.com/",
-        "seo": 90,
-        "aeo": 49,
-        "geo": 80
-      },
-      {
-        "url": "https://www.pizzatwice.com/",
-        "seo": 90,
-        "aeo": 49,
-        "geo": 80
-      },
-      {
-        "url": "https://www.pizzatwice.com/about-us",
-        "seo": 80,
-        "aeo": 5,
+        "url": "https://fundylogic.com/",
+        "seo": 99,
+        "aeo": 99,
         "geo": 100
       },
       {
-        "url": "https://www.pizzatwice.com/locations",
-        "seo": 87,
-        "aeo": 39,
+        "url": "https://fundylogic.com/services",
+        "seo": 96,
+        "aeo": 96,
         "geo": 80
       },
       {
-        "url": "https://www.pizzatwice.com/pizza-twice-franchise",
-        "seo": 89,
-        "aeo": 28,
-        "geo": 35
+        "url": "https://fundylogic.com/testimonials",
+        "seo": 90,
+        "aeo": 92,
+        "geo": 100
       },
       {
-        "url": "https://www.pizzatwice.com/reviews",
-        "seo": 84,
-        "aeo": 42,
-        "geo": 85
+        "url": "https://fundylogic.com/grants/cybersecure-nb",
+        "seo": 93,
+        "aeo": 92,
+        "geo": 70
       },
       {
-        "url": "https://www.pizzatwice.com/contact-us",
-        "seo": 85,
-        "aeo": 15,
-        "geo": 25
+        "url": "https://fundylogic.com/faqs",
+        "seo": 88,
+        "aeo": 88,
+        "geo": 75
       },
       {
-        "url": "https://www.pizzatwice.com/menu",
-        "seo": 89,
-        "aeo": 28,
-        "geo": 25
+        "url": "https://fundylogic.com/legal",
+        "seo": 92,
+        "aeo": 65,
+        "geo": 100
+      },
+      {
+        "url": "https://fundylogic.com/service-area/uptown-saint-john-startups",
+        "seo": 93,
+        "aeo": 78,
+        "geo": 45
+      },
+      {
+        "url": "https://fundylogic.com/service-area/saint-john-industrial-trades",
+        "seo": 93,
+        "aeo": 97,
+        "geo": 75
+      },
+      {
+        "url": "https://fundylogic.com/service-area/fredericton-tech-web-design",
+        "seo": 93,
+        "aeo": 96,
+        "geo": 100
+      },
+      {
+        "url": "https://fundylogic.com/service-area/fredericton-industrial-parks",
+        "seo": 93,
+        "aeo": 94,
+        "geo": 100
       }
     ]
   }

@@ -185,11 +185,7 @@ export default function SiteAnalysis() {
 
     useEffect(() => {
         if (typeof window !== "undefined") {
-            if (localStorage.getItem("isProUnlocked") === "true") {
-                setIsAuthorized(true)
-            } else {
-                setIsAuthorized(false)
-            }
+            setIsAuthorized(true)
             setIsCheckingAuth(false)
 
             const savedUrl = sessionStorage.getItem("pro_url")

@@ -1,18 +1,18 @@
 {
-  "id": "deep-v3-1773577623569",
-  "url": "fundylogic.com",
-  "timestamp": "2026-03-15T12:27:03.569Z",
+  "id": "deep-v3-1773690492542",
+  "url": "https://pizzatwice.com",
+  "timestamp": "2026-03-16T19:48:12.542Z",
   "apiRoute": "/api/analyze-deep-v3",
   "scores": {
-    "seo": 93,
-    "aeo": 91,
-    "geo": 86
+    "seo": 87,
+    "aeo": 36,
+    "geo": 60
   },
-  "siteType": "local-business",
+  "siteType": "restaurant",
   "rawAiScores": {
-    "seoScore": 99,
-    "aeoScore": 99,
-    "geoScore": 100,
+    "seoScore": 90,
+    "aeoScore": 49,
+    "geoScore": 70,
     "breakdown": {
       "seo": [
         {
@@ -58,21 +58,27 @@
         },
         {
           "name": "Content Quality",
-          "score": 42,
+          "score": 27,
           "maxScore": 42,
-          "percentage": 100,
+          "percentage": 64,
           "components": [
             {
-              "score": 15,
+              "score": 7,
               "maxScore": 15,
-              "status": "excellent",
-              "feedback": "Strong content depth (1514 words)"
+              "status": "warning",
+              "feedback": "Thin content - needs substantial expansion",
+              "issues": [
+                "Only 282 words (recommended: 800+)"
+              ]
             },
             {
-              "score": 7,
+              "score": 0,
               "maxScore": 7,
-              "status": "excellent",
-              "feedback": "Content is clear and readable"
+              "status": "critical",
+              "feedback": "Insufficient content to evaluate readability",
+              "issues": [
+                "Need at least 300 words for meaningful content"
+              ]
             },
             {
               "score": 10,
@@ -90,24 +96,21 @@
         },
         {
           "name": "Technical Excellence",
-          "score": 16,
+          "score": 22,
           "maxScore": 22,
-          "percentage": 73,
+          "percentage": 100,
           "components": [
             {
               "score": 10,
               "maxScore": 10,
               "status": "excellent",
-              "feedback": "Fast page load (366ms)"
+              "feedback": "Fast page load (1038ms)"
             },
             {
-              "score": 0,
+              "score": 6,
               "maxScore": 6,
-              "status": "warning",
-              "feedback": "No semantic HTML5 tags found",
-              "issues": [
-                "Consider using <main>, <nav>, <article>, <header>, <footer>"
-              ]
+              "status": "excellent",
+              "feedback": "Semantic structure not critical for short pages"
             },
             {
               "score": 6,
@@ -134,7 +137,7 @@
               "score": 3,
               "maxScore": 3,
               "status": "excellent",
-              "feedback": "External links present (undefined)"
+              "feedback": "External links not critical for short pages"
             },
             {
               "score": 0,
@@ -148,15 +151,18 @@
       "aeo": [
         {
           "name": "AEO Readiness",
-          "score": 99,
+          "score": 49,
           "maxScore": 100,
-          "percentage": 99,
+          "percentage": 49,
           "components": [
             {
-              "score": 20,
+              "score": 0,
               "maxScore": 20,
-              "status": "good",
-              "feedback": "Content Depth"
+              "status": "critical",
+              "feedback": "Content Depth",
+              "issues": [
+                "Only 282 words - thin content is invisible to AI (need 800+ words)"
+              ]
             },
             {
               "score": 29,
@@ -166,10 +172,13 @@
               "issues": []
             },
             {
-              "score": 20,
+              "score": 0,
               "maxScore": 20,
-              "status": "good",
-              "feedback": "Question Answering"
+              "status": "warning",
+              "feedback": "Question Answering",
+              "issues": [
+                "Content does not directly answer common questions"
+              ]
             },
             {
               "score": 15,
@@ -184,10 +193,13 @@
               "feedback": "Formatting"
             },
             {
-              "score": 10,
+              "score": 0,
               "maxScore": 10,
-              "status": "good",
-              "feedback": "Definitions"
+              "status": "warning",
+              "feedback": "Definitions",
+              "issues": [
+                "Missing clear definition statements"
+              ]
             }
           ]
         }
@@ -195,9 +207,9 @@
       "geo": [
         {
           "name": "GEO Visibility",
-          "score": 100,
+          "score": 70,
           "maxScore": 100,
-          "percentage": 100,
+          "percentage": 70,
           "components": [
             {
               "score": 25,
@@ -206,10 +218,13 @@
               "feedback": "Image Accessibility"
             },
             {
-              "score": 20,
+              "score": 0,
               "maxScore": 20,
-              "status": "good",
-              "feedback": "Tone"
+              "status": "warning",
+              "feedback": "Tone",
+              "issues": [
+                "Overly promotional tone reduces AI trust"
+              ]
             },
             {
               "score": 20,
@@ -224,10 +239,13 @@
               "feedback": "Data & Facts"
             },
             {
-              "score": 10,
+              "score": 0,
               "maxScore": 10,
-              "status": "good",
-              "feedback": "Objectivity"
+              "status": "warning",
+              "feedback": "Objectivity",
+              "issues": [
+                "Heavy first-person usage reduces perceived objectivity"
+              ]
             },
             {
               "score": 10,
@@ -239,12 +257,13 @@
         }
       ]
     },
-    "overallFeedback": "Exceptional SEO for a local business - Your site follows modern best practices and is well-optimized for search engines.",
+    "overallFeedback": "Exceptional SEO for a restaurant - Your site follows modern best practices and is well-optimized for search engines.",
     "criticalIssues": [
-      "No viewport meta tag found"
+      "No viewport meta tag found",
+      "Need at least 300 words for meaningful content"
     ],
     "version": "v2",
-    "siteType": "local-business"
+    "siteType": "restaurant"
   },
   "graderBreakdown": {
     "seo": [
@@ -291,21 +310,27 @@
       },
       {
         "name": "Content Quality",
-        "score": 42,
+        "score": 27,
         "maxScore": 42,
-        "percentage": 100,
+        "percentage": 64,
         "components": [
           {
-            "score": 15,
+            "score": 7,
             "maxScore": 15,
-            "status": "excellent",
-            "feedback": "Strong content depth (1514 words)"
+            "status": "warning",
+            "feedback": "Thin content - needs substantial expansion",
+            "issues": [
+              "Only 282 words (recommended: 800+)"
+            ]
           },
           {
-            "score": 7,
+            "score": 0,
             "maxScore": 7,
-            "status": "excellent",
-            "feedback": "Content is clear and readable"
+            "status": "critical",
+            "feedback": "Insufficient content to evaluate readability",
+            "issues": [
+              "Need at least 300 words for meaningful content"
+            ]
           },
           {
             "score": 10,
@@ -323,24 +348,21 @@
       },
       {
         "name": "Technical Excellence",
-        "score": 16,
+        "score": 22,
         "maxScore": 22,
-        "percentage": 73,
+        "percentage": 100,
         "components": [
           {
             "score": 10,
             "maxScore": 10,
             "status": "excellent",
-            "feedback": "Fast page load (366ms)"
+            "feedback": "Fast page load (1038ms)"
           },
           {
-            "score": 0,
+            "score": 6,
             "maxScore": 6,
-            "status": "warning",
-            "feedback": "No semantic HTML5 tags found",
-            "issues": [
-              "Consider using <main>, <nav>, <article>, <header>, <footer>"
-            ]
+            "status": "excellent",
+            "feedback": "Semantic structure not critical for short pages"
           },
           {
             "score": 6,
@@ -367,7 +389,7 @@
             "score": 3,
             "maxScore": 3,
             "status": "excellent",
-            "feedback": "External links present (undefined)"
+            "feedback": "External links not critical for short pages"
           },
           {
             "score": 0,
@@ -381,15 +403,18 @@
     "aeo": [
       {
         "name": "AEO Readiness",
-        "score": 99,
+        "score": 49,
         "maxScore": 100,
-        "percentage": 99,
+        "percentage": 49,
         "components": [
           {
-            "score": 20,
+            "score": 0,
             "maxScore": 20,
-            "status": "good",
-            "feedback": "Content Depth"
+            "status": "critical",
+            "feedback": "Content Depth",
+            "issues": [
+              "Only 282 words - thin content is invisible to AI (need 800+ words)"
+            ]
           },
           {
             "score": 29,
@@ -399,10 +424,13 @@
             "issues": []
           },
           {
-            "score": 20,
+            "score": 0,
             "maxScore": 20,
-            "status": "good",
-            "feedback": "Question Answering"
+            "status": "warning",
+            "feedback": "Question Answering",
+            "issues": [
+              "Content does not directly answer common questions"
+            ]
           },
           {
             "score": 15,
@@ -417,10 +445,13 @@
             "feedback": "Formatting"
           },
           {
-            "score": 10,
+            "score": 0,
             "maxScore": 10,
-            "status": "good",
-            "feedback": "Definitions"
+            "status": "warning",
+            "feedback": "Definitions",
+            "issues": [
+              "Missing clear definition statements"
+            ]
           }
         ]
       }
@@ -428,9 +459,9 @@
     "geo": [
       {
         "name": "GEO Visibility",
-        "score": 100,
+        "score": 70,
         "maxScore": 100,
-        "percentage": 100,
+        "percentage": 70,
         "components": [
           {
             "score": 25,
@@ -439,10 +470,13 @@
             "feedback": "Image Accessibility"
           },
           {
-            "score": 20,
+            "score": 0,
             "maxScore": 20,
-            "status": "good",
-            "feedback": "Tone"
+            "status": "warning",
+            "feedback": "Tone",
+            "issues": [
+              "Overly promotional tone reduces AI trust"
+            ]
           },
           {
             "score": 20,
@@ -457,10 +491,13 @@
             "feedback": "Data & Facts"
           },
           {
-            "score": 10,
+            "score": 0,
             "maxScore": 10,
-            "status": "good",
-            "feedback": "Objectivity"
+            "status": "warning",
+            "feedback": "Objectivity",
+            "issues": [
+              "Heavy first-person usage reduces perceived objectivity"
+            ]
           },
           {
             "score": 10,
@@ -474,6 +511,15 @@
   },
   "enhancedPenalties": [
     {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Content Depth",
+      "penalty": "Only 282 words - thin content is invisible to AI (need 800+ words)",
+      "explanation": "Thin content (under 300 words) rarely ranks. Search engines prefer comprehensive content that thoroughly covers topics. AI systems like ChatGPT, Gemini, and Perplexity need substantial content to cite and reference.",
+      "fix": "Expand content to at least 800 words. Add sections covering: what (define your topic), why (explain benefits), how (describe process), benefits (list advantages), examples (provide use cases), and FAQs (answer 5-10 common questions). Focus on depth and value over word count.",
+      "pointsDeducted": -20,
+      "severity": "critical"
+    },
+    {
       "category": "SEO",
       "component": "SEO Foundation - Missing viewport meta tag - not mobile optimized",
       "penalty": "No viewport meta tag found",
@@ -484,11 +530,56 @@
     },
     {
       "category": "SEO",
-      "component": "SEO Technical Excellence - No semantic HTML5 tags found",
-      "penalty": "Consider using <main>, <nav>, <article>, <header>, <footer>",
+      "component": "SEO Content Quality - Insufficient content to evaluate readability",
+      "penalty": "Need at least 300 words for meaningful content",
       "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
       "fix": "Review and update this element following current best practices for search engines and AI systems.",
-      "pointsDeducted": -6,
+      "pointsDeducted": -7,
+      "severity": "critical"
+    },
+    {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Question Answering",
+      "penalty": "Content does not directly answer common questions",
+      "explanation": "AI systems prioritize content that directly answers questions. Content without clear Q&A patterns gets ignored.",
+      "fix": "Add FAQ section with 5-10 common questions. Use <h3> for questions, <p> for answers. Start answers with direct responses (Yes/No, specific number).",
+      "pointsDeducted": -20,
+      "severity": "warning"
+    },
+    {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Tone",
+      "penalty": "Overly promotional tone reduces AI trust",
+      "explanation": "Overly promotional content is flagged as biased by AI systems. Neutral, informative tone increases trust and citation likelihood.",
+      "fix": "Remove promotional language (\"best\", \"amazing\", \"revolutionary\"). Use neutral, factual tone. Replace \"we offer\" with \"this includes\". Focus on information, not selling.",
+      "pointsDeducted": -20,
+      "severity": "warning"
+    },
+    {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Definitions",
+      "penalty": "Missing clear definition statements",
+      "explanation": "Clear definition statements help AI systems understand and explain concepts. Missing definitions reduce citation likelihood.",
+      "fix": "Start with a clear definition: \"X is [category] that [key characteristic]\". Example: \"SEO is a marketing strategy that improves website visibility in search results.\"",
+      "pointsDeducted": -10,
+      "severity": "warning"
+    },
+    {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Objectivity",
+      "penalty": "Heavy first-person usage reduces perceived objectivity",
+      "explanation": "Heavy first-person usage suggests opinion rather than fact. AI systems prefer objective, third-person content for citations.",
+      "fix": "Replace first-person (\"I think\", \"we believe\") with third-person or passive voice. Use \"research shows\" instead of \"I found\". Focus on facts, not opinions.",
+      "pointsDeducted": -10,
+      "severity": "warning"
+    },
+    {
+      "category": "SEO",
+      "component": "SEO Content Quality - Thin content - needs substantial expansion",
+      "penalty": "Only 282 words (recommended: 800+)",
+      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
+      "fix": "Review and update this element following current best practices for search engines and AI systems.",
+      "pointsDeducted": -8,
       "severity": "warning"
     },
     {
@@ -502,67 +593,55 @@
     }
   ],
   "fullResult": {
-    "pagesCrawled": 10,
+    "pagesCrawled": 8,
     "perPageScores": [
       {
-        "url": "https://fundylogic.com/",
-        "seo": 99,
-        "aeo": 99,
-        "geo": 100
-      },
-      {
-        "url": "https://fundylogic.com/services",
-        "seo": 96,
-        "aeo": 96,
-        "geo": 80
-      },
-      {
-        "url": "https://fundylogic.com/testimonials",
+        "url": "https://www.pizzatwice.com/",
         "seo": 90,
-        "aeo": 89,
-        "geo": 100
+        "aeo": 49,
+        "geo": 70
       },
       {
-        "url": "https://fundylogic.com/grants/cybersecure-nb",
-        "seo": 93,
-        "aeo": 89,
+        "url": "https://www.pizzatwice.com/",
+        "seo": 90,
+        "aeo": 49,
         "geo": 80
       },
       {
-        "url": "https://fundylogic.com/faqs",
-        "seo": 88,
-        "aeo": 88,
-        "geo": 75
-      },
-      {
-        "url": "https://fundylogic.com/legal",
-        "seo": 92,
-        "aeo": 85,
+        "url": "https://www.pizzatwice.com/about-us",
+        "seo": 80,
+        "aeo": 20,
         "geo": 100
       },
       {
-        "url": "https://fundylogic.com/service-area/uptown-saint-john-startups",
-        "seo": 93,
-        "aeo": 78,
-        "geo": 45
+        "url": "https://www.pizzatwice.com/locations",
+        "seo": 87,
+        "aeo": 49,
+        "geo": 50
       },
       {
-        "url": "https://fundylogic.com/service-area/saint-john-industrial-trades",
-        "seo": 93,
-        "aeo": 97,
-        "geo": 75
+        "url": "https://www.pizzatwice.com/pizza-twice-franchise",
+        "seo": 89,
+        "aeo": 38,
+        "geo": 35
       },
       {
-        "url": "https://fundylogic.com/service-area/fredericton-tech-web-design",
-        "seo": 93,
-        "aeo": 96,
-        "geo": 100
+        "url": "https://www.pizzatwice.com/reviews",
+        "seo": 84,
+        "aeo": 42,
+        "geo": 85
       },
       {
-        "url": "https://fundylogic.com/service-area/fredericton-industrial-parks",
-        "seo": 93,
-        "aeo": 94,
-        "geo": 100
+        "url": "https://www.pizzatwice.com/contact-us",
+        "seo": 85,
+        "aeo": 30,
+        "geo": 35
+      },
+      {
+        "url": "https://www.pizzatwice.com/menu",
+        "seo": 89,
+        "aeo": 13,
+        "geo": 25
       }
     ]
   }

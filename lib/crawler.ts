@@ -12,7 +12,7 @@ export interface ScanResult {
     summarizedContent: string; // NEW: Optimized content summary
     schemas: any[];
     structuralData: {
-        semanticTags: { article: number, main: number, nav: number, aside: number, headers: number, h1Count: number };
+        semanticTags: { article: number, main: number, nav: number, aside: number, headers: number, h1Count: number, h2Count: number, h3Count: number };
         links: { internal: number, external: number, socialLinksCount: number };
         media: { totalImages: number, imagesWithAlt: number };
         wordCount: number;
@@ -21,6 +21,17 @@ export interface ScanResult {
         responseTimeMs: number;
         isHttps: boolean;
         status: number;
+    };
+    metaChecks: {
+        titleLength: number;
+        descriptionLength: number;
+        hasCanonical: boolean;
+        canonicalUrl: string;
+        hasViewport: boolean;
+        hasOgTitle: boolean;
+        hasOgDescription: boolean;
+        hasOgImage: boolean;
+        hasTwitterCard: boolean;
     };
 }
 
@@ -112,7 +123,9 @@ export async function performScan(targetUrl: string): Promise<ScanResult> {
                     nav: document.querySelectorAll('nav').length,
                     aside: document.querySelectorAll('aside').length,
                     headers: document.querySelectorAll('h1, h2, h3, h4, h5, h6').length,
-                    h1Count: document.querySelectorAll('h1').length
+                    h1Count: document.querySelectorAll('h1').length,
+                    h2Count: document.querySelectorAll('h2').length,
+                    h3Count: document.querySelectorAll('h3').length
                 },
                 links: {
                     internal: internalLinks,
@@ -127,7 +140,26 @@ export async function performScan(targetUrl: string): Promise<ScanResult> {
             };
         });
 
-        // 5. Optimize content for AI analysis
+        // 5. Extract meta checks for pass/fail auditing
+        const metaChecks = await page.evaluate(() => {
+            const canonical = document.querySelector('link[rel="canonical"]');
+            const viewport = document.querySelector('meta[name="viewport"]');
+            const ogTitle = document.querySelector('meta[property="og:title"]');
+            const ogDesc = document.querySelector('meta[property="og:description"]');
+            const ogImage = document.querySelector('meta[property="og:image"]');
+            const twitterCard = document.querySelector('meta[name="twitter:card"]') || document.querySelector('meta[property="twitter:card"]');
+            return {
+                hasCanonical: !!canonical,
+                canonicalUrl: canonical?.getAttribute('href') || '',
+                hasViewport: !!viewport,
+                hasOgTitle: !!ogTitle && !!(ogTitle as HTMLMetaElement).content,
+                hasOgDescription: !!ogDesc && !!(ogDesc as HTMLMetaElement).content,
+                hasOgImage: !!ogImage && !!(ogImage as HTMLMetaElement).content,
+                hasTwitterCard: !!twitterCard,
+            };
+        });
+
+        // 6. Optimize content for AI analysis
         const contentSummary = summarizeContent(html);
         const summarizedContent = formatSummaryForAI(contentSummary);
 
@@ -143,6 +175,11 @@ export async function performScan(targetUrl: string): Promise<ScanResult> {
                 responseTimeMs,
                 isHttps,
                 status: response.status()
+            },
+            metaChecks: {
+                titleLength: title.length,
+                descriptionLength: description.length,
+                ...metaChecks
             }
         };
     } catch (error: any) {

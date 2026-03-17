@@ -154,6 +154,7 @@ const siteTypeConfig: Record<SiteType, {
 export function SiteTypeBadge({ siteType, onConfirm, onManualSelect }: SiteTypeBadgeProps) {
   const [isManualSelecting, setIsManualSelecting] = useState(false)
   const [selectedType, setSelectedType] = useState<SiteType>(siteType.primaryType)
+  const [isConfirmed, setIsConfirmed] = useState(false)
 
   const config = siteTypeConfig[siteType.primaryType]
   const Icon = config.icon
@@ -190,38 +191,40 @@ export function SiteTypeBadge({ siteType, onConfirm, onManualSelect }: SiteTypeB
   const ConfidenceIcon = confidenceConfig[confidenceLevel].icon
 
   const handleConfirm = () => {
+    setIsConfirmed(true)
     if (onConfirm) {
       onConfirm(siteType.primaryType)
     }
   }
 
   const handleManualSelect = () => {
+    setIsConfirmed(true)
     if (onManualSelect) {
       onManualSelect(selectedType)
-      setIsManualSelecting(false)
     }
+    setIsManualSelecting(false)
   }
 
   // High confidence - just show the badge
   if (confidenceLevel === 'high') {
     return (
-      <div className="flex items-center gap-3 p-4 rounded-xl border bg-background/60" style={{
+      <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg border bg-background/60" style={{
         borderColor: config.borderColor.replace('border-', ''),
         backgroundColor: config.bgColor.replace('bg-', '')
       }}>
-        <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center", config.bgColor)}>
-          <Icon className={cn("h-5 w-5", config.color)} />
+        <div className={cn("h-7 w-7 rounded-md flex items-center justify-center", config.bgColor)}>
+          <Icon className={cn("h-4 w-4", config.color)} />
         </div>
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm font-bold">Site Type:</span>
-            <span className={cn("text-sm font-bold", config.color)}>{config.label}</span>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-bold">Site Type:</span>
+            <span className={cn("text-xs font-bold", config.color)}>{config.label}</span>
           </div>
-          <p className="text-xs text-muted-foreground">{config.description}</p>
+          <p className="text-[10px] text-muted-foreground truncate">{config.description}</p>
         </div>
-        <Badge variant="outline" className={cn("shrink-0", confidenceConfig.high.borderColor, confidenceConfig.high.color, confidenceConfig.high.bgColor)}>
-          <ConfidenceIcon className="h-3 w-3 mr-1" />
-          {siteType.confidence}% confident
+        <Badge variant="outline" className={cn("shrink-0 text-[10px] px-1.5 py-0", confidenceConfig.high.borderColor, confidenceConfig.high.color, confidenceConfig.high.bgColor)}>
+          <ConfidenceIcon className="h-2.5 w-2.5 mr-0.5" />
+          {siteType.confidence}%
         </Badge>
       </div>
     )
@@ -230,31 +233,38 @@ export function SiteTypeBadge({ siteType, onConfirm, onManualSelect }: SiteTypeB
   // Medium confidence - show with confirmation option
   if (confidenceLevel === 'medium') {
     return (
-      <div className="flex items-center gap-3 p-4 rounded-xl border bg-background/60" style={{
+      <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg border bg-background/60" style={{
         borderColor: confidenceConfig.medium.borderColor.replace('border-', ''),
         backgroundColor: confidenceConfig.medium.bgColor.replace('bg-', '')
       }}>
-        <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center", config.bgColor)}>
-          <Icon className={cn("h-5 w-5", config.color)} />
+        <div className={cn("h-7 w-7 rounded-md flex items-center justify-center", config.bgColor)}>
+          <Icon className={cn("h-4 w-4", config.color)} />
         </div>
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-sm font-bold">Detected Site Type:</span>
-            <span className={cn("text-sm font-bold", config.color)}>{config.label}</span>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-bold">Detected:</span>
+            <span className={cn("text-xs font-bold", config.color)}>{config.label}</span>
           </div>
-          <p className="text-xs text-muted-foreground">
-            {config.description} • {siteType.confidence}% confidence
+          <p className="text-[10px] text-muted-foreground truncate">
+            {config.description} • {siteType.confidence}%
           </p>
         </div>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={handleConfirm}
-          className={cn("shrink-0", confidenceConfig.medium.borderColor, confidenceConfig.medium.color)}
-        >
-          <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" />
-          Confirm
-        </Button>
+        {isConfirmed ? (
+          <Badge variant="outline" className="shrink-0 text-[10px] px-1.5 py-0 border-geo/30 text-geo bg-geo/10">
+            <CheckCircle2 className="h-2.5 w-2.5 mr-0.5" />
+            Confirmed
+          </Badge>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleConfirm}
+            className={cn("shrink-0 h-7 text-xs px-2", confidenceConfig.medium.borderColor, confidenceConfig.medium.color)}
+          >
+            <CheckCircle2 className="h-3 w-3 mr-1" />
+            Confirm
+          </Button>
+        )}
       </div>
     )
   }
@@ -262,17 +272,17 @@ export function SiteTypeBadge({ siteType, onConfirm, onManualSelect }: SiteTypeB
   // Low confidence - require manual selection
   if (isManualSelecting) {
     return (
-      <div className="p-4 rounded-xl border bg-background/60 space-y-3" style={{
+      <div className="px-2 py-1.5 rounded-lg border bg-background/60 space-y-2" style={{
         borderColor: confidenceConfig.low.borderColor.replace('border-', ''),
         backgroundColor: confidenceConfig.low.bgColor.replace('bg-', '')
       }}>
-        <div className="flex items-center gap-2">
-          <HelpCircle className={cn("h-4 w-4", confidenceConfig.low.color)} />
-          <span className="text-sm font-bold">Please select your site type:</span>
+        <div className="flex items-center gap-1.5">
+          <HelpCircle className={cn("h-3.5 w-3.5", confidenceConfig.low.color)} />
+          <span className="text-xs font-bold">Select your site type:</span>
         </div>
         <div className="flex gap-2">
-          <Select value={selectedType} onValueChange={(value) => setSelectedType(value as SiteType)}>
-            <SelectTrigger className="flex-1">
+          <Select value={selectedType} onValueChange={(value: string) => setSelectedType(value as SiteType)}>
+            <SelectTrigger className="flex-1 h-7 text-xs">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -289,44 +299,66 @@ export function SiteTypeBadge({ siteType, onConfirm, onManualSelect }: SiteTypeB
               })}
             </SelectContent>
           </Select>
-          <Button onClick={handleManualSelect} className="shrink-0">
-            <CheckCircle2 className="h-4 w-4 mr-1.5" />
+          <Button onClick={handleManualSelect} size="sm" className="shrink-0 h-7 text-xs px-2">
+            <CheckCircle2 className="h-3 w-3 mr-1" />
             Confirm
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground">
-          {siteTypeConfig[selectedType].description}
-        </p>
+      </div>
+    )
+  }
+
+  // Low confidence - not yet selecting
+  if (isConfirmed) {
+    return (
+      <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg border bg-background/60" style={{
+        borderColor: config.borderColor.replace('border-', ''),
+        backgroundColor: config.bgColor.replace('bg-', '')
+      }}>
+        <div className={cn("h-7 w-7 rounded-md flex items-center justify-center", config.bgColor)}>
+          <Icon className={cn("h-4 w-4", config.color)} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-bold">Site Type:</span>
+            <span className={cn("text-xs font-bold", config.color)}>{config.label}</span>
+          </div>
+          <p className="text-[10px] text-muted-foreground truncate">{config.description}</p>
+        </div>
+        <Badge variant="outline" className="shrink-0 text-[10px] px-1.5 py-0 border-geo/30 text-geo bg-geo/10">
+          <CheckCircle2 className="h-2.5 w-2.5 mr-0.5" />
+          Confirmed
+        </Badge>
       </div>
     )
   }
 
   return (
-    <div className="flex items-center gap-3 p-4 rounded-xl border bg-background/60" style={{
+    <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg border bg-background/60" style={{
       borderColor: confidenceConfig.low.borderColor.replace('border-', ''),
       backgroundColor: confidenceConfig.low.bgColor.replace('bg-', '')
     }}>
-      <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center", confidenceConfig.low.bgColor)}>
-        <HelpCircle className={cn("h-5 w-5", confidenceConfig.low.color)} />
+      <div className={cn("h-7 w-7 rounded-md flex items-center justify-center", confidenceConfig.low.bgColor)}>
+        <HelpCircle className={cn("h-4 w-4", confidenceConfig.low.color)} />
       </div>
-      <div className="flex-1">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-sm font-bold">Site Type Uncertain</span>
-          <Badge variant="outline" className={cn("text-[10px]", confidenceConfig.low.borderColor, confidenceConfig.low.color)}>
-            {siteType.confidence}% confidence
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-bold">Site Type Uncertain</span>
+          <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0", confidenceConfig.low.borderColor, confidenceConfig.low.color)}>
+            {siteType.confidence}%
           </Badge>
         </div>
-        <p className="text-xs text-muted-foreground">
-          Best guess: {config.label} • Please confirm for accurate recommendations
+        <p className="text-[10px] text-muted-foreground truncate">
+          Best guess: {config.label} • Please confirm
         </p>
       </div>
       <Button
         size="sm"
         variant="outline"
         onClick={() => setIsManualSelecting(true)}
-        className="shrink-0"
+        className="shrink-0 h-7 text-xs px-2"
       >
-        <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+        <Sparkles className="h-3 w-3 mr-1" />
         Select Type
       </Button>
     </div>

@@ -1,10 +1,26 @@
 "use client"
 
-import { RefreshCw, Download, Copy, Check, Search, Clock, Activity, Sparkles, HelpCircle } from "lucide-react"
+import { RefreshCw, Download, Copy, Check, Search, Clock, Activity, Sparkles, HelpCircle, Zap, Lock } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { SiteTypeBadge } from "@/components/dashboard/site-type-badge"
+import { InfoTooltip } from "@/components/ui/info-tooltip"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { downloadReport, copyReportToClipboard } from "@/lib/report-exporter"
+
+interface CWVMetric {
+  value: number
+  category: string
+  displayValue: string
+  score: number
+}
+
+interface CWVData {
+  performanceScore: number
+  lcp: CWVMetric | null
+  inp: CWVMetric | null
+  cls: CWVMetric | null
+}
 
 interface AuditPageHeaderProps {
   title: string
@@ -22,6 +38,8 @@ interface AuditPageHeaderProps {
     primaryType: string
     confidence: number
   }
+  cwv?: CWVData
+  proLocked?: boolean
 }
 
 export function AuditPageHeader({
@@ -36,9 +54,12 @@ export function AuditPageHeader({
   onRefreshAnalysis,
   analysisData,
   pageCount = 1,
-  siteType
+  siteType,
+  cwv,
+  proLocked = false
 }: AuditPageHeaderProps) {
   const [reportCopied, setReportCopied] = useState(false)
+  const router = useRouter()
 
   const handleExportReport = () => {
     if (!analysisData) return
@@ -149,6 +170,45 @@ export function AuditPageHeader({
                       confidence: siteType.confidence
                     }}
                   />
+                  {cwv && (
+                    <div className="flex items-center gap-2 flex-wrap mt-1.5 pt-1.5 border-t border-purple-500/20">
+                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-bold uppercase tracking-wide">
+                        <Zap className="h-3 w-3" />
+                        <span>Core Web Vitals</span>
+                        <span className="text-foreground">{cwv.performanceScore}/100</span>
+                      </div>
+                      {cwv.lcp && (
+                        <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border ${
+                          cwv.lcp.category === 'FAST' ? 'border-green-500/30 bg-green-500/5 text-green-600' :
+                          cwv.lcp.category === 'SLOW' ? 'border-red-500/30 bg-red-500/5 text-red-600' :
+                          'border-yellow-500/30 bg-yellow-500/5 text-yellow-600'
+                        }`}>
+                          LCP {cwv.lcp.displayValue}
+                          <InfoTooltip content="Largest Contentful Paint — measures loading performance. How long until the largest visible element renders. Under 2.5s is good." className="[&_svg]:h-2.5 [&_svg]:w-2.5" />
+                        </span>
+                      )}
+                      {cwv.inp && (
+                        <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border ${
+                          cwv.inp.category === 'FAST' ? 'border-green-500/30 bg-green-500/5 text-green-600' :
+                          cwv.inp.category === 'SLOW' ? 'border-red-500/30 bg-red-500/5 text-red-600' :
+                          'border-yellow-500/30 bg-yellow-500/5 text-yellow-600'
+                        }`}>
+                          INP {cwv.inp.displayValue}
+                          <InfoTooltip content="Interaction to Next Paint — measures responsiveness. How long until the page responds to user input. Under 200ms is good." className="[&_svg]:h-2.5 [&_svg]:w-2.5" />
+                        </span>
+                      )}
+                      {cwv.cls && (
+                        <span className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full border ${
+                          cwv.cls.category === 'FAST' ? 'border-green-500/30 bg-green-500/5 text-green-600' :
+                          cwv.cls.category === 'SLOW' ? 'border-red-500/30 bg-red-500/5 text-red-600' :
+                          'border-yellow-500/30 bg-yellow-500/5 text-yellow-600'
+                        }`}>
+                          CLS {cwv.cls.displayValue}
+                          <InfoTooltip content="Cumulative Layout Shift — measures visual stability. How much the page layout shifts during loading. Under 0.1 is good." className="[&_svg]:h-2.5 [&_svg]:w-2.5" />
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
               
@@ -161,11 +221,16 @@ export function AuditPageHeader({
                   New Audit
                 </button>
                 <button
-                  onClick={handleCopyReport}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 text-sm text-muted-foreground hover:text-foreground hover:border-geo/50 transition-colors"
-                  title="Copy report to clipboard"
+                  onClick={proLocked ? () => router.push('/pro') : handleCopyReport}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 text-sm transition-colors ${proLocked ? 'text-muted-foreground hover:text-foreground hover:border-geo/50 cursor-pointer' : 'text-muted-foreground hover:text-foreground hover:border-geo/50'}`}
+                  title={proLocked ? "Upgrade to Pro to copy reports" : "Copy report to clipboard"}
                 >
-                  {reportCopied ? (
+                  {proLocked ? (
+                    <>
+                      <Lock className="h-4 w-4" />
+                      Copy Report
+                    </>
+                  ) : reportCopied ? (
                     <>
                       <Check className="h-4 w-4 text-geo" />
                       Copied!
@@ -178,11 +243,12 @@ export function AuditPageHeader({
                   )}
                 </button>
                 <button
-                  onClick={handleExportReport}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
-                  title="Download report as text file"
+                  onClick={proLocked ? () => router.push('/pro') : handleExportReport}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${proLocked ? 'bg-primary/50 text-primary-foreground hover:bg-primary/70 cursor-pointer' : 'bg-primary text-primary-foreground hover:bg-primary/90'}`}
+                  title={proLocked ? "Upgrade to Pro to export reports" : "Download report as text file"}
                 >
-                  <Download className="h-4 w-4" />
+                  {proLocked && <Lock className="h-4 w-4" />}
+                  {!proLocked && <Download className="h-4 w-4" />}
                   Export Report
                 </button>
               </div>

@@ -7,13 +7,16 @@ import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-he
 export const maxDuration = 300
 
 export async function POST(request: NextRequest) {
-  const { url } = await request.json()
+  const { url: rawUrl } = await request.json()
 
-  if (!url) {
+  if (!rawUrl) {
     return new Response(JSON.stringify({ error: 'URL is required' }), {
       status: 400, headers: { 'Content-Type': 'application/json' },
     })
   }
+
+  // Normalize URL — ensure protocol so new URL() won't throw
+  const url = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`
 
   const stream = createSSEStream(async (send) => {
     try {
@@ -65,6 +68,23 @@ export async function POST(request: NextRequest) {
 
       send({ type: 'progress', phase: 'Finalizing report...', progress: 92 })
 
+      // Step 6: Robots.txt & Sitemap check
+      let robotsTxt = false
+      let sitemapFound = false
+      try {
+        const parsedUrl = new URL(url)
+        const robotsRes = await fetch(`${parsedUrl.origin}/robots.txt`, { signal: AbortSignal.timeout(5000) })
+        robotsTxt = robotsRes.ok
+      } catch {}
+      try {
+        const parsedUrl = new URL(url)
+        const sitemapRes = await fetch(`${parsedUrl.origin}/sitemap.xml`, { signal: AbortSignal.timeout(8000) })
+        if (sitemapRes.ok) {
+          const text = await sitemapRes.text()
+          sitemapFound = text.includes('<urlset') || text.includes('<sitemapindex')
+        }
+      } catch {}
+
       const scores = { seo: { score: graderResult.seoScore }, aeo: { score: graderResult.aeoScore }, geo: { score: graderResult.geoScore } }
       const cwv = {
         lcp: { value: 2400, category: 'FAST' as const, score: 95, displayValue: '2.4 s' },
@@ -75,7 +95,7 @@ export async function POST(request: NextRequest) {
       }
 
       send({ type: 'progress', phase: 'Audit complete!', progress: 100 })
-      send({ type: 'result', success: true, data: { url, pageData, scores, graderResult, enhancedPenalties, siteTypeResult, cwv, analyzedAt: new Date().toISOString() } })
+      send({ type: 'result', success: true, data: { url, pageData, scores, graderResult, enhancedPenalties, siteTypeResult, cwv, robotsTxt, sitemapFound, analyzedAt: new Date().toISOString() } })
     } catch (error: any) {
       console.error('[V2 API] Error:', error)
       send({ type: 'error', success: false, error: error.message || 'Analysis failed' })

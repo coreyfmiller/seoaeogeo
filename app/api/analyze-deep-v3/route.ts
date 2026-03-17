@@ -10,13 +10,16 @@ import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-he
 export const maxDuration = 300
 
 export async function POST(request: NextRequest) {
-  const { url, maxPages = 10 } = await request.json()
+  const { url: rawUrl, maxPages = 10 } = await request.json()
 
-  if (!url) {
+  if (!rawUrl) {
     return new Response(JSON.stringify({ error: 'URL is required' }), {
       status: 400, headers: { 'Content-Type': 'application/json' },
     })
   }
+
+  // Normalize URL — ensure protocol so new URL() won't throw
+  const url = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`
 
   const stream = createSSEStream(async (send) => {
     try {
@@ -80,7 +83,10 @@ export async function POST(request: NextRequest) {
               return {
                 url: page.url, title: page.title,
                 scores: { seo: { score: graderResult.seoScore }, aeo: { score: graderResult.aeoScore }, geo: { score: graderResult.geoScore } },
-                graderResult, enhancedPenalties, wordCount: page.wordCount
+                graderResult, enhancedPenalties, wordCount: page.wordCount,
+                hasH1: page.hasH1, isHttps: page.isHttps,
+                hasDescription: !!page.description, schemaCount: (page.schemas || []).length,
+                responseTimeMs: page.responseTimeMs,
               }
             } catch (error) {
               console.error(`[V3 Deep Scan] Error analyzing ${page.url}:`, error)
@@ -100,6 +106,59 @@ export async function POST(request: NextRequest) {
         return
       }
 
+      // Step 4: Robots.txt & Sitemap check
+      send({ type: 'progress', phase: 'Checking robots.txt and sitemap...', progress: 68 })
+      let robotsTxt: string | null = null
+      let sitemapFound = false
+      try {
+        const parsedUrl = new URL(url)
+        const robotsRes = await fetch(`${parsedUrl.origin}/robots.txt`, { signal: AbortSignal.timeout(8000) })
+        if (robotsRes.ok) robotsTxt = await robotsRes.text()
+        console.log('[V3 Deep Scan] robots.txt:', robotsRes.ok ? 'Found' : 'Not found', robotsRes.status)
+      } catch (e) {
+        console.error('[V3 Deep Scan] robots.txt check failed:', e instanceof Error ? e.message : e)
+      }
+      try {
+        const parsedUrl = new URL(url)
+        const sitemapRes = await fetch(`${parsedUrl.origin}/sitemap.xml`, { signal: AbortSignal.timeout(8000) })
+        if (sitemapRes.ok) {
+          const sitemapText = await sitemapRes.text()
+          sitemapFound = sitemapText.includes('<urlset') || sitemapText.includes('<sitemapindex')
+        }
+        console.log('[V3 Deep Scan] sitemap.xml:', sitemapRes.ok ? 'Found' : 'Not found', sitemapRes.status)
+      } catch (e) {
+        console.error('[V3 Deep Scan] sitemap check failed:', e instanceof Error ? e.message : e)
+      }
+
+      // Step 5: Sitewide AI Intelligence
+      send({ type: 'progress', phase: 'Running sitewide AI intelligence analysis...', progress: 72 })
+      let sitewideIntelligence: any = null
+      try {
+        const parsedUrl = new URL(url)
+        sitewideIntelligence = await analyzeSitewideIntelligence({
+          domain: parsedUrl.hostname,
+          pages: crawlResult.pages.map(p => ({
+            url: p.url,
+            title: p.title || '',
+            description: p.description || '',
+            schemas: p.schemas || [],
+            wordCount: p.wordCount,
+            internalLinks: p.internalLinks,
+            hasH1: p.hasH1,
+            isHttps: p.isHttps,
+            responseTimeMs: p.responseTimeMs,
+            h2Count: p.h2Count,
+            h3Count: p.h3Count,
+            imgTotal: p.imgTotal,
+            imgWithAlt: p.imgWithAlt,
+          })),
+          siteType: siteTypeResult.primaryType as any,
+        })
+      } catch (err) {
+        console.error('[V3 Deep Scan] Sitewide intelligence failed:', err instanceof Error ? err.message : err)
+        console.error('[V3 Deep Scan] Sitewide intelligence stack:', err instanceof Error ? err.stack : 'no stack')
+      }
+
       send({ type: 'progress', phase: 'Calculating aggregate scores...', progress: 88 })
 
       const avgScores = {
@@ -111,6 +170,33 @@ export async function POST(request: NextRequest) {
         totalPages: pageAnalyses.length,
         pagesWithSchema: pageAnalyses.filter((a: any) => a.graderResult.breakdown.seo.some((cat: any) => cat.name.toLowerCase().includes('schema') && cat.score > 0)).length
       }
+
+      // Calculate aggregate metrics
+      const totalWords = crawlResult.pages.reduce((s, p) => s + (p.wordCount || 0), 0)
+      const totalSchemas = crawlResult.pages.reduce((s, p) => s + (p.schemas?.length || 0), 0)
+      const avgResponseTime = crawlResult.pages.length > 0
+        ? Math.round(crawlResult.pages.reduce((s, p) => s + (p.responseTimeMs || 0), 0) / crawlResult.pages.length)
+        : 0
+      const totalImages = crawlResult.pages.reduce((s, p) => s + (p.imgTotal || 0), 0)
+      const totalImagesWithAlt = crawlResult.pages.reduce((s, p) => s + (p.imgWithAlt || 0), 0)
+
+      // Duplicate title/meta detection
+      const titleMap = new Map<string, string[]>()
+      const descMap = new Map<string, string[]>()
+      crawlResult.pages.forEach(p => {
+        if (p.title) {
+          const t = p.title.trim().toLowerCase()
+          if (!titleMap.has(t)) titleMap.set(t, [])
+          titleMap.get(t)!.push(p.url)
+        }
+        if (p.description) {
+          const d = p.description.trim().toLowerCase()
+          if (!descMap.has(d)) descMap.set(d, [])
+          descMap.get(d)!.push(p.url)
+        }
+      })
+      const duplicateTitles = Array.from(titleMap.entries()).filter(([, urls]) => urls.length > 1).map(([title, urls]) => ({ title, urls }))
+      const duplicateDescriptions = Array.from(descMap.entries()).filter(([, urls]) => urls.length > 1).map(([description, urls]) => ({ description, urls }))
 
       send({ type: 'progress', phase: 'Saving snapshot...', progress: 95 })
       saveScanSnapshot({
@@ -128,7 +214,14 @@ export async function POST(request: NextRequest) {
         pagesCrawled: pageAnalyses.length, scores: avgScores, pages: pageAnalyses,
         schemaCoverage, siteWideIssues: crawlResult.siteWideIssues,
         orphanPages: crawlResult.orphanPages, duplicateGroups: crawlResult.duplicateGroups,
-        crawlStats: { totalFound: crawlResult.pages.length, analyzed: pageAnalyses.length, failed: crawlResult.pages.length - pageAnalyses.length }
+        crawlStats: { totalFound: crawlResult.pages.length, analyzed: pageAnalyses.length, failed: crawlResult.pages.length - pageAnalyses.length },
+        // New sitewide data
+        sitewideIntelligence,
+        robotsTxt: robotsTxt ? true : false,
+        sitemapFound,
+        aggregateMetrics: { totalWords, totalSchemas, avgResponseTime, totalImages, totalImagesWithAlt },
+        duplicateTitles,
+        duplicateDescriptions,
       }})
     } catch (error: any) {
       console.error('[V3 Deep Scan] Error:', error)

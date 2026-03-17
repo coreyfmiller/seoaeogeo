@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
@@ -34,19 +34,13 @@ interface HeaderProps {
 
 export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" }: HeaderProps) {
   const [url, setUrl] = useState(currentUrl || "")
-  const [isProUnlocked, setIsProUnlocked] = useState(true) // Temporarily unlocked for everyone
+  const isProUnlocked = true // Pro lock removed for now
   const [showProModal, setShowProModal] = useState(false)
   const [password, setPassword] = useState("")
   const [error, setError] = useState(false)
 
   const router = useRouter()
   const pathname = usePathname()
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setIsProUnlocked(localStorage.getItem("isProUnlocked") === "true")
-    }
-  }, [])
 
   const handleUnlock = () => {
     if (password === "password123") {

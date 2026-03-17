@@ -1,16 +1,16 @@
 'use client'
 
-import { useState } from 'react'
-import { Activity, Search, Zap, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { Activity, Search, Zap, CheckCircle2, XCircle, ArrowRight } from 'lucide-react'
+import { saveScanToHistory } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { SearchInput } from '@/components/dashboard/search-input'
-import { Progress } from '@/components/ui/progress'
-import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
-import { SiteTypeBadge } from '@/components/dashboard/site-type-badge'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { Header } from '@/components/dashboard/header'
 import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
+import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
 
 interface AnalysisResult {
@@ -90,12 +90,15 @@ interface AnalysisResult {
     performanceScore: number
   }
   analyzedAt: string
+  robotsTxt: boolean
+  sitemapFound: boolean
 }
 
 export default function V2Page() {
   const [url, setUrl] = useState('')
   const [currentUrl, setCurrentUrl] = useState('')
   const sse = useSSEAnalysis<AnalysisResult>('/api/analyze-v2')
+  const router = useRouter()
 
   const handleAnalyze = async (submittedUrl: string) => {
     setCurrentUrl(submittedUrl)
@@ -106,17 +109,16 @@ export default function V2Page() {
   const isAnalyzing = sse.isAnalyzing
   const error = sse.error
 
-  const getCategoryColor = (category: string) => {
-    if (category === 'FAST') return 'text-green-600'
-    if (category === 'SLOW') return 'text-red-600'
-    return 'text-yellow-600'
-  }
-
-  const getCategoryIcon = (category: string) => {
-    if (category === 'FAST') return TrendingUp
-    if (category === 'SLOW') return TrendingDown
-    return Minus
-  }
+  useEffect(() => {
+    if (result && currentUrl) {
+      saveScanToHistory({
+        url: currentUrl,
+        type: 'free-v3',
+        scores: { seo: result.scores.seo.score, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
+        timestamp: new Date().toISOString(),
+      })
+    }
+  }, [result, currentUrl])
 
   return (
     <div className="flex h-screen bg-background">
@@ -139,9 +141,9 @@ export default function V2Page() {
       
       {/* Page Header with Actions */}
       <AuditPageHeader
-        title="V2.0 Beta - Next-Gen Audit"
+        title="V3 Free Audit"
         description="Fast heuristic scoring with Core Web Vitals and site-type detection."
-        badge="BETA"
+        badge="FREE"
         badgeVariant="beta"
         currentUrl={currentUrl}
         hasResults={!!result}
@@ -153,6 +155,7 @@ export default function V2Page() {
         onRefreshAnalysis={() => handleAnalyze(currentUrl)}
         analysisData={result}
         pageCount={1}
+        proLocked={true}
         siteType={result?.siteTypeResult ? {
           primaryType: result.siteTypeResult.primaryType,
           confidence: result.siteTypeResult.confidence
@@ -166,7 +169,7 @@ export default function V2Page() {
             <div className="flex flex-col items-center gap-4 py-8">
               <div className="h-12 w-12 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
               <div className="text-center min-h-[48px]">
-                <h3 className="text-lg font-bold text-foreground">V2 Audit in Progress</h3>
+                <h3 className="text-lg font-bold text-foreground">V3 Free Audit in Progress</h3>
                 <p className="text-sm text-muted-foreground mt-1 transition-opacity duration-500">{sse.phase || 'Initializing...'}</p>
               </div>
               <div className="w-64 h-1.5 bg-muted rounded-full overflow-hidden">
@@ -190,7 +193,7 @@ export default function V2Page() {
               The Future of SEO Auditing
             </CardTitle>
             <CardDescription className="text-base max-w-2xl mx-auto">
-              V2.0 includes Core Web Vitals, mobile-first scoring, and AI-powered insights.
+              V3 Free Audit includes Core Web Vitals, mobile-first scoring, and AI-powered insights.
               Built for the 2026 search landscape.
             </CardDescription>
           </div>
@@ -297,252 +300,181 @@ export default function V2Page() {
             </Card>
           </div>
 
-          {/* Actionable Fixes Section */}
-          {result.enhancedPenalties && result.enhancedPenalties.length > 0 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold mb-2">Actionable Fixes</h2>
-                <p className="text-muted-foreground">
-                  Prioritized list of issues with step-by-step instructions
+          {/* Key Metrics Strip */}
+          {(() => {
+            const sd = result.pageData?.structuralData || {}
+            const tech = result.pageData?.technical || {}
+            const schemas = result.pageData?.schemas || []
+            const hasSchema = schemas.length > 0
+            const hasH1 = (sd.semanticTags?.h1Count || 0) > 0
+            const isHttps = tech.isHttps === true
+            const hasMeta = !!(result.pageData?.description && result.pageData?.title)
+            const responseTime = tech.responseTimeMs || 0
+            const imgTotal = sd.media?.totalImages || 0
+            const imgWithAlt = sd.media?.imagesWithAlt || 0
+            const altPct = imgTotal > 0 ? Math.round((imgWithAlt / imgTotal) * 100) : 100
+            const metrics = [
+              { label: "Schema", value: hasSchema ? `${schemas.length} found` : "0%", color: hasSchema ? "text-seo" : "text-red-600", tip: "Number of structured data schemas found. Improves rich snippet eligibility." },
+              { label: "Metadata", value: hasMeta ? "100%" : "0%", color: hasMeta ? "text-geo" : "text-yellow-600", tip: "Whether the page has both a title tag and meta description." },
+              { label: "H1 Tag", value: hasH1 ? "100%" : "0%", color: hasH1 ? "text-geo" : "text-red-600", tip: "Whether the page has an H1 heading tag." },
+              { label: "HTTPS", value: isHttps ? "100%" : "0%", color: isHttps ? "text-geo" : "text-red-600", tip: "Whether the page is served over HTTPS." },
+              { label: "Response", value: `${responseTime}ms`, color: responseTime < 500 ? "text-geo" : "text-yellow-600", tip: "Server response time. Under 200ms is good, over 500ms needs attention." },
+              { label: "Robots.txt", value: result.robotsTxt ? "Found" : "Missing", color: result.robotsTxt ? "text-green-600" : "text-red-600", tip: "Whether a robots.txt file exists at the domain root." },
+              { label: "Sitemap", value: result.sitemapFound ? "Found" : "Missing", color: result.sitemapFound ? "text-green-600" : "text-red-600", tip: "Whether an XML sitemap was found at the domain root." },
+              { label: "Alt Text", value: `${altPct}%`, color: altPct >= 80 ? "text-green-600" : "text-yellow-600", tip: "Percentage of images with descriptive alt text. Critical for accessibility and image search." },
+            ]
+            return (
+              <div className="grid grid-cols-4 md:grid-cols-4 lg:grid-cols-8 gap-2">
+                {metrics.map(m => (
+                  <div key={m.label} className="rounded-lg border border-border/50 bg-card/50 px-2.5 py-2">
+                    <div className="flex items-center gap-0.5 mb-0.5">
+                      <p className="text-[8px] uppercase tracking-wider text-muted-foreground font-bold leading-tight truncate">{m.label}</p>
+                      <InfoTooltip content={m.tip} className="shrink-0 [&_svg]:h-2.5 [&_svg]:w-2.5" />
+                    </div>
+                    <p className={`text-sm font-black ${m.color} truncate`}>{m.value}</p>
+                  </div>
+                ))}
+              </div>
+            )
+          })()}
+
+          {/* Pass/Fail Checklist */}
+          {(() => {
+            const mc = result.pageData?.metaChecks || {}
+            const sd = result.pageData?.structuralData || {}
+            const titleLen = mc.titleLength || 0
+            const descLen = mc.descriptionLength || 0
+            const wordCount = sd.wordCount || 0
+            const h2Count = sd.semanticTags?.h2Count || 0
+            const internalLinks = sd.links?.internal || 0
+
+            const checks = [
+              { label: "Title Length", value: `${titleLen} chars`, pass: titleLen >= 30 && titleLen <= 60, tip: titleLen === 0 ? "Missing" : titleLen < 30 ? "Too short (min 30)" : titleLen > 60 ? "Too long (max 60)" : "Optimal" },
+              { label: "Description Length", value: `${descLen} chars`, pass: descLen >= 70 && descLen <= 160, tip: descLen === 0 ? "Missing" : descLen < 70 ? "Too short (min 70)" : descLen > 160 ? "Too long (max 160)" : "Optimal" },
+              { label: "Canonical URL", value: mc.hasCanonical ? "Present" : "Missing", pass: !!mc.hasCanonical, tip: mc.hasCanonical ? "Canonical tag found" : "No canonical tag — risk of duplicate content" },
+              { label: "Open Graph", value: mc.hasOgTitle && mc.hasOgImage ? "Complete" : mc.hasOgTitle ? "Partial" : "Missing", pass: !!mc.hasOgTitle && !!mc.hasOgImage, tip: !mc.hasOgTitle ? "No OG tags — poor social sharing preview" : !mc.hasOgImage ? "Missing og:image" : "Social sharing ready" },
+              { label: "Viewport Tag", value: mc.hasViewport ? "Present" : "Missing", pass: !!mc.hasViewport, tip: mc.hasViewport ? "Mobile-friendly viewport set" : "No viewport tag — not mobile-friendly" },
+              { label: "Content Depth", value: `${wordCount.toLocaleString()} words`, pass: wordCount >= 300, tip: wordCount < 300 ? "Thin content (under 300 words)" : "Sufficient content depth" },
+              { label: "H2 Structure", value: `${h2Count} found`, pass: h2Count > 0, tip: h2Count === 0 ? "No H2 headings — poor content structure" : "Content has heading structure" },
+              { label: "Internal Links", value: `${internalLinks} found`, pass: internalLinks > 0, tip: internalLinks === 0 ? "No internal links — orphan page" : "Page links to other pages on the site" },
+            ]
+
+            const passCount = checks.filter(c => c.pass).length
+            const failCount = checks.length - passCount
+
+            return (
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Activity className="h-4 w-4 text-seo" />
+                      Quick Health Check
+                    </CardTitle>
+                    <div className="flex items-center gap-3 text-xs">
+                      <span className="flex items-center gap-1 text-green-600"><CheckCircle2 className="h-3 w-3" />{passCount} passed</span>
+                      <span className="flex items-center gap-1 text-red-600"><XCircle className="h-3 w-3" />{failCount} failed</span>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {checks.map(c => (
+                      <div key={c.label} className={`flex items-start gap-2 rounded-lg border px-3 py-2 ${c.pass ? 'border-green-500/20 bg-green-500/5' : 'border-red-500/20 bg-red-500/5'}`}>
+                        {c.pass ? <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />}
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold truncate">{c.label}</p>
+                          <p className={`text-xs font-medium ${c.pass ? 'text-green-600' : 'text-red-600'}`}>{c.value}</p>
+                          <p className="text-[10px] text-muted-foreground">{c.tip}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })()}
+
+          {/* Upgrade CTA */}
+          {(() => {
+            // Count issues from grader breakdown
+            const critical = result.graderResult?.criticalIssues?.length || 0
+            const warningCount = [...(result.graderResult?.breakdown?.seo || []), ...(result.graderResult?.breakdown?.aeo || []), ...(result.graderResult?.breakdown?.geo || [])]
+              .flatMap((cat: any) => cat.components || [])
+              .filter((c: any) => c.status === 'critical' || c.status === 'warning').length
+            const total = critical + warningCount
+            const color = total === 0 ? 'border-green-500/20 bg-green-500/5' : total <= 5 ? 'border-yellow-500/20 bg-yellow-500/5' : 'border-red-500/20 bg-red-500/5'
+            const textColor = total === 0 ? 'text-green-600' : total <= 5 ? 'text-yellow-600' : 'text-red-600'
+            return (
+              <div className={`flex items-center justify-between rounded-lg border px-4 py-2 ${color}`}>
+                <div className="flex items-center gap-2">
+                  <span className={`text-lg font-black ${textColor}`}>{total}</span>
+                  <span className="text-sm font-medium">issues found</span>
+                  {critical > 0 && <span className="text-xs text-red-600 font-medium">({critical} critical)</span>}
+                </div>
+                <button
+                  onClick={() => document.getElementById('upgrade-cta-v3')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="text-xs px-3 py-1 rounded-md bg-geo/10 text-geo hover:bg-geo/20 font-medium transition-colors"
+                >
+                  See fixes →
+                </button>
+              </div>
+            )
+          })()}
+
+          <Card id="upgrade-cta-v3" className="border-geo/30 bg-gradient-to-br from-geo/10 to-aeo/10 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-geo/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <CardContent className="p-6 relative">
+              <div className="text-center mb-4">
+                <p className="text-lg font-semibold text-foreground">
+                  Ready to fix these issues and boost your scores?
                 </p>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {result.enhancedPenalties.map((penalty, idx) => {
-                  let priority: 'CRITICAL' | 'HIGH' | 'MEDIUM' = 'MEDIUM'
-                  let category: 'Quick Win' | 'High Priority' | 'Medium Priority' | 'Long-term Investment' | 'Low Priority' = 'Medium Priority'
-                  
-                  if (penalty.severity === 'critical') {
-                    priority = 'CRITICAL'
-                    category = 'High Priority'
-                  } else if (penalty.severity === 'warning') {
-                    priority = 'HIGH'
-                    category = 'Medium Priority'
-                  } else {
-                    priority = 'MEDIUM'
-                    category = 'Quick Win'
-                  }
-                  
-                  const difficulty = penalty.component.includes('Content') || penalty.component.includes('Schema') ? 'moderate' : 'easy'
-                  
-                  const fixLines = penalty.fix.split(/\d+\.\s+/).filter(line => line.trim())
-                  const steps = fixLines.length > 1 
-                    ? fixLines.map((line, i) => ({
-                        step: i + 1,
-                        title: line.split(':')[0] || `Step ${i + 1}`,
-                        description: line.split(':').slice(1).join(':').trim() || line
-                      }))
-                    : [{
-                        step: 1,
-                        title: 'Implementation',
-                        description: penalty.fix
-                      }]
-                  
-                  return (
-                    <FixInstructionCard
-                      key={idx}
-                      title={penalty.component.replace(/^(SEO|AEO|GEO)\s+/, '')}
-                      category={category}
-                      priority={priority}
-                      steps={steps}
-                      platform="All Platforms"
-                      estimatedTime={penalty.severity === 'critical' ? '2-4 hours' : penalty.severity === 'warning' ? '1-2 hours' : '30-60 min'}
-                      difficulty={difficulty}
-                      impact={penalty.severity === 'critical' ? 'high' : penalty.severity === 'warning' ? 'medium' : 'low'}
-                      affectedPages={1}
-                    />
-                  )
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Core Web Vitals */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5 text-seo" />
-                Core Web Vitals
-              </CardTitle>
-              <CardDescription>
-                Performance Score: {result.cwv.performanceScore}/100 • Overall: {result.cwv.overallCategory}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-3">
-                {/* LCP */}
-                {result.cwv.lcp && (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">LCP</span>
-                      <span className={`text-sm font-medium ${getCategoryColor(result.cwv.lcp.category)}`}>
-                        {result.cwv.lcp.category}
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold">{result.cwv.lcp.displayValue}</div>
-                    <Progress value={result.cwv.lcp.score} className="h-2" />
-                    <p className="text-xs text-muted-foreground">Largest Contentful Paint</p>
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="flex-1">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-geo/20 text-geo text-xs font-bold mb-3">
+                    <Zap className="h-3 w-3" />
+                    UPGRADE TO PRO
                   </div>
-                )}
-
-                {/* INP */}
-                {result.cwv.inp && (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">INP</span>
-                      <span className={`text-sm font-medium ${getCategoryColor(result.cwv.inp.category)}`}>
-                        {result.cwv.inp.category}
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold">{result.cwv.inp.displayValue}</div>
-                    <Progress value={result.cwv.inp.score} className="h-2" />
-                    <p className="text-xs text-muted-foreground">Interaction to Next Paint</p>
-                  </div>
-                )}
-
-                {/* CLS */}
-                {result.cwv.cls && (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">CLS</span>
-                      <span className={`text-sm font-medium ${getCategoryColor(result.cwv.cls.category)}`}>
-                        {result.cwv.cls.category}
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold">{result.cwv.cls.displayValue}</div>
-                    <Progress value={result.cwv.cls.score} className="h-2" />
-                    <p className="text-xs text-muted-foreground">Cumulative Layout Shift</p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Detailed Breakdown */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Detailed Analysis</CardTitle>
-              <CardDescription>{result.graderResult.overallFeedback}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* SEO Breakdown */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-seo">SEO Breakdown</h3>
-                {result.graderResult.breakdown.seo.map((category, idx) => (
-                  <div key={idx} className="border rounded-lg p-4 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{category.name}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {category.score}/{category.maxScore} ({category.percentage}%)
-                      </span>
-                    </div>
-                    <div className="space-y-2 pl-4">
-                      {category.components.map((comp, compIdx) => (
-                        <div key={compIdx} className="text-sm">
-                          <div className="flex items-center justify-between">
-                            <span className={
-                              comp.status === 'good' || comp.status === 'excellent' ? 'text-green-600' :
-                              comp.status === 'warning' ? 'text-yellow-600' :
-                              'text-red-600'
-                            }>
-                              {comp.status === 'good' || comp.status === 'excellent' ? '✓' : comp.status === 'warning' ? '⚠' : '✗'} {comp.feedback}
-                            </span>
-                            <span className="text-muted-foreground">
-                              {comp.score}/{comp.maxScore}
-                            </span>
-                          </div>
-                          {comp.issues && comp.issues.length > 0 && (
-                            <ul className="list-disc list-inside text-muted-foreground pl-4 mt-1">
-                              {comp.issues.map((issue, issueIdx) => (
-                                <li key={issueIdx}>{issue}</li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* AEO Breakdown */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-aeo">AEO Breakdown</h3>
-                {result.graderResult.breakdown.aeo.map((category, idx) => (
-                  <div key={idx} className="border rounded-lg p-4 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{category.name}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {category.score}/{category.maxScore} ({category.percentage}%)
-                      </span>
-                    </div>
-                    <div className="space-y-2 pl-4">
-                      {category.components.map((comp, compIdx) => (
-                        <div key={compIdx} className="text-sm">
-                          <div className="flex items-center justify-between">
-                            <span className={
-                              comp.status === 'good' || comp.status === 'excellent' ? 'text-green-600' :
-                              comp.status === 'warning' ? 'text-yellow-600' :
-                              'text-red-600'
-                            }>
-                              {comp.status === 'good' || comp.status === 'excellent' ? '✓' : comp.status === 'warning' ? '⚠' : '✗'} {comp.feedback}
-                            </span>
-                            <span className="text-muted-foreground">
-                              {comp.score}/{comp.maxScore}
-                            </span>
-                          </div>
-                          {comp.issues && comp.issues.length > 0 && (
-                            <ul className="list-disc list-inside text-muted-foreground pl-4 mt-1">
-                              {comp.issues.map((issue, issueIdx) => (
-                                <li key={issueIdx}>{issue}</li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* GEO Breakdown */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-geo">GEO Breakdown</h3>
-                {result.graderResult.breakdown.geo.map((category, idx) => (
-                  <div key={idx} className="border rounded-lg p-4 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{category.name}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {category.score}/{category.maxScore} ({category.percentage}%)
-                      </span>
-                    </div>
-                    <div className="space-y-2 pl-4">
-                      {category.components.map((comp, compIdx) => (
-                        <div key={compIdx} className="text-sm">
-                          <div className="flex items-center justify-between">
-                            <span className={
-                              comp.status === 'good' || comp.status === 'excellent' ? 'text-green-600' :
-                              comp.status === 'warning' ? 'text-yellow-600' :
-                              'text-red-600'
-                            }>
-                              {comp.status === 'good' || comp.status === 'excellent' ? '✓' : comp.status === 'warning' ? '⚠' : '✗'} {comp.feedback}
-                            </span>
-                            <span className="text-muted-foreground">
-                              {comp.score}/{comp.maxScore}
-                            </span>
-                          </div>
-                          {comp.issues && comp.issues.length > 0 && (
-                            <ul className="list-disc list-inside text-muted-foreground pl-4 mt-1">
-                              {comp.issues.map((issue, issueIdx) => (
-                                <li key={issueIdx}>{issue}</li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                  <h3 className="text-2xl font-bold mb-1">Get Step-by-Step Fix Instructions</h3>
+                  <p className="text-lg text-geo font-bold mb-2">Plans starting at $5/month</p>
+                  <p className="text-muted-foreground mb-4">
+                    Stop guessing. Get exact implementation guides with copy-paste code for every issue.
+                  </p>
+                  <ul className="space-y-2 mb-6">
+                    <li className="flex items-center gap-2 text-sm">
+                      <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
+                      <span>Detailed explanations of why each fix matters</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm">
+                      <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
+                      <span>Copy-paste code examples ready to implement</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm">
+                      <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
+                      <span>Platform-specific guides (WordPress, Shopify, custom)</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm">
+                      <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
+                      <span>ROI estimates and priority scoring</span>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm">
+                      <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
+                      <span>Deep crawl up to 50 pages for comprehensive site analysis</span>
+                    </li>
+                  </ul>
+                </div>
+                <div className="shrink-0 text-center">
+                  <button
+                    onClick={() => router.push('/v3')}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-geo hover:bg-geo/90 text-white font-medium shadow-lg hover:shadow-xl transition-all"
+                  >
+                    View Pro Audit
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    See detailed fixes for this URL
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>

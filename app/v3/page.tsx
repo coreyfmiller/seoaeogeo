@@ -1,17 +1,21 @@
 'use client'
 
-import { useState } from 'react'
-import { Activity, Search, Zap, TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Zap, Search, Sparkles, Bot } from 'lucide-react'
+import { saveScanToHistory } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { SearchInput } from '@/components/dashboard/search-input'
-import { Progress } from '@/components/ui/progress'
-import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
-import { SiteTypeBadge } from '@/components/dashboard/site-type-badge'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { Header } from '@/components/dashboard/header'
 import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
+import { SEOTabEnhanced } from '@/components/dashboard/seo-tab-enhanced'
+import { AEOTab } from '@/components/dashboard/aeo-tab'
+import { GEOTab } from '@/components/dashboard/geo-tab'
+import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
+import { cn } from '@/lib/utils'
 
 interface AnalysisResult {
   url: string
@@ -82,6 +86,21 @@ interface AnalysisResult {
     pointsDeducted: number
     severity: 'critical' | 'warning' | 'info'
   }>
+  // AI analysis from Gemini (same shape as Pro Audit)
+  aiAnalysis?: {
+    seoAnalysis?: any
+    aeoAnalysis?: any
+    geoAnalysis?: any
+    schemaQuality?: any
+    recommendations?: any[]
+  }
+  // Page data from crawler
+  pageData?: {
+    structuralData?: any
+    technical?: any
+    url?: string
+    title?: string
+  }
   cwv: {
     lcp: { value: number; category: string; displayValue: string; score: number } | null
     inp: { value: number; category: string; displayValue: string; score: number } | null
@@ -95,6 +114,7 @@ interface AnalysisResult {
 export default function V3Page() {
   const [url, setUrl] = useState('')
   const [currentUrl, setCurrentUrl] = useState('')
+  const [activeTab, setActiveTab] = useState('seo')
   const sse = useSSEAnalysis<AnalysisResult>('/api/analyze-v3')
 
   const handleAnalyze = async (submittedUrl: string) => {
@@ -106,17 +126,58 @@ export default function V3Page() {
   const isAnalyzing = sse.isAnalyzing
   const error = sse.error
 
-  const getCategoryColor = (category: string) => {
-    if (category === 'FAST') return 'text-green-600'
-    if (category === 'SLOW') return 'text-red-600'
-    return 'text-yellow-600'
-  }
+  useEffect(() => {
+    if (result && currentUrl) {
+      saveScanToHistory({
+        url: currentUrl,
+        type: 'pro',
+        scores: { seo: result.scores.seo.score, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
+        timestamp: new Date().toISOString(),
+      })
+    }
+  }, [result, currentUrl])
 
-  const getCategoryIcon = (category: string) => {
-    if (category === 'FAST') return TrendingUp
-    if (category === 'SLOW') return TrendingDown
-    return Minus
-  }
+  // Map V3 result data into the shape the Pro Audit tab components expect
+  const tabData = result ? {
+    technical: result.pageData?.technical || {
+      isHttps: true,
+      status: 200,
+      responseTimeMs: 0
+    },
+    structuralData: result.pageData?.structuralData || {
+      semanticTags: { article: 0, main: 0, nav: 0, aside: 0, headers: 0 },
+      links: { internal: 0, external: 0 },
+      media: { totalImages: 0, imagesWithAlt: 0 },
+      wordCount: 0
+    },
+    ai: {
+      scores: {
+        seo: result.scores.seo.score,
+        aeo: result.scores.aeo.score,
+        geo: result.scores.geo.score
+      },
+      enhancedPenalties: result.enhancedPenalties || [],
+      seoAnalysis: result.aiAnalysis?.seoAnalysis || {
+        onPageIssues: [],
+        keywordOpportunities: [],
+        contentQuality: 'fair',
+        metaAnalysis: ''
+      },
+      aeoAnalysis: result.aiAnalysis?.aeoAnalysis || {
+        questionsAnswered: { who: 0, what: 0, where: 0, why: 0, how: 0 },
+        missingSchemas: [],
+        snippetEligibilityScore: 0,
+        topOpportunities: []
+      },
+      geoAnalysis: result.aiAnalysis?.geoAnalysis || {
+        sentimentScore: 0,
+        brandPerception: 'neutral' as const,
+        citationLikelihood: 0,
+        llmContextClarity: 0,
+        visibilityGaps: []
+      }
+    }
+  } : undefined
 
   return (
     <div className="flex h-screen bg-background">
@@ -139,7 +200,7 @@ export default function V3Page() {
       
       {/* Page Header with Actions */}
       <AuditPageHeader
-        title="V3.0 - AI-Powered Context-Aware Audit"
+        title="V3 Pro Audit"
         description="AI-powered scoring with site-type-specific analysis for 95% accuracy."
         badge="BETA AI"
         badgeVariant="beta"
@@ -157,6 +218,7 @@ export default function V3Page() {
           primaryType: result.siteTypeResult.primaryType,
           confidence: result.siteTypeResult.confidence
         } : undefined}
+        cwv={result?.cwv}
       />
 
       {/* Loading Overlay */}
@@ -166,7 +228,7 @@ export default function V3Page() {
             <div className="flex flex-col items-center gap-4 py-8">
               <div className="h-12 w-12 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
               <div className="text-center min-h-[48px]">
-                <h3 className="text-lg font-bold text-foreground">V3 AI Audit in Progress</h3>
+                <h3 className="text-lg font-bold text-foreground">V3 Pro Audit in Progress</h3>
                 <p className="text-sm text-muted-foreground mt-1 transition-opacity duration-500">{sse.phase || 'Initializing...'}</p>
               </div>
               <div className="w-64 h-1.5 bg-muted rounded-full overflow-hidden">
@@ -190,7 +252,7 @@ export default function V3Page() {
               Best-in-Class SEO/AEO/GEO Scoring
             </CardTitle>
             <CardDescription className="text-base max-w-2xl mx-auto">
-              V3.0 combines AI content analysis with site-type-specific scoring for the most accurate audits.
+              V3 Pro combines AI content analysis with site-type-specific scoring for the most accurate audits.
               Built for the 2026 search landscape.
             </CardDescription>
           </div>
@@ -267,285 +329,106 @@ export default function V3Page() {
           {/* Score Cards with Circular Progress */}
           <div className="grid gap-6 md:grid-cols-3">
             <Card className="flex items-center justify-center p-6">
-              <CircularProgress
-                value={result.scores.seo.score}
-                variant="seo"
-                label="SEO Score"
-                size={140}
-                strokeWidth={10}
-              />
+              <div className="flex flex-col items-center gap-1">
+                <CircularProgress
+                  value={result.scores.seo.score}
+                  variant="seo"
+                  label="SEO Score"
+                  size={140}
+                  strokeWidth={10}
+                />
+                <InfoTooltip content="Search Engine Optimization score measuring technical SEO, content quality, metadata, and crawlability against 2026 standards." />
+              </div>
             </Card>
 
             <Card className="flex items-center justify-center p-6">
-              <CircularProgress
-                value={result.scores.aeo.score}
-                variant="aeo"
-                label="AEO Score"
-                size={140}
-                strokeWidth={10}
-              />
+              <div className="flex flex-col items-center gap-1">
+                <CircularProgress
+                  value={result.scores.aeo.score}
+                  variant="aeo"
+                  label="AEO Score"
+                  size={140}
+                  strokeWidth={10}
+                />
+                <InfoTooltip content="Answer Engine Optimization score measuring how likely AI assistants (ChatGPT, Perplexity, Gemini) are to cite your content as a source." />
+              </div>
             </Card>
 
             <Card className="flex items-center justify-center p-6">
-              <CircularProgress
-                value={result.scores.geo.score}
-                variant="geo"
-                label="GEO Score"
-                size={140}
-                strokeWidth={10}
-              />
+              <div className="flex flex-col items-center gap-1">
+                <CircularProgress
+                  value={result.scores.geo.score}
+                  variant="geo"
+                  label="GEO Score"
+                  size={140}
+                  strokeWidth={10}
+                />
+                <InfoTooltip content="Generative Engine Optimization score measuring how well your content is structured for AI-generated search results and summaries." />
+              </div>
             </Card>
           </div>
 
-          {/* Actionable Fixes Section */}
-          {result.enhancedPenalties && result.enhancedPenalties.length > 0 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold mb-2">Actionable Fixes</h2>
-                <p className="text-muted-foreground">
-                  Prioritized list of issues with step-by-step instructions
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {result.enhancedPenalties.map((penalty, idx) => {
-                  let priority: 'CRITICAL' | 'HIGH' | 'MEDIUM' = 'MEDIUM'
-                  let category: 'Quick Win' | 'High Priority' | 'Medium Priority' | 'Long-term Investment' | 'Low Priority' = 'Medium Priority'
-                  
-                  if (penalty.severity === 'critical') {
-                    priority = 'CRITICAL'
-                    category = 'High Priority'
-                  } else if (penalty.severity === 'warning') {
-                    priority = 'HIGH'
-                    category = 'Medium Priority'
-                  } else {
-                    priority = 'MEDIUM'
-                    category = 'Quick Win'
-                  }
-                  
-                  const difficulty = penalty.component.includes('Content') || penalty.component.includes('Schema') ? 'moderate' : 'easy'
-                  
-                  const fixLines = penalty.fix.split(/\d+\.\s+/).filter(line => line.trim())
-                  const steps = fixLines.length > 1 
-                    ? fixLines.map((line, i) => ({
-                        step: i + 1,
-                        title: line.split(':')[0] || `Step ${i + 1}`,
-                        description: line.split(':').slice(1).join(':').trim() || line
-                      }))
-                    : [{
-                        step: 1,
-                        title: 'Implementation',
-                        description: penalty.fix
-                      }]
-                  
-                  return (
-                    <FixInstructionCard
-                      key={idx}
-                      title={penalty.component.replace(/^(SEO|AEO|GEO)\s+/, '')}
-                      category={category}
-                      priority={priority}
-                      steps={steps}
-                      platform="All Platforms"
-                      estimatedTime={penalty.severity === 'critical' ? '2-4 hours' : penalty.severity === 'warning' ? '1-2 hours' : '30-60 min'}
-                      difficulty={difficulty}
-                      impact={penalty.severity === 'critical' ? 'high' : penalty.severity === 'warning' ? 'medium' : 'low'}
-                      affectedPages={1}
-                    />
-                  )
-                })}
-              </div>
+          {/* Tabbed SEO / AEO / GEO Analysis */}
+          <Tabs
+            defaultValue="seo"
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
+            <TabsList className="w-full sm:w-auto bg-muted/50 p-1">
+              <TabsTrigger
+                value="seo"
+                className={cn(
+                  "gap-2 border transition-all duration-200",
+                  "border-seo/10 bg-seo/5 text-seo/40 cursor-pointer",
+                  "hover:border-seo/30 hover:bg-seo/10 hover:text-seo/60",
+                  "data-[state=active]:!border-seo/50 data-[state=active]:!bg-seo data-[state=active]:!text-white data-[state=active]:!shadow-lg data-[state=active]:!font-bold data-[state=active]:!opacity-100"
+                )}
+              >
+                <Search className="h-4 w-4" />
+                <span className="hidden sm:inline">SEO Analysis</span>
+                <span className="sm:hidden">SEO</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="aeo"
+                className={cn(
+                  "gap-2 border transition-all duration-200",
+                  "border-aeo/10 bg-aeo/5 text-aeo/40 cursor-pointer",
+                  "hover:border-aeo/30 hover:bg-aeo/10 hover:text-aeo/60",
+                  "data-[state=active]:!border-aeo/50 data-[state=active]:!bg-aeo data-[state=active]:!text-white data-[state=active]:!shadow-lg data-[state=active]:!font-bold data-[state=active]:!opacity-100"
+                )}
+              >
+                <Sparkles className="h-4 w-4" />
+                <span className="hidden sm:inline">AEO Analysis</span>
+                <span className="sm:hidden">AEO</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="geo"
+                className={cn(
+                  "gap-2 border transition-all duration-200",
+                  "border-geo/10 bg-geo/5 text-geo/40 cursor-pointer",
+                  "hover:border-geo/30 hover:bg-geo/10 hover:text-geo/60",
+                  "data-[state=active]:!border-geo/50 data-[state=active]:!bg-geo data-[state=active]:!text-white data-[state=active]:!shadow-lg data-[state=active]:!font-bold data-[state=active]:!opacity-100"
+                )}
+              >
+                <Bot className="h-4 w-4" />
+                <span className="hidden sm:inline">GEO Analysis</span>
+                <span className="sm:hidden">GEO</span>
+              </TabsTrigger>
+            </TabsList>
+
+            <div className="mt-6">
+              <TabsContent value="seo" className="mt-0">
+                <SEOTabEnhanced data={tabData} />
+              </TabsContent>
+              <TabsContent value="aeo" className="mt-0">
+                <AEOTab data={tabData} />
+              </TabsContent>
+              <TabsContent value="geo" className="mt-0">
+                <GEOTab data={tabData} />
+              </TabsContent>
             </div>
-          )}
-
-          {/* Core Web Vitals */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5 text-seo" />
-                Core Web Vitals
-              </CardTitle>
-              <CardDescription>
-                Performance Score: {result.cwv.performanceScore}/100 • Overall: {result.cwv.overallCategory}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-3">
-                {/* LCP */}
-                {result.cwv.lcp && (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">LCP</span>
-                      <span className={`text-sm font-medium ${getCategoryColor(result.cwv.lcp.category)}`}>
-                        {result.cwv.lcp.category}
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold">{result.cwv.lcp.displayValue}</div>
-                    <Progress value={result.cwv.lcp.score} className="h-2" />
-                    <p className="text-xs text-muted-foreground">Largest Contentful Paint</p>
-                  </div>
-                )}
-
-                {/* INP */}
-                {result.cwv.inp && (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">INP</span>
-                      <span className={`text-sm font-medium ${getCategoryColor(result.cwv.inp.category)}`}>
-                        {result.cwv.inp.category}
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold">{result.cwv.inp.displayValue}</div>
-                    <Progress value={result.cwv.inp.score} className="h-2" />
-                    <p className="text-xs text-muted-foreground">Interaction to Next Paint</p>
-                  </div>
-                )}
-
-                {/* CLS */}
-                {result.cwv.cls && (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">CLS</span>
-                      <span className={`text-sm font-medium ${getCategoryColor(result.cwv.cls.category)}`}>
-                        {result.cwv.cls.category}
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold">{result.cwv.cls.displayValue}</div>
-                    <Progress value={result.cwv.cls.score} className="h-2" />
-                    <p className="text-xs text-muted-foreground">Cumulative Layout Shift</p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Detailed Breakdown */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Detailed Analysis</CardTitle>
-              <CardDescription>{result.graderResult.overallFeedback}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* SEO Breakdown */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-seo">SEO Breakdown</h3>
-                {result.graderResult.breakdown.seo.map((category, idx) => (
-                  <div key={idx} className="border rounded-lg p-4 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{category.name}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {category.score}/{category.maxScore} ({category.percentage}%)
-                      </span>
-                    </div>
-                    <div className="space-y-2 pl-4">
-                      {category.components.map((comp, compIdx) => (
-                        <div key={compIdx} className="text-sm">
-                          <div className="flex items-center justify-between">
-                            <span className={
-                              comp.status === 'good' || comp.status === 'excellent' ? 'text-green-600' :
-                              comp.status === 'warning' ? 'text-yellow-600' :
-                              'text-red-600'
-                            }>
-                              {comp.status === 'good' || comp.status === 'excellent' ? '✓' : comp.status === 'warning' ? '⚠' : '✗'} {comp.feedback}
-                            </span>
-                            <span className="text-muted-foreground">
-                              {comp.score}/{comp.maxScore}
-                            </span>
-                          </div>
-                          {comp.issues && comp.issues.length > 0 && (
-                            <ul className="list-disc list-inside text-muted-foreground pl-4 mt-1">
-                              {comp.issues.map((issue, issueIdx) => (
-                                <li key={issueIdx}>{issue}</li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* AEO Breakdown */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-aeo">AEO Breakdown</h3>
-                {result.graderResult.breakdown.aeo.map((category, idx) => (
-                  <div key={idx} className="border rounded-lg p-4 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{category.name}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {category.score}/{category.maxScore} ({category.percentage}%)
-                      </span>
-                    </div>
-                    <div className="space-y-2 pl-4">
-                      {category.components.map((comp, compIdx) => (
-                        <div key={compIdx} className="text-sm">
-                          <div className="flex items-center justify-between">
-                            <span className={
-                              comp.status === 'good' || comp.status === 'excellent' ? 'text-green-600' :
-                              comp.status === 'warning' ? 'text-yellow-600' :
-                              'text-red-600'
-                            }>
-                              {comp.status === 'good' || comp.status === 'excellent' ? '✓' : comp.status === 'warning' ? '⚠' : '✗'} {comp.feedback}
-                            </span>
-                            <span className="text-muted-foreground">
-                              {comp.score}/{comp.maxScore}
-                            </span>
-                          </div>
-                          {comp.issues && comp.issues.length > 0 && (
-                            <ul className="list-disc list-inside text-muted-foreground pl-4 mt-1">
-                              {comp.issues.map((issue, issueIdx) => (
-                                <li key={issueIdx}>{issue}</li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* GEO Breakdown */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-geo">GEO Breakdown</h3>
-                {result.graderResult.breakdown.geo.map((category, idx) => (
-                  <div key={idx} className="border rounded-lg p-4 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium">{category.name}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {category.score}/{category.maxScore} ({category.percentage}%)
-                      </span>
-                    </div>
-                    <div className="space-y-2 pl-4">
-                      {category.components.map((comp, compIdx) => (
-                        <div key={compIdx} className="text-sm">
-                          <div className="flex items-center justify-between">
-                            <span className={
-                              comp.status === 'good' || comp.status === 'excellent' ? 'text-green-600' :
-                              comp.status === 'warning' ? 'text-yellow-600' :
-                              'text-red-600'
-                            }>
-                              {comp.status === 'good' || comp.status === 'excellent' ? '✓' : comp.status === 'warning' ? '⚠' : '✗'} {comp.feedback}
-                            </span>
-                            <span className="text-muted-foreground">
-                              {comp.score}/{comp.maxScore}
-                            </span>
-                          </div>
-                          {comp.issues && comp.issues.length > 0 && (
-                            <ul className="list-disc list-inside text-muted-foreground pl-4 mt-1">
-                              {comp.issues.map((issue, issueIdx) => (
-                                <li key={issueIdx}>{issue}</li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          </Tabs>
         </div>
       )}
           </div>

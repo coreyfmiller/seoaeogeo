@@ -1,16 +1,16 @@
 {
-  "id": "deep-v3-1773580127072",
+  "id": "deep-v3-1773678797698",
   "url": "https://pizzatwice.com",
-  "timestamp": "2026-03-15T13:08:47.072Z",
+  "timestamp": "2026-03-16T16:33:17.698Z",
   "apiRoute": "/api/analyze-deep-v3",
   "scores": {
-    "seo": 87,
-    "aeo": 34,
-    "geo": 59
+    "seo": 76,
+    "aeo": 26,
+    "geo": 61
   },
   "siteType": "restaurant",
   "rawAiScores": {
-    "seoScore": 90,
+    "seoScore": 80,
     "aeoScore": 49,
     "geoScore": 80,
     "breakdown": {
@@ -96,15 +96,18 @@
         },
         {
           "name": "Technical Excellence",
-          "score": 22,
+          "score": 12,
           "maxScore": 22,
-          "percentage": 100,
+          "percentage": 55,
           "components": [
             {
-              "score": 10,
+              "score": 0,
               "maxScore": 10,
-              "status": "excellent",
-              "feedback": "Fast page load (1086ms)"
+              "status": "critical",
+              "feedback": "Very slow page load time - critical performance issue",
+              "issues": [
+                "16389ms response time (target: <1500ms)"
+              ]
             },
             {
               "score": 6,
@@ -258,10 +261,11 @@
         }
       ]
     },
-    "overallFeedback": "Exceptional SEO for a restaurant - Your site follows modern best practices and is well-optimized for search engines.",
+    "overallFeedback": "Good SEO foundation for a restaurant - Your site has solid optimization with room for minor improvements.",
     "criticalIssues": [
       "No viewport meta tag found",
-      "Need at least 300 words for meaningful content"
+      "Need at least 300 words for meaningful content",
+      "16389ms response time (target: <1500ms)"
     ],
     "version": "v2",
     "siteType": "restaurant"
@@ -349,15 +353,18 @@
       },
       {
         "name": "Technical Excellence",
-        "score": 22,
+        "score": 12,
         "maxScore": 22,
-        "percentage": 100,
+        "percentage": 55,
         "components": [
           {
-            "score": 10,
+            "score": 0,
             "maxScore": 10,
-            "status": "excellent",
-            "feedback": "Fast page load (1086ms)"
+            "status": "critical",
+            "feedback": "Very slow page load time - critical performance issue",
+            "issues": [
+              "16389ms response time (target: <1500ms)"
+            ]
           },
           {
             "score": 6,
@@ -523,6 +530,15 @@
     },
     {
       "category": "SEO",
+      "component": "SEO Technical Excellence - Very slow page load time - critical performance issue",
+      "penalty": "16389ms response time (target: <1500ms)",
+      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
+      "fix": "Review and update this element following current best practices for search engines and AI systems.",
+      "pointsDeducted": -10,
+      "severity": "critical"
+    },
+    {
+      "category": "SEO",
       "component": "SEO Foundation - Missing viewport meta tag - not mobile optimized",
       "penalty": "No viewport meta tag found",
       "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
@@ -590,50 +606,50 @@
     "perPageScores": [
       {
         "url": "https://www.pizzatwice.com/",
-        "seo": 90,
+        "seo": 80,
         "aeo": 49,
         "geo": 80
       },
       {
         "url": "https://www.pizzatwice.com/",
-        "seo": 90,
+        "seo": 80,
         "aeo": 49,
-        "geo": 80
+        "geo": 70
       },
       {
         "url": "https://www.pizzatwice.com/about-us",
-        "seo": 80,
-        "aeo": 20,
+        "seo": 70,
+        "aeo": 5,
         "geo": 100
       },
       {
         "url": "https://www.pizzatwice.com/locations",
-        "seo": 87,
-        "aeo": 39,
-        "geo": 80
+        "seo": 62,
+        "aeo": 0,
+        "geo": 65
       },
       {
         "url": "https://www.pizzatwice.com/pizza-twice-franchise",
         "seo": 89,
-        "aeo": 28,
+        "aeo": 38,
         "geo": 35
       },
       {
         "url": "https://www.pizzatwice.com/reviews",
-        "seo": 84,
+        "seo": 74,
         "aeo": 42,
-        "geo": 45
+        "geo": 85
       },
       {
         "url": "https://www.pizzatwice.com/contact-us",
-        "seo": 85,
+        "seo": 75,
         "aeo": 15,
         "geo": 25
       },
       {
         "url": "https://www.pizzatwice.com/menu",
-        "seo": 89,
-        "aeo": 28,
+        "seo": 79,
+        "aeo": 13,
         "geo": 25
       }
     ]
