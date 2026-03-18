@@ -1,11 +1,13 @@
 import { NextRequest } from 'next/server'
-import { crawlMultiplePages } from '@/lib/multi-page-crawler'
+import { performScan, type ScanResult } from '@/lib/crawler'
 import { detectSiteType } from '@/lib/site-type-detector'
 import { analyzeWithGemini } from '@/lib/gemini'
 import { calculateScoresFromScanResult, convertBreakdownToEnhancedPenalties } from '@/lib/grader-v2'
 import { analyzeSitewideIntelligence } from '@/lib/gemini-sitewide'
 import { saveScanSnapshot } from '@/lib/scan-snapshots'
 import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers'
+import { chromium as playwright, type Browser } from 'playwright-core'
+import chromium from '@sparticuz/chromium'
 
 export const maxDuration = 300
 
@@ -18,71 +20,118 @@ export async function POST(request: NextRequest) {
     })
   }
 
-  // Normalize URL — ensure protocol so new URL() won't throw
   const url = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`
 
   const stream = createSSEStream(async (send) => {
+    let browser: Browser | null = null
     try {
-      // Step 1: Crawl multiple pages
-      send({ type: 'progress', phase: 'Crawling site pages...', progress: 5 })
-      const crawlResult = await crawlMultiplePages(url, maxPages)
+      // Step 1: Launch browser and discover internal URLs
+      send({ type: 'progress', phase: 'Launching browser...', progress: 5 })
 
-      if (!crawlResult.pages || crawlResult.pages.length === 0) {
-        send({ type: 'error', success: false, error: 'Failed to crawl pages' })
-        return
+      const isLocal = process.env.NODE_ENV === 'development'
+      browser = await playwright.launch({
+        args: isLocal ? [] : chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: isLocal ? undefined : await chromium.executablePath(),
+        headless: isLocal ? true : chromium.headless,
+        channel: isLocal ? 'chrome' : undefined,
+      })
+
+      send({ type: 'progress', phase: 'Discovering site pages...', progress: 8 })
+      const discoveryPage = await browser.newPage()
+      await discoveryPage.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
+
+      // Extract internal links for crawling
+      const domain = new URL(url).hostname
+      const rawLinks = await discoveryPage.evaluate(() => {
+        return Array.from(document.querySelectorAll('a[href]'))
+          .map(a => (a as HTMLAnchorElement).href)
+          .filter(href => href.startsWith(window.location.origin) || href.startsWith('/'))
+      })
+      await discoveryPage.close()
+      await browser.close()
+      browser = null
+
+      // Deduplicate and clean links
+      const seen = new Set<string>()
+      seen.add(url.replace(/\/$/, '').toLowerCase())
+      const targetUrls: string[] = [url]
+
+      for (const link of rawLinks) {
+        try {
+          const fullLink = new URL(link, url).href.split('#')[0].replace(/\/$/, '')
+          const normalized = fullLink.toLowerCase()
+          if (
+            fullLink.includes(domain) &&
+            !seen.has(normalized) &&
+            !fullLink.match(/\.(jpg|jpeg|png|gif|pdf|zip|css|js)$/i)
+          ) {
+            seen.add(normalized)
+            targetUrls.push(fullLink)
+          }
+        } catch (e) { }
       }
-      const totalPages = crawlResult.pages.length
-      send({ type: 'progress', phase: `Crawled ${totalPages} pages. Detecting site type...`, progress: 20 })
 
-      // Step 2: Site type detection
-      const homepage = crawlResult.pages[0]
-      const siteTypeResult = detectSiteType(homepage, crawlResult.pages)
-      send({ type: 'progress', phase: `Site type: ${siteTypeResult.primaryType}. Analyzing pages with AI...`, progress: 25 })
+      const pagesToScan = targetUrls.slice(0, maxPages)
+      const totalPages = pagesToScan.length
+      send({ type: 'progress', phase: `Found ${totalPages} pages. Starting scans...`, progress: 12 })
 
-      // Step 3: Analyze pages in parallel batches of 5 with per-batch progress
-      const BATCH_SIZE = 5
-      const pageAnalyses: any[] = []
+      // Step 2: Scan each page using the EXACT same performScan as Pro Audit
+      // Process in batches of 3 (each launches its own browser, same as Pro Audit)
+      const BATCH_SIZE = 3
+      const scanResults: { url: string; scanResult: ScanResult }[] = []
       let completed = 0
 
-      for (let batchStart = 0; batchStart < crawlResult.pages.length; batchStart += BATCH_SIZE) {
-        const batch = crawlResult.pages.slice(batchStart, batchStart + BATCH_SIZE)
-        const batchNum = Math.floor(batchStart / BATCH_SIZE) + 1
-        const totalBatches = Math.ceil(crawlResult.pages.length / BATCH_SIZE)
-        send({ type: 'progress', phase: `Analyzing batch ${batchNum} of ${totalBatches} (${completed} of ${totalPages} pages done)...`, progress: Math.round(25 + (completed / totalPages) * 40) })
+      for (let i = 0; i < pagesToScan.length; i += BATCH_SIZE) {
+        const batch = pagesToScan.slice(i, i + BATCH_SIZE)
+        const batchNum = Math.floor(i / BATCH_SIZE) + 1
+        const totalBatches = Math.ceil(pagesToScan.length / BATCH_SIZE)
+        send({ type: 'progress', phase: `Crawling batch ${batchNum}/${totalBatches} (${completed}/${totalPages} pages done)...`, progress: Math.round(12 + (completed / totalPages) * 18) })
 
         const batchResults = await Promise.all(
-          batch.map(async (page) => {
+          batch.map(async (pageUrl) => {
             try {
-              // Build ScanResult-compatible object (identical shape to Pro Audit's performScan output)
-              const scanResult: any = {
-                url: page.url,
-                title: page.title,
-                description: page.description,
-                thinnedText: page.thinnedText,
-                summarizedContent: page.summarizedContent,
-                schemas: page.schemas,
-                structuralData: {
-                  semanticTags: page.semanticTags,
-                  links: {
-                    internal: page.internalLinks,
-                    external: page.externalLinks,
-                    socialLinksCount: page.socialLinksCount,
-                  },
-                  media: {
-                    totalImages: page.imgTotal,
-                    imagesWithAlt: page.imgWithAlt,
-                  },
-                  wordCount: page.wordCount,
-                },
-                technical: {
-                  responseTimeMs: page.responseTimeMs,
-                  isHttps: page.isHttps,
-                },
-                metaChecks: page.metaChecks,
-                siteType: siteTypeResult.primaryType,
-              }
+              // Identical to Pro Audit — same function, same browser launch, same extraction
+              const scanResult = await performScan(pageUrl)
+              return { url: pageUrl, scanResult }
+            } catch (error) {
+              console.error(`[Deep Scan] Failed to scan ${pageUrl}:`, error)
+              return null
+            }
+          })
+        )
 
-              // Same AI call as Pro Audit — identical data in
+        batchResults.forEach(r => { if (r) scanResults.push(r) })
+        completed += batch.length
+      }
+
+      if (scanResults.length === 0) {
+        send({ type: 'error', success: false, error: 'Failed to crawl any pages' })
+        return
+      }
+
+      send({ type: 'progress', phase: `Crawled ${scanResults.length} pages. Detecting site type...`, progress: 32 })
+
+      // Step 3: Site type detection (using first page, same as before)
+      const siteTypeResult = detectSiteType(scanResults[0].scanResult as any, [])
+      send({ type: 'progress', phase: `Site type: ${siteTypeResult.primaryType}. Starting AI analysis...`, progress: 35 })
+
+      // Step 4: AI analysis + grading for each page — identical pipeline to Pro Audit
+      const pageAnalyses: any[] = []
+      let aiCompleted = 0
+
+      // Start a slow ticker that creeps from 35 to 90 during AI analysis
+      const aiTicker = createProgressTicker(send, 'Running AI analysis on all pages...', 35, 90, 2, 4000)
+
+      for (let i = 0; i < scanResults.length; i += BATCH_SIZE) {
+        const batch = scanResults.slice(i, i + BATCH_SIZE)
+
+        const batchResults = await Promise.all(
+          batch.map(async ({ url: pageUrl, scanResult }) => {
+            try {
+              ;(scanResult as any).siteType = siteTypeResult.primaryType
+
+              // Same AI call as Pro Audit
               const aiAnalysis = await analyzeWithGemini({
                 title: scanResult.title,
                 description: scanResult.description,
@@ -92,53 +141,59 @@ export async function POST(request: NextRequest) {
                 structuralData: scanResult.structuralData,
               })
 
-              // Attach AI results to scanResult (same as Pro Audit does with pageData)
-              scanResult.semanticFlags = aiAnalysis?.semanticFlags || {}
-              scanResult.schemaQuality = aiAnalysis?.schemaQuality
+              ;(scanResult as any).semanticFlags = aiAnalysis.semanticFlags
+              ;(scanResult as any).schemaQuality = aiAnalysis.schemaQuality
 
-              // Same grader call as Pro Audit — identical data in
+              // Same grader call as Pro Audit
               const graderResult = calculateScoresFromScanResult(scanResult)
               const enhancedPenalties = convertBreakdownToEnhancedPenalties(
                 graderResult.breakdown.seo, graderResult.breakdown.aeo, graderResult.breakdown.geo
               )
+
               return {
-                url: page.url, title: page.title,
-                scores: { seo: { score: graderResult.seoScore }, aeo: { score: graderResult.aeoScore }, geo: { score: graderResult.geoScore } },
-                graderResult, enhancedPenalties, wordCount: page.wordCount,
-                hasH1: page.hasH1, isHttps: page.isHttps,
-                hasDescription: !!page.description, schemaCount: (page.schemas || []).length,
-                responseTimeMs: page.responseTimeMs,
+                url: pageUrl,
+                title: scanResult.title,
+                scores: {
+                  seo: { score: graderResult.seoScore },
+                  aeo: { score: graderResult.aeoScore },
+                  geo: { score: graderResult.geoScore },
+                },
+                graderResult,
+                enhancedPenalties,
+                wordCount: scanResult.structuralData.wordCount,
+                hasH1: scanResult.structuralData.semanticTags.h1Count > 0,
+                isHttps: scanResult.technical.isHttps,
+                hasDescription: !!scanResult.description,
+                schemaCount: (scanResult.schemas || []).length,
+                responseTimeMs: scanResult.technical.responseTimeMs,
               }
             } catch (error) {
-              console.error(`[V3 Deep Scan] Error analyzing ${page.url}:`, error)
+              console.error(`[Deep Scan] AI analysis failed for ${pageUrl}:`, error)
               return null
             }
           })
         )
 
-        const validResults = batchResults.filter((r): r is NonNullable<typeof r> => r !== null)
-        pageAnalyses.push(...validResults)
-        completed += batch.length
-        send({ type: 'progress', phase: `${completed} of ${totalPages} pages analyzed...`, progress: Math.round(25 + (completed / totalPages) * 40) })
+        batchResults.forEach(r => { if (r) pageAnalyses.push(r) })
+        aiCompleted += batch.length
       }
+
+      aiTicker.stop()
 
       if (pageAnalyses.length === 0) {
         send({ type: 'error', success: false, error: 'Failed to analyze any pages' })
         return
       }
 
-      // Step 4: Robots.txt & Sitemap check
-      send({ type: 'progress', phase: 'Checking robots.txt and sitemap...', progress: 68 })
+      // Step 5: Robots.txt & Sitemap check
+      send({ type: 'progress', phase: 'Checking robots.txt and sitemap...', progress: 91 })
       let robotsTxt: string | null = null
       let sitemapFound = false
       try {
         const parsedUrl = new URL(url)
         const robotsRes = await fetch(`${parsedUrl.origin}/robots.txt`, { signal: AbortSignal.timeout(8000) })
         if (robotsRes.ok) robotsTxt = await robotsRes.text()
-        console.log('[V3 Deep Scan] robots.txt:', robotsRes.ok ? 'Found' : 'Not found', robotsRes.status)
-      } catch (e) {
-        console.error('[V3 Deep Scan] robots.txt check failed:', e instanceof Error ? e.message : e)
-      }
+      } catch (e) { }
       try {
         const parsedUrl = new URL(url)
         const sitemapRes = await fetch(`${parsedUrl.origin}/sitemap.xml`, { signal: AbortSignal.timeout(8000) })
@@ -146,80 +201,86 @@ export async function POST(request: NextRequest) {
           const sitemapText = await sitemapRes.text()
           sitemapFound = sitemapText.includes('<urlset') || sitemapText.includes('<sitemapindex')
         }
-        console.log('[V3 Deep Scan] sitemap.xml:', sitemapRes.ok ? 'Found' : 'Not found', sitemapRes.status)
-      } catch (e) {
-        console.error('[V3 Deep Scan] sitemap check failed:', e instanceof Error ? e.message : e)
-      }
+      } catch (e) { }
 
-      // Step 5: Sitewide AI Intelligence
-      send({ type: 'progress', phase: 'Running sitewide AI intelligence analysis...', progress: 72 })
+      // Step 6: Sitewide AI Intelligence
+      send({ type: 'progress', phase: 'Running sitewide intelligence analysis...', progress: 93 })
       let sitewideIntelligence: any = null
       try {
         const parsedUrl = new URL(url)
         sitewideIntelligence = await analyzeSitewideIntelligence({
           domain: parsedUrl.hostname,
-          pages: crawlResult.pages.map(p => ({
-            url: p.url,
-            title: p.title || '',
-            description: p.description || '',
-            schemas: p.schemas || [],
-            wordCount: p.wordCount,
-            internalLinks: p.internalLinks,
-            hasH1: p.hasH1,
-            isHttps: p.isHttps,
-            responseTimeMs: p.responseTimeMs,
-            h2Count: p.h2Count,
-            h3Count: p.h3Count,
-            imgTotal: p.imgTotal,
-            imgWithAlt: p.imgWithAlt,
+          pages: scanResults.map(({ scanResult: sr }) => ({
+            url: sr.url,
+            title: sr.title || '',
+            description: sr.description || '',
+            schemas: sr.schemas || [],
+            wordCount: sr.structuralData.wordCount,
+            internalLinks: sr.structuralData.links.internal,
+            hasH1: sr.structuralData.semanticTags.h1Count > 0,
+            isHttps: sr.technical.isHttps,
+            responseTimeMs: sr.technical.responseTimeMs,
+            h2Count: sr.structuralData.semanticTags.h2Count,
+            h3Count: sr.structuralData.semanticTags.h3Count,
+            imgTotal: sr.structuralData.media.totalImages,
+            imgWithAlt: sr.structuralData.media.imagesWithAlt,
           })),
           siteType: siteTypeResult.primaryType as any,
         })
       } catch (err) {
-        console.error('[V3 Deep Scan] Sitewide intelligence failed:', err instanceof Error ? err.message : err)
-        console.error('[V3 Deep Scan] Sitewide intelligence stack:', err instanceof Error ? err.stack : 'no stack')
+        console.error('[Deep Scan] Sitewide intelligence failed:', err instanceof Error ? err.message : err)
       }
 
-      send({ type: 'progress', phase: 'Calculating aggregate scores...', progress: 88 })
+      send({ type: 'progress', phase: 'Calculating aggregate scores...', progress: 95 })
 
+      // Aggregate scores
       const avgScores = {
         seo: Math.round(pageAnalyses.reduce((s: number, a: any) => s + a.scores.seo.score, 0) / pageAnalyses.length),
         aeo: Math.round(pageAnalyses.reduce((s: number, a: any) => s + a.scores.aeo.score, 0) / pageAnalyses.length),
-        geo: Math.round(pageAnalyses.reduce((s: number, a: any) => s + a.scores.geo.score, 0) / pageAnalyses.length)
+        geo: Math.round(pageAnalyses.reduce((s: number, a: any) => s + a.scores.geo.score, 0) / pageAnalyses.length),
       }
       const schemaCoverage = {
         totalPages: pageAnalyses.length,
-        pagesWithSchema: pageAnalyses.filter((a: any) => a.graderResult.breakdown.seo.some((cat: any) => cat.name.toLowerCase().includes('schema') && cat.score > 0)).length
+        pagesWithSchema: pageAnalyses.filter((a: any) => a.schemaCount > 0).length,
       }
 
-      // Calculate aggregate metrics
-      const totalWords = crawlResult.pages.reduce((s, p) => s + (p.wordCount || 0), 0)
-      const totalSchemas = crawlResult.pages.reduce((s, p) => s + (p.schemas?.length || 0), 0)
-      const avgResponseTime = crawlResult.pages.length > 0
-        ? Math.round(crawlResult.pages.reduce((s, p) => s + (p.responseTimeMs || 0), 0) / crawlResult.pages.length)
+      // Aggregate metrics from scan results
+      const totalWords = scanResults.reduce((s, { scanResult: sr }) => s + (sr.structuralData.wordCount || 0), 0)
+      const totalSchemas = scanResults.reduce((s, { scanResult: sr }) => s + (sr.schemas?.length || 0), 0)
+      const avgResponseTime = scanResults.length > 0
+        ? Math.round(scanResults.reduce((s, { scanResult: sr }) => s + (sr.technical.responseTimeMs || 0), 0) / scanResults.length)
         : 0
-      const totalImages = crawlResult.pages.reduce((s, p) => s + (p.imgTotal || 0), 0)
-      const totalImagesWithAlt = crawlResult.pages.reduce((s, p) => s + (p.imgWithAlt || 0), 0)
+      const totalImages = scanResults.reduce((s, { scanResult: sr }) => s + (sr.structuralData.media.totalImages || 0), 0)
+      const totalImagesWithAlt = scanResults.reduce((s, { scanResult: sr }) => s + (sr.structuralData.media.imagesWithAlt || 0), 0)
 
       // Duplicate title/meta detection
       const titleMap = new Map<string, string[]>()
       const descMap = new Map<string, string[]>()
-      crawlResult.pages.forEach(p => {
-        if (p.title) {
-          const t = p.title.trim().toLowerCase()
+      scanResults.forEach(({ scanResult: sr }) => {
+        if (sr.title) {
+          const t = sr.title.trim().toLowerCase()
           if (!titleMap.has(t)) titleMap.set(t, [])
-          titleMap.get(t)!.push(p.url)
+          titleMap.get(t)!.push(sr.url)
         }
-        if (p.description) {
-          const d = p.description.trim().toLowerCase()
+        if (sr.description) {
+          const d = sr.description.trim().toLowerCase()
           if (!descMap.has(d)) descMap.set(d, [])
-          descMap.get(d)!.push(p.url)
+          descMap.get(d)!.push(sr.url)
         }
       })
       const duplicateTitles = Array.from(titleMap.entries()).filter(([, urls]) => urls.length > 1).map(([title, urls]) => ({ title, urls }))
       const duplicateDescriptions = Array.from(descMap.entries()).filter(([, urls]) => urls.length > 1).map(([description, urls]) => ({ description, urls }))
 
-      send({ type: 'progress', phase: 'Saving snapshot...', progress: 95 })
+      // Orphan / duplicate / site-wide issues (simplified since we don't have outboundLinks from performScan)
+      const siteWideIssues: any[] = []
+      const missingH1 = pageAnalyses.filter((a: any) => !a.hasH1)
+      if (missingH1.length > 0) siteWideIssues.push({ type: 'missing-h1', affectedPages: missingH1.map((a: any) => a.url), count: missingH1.length, severity: missingH1.length > pageAnalyses.length * 0.5 ? 'critical' : 'high', description: `${missingH1.length} page(s) missing H1 tags` })
+      const thinContent = pageAnalyses.filter((a: any) => a.wordCount < 300)
+      if (thinContent.length > 0) siteWideIssues.push({ type: 'thin-content', affectedPages: thinContent.map((a: any) => a.url), count: thinContent.length, severity: thinContent.length > pageAnalyses.length * 0.3 ? 'high' : 'medium', description: `${thinContent.length} page(s) with thin content (<300 words)` })
+      const missingMeta = pageAnalyses.filter((a: any) => !a.hasDescription)
+      if (missingMeta.length > 0) siteWideIssues.push({ type: 'missing-meta', affectedPages: missingMeta.map((a: any) => a.url), count: missingMeta.length, severity: missingMeta.length > pageAnalyses.length * 0.5 ? 'critical' : 'high', description: `${missingMeta.length} page(s) missing meta descriptions` })
+
+      send({ type: 'progress', phase: 'Saving snapshot...', progress: 97 })
       saveScanSnapshot({
         id: `deep-v3-${Date.now()}`, url, timestamp: new Date().toISOString(),
         apiRoute: '/api/analyze-deep-v3', scores: avgScores,
@@ -233,10 +294,9 @@ export async function POST(request: NextRequest) {
       send({ type: 'result', success: true, data: {
         url, analyzedAt: new Date().toISOString(), siteTypeResult,
         pagesCrawled: pageAnalyses.length, scores: avgScores, pages: pageAnalyses,
-        schemaCoverage, siteWideIssues: crawlResult.siteWideIssues,
-        orphanPages: crawlResult.orphanPages, duplicateGroups: crawlResult.duplicateGroups,
-        crawlStats: { totalFound: crawlResult.pages.length, analyzed: pageAnalyses.length, failed: crawlResult.pages.length - pageAnalyses.length },
-        // New sitewide data
+        schemaCoverage, siteWideIssues,
+        orphanPages: [], duplicateGroups: [],
+        crawlStats: { totalFound: pagesToScan.length, analyzed: pageAnalyses.length, failed: pagesToScan.length - pageAnalyses.length },
         sitewideIntelligence,
         robotsTxt: robotsTxt ? true : false,
         sitemapFound,
@@ -245,8 +305,10 @@ export async function POST(request: NextRequest) {
         duplicateDescriptions,
       }})
     } catch (error: any) {
-      console.error('[V3 Deep Scan] Error:', error)
+      console.error('[Deep Scan] Error:', error)
       send({ type: 'error', success: false, error: error.message || 'Analysis failed' })
+    } finally {
+      if (browser) await browser.close()
     }
   })
 
