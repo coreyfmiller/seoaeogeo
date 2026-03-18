@@ -521,3 +521,99 @@
   "consistencyScore": 60,
   "schemaScore": 100
 }
+[2026-03-18T12:25:42.760Z] [GEMINI-SITEWIDE] Starting AI analysis
+{
+  "domain": "www.giselespizza.com",
+  "pageCount": 10
+}
+[2026-03-18T12:25:42.760Z] [GEMINI-SITEWIDE] Schema health score
+{
+  "score": 100
+}
+[2026-03-18T12:25:42.761Z] [GEMINI-SITEWIDE] Brand consistency score
+{
+  "score": 60
+}
+[2026-03-18T12:25:42.762Z] [GEMINI-SITEWIDE] Calling Gemini API
+[2026-03-18T12:26:29.246Z] [GEMINI-SITEWIDE] Received response
+{
+  "length": 15885,
+  "preview": "```json\n{\n  \"domainHealthScore\": 64,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 85,\n    \"schemaQuality\": 30,\n    \"metadataQuality\": 60,\n    \"technicalHealth\": 57,\n    \"architectureHealth\": 90\n"
+}
+[2026-03-18T12:26:29.251Z] [GEMINI-SITEWIDE] Parsed AI result
+{
+  "domainHealthScore": 64,
+  "recommendationsCount": 6,
+  "keys": [
+    "domainHealthScore",
+    "domainHealthBreakdown",
+    "domainHealthExplanations",
+    "authorityMetrics",
+    "sitewideInsights",
+    "contentGapAnalysis",
+    "cannibalizationRisks",
+    "internalLinkLeaders",
+    "orphanPageRisks",
+    "navigationAnalysis",
+    "brandClarityVerdict",
+    "aeoReadiness",
+    "socialProofSignals",
+    "topicalClusters",
+    "inventoryEvidence",
+    "recommendations"
+  ]
+}
+[2026-03-18T12:26:29.252Z] [GEMINI-SITEWIDE] Final result assembled
+{
+  "domainHealthScore": 64,
+  "consistencyScore": 60,
+  "schemaScore": 100
+}
+[2026-03-18T12:31:51.873Z] [GEMINI-SITEWIDE] Starting AI analysis
+{
+  "domain": "www.giselespizza.com",
+  "pageCount": 10
+}
+[2026-03-18T12:31:51.873Z] [GEMINI-SITEWIDE] Schema health score
+{
+  "score": 100
+}
+[2026-03-18T12:31:51.873Z] [GEMINI-SITEWIDE] Brand consistency score
+{
+  "score": 60
+}
+[2026-03-18T12:31:51.874Z] [GEMINI-SITEWIDE] Calling Gemini API
+[2026-03-18T12:32:23.895Z] [GEMINI-SITEWIDE] Received response
+{
+  "length": 13682,
+  "preview": "```json\n{\n  \"domainHealthScore\": 59,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 70,\n    \"schemaQuality\": 10,\n    \"metadataQuality\": 50,\n    \"technicalHealth\": 70,\n    \"architectureHealth\": 95\n"
+}
+[2026-03-18T12:32:23.900Z] [GEMINI-SITEWIDE] Parsed AI result
+{
+  "domainHealthScore": 59,
+  "recommendationsCount": 6,
+  "keys": [
+    "domainHealthScore",
+    "domainHealthBreakdown",
+    "domainHealthExplanations",
+    "authorityMetrics",
+    "sitewideInsights",
+    "contentGapAnalysis",
+    "cannibalizationRisks",
+    "internalLinkLeaders",
+    "orphanPageRisks",
+    "navigationAnalysis",
+    "brandClarityVerdict",
+    "aeoReadiness",
+    "socialProofSignals",
+    "topicalClusters",
+    "inventoryEvidence",
+    "recommendations"
+  ]
+}
+[2026-03-18T12:32:23.900Z] [GEMINI-SITEWIDE] Final result assembled
+{
+  "domainHealthScore": 59,
+  "consistencyScore": 60,
+  "schemaScore": 100
+}

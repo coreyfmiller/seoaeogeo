@@ -53,19 +53,14 @@ export async function POST(request: NextRequest) {
         const batchResults = await Promise.all(
           batch.map(async (page) => {
             try {
-              const aiAnalysis = await analyzeWithGemini({
-                title: page.title, description: page.description,
-                thinnedText: page.thinnedText, schemas: page.schemas,
-                structuralData: {
-                  url: page.url, hasH1: page.hasH1, h2Count: page.h2Count, h3Count: page.h3Count,
-                  wordCount: page.wordCount, imgTotal: page.imgTotal, imgWithAlt: page.imgWithAlt,
-                  internalLinks: page.internalLinks, externalLinks: page.externalLinks, isHttps: page.isHttps
-                }
-              })
-
-              const scanResultForGrader = {
-                url: page.url, title: page.title, description: page.description, schemas: page.schemas,
+              // Build ScanResult-compatible object (identical shape to Pro Audit's performScan output)
+              const scanResult: any = {
+                url: page.url,
+                title: page.title,
+                description: page.description,
                 thinnedText: page.thinnedText,
+                summarizedContent: page.summarizedContent,
+                schemas: page.schemas,
                 structuralData: {
                   semanticTags: page.semanticTags,
                   links: {
@@ -78,15 +73,31 @@ export async function POST(request: NextRequest) {
                     imagesWithAlt: page.imgWithAlt,
                   },
                   wordCount: page.wordCount,
-                  hasViewport: page.metaChecks.hasViewport,
                 },
-                semanticFlags: aiAnalysis?.semanticFlags || {},
-                schemaQuality: aiAnalysis?.schemaQuality,
-                technical: { responseTimeMs: page.responseTimeMs, isHttps: page.isHttps },
+                technical: {
+                  responseTimeMs: page.responseTimeMs,
+                  isHttps: page.isHttps,
+                },
                 metaChecks: page.metaChecks,
-                siteType: siteTypeResult.primaryType
+                siteType: siteTypeResult.primaryType,
               }
-              const graderResult = calculateScoresFromScanResult(scanResultForGrader)
+
+              // Same AI call as Pro Audit — identical data in
+              const aiAnalysis = await analyzeWithGemini({
+                title: scanResult.title,
+                description: scanResult.description,
+                thinnedText: scanResult.thinnedText,
+                summarizedContent: scanResult.summarizedContent,
+                schemas: scanResult.schemas,
+                structuralData: scanResult.structuralData,
+              })
+
+              // Attach AI results to scanResult (same as Pro Audit does with pageData)
+              scanResult.semanticFlags = aiAnalysis?.semanticFlags || {}
+              scanResult.schemaQuality = aiAnalysis?.schemaQuality
+
+              // Same grader call as Pro Audit — identical data in
+              const graderResult = calculateScoresFromScanResult(scanResult)
               const enhancedPenalties = convertBreakdownToEnhancedPenalties(
                 graderResult.breakdown.seo, graderResult.breakdown.aeo, graderResult.breakdown.geo
               )

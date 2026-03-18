@@ -1,6 +1,7 @@
 import { chromium as playwright, type Browser, type Page } from 'playwright-core';
 import chromium from '@sparticuz/chromium';
 import { thinHtml, extractSchema } from './utils/cleaner';
+import { summarizeContent, formatSummaryForAI } from './utils/content-summarizer';
 
 export interface PageScan {
     url: string;
@@ -9,6 +10,7 @@ export interface PageScan {
     schemas: any[];
     schemaTypes: string[];
     thinnedText: string;
+    summarizedContent: string;
     status: 'success' | 'failed';
     wordCount: number;
     internalLinks: number;
@@ -226,13 +228,18 @@ async function extractPageData(page: Page, domain: string, responseTimeMs: numbe
         return { wordCount: words.length, internalLinks, externalLinks, hasH1, h2Count, h3Count, imgTotal, imgWithAlt, internalUrls, semanticTags, socialLinksCount, metaChecks };
     }, domain);
 
+    // Generate summarized content (matching Pro Audit's content-summarizer pipeline)
+    const contentSummary = summarizeContent(html);
+    const summarizedContent = formatSummaryForAI(contentSummary);
+
     return {
         url,
         title,
         description,
         schemas,
         schemaTypes,
-        thinnedText: thinHtml(html).substring(0, 3000),
+        thinnedText: thinHtml(html),
+        summarizedContent,
         status: 'success',
         wordCount: pageSignals.wordCount,
         internalLinks: pageSignals.internalLinks,
