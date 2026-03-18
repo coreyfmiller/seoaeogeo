@@ -1,15 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Activity, Layers, Sparkles, Zap, ShieldCheck, AlertTriangle, FileText, Globe, Image } from 'lucide-react'
+import { Layers, Sparkles, Zap, ShieldCheck, AlertTriangle, FileText } from 'lucide-react'
 import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { Header } from '@/components/dashboard/header'
 import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
 import { CrawlConfig } from '@/components/dashboard/crawl-config'
-import { CrawlProgress } from '@/components/dashboard/crawl-progress'
-import { MultiPageDashboard } from '@/components/dashboard/multi-page-dashboard'
 import { PageComparisonTable } from '@/components/dashboard/page-comparison-table'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
@@ -390,6 +388,30 @@ export default function DeepV3Page() {
                   </Card>
                 )}
 
+                {/* Page Comparison Table */}
+                {result.pages.length > 1 && (
+                  <PageComparisonTable
+                    pages={result.pages.map((p: any) => ({
+                      url: p.url,
+                      title: p.title || 'Untitled',
+                      seoScore: p.scores.seo.score,
+                      aeoScore: p.scores.aeo.score,
+                      geoScore: p.scores.geo.score,
+                      wordCount: p.wordCount || 0,
+                      issueCount: p.enhancedPenalties?.length || 0,
+                      issues: (p.enhancedPenalties || []).slice(0, 3).map((pen: any) => ({
+                        type: pen.component,
+                        severity: pen.severity === 'critical' ? 'high' : pen.severity === 'warning' ? 'medium' : 'low',
+                        fix: pen.fix
+                      })),
+                      hasH1: p.hasH1 === true,
+                      hasMetaDescription: p.hasDescription === true,
+                      schemaCount: p.schemaCount || 0,
+                      responseTimeMs: p.responseTimeMs || 0,
+                    }))}
+                  />
+                )}
+
                 {/* Domain Health Breakdown */}
                 {result.sitewideIntelligence?.domainHealthBreakdown && (
                   <Card className="border-geo/20 bg-geo/5">
@@ -430,6 +452,15 @@ export default function DeepV3Page() {
                                   {data.issues.slice(0, 3).map((issue: string, i: number) => (
                                     <li key={i} className="flex items-start gap-1">
                                       <span className="text-yellow-600 mt-0.5">⚠</span> {issue}
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                              {data.recommendations?.length > 0 && (
+                                <ul className="text-xs space-y-0.5 mt-2">
+                                  {data.recommendations.slice(0, 3).map((rec: string, i: number) => (
+                                    <li key={i} className="flex items-start gap-1 text-geo">
+                                      <Zap className="h-3 w-3 shrink-0 mt-0.5" /> <span className="text-foreground/80">{rec}</span>
                                     </li>
                                   ))}
                                 </ul>
@@ -483,6 +514,12 @@ export default function DeepV3Page() {
                                 <span className="text-sm font-medium">{issue.issue}</span>
                               </div>
                               <p className="text-xs text-muted-foreground">{issue.affectedCount} page(s) affected • -{issue.pointsDeducted} pts</p>
+                              {issue.howToFix && (
+                                <div className="flex items-start gap-1.5 mt-1.5 p-1.5 rounded bg-geo/5 border border-geo/20">
+                                  <Zap className="h-3 w-3 text-geo shrink-0 mt-0.5" />
+                                  <p className="text-xs text-foreground/80"><span className="font-semibold text-geo">Fix:</span> {issue.howToFix}</p>
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>
@@ -509,6 +546,10 @@ export default function DeepV3Page() {
                           <div className="space-y-0.5">
                             {dup.urls.map((u, j) => <p key={j} className="text-xs text-muted-foreground truncate">{u}</p>)}
                           </div>
+                          <div className="flex items-start gap-1.5 mt-2 p-1.5 rounded bg-geo/5 border border-geo/20">
+                            <Zap className="h-3 w-3 text-geo shrink-0 mt-0.5" />
+                            <p className="text-xs text-foreground/80"><span className="font-semibold text-geo">Fix:</span> Write a unique, descriptive title for each page that reflects its specific content. Duplicate titles cause keyword cannibalization.</p>
+                          </div>
                         </div>
                       ))}
                       {result.duplicateDescriptions?.map((dup, i) => (
@@ -517,6 +558,10 @@ export default function DeepV3Page() {
                           <p className="text-sm font-medium mb-1 truncate">{dup.description}</p>
                           <div className="space-y-0.5">
                             {dup.urls.map((u, j) => <p key={j} className="text-xs text-muted-foreground truncate">{u}</p>)}
+                          </div>
+                          <div className="flex items-start gap-1.5 mt-2 p-1.5 rounded bg-geo/5 border border-geo/20">
+                            <Zap className="h-3 w-3 text-geo shrink-0 mt-0.5" />
+                            <p className="text-xs text-foreground/80"><span className="font-semibold text-geo">Fix:</span> Write a unique meta description (120-160 chars) for each page summarizing its specific value proposition.</p>
                           </div>
                         </div>
                       ))}
@@ -540,88 +585,32 @@ export default function DeepV3Page() {
                     <CardContent>
                       <p className="text-sm text-muted-foreground mb-3">{result.sitewideIntelligence.aeoReadiness.verdict}</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {Object.entries(result.sitewideIntelligence.aeoReadiness.signals || {}).map(([key, val]) => (
-                          <div key={key} className={`p-2 rounded border text-xs ${val ? 'border-green-500/30 bg-green-500/5 text-green-600' : 'border-red-500/30 bg-red-500/5 text-red-600'}`}>
-                            {val ? '✓' : '✗'} {key.replace(/^has/, '').replace(/([A-Z])/g, ' $1').trim()}
-                          </div>
-                        ))}
+                        {Object.entries(result.sitewideIntelligence.aeoReadiness.signals || {}).map(([key, val]) => {
+                          const label = key.replace(/^has/, '').replace(/([A-Z])/g, ' $1').trim()
+                          const fixes: Record<string, string> = {
+                            'AboutPage': 'Create a detailed About page with team bios, company history, and expertise signals.',
+                            'FaqContent': 'Add an FAQ section with structured Q&A using FAQPage schema markup.',
+                            'StructuredQa': 'Implement FAQPage or QAPage schema to help AI engines parse your Q&A content.',
+                            'AuthorOrExpertSignals': 'Add author bios with credentials, certifications, or experience to establish E-E-A-T.',
+                            'ClearTopicFocus': 'Tighten your content around core topics. Avoid covering too many unrelated subjects.',
+                            'SchemaForAi': 'Add JSON-LD schema (Organization, LocalBusiness, FAQPage) to help AI engines understand your site.',
+                            'LongformContent': 'Create in-depth content (1000+ words) on key topics to demonstrate expertise.',
+                          }
+                          const fixKey = key.replace(/^has/, '')
+                          return (
+                            <div key={key} className={`p-2 rounded border text-xs ${val ? 'border-green-500/30 bg-green-500/5 text-green-600' : 'border-red-500/30 bg-red-500/5 text-red-600'}`}>
+                              <p>{val ? '✓' : '✗'} {label}</p>
+                              {!val && fixes[fixKey] && (
+                                <p className="text-[10px] text-foreground/60 mt-1">💡 {fixes[fixKey]}</p>
+                              )}
+                            </div>
+                          )
+                        })}
                       </div>
                     </CardContent>
                   </Card>
                 )}
 
-                {/* Multi-Page Dashboard */}
-                {result.pagesCrawled > 1 && result.siteWideIssues && (
-                  <MultiPageDashboard
-                    pagesCrawled={result.pagesCrawled}
-                    aggregateScores={result.scores}
-                    siteWideIssues={result.siteWideIssues}
-                    totalWords={result.aggregateMetrics.totalWords}
-                    schemaCount={result.aggregateMetrics.totalSchemas}
-                    orphanCount={result.sitewideIntelligence?.orphanPageRisks?.length || 0}
-                    duplicateCount={result.duplicateTitles?.length || 0}
-                  />
-                )}
-
-                {/* Page Comparison Table */}
-                {result.pages.length > 1 && (
-                  <PageComparisonTable
-                    pages={result.pages.map((p: any) => ({
-                      url: p.url,
-                      title: p.title || 'Untitled',
-                      seoScore: p.scores.seo.score,
-                      aeoScore: p.scores.aeo.score,
-                      geoScore: p.scores.geo.score,
-                      wordCount: p.wordCount || 0,
-                      issueCount: p.enhancedPenalties?.length || 0,
-                      issues: (p.enhancedPenalties || []).slice(0, 3).map((pen: any) => ({
-                        type: pen.component,
-                        severity: pen.severity,
-                        fix: pen.fix
-                      })),
-                      hasH1: p.hasH1 === true,
-                      hasMetaDescription: p.hasDescription === true,
-                      schemaCount: p.schemaCount || 0,
-                      responseTimeMs: p.responseTimeMs || 0,
-                    }))}
-                  />
-                )}
-
-                {/* Per-Page Results */}
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <CardTitle>Page Analysis Results</CardTitle>
-                      <InfoTooltip content="Individual page scores from AI-powered context-aware analysis. Each page is scored independently." />
-                    </div>
-                    <CardDescription>
-                      Analyzed {result.pages.length} pages • {result.crawlStats.failed} failed
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {result.pages.map((page: any, idx: number) => (
-                        <div key={idx} className="p-4 border rounded-lg">
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-medium truncate">{page.title || page.url}</h4>
-                            <div className="flex gap-2">
-                              <span className="text-xs px-2 py-1 rounded bg-seo/10 text-seo">
-                                SEO: {page.scores.seo.score}
-                              </span>
-                              <span className="text-xs px-2 py-1 rounded bg-aeo/10 text-aeo">
-                                AEO: {page.scores.aeo.score}
-                              </span>
-                              <span className="text-xs px-2 py-1 rounded bg-geo/10 text-geo">
-                                GEO: {page.scores.geo.score}
-                              </span>
-                            </div>
-                          </div>
-                          <p className="text-xs text-muted-foreground truncate">{page.url}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
               </div>
             )}
           </div>

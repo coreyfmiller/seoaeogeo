@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import React, { useState, useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -214,9 +214,8 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                 {currentPages.map((page, idx) => {
                   const isExpanded = expandedRows.has(page.url)
                   return (
-                    <>
+                    <React.Fragment key={page.url}>
                       <tr 
-                        key={page.url}
                         className={cn(
                           "border-b border-border/30 hover:bg-muted/30 transition-colors",
                           idx % 2 === 0 ? "bg-background" : "bg-muted/10",
@@ -393,7 +392,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                           </td>
                         </tr>
                       )}
-                    </>
+                    </React.Fragment>
                   )
                 })}
               </tbody>
