@@ -22,7 +22,7 @@ const plans = [
     price: "$5",
     period: "",
     desc: "For individual site owners",
-    highlights: ["15 Pro Audits", "AI fix instructions with code examples", "Export reports"],
+    highlights: ["5 Pro Audits", "AI fix instructions with code examples", "Export reports"],
     cta: "Go Pro",
     popular: false,
   },
@@ -31,7 +31,7 @@ const plans = [
     price: "$20",
     period: "",
     desc: "For freelancers and consultants",
-    highlights: ["75 Pro Audits", "10 Deep Crawls (up to 50 pages)", "10 Competitive Intelligence scans", "AI fix instructions with code examples", "Priority scoring & ROI", "Platform-specific guides", "Export reports"],
+    highlights: ["20 Pro Audits", "10 Deep Crawls (up to 50 pages)", "10 Competitive Intelligence scans", "AI fix instructions with code examples", "Priority scoring & ROI", "Platform-specific guides", "Export reports"],
     cta: "Go Pro",
     popular: true,
   },
@@ -40,7 +40,7 @@ const plans = [
     price: "$50",
     period: "",
     desc: "For growing agencies",
-    highlights: ["200 Pro Audits", "50 Deep Crawls (up to 50 pages)", "25 Competitive Intelligence scans", "AI fix instructions with code examples", "Priority scoring & ROI", "Platform-specific guides", "White-label reports", "Export reports", "Priority support"],
+    highlights: ["60 Pro Audits", "50 Deep Crawls (up to 50 pages)", "25 Competitive Intelligence scans", "AI fix instructions with code examples", "Priority scoring & ROI", "Platform-specific guides", "White-label reports", "Export reports", "Priority support"],
     cta: "Go Pro",
     popular: false,
   },
@@ -49,7 +49,7 @@ const plans = [
     price: "$100",
     period: "",
     desc: "For high-volume professionals",
-    highlights: ["500 Pro Audits", "100 Deep Crawls (up to 50 pages)", "50 Competitive Intelligence scans", "AI fix instructions with code examples", "Priority scoring & ROI", "Platform-specific guides", "White-label reports", "Export reports", "Scan history & snapshots", "Priority support"],
+    highlights: ["140 Pro Audits", "100 Deep Crawls (up to 50 pages)", "50 Competitive Intelligence scans", "AI fix instructions with code examples", "Priority scoring & ROI", "Platform-specific guides", "White-label reports", "Export reports", "Scan history & snapshots", "Priority support"],
     cta: "Go Pro",
     popular: false,
   },
@@ -61,8 +61,8 @@ export default function ProPage() {
       <AppSidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header apiStatus="idle" />
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-5xl mx-auto space-y-10">
+        <main className="flex-1 overflow-y-auto px-6 pt-6">
+          <div className="max-w-5xl mx-auto space-y-10 pb-6">
 
             {/* Hero */}
             <div className="text-center space-y-4">
@@ -149,7 +149,7 @@ export default function ProPage() {
                         ["SEO / AEO / GEO Scores", "✓", "✓", "✓", "✓", "✓"],
                         ["Quick Health Check", "✓", "✓", "✓", "✓", "✓"],
                         ["Key Metrics Strip", "✓", "✓", "✓", "✓", "✓"],
-                        ["Pro Audits", "—", "15", "75", "200", "500"],
+                        ["Pro Audits", "—", "5", "20", "60", "140"],
                         ["AI Fix Instructions", "—", "✓", "✓", "✓", "✓"],
                         ["Copy-Paste Code", "—", "✓", "✓", "✓", "✓"],
                         ["Export Reports", "—", "✓", "✓", "✓", "✓"],

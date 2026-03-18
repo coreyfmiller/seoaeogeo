@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Activity, Search, Zap, CheckCircle2, XCircle, ArrowRight } from 'lucide-react'
-import { saveScanToHistory } from '@/lib/scan-history'
+import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { SearchInput } from '@/components/dashboard/search-input'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { Header } from '@/components/dashboard/header'
 import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
+import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
 import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
 
@@ -116,9 +117,28 @@ export default function V2Page() {
         type: 'free-v3',
         scores: { seo: result.scores.seo.score, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
         timestamp: new Date().toISOString(),
-      })
+      }, result)
     }
   }, [result, currentUrl])
+
+  // Load from history if navigated from dashboard, or restore last scan
+  useEffect(() => {
+    const entry = consumeLoadFromHistory()
+    if (entry && entry.type === 'free-v3') {
+      const full = getFullScanResult(entry)
+      if (full) {
+        setCurrentUrl(entry.url)
+        sse.setData(full)
+        return
+      }
+    }
+    // Auto-restore most recent scan for this page
+    const latest = getLatestFullScan('free-v3')
+    if (latest) {
+      setCurrentUrl(latest.entry.url)
+      sse.setData(latest.result)
+    }
+  }, [])
 
   return (
     <div className="flex h-screen bg-background">
@@ -136,8 +156,8 @@ export default function V2Page() {
         />
 
         {/* Dashboard Content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
+        <main className="flex-1 overflow-y-auto px-6 pt-6">
+          <div className="max-w-7xl mx-auto space-y-6 pb-6">
       
       {/* Page Header with Actions */}
       <AuditPageHeader
@@ -160,6 +180,7 @@ export default function V2Page() {
           primaryType: result.siteTypeResult.primaryType,
           confidence: result.siteTypeResult.confidence
         } : undefined}
+        cwv={result?.cwv}
       />
 
       {/* Loading Overlay */}
@@ -255,14 +276,8 @@ export default function V2Page() {
         </div>
       )}
 
-      {/* Error Display */}
-      {error && (
-        <Card className="border-red-500/50 bg-red-500/5">
-          <CardContent className="pt-6">
-            <p className="text-sm text-red-600">{error}</p>
-          </CardContent>
-        </Card>
-      )}
+      {/* Error Popup */}
+      <ScanErrorDialog error={error} onClose={() => sse.reset()} onRetry={() => handleAnalyze(currentUrl)} />
 
       {/* Results Display */}
       {result && (
@@ -270,6 +285,7 @@ export default function V2Page() {
           {/* Score Cards with Circular Progress */}
           <div className="grid gap-6 md:grid-cols-3">
             <Card className="flex items-center justify-center p-6">
+              <div className="flex flex-col items-center gap-1">
               <CircularProgress
                 value={result.scores.seo.score}
                 variant="seo"
@@ -277,9 +293,12 @@ export default function V2Page() {
                 size={140}
                 strokeWidth={10}
               />
+              <InfoTooltip content="Search Engine Optimization — measures technical health, metadata, crawlability, content structure, and on-page factors. A high SEO score means search engines can easily find, crawl, and understand your page." />
+              </div>
             </Card>
 
             <Card className="flex items-center justify-center p-6">
+              <div className="flex flex-col items-center gap-1">
               <CircularProgress
                 value={result.scores.aeo.score}
                 variant="aeo"
@@ -287,9 +306,12 @@ export default function V2Page() {
                 size={140}
                 strokeWidth={10}
               />
+              <InfoTooltip content="Answer Engine Optimization — measures how likely AI assistants like ChatGPT, Perplexity, and Gemini are to cite your content. Factors include structured data, FAQ coverage, direct answer formatting, and schema markup." />
+              </div>
             </Card>
 
             <Card className="flex items-center justify-center p-6">
+              <div className="flex flex-col items-center gap-1">
               <CircularProgress
                 value={result.scores.geo.score}
                 variant="geo"
@@ -297,6 +319,8 @@ export default function V2Page() {
                 size={140}
                 strokeWidth={10}
               />
+              <InfoTooltip content="Generative Engine Optimization — measures how well your content is structured for AI-generated search results and summaries. Evaluates brand clarity, topical authority, citation-worthiness, and content uniqueness." />
+              </div>
             </Card>
           </div>
 
@@ -313,84 +337,33 @@ export default function V2Page() {
             const imgTotal = sd.media?.totalImages || 0
             const imgWithAlt = sd.media?.imagesWithAlt || 0
             const altPct = imgTotal > 0 ? Math.round((imgWithAlt / imgTotal) * 100) : 100
-            const metrics = [
-              { label: "Schema", value: hasSchema ? `${schemas.length} found` : "0%", color: hasSchema ? "text-seo" : "text-red-600", tip: "Number of structured data schemas found. Improves rich snippet eligibility." },
-              { label: "Metadata", value: hasMeta ? "100%" : "0%", color: hasMeta ? "text-geo" : "text-yellow-600", tip: "Whether the page has both a title tag and meta description." },
-              { label: "H1 Tag", value: hasH1 ? "100%" : "0%", color: hasH1 ? "text-geo" : "text-red-600", tip: "Whether the page has an H1 heading tag." },
-              { label: "HTTPS", value: isHttps ? "100%" : "0%", color: isHttps ? "text-geo" : "text-red-600", tip: "Whether the page is served over HTTPS." },
-              { label: "Response", value: `${responseTime}ms`, color: responseTime < 500 ? "text-geo" : "text-yellow-600", tip: "Server response time. Under 200ms is good, over 500ms needs attention." },
-              { label: "Robots.txt", value: result.robotsTxt ? "Found" : "Missing", color: result.robotsTxt ? "text-green-600" : "text-red-600", tip: "Whether a robots.txt file exists at the domain root." },
-              { label: "Sitemap", value: result.sitemapFound ? "Found" : "Missing", color: result.sitemapFound ? "text-green-600" : "text-red-600", tip: "Whether an XML sitemap was found at the domain root." },
-              { label: "Alt Text", value: `${altPct}%`, color: altPct >= 80 ? "text-green-600" : "text-yellow-600", tip: "Percentage of images with descriptive alt text. Critical for accessibility and image search." },
-            ]
-            return (
-              <div className="grid grid-cols-4 md:grid-cols-4 lg:grid-cols-8 gap-2">
-                {metrics.map(m => (
-                  <div key={m.label} className="rounded-lg border border-border/50 bg-card/50 px-2.5 py-2">
-                    <div className="flex items-center gap-0.5 mb-0.5">
-                      <p className="text-[8px] uppercase tracking-wider text-muted-foreground font-bold leading-tight truncate">{m.label}</p>
-                      <InfoTooltip content={m.tip} className="shrink-0 [&_svg]:h-2.5 [&_svg]:w-2.5" />
-                    </div>
-                    <p className={`text-sm font-black ${m.color} truncate`}>{m.value}</p>
-                  </div>
-                ))}
-              </div>
-            )
-          })()}
-
-          {/* Pass/Fail Checklist */}
-          {(() => {
-            const mc = result.pageData?.metaChecks || {}
-            const sd = result.pageData?.structuralData || {}
-            const titleLen = mc.titleLength || 0
-            const descLen = mc.descriptionLength || 0
             const wordCount = sd.wordCount || 0
-            const h2Count = sd.semanticTags?.h2Count || 0
-            const internalLinks = sd.links?.internal || 0
-
-            const checks = [
-              { label: "Title Length", value: `${titleLen} chars`, pass: titleLen >= 30 && titleLen <= 60, tip: titleLen === 0 ? "Missing" : titleLen < 30 ? "Too short (min 30)" : titleLen > 60 ? "Too long (max 60)" : "Optimal" },
-              { label: "Description Length", value: `${descLen} chars`, pass: descLen >= 70 && descLen <= 160, tip: descLen === 0 ? "Missing" : descLen < 70 ? "Too short (min 70)" : descLen > 160 ? "Too long (max 160)" : "Optimal" },
-              { label: "Canonical URL", value: mc.hasCanonical ? "Present" : "Missing", pass: !!mc.hasCanonical, tip: mc.hasCanonical ? "Canonical tag found" : "No canonical tag — risk of duplicate content" },
-              { label: "Open Graph", value: mc.hasOgTitle && mc.hasOgImage ? "Complete" : mc.hasOgTitle ? "Partial" : "Missing", pass: !!mc.hasOgTitle && !!mc.hasOgImage, tip: !mc.hasOgTitle ? "No OG tags — poor social sharing preview" : !mc.hasOgImage ? "Missing og:image" : "Social sharing ready" },
-              { label: "Viewport Tag", value: mc.hasViewport ? "Present" : "Missing", pass: !!mc.hasViewport, tip: mc.hasViewport ? "Mobile-friendly viewport set" : "No viewport tag — not mobile-friendly" },
-              { label: "Content Depth", value: `${wordCount.toLocaleString()} words`, pass: wordCount >= 300, tip: wordCount < 300 ? "Thin content (under 300 words)" : "Sufficient content depth" },
-              { label: "H2 Structure", value: `${h2Count} found`, pass: h2Count > 0, tip: h2Count === 0 ? "No H2 headings — poor content structure" : "Content has heading structure" },
-              { label: "Internal Links", value: `${internalLinks} found`, pass: internalLinks > 0, tip: internalLinks === 0 ? "No internal links — orphan page" : "Page links to other pages on the site" },
+            const metrics = [
+              { label: "Schema", value: hasSchema ? `${schemas.length} found` : "None", color: hasSchema ? "text-seo" : "text-red-600", tip: "Structured data (JSON-LD) schemas found on the page. Schema markup helps search engines understand your content and enables rich snippets in search results — like star ratings, FAQs, and product prices. Missing schema means you're invisible to rich result features." },
+              { label: "Metadata", value: hasMeta ? "100%" : "0%", color: hasMeta ? "text-geo" : "text-red-600", tip: "Whether the page has both a title tag and meta description. These are the first things users see in search results. Missing metadata means Google will auto-generate your snippet, which is almost always worse than a crafted one." },
+              { label: "H1 Tag", value: hasH1 ? "100%" : "0%", color: hasH1 ? "text-geo" : "text-red-600", tip: "Whether the page has an H1 heading tag. The H1 is the primary heading that tells search engines and users what the page is about. Every page should have exactly one H1 — missing it confuses crawlers and hurts rankings." },
+              { label: "HTTPS", value: isHttps ? "100%" : "0%", color: isHttps ? "text-geo" : "text-red-600", tip: "Whether the page is served over HTTPS (SSL/TLS encryption). Google has used HTTPS as a ranking signal since 2014. Non-HTTPS sites show 'Not Secure' warnings in browsers, destroying user trust and hurting conversions." },
+              { label: "Response", value: `${responseTime}ms`, color: responseTime < 500 ? "text-geo" : responseTime < 1000 ? "text-yellow-600" : "text-red-600", tip: "Server response time (Time to First Byte). Under 500ms is good, 500-1000ms needs attention, over 1000ms is critical. Slow response times directly impact Core Web Vitals and user experience — Google penalizes slow sites in rankings." },
+              { label: "Robots.txt", value: result.robotsTxt ? "Found" : "Missing", color: result.robotsTxt ? "text-green-600" : "text-red-600", tip: "Whether a robots.txt file exists at the domain root. This file tells search engine crawlers which pages to index and which to skip. Without it, crawlers may waste budget on unimportant pages or index pages you don't want visible." },
+              { label: "Sitemap", value: result.sitemapFound ? "Found" : "Missing", color: result.sitemapFound ? "text-green-600" : "text-red-600", tip: "Whether an XML sitemap was found. Sitemaps help search engines discover all your pages efficiently, especially new or deeply nested content. Without one, some pages may never get indexed." },
+              { label: "Alt Text", value: `${altPct}%`, color: altPct >= 80 ? "text-green-600" : altPct >= 50 ? "text-yellow-600" : "text-red-600", tip: "Percentage of images with descriptive alt text. Alt text is critical for accessibility (screen readers) and image search rankings. Google Images drives significant traffic — missing alt text means you're leaving that traffic on the table." },
+              { label: "Content Depth", value: `${wordCount.toLocaleString()}`, color: wordCount < 300 ? "text-red-600" : wordCount < 800 ? "text-yellow-600" : "text-green-600", tip: wordCount < 300 ? "Thin content — under 300 words. Pages with very little content struggle to rank because search engines can't determine topical relevance. Aim for 800+ words of quality, focused content." : wordCount < 800 ? "Moderate content depth. While not thin, pages with 800+ words tend to rank better for competitive queries. Consider expanding with relevant subtopics and supporting details." : "Good content depth. Longer, comprehensive content tends to rank better and earn more backlinks. Quality matters more than quantity — ensure every word adds value." },
             ]
-
-            const passCount = checks.filter(c => c.pass).length
-            const failCount = checks.length - passCount
-
             return (
-              <Card>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <Activity className="h-4 w-4 text-seo" />
-                      Quick Health Check
-                    </CardTitle>
-                    <div className="flex items-center gap-3 text-xs">
-                      <span className="flex items-center gap-1 text-green-600"><CheckCircle2 className="h-3 w-3" />{passCount} passed</span>
-                      <span className="flex items-center gap-1 text-red-600"><XCircle className="h-3 w-3" />{failCount} failed</span>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {checks.map(c => (
-                      <div key={c.label} className={`flex items-start gap-2 rounded-lg border px-3 py-2 ${c.pass ? 'border-green-500/20 bg-green-500/5' : 'border-red-500/20 bg-red-500/5'}`}>
-                        {c.pass ? <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0 mt-0.5" /> : <XCircle className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />}
-                        <div className="min-w-0">
-                          <p className="text-xs font-bold truncate">{c.label}</p>
-                          <p className={`text-xs font-medium ${c.pass ? 'text-green-600' : 'text-red-600'}`}>{c.value}</p>
-                          <p className="text-[10px] text-muted-foreground">{c.tip}</p>
-                        </div>
+              <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-2">
+                {metrics.map(m => {
+                  const isBad = m.color === "text-red-600"
+                  return (
+                    <div key={m.label} className={`rounded-lg border px-2.5 py-2 ${isBad ? "border-red-500/40 bg-red-500/5" : "border-border/50 bg-card/50"}`}>
+                      <div className="flex items-center gap-0.5 mb-0.5">
+                        <p className="text-[8px] uppercase tracking-wider text-muted-foreground font-bold leading-tight truncate">{m.label}</p>
+                        <InfoTooltip content={m.tip} className="shrink-0 [&_svg]:h-2.5 [&_svg]:w-2.5" />
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                      <p className={`text-sm font-black ${m.color} truncate`}>{m.value}</p>
+                    </div>
+                  )
+                })}
+              </div>
             )
           })()}
 
@@ -409,6 +382,7 @@ export default function V2Page() {
                 <div className="flex items-center gap-2">
                   <span className={`text-lg font-black ${textColor}`}>{total}</span>
                   <span className="text-sm font-medium">issues found</span>
+                  <InfoTooltip content="Total number of SEO, AEO, and GEO issues detected on this page. Critical issues have the highest impact on your scores and should be fixed first. Upgrade to Pro for step-by-step fix instructions." />
                   {critical > 0 && <span className="text-xs text-red-600 font-medium">({critical} critical)</span>}
                 </div>
                 <button

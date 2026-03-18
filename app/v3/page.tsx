@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Zap, Search, Sparkles, Bot } from 'lucide-react'
-import { saveScanToHistory } from '@/lib/scan-history'
+import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { SearchInput } from '@/components/dashboard/search-input'
@@ -10,6 +10,7 @@ import { CircularProgress } from '@/components/dashboard/circular-progress'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { Header } from '@/components/dashboard/header'
 import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
+import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
 import { SEOTabEnhanced } from '@/components/dashboard/seo-tab-enhanced'
 import { AEOTab } from '@/components/dashboard/aeo-tab'
 import { GEOTab } from '@/components/dashboard/geo-tab'
@@ -133,9 +134,26 @@ export default function V3Page() {
         type: 'pro',
         scores: { seo: result.scores.seo.score, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
         timestamp: new Date().toISOString(),
-      })
+      }, result)
     }
   }, [result, currentUrl])
+
+  useEffect(() => {
+    const entry = consumeLoadFromHistory()
+    if (entry && entry.type === 'pro') {
+      const full = getFullScanResult(entry)
+      if (full) {
+        setCurrentUrl(entry.url)
+        sse.setData(full)
+        return
+      }
+    }
+    const latest = getLatestFullScan('pro')
+    if (latest) {
+      setCurrentUrl(latest.entry.url)
+      sse.setData(latest.result)
+    }
+  }, [])
 
   // Map V3 result data into the shape the Pro Audit tab components expect
   const tabData = result ? {
@@ -195,15 +213,13 @@ export default function V3Page() {
         />
 
         {/* Dashboard Content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
+        <main className="flex-1 overflow-y-auto px-6 pt-6">
+          <div className="max-w-7xl mx-auto space-y-6 pb-6 overflow-hidden">
       
       {/* Page Header with Actions */}
       <AuditPageHeader
         title="V3 Pro Audit"
         description="AI-powered scoring with site-type-specific analysis for 95% accuracy."
-        badge="BETA AI"
-        badgeVariant="beta"
         currentUrl={currentUrl}
         hasResults={!!result}
         isAnalyzing={isAnalyzing}
@@ -218,7 +234,6 @@ export default function V3Page() {
           primaryType: result.siteTypeResult.primaryType,
           confidence: result.siteTypeResult.confidence
         } : undefined}
-        cwv={result?.cwv}
       />
 
       {/* Loading Overlay */}
@@ -314,14 +329,8 @@ export default function V3Page() {
         </div>
       )}
 
-      {/* Error Display */}
-      {error && (
-        <Card className="border-red-500/50 bg-red-500/5">
-          <CardContent className="pt-6">
-            <p className="text-sm text-red-600">{error}</p>
-          </CardContent>
-        </Card>
-      )}
+      {/* Error Popup */}
+      <ScanErrorDialog error={error} onClose={() => sse.reset()} onRetry={() => handleAnalyze(currentUrl)} />
 
       {/* Results Display */}
       {result && (
@@ -429,6 +438,84 @@ export default function V3Page() {
               </TabsContent>
             </div>
           </Tabs>
+
+          {/* Core Web Vitals */}
+          {result.cwv && (
+            <Card className="border-purple-500/20 bg-purple-500/5">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Zap className="h-5 w-5 text-purple-600" />
+                  Core Web Vitals
+                  <InfoTooltip content="Google's Core Web Vitals measure real-world user experience — loading speed (LCP), interactivity (INP), and visual stability (CLS). These are direct ranking signals that affect your position in search results." />
+                  <span className="ml-auto text-sm font-black text-purple-600">{result.cwv.performanceScore}/100</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-4">
+                  {result.cwv.lcp && (
+                    <div className={`rounded-lg border p-4 text-center ${
+                      result.cwv.lcp.category === 'FAST' ? 'border-green-500/30 bg-green-500/5' :
+                      result.cwv.lcp.category === 'SLOW' ? 'border-red-500/30 bg-red-500/5' :
+                      'border-yellow-500/30 bg-yellow-500/5'
+                    }`}>
+                      <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1 flex items-center justify-center gap-1">
+                        LCP
+                        <InfoTooltip content="Largest Contentful Paint — measures loading performance. How long until the largest visible element (image, heading, or text block) renders on screen. Under 2.5s is good, over 4s is poor. This is the most impactful Core Web Vital for perceived speed." className="[&_svg]:h-3 [&_svg]:w-3" />
+                      </p>
+                      <p className={`text-2xl font-black ${
+                        result.cwv.lcp.category === 'FAST' ? 'text-green-600' :
+                        result.cwv.lcp.category === 'SLOW' ? 'text-red-600' : 'text-yellow-600'
+                      }`}>{result.cwv.lcp.displayValue}</p>
+                      <p className={`text-[10px] font-bold uppercase mt-1 ${
+                        result.cwv.lcp.category === 'FAST' ? 'text-green-600' :
+                        result.cwv.lcp.category === 'SLOW' ? 'text-red-600' : 'text-yellow-600'
+                      }`}>{result.cwv.lcp.category}</p>
+                    </div>
+                  )}
+                  {result.cwv.inp && (
+                    <div className={`rounded-lg border p-4 text-center ${
+                      result.cwv.inp.category === 'FAST' ? 'border-green-500/30 bg-green-500/5' :
+                      result.cwv.inp.category === 'SLOW' ? 'border-red-500/30 bg-red-500/5' :
+                      'border-yellow-500/30 bg-yellow-500/5'
+                    }`}>
+                      <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1 flex items-center justify-center gap-1">
+                        INP
+                        <InfoTooltip content="Interaction to Next Paint — measures responsiveness. How long until the page visually responds after a user clicks, taps, or presses a key. Under 200ms is good, over 500ms is poor. Slow INP makes your site feel sluggish and unresponsive." className="[&_svg]:h-3 [&_svg]:w-3" />
+                      </p>
+                      <p className={`text-2xl font-black ${
+                        result.cwv.inp.category === 'FAST' ? 'text-green-600' :
+                        result.cwv.inp.category === 'SLOW' ? 'text-red-600' : 'text-yellow-600'
+                      }`}>{result.cwv.inp.displayValue}</p>
+                      <p className={`text-[10px] font-bold uppercase mt-1 ${
+                        result.cwv.inp.category === 'FAST' ? 'text-green-600' :
+                        result.cwv.inp.category === 'SLOW' ? 'text-red-600' : 'text-yellow-600'
+                      }`}>{result.cwv.inp.category}</p>
+                    </div>
+                  )}
+                  {result.cwv.cls && (
+                    <div className={`rounded-lg border p-4 text-center ${
+                      result.cwv.cls.category === 'FAST' ? 'border-green-500/30 bg-green-500/5' :
+                      result.cwv.cls.category === 'SLOW' ? 'border-red-500/30 bg-red-500/5' :
+                      'border-yellow-500/30 bg-yellow-500/5'
+                    }`}>
+                      <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1 flex items-center justify-center gap-1">
+                        CLS
+                        <InfoTooltip content="Cumulative Layout Shift — measures visual stability. How much the page layout unexpectedly shifts during loading (buttons moving, text jumping, images pushing content down). Under 0.1 is good, over 0.25 is poor. High CLS causes accidental clicks and frustrates users." className="[&_svg]:h-3 [&_svg]:w-3" />
+                      </p>
+                      <p className={`text-2xl font-black ${
+                        result.cwv.cls.category === 'FAST' ? 'text-green-600' :
+                        result.cwv.cls.category === 'SLOW' ? 'text-red-600' : 'text-yellow-600'
+                      }`}>{result.cwv.cls.displayValue}</p>
+                      <p className={`text-[10px] font-bold uppercase mt-1 ${
+                        result.cwv.cls.category === 'FAST' ? 'text-green-600' :
+                        result.cwv.cls.category === 'SLOW' ? 'text-red-600' : 'text-yellow-600'
+                      }`}>{result.cwv.cls.category}</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       )}
           </div>

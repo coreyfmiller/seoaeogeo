@@ -11,6 +11,7 @@ interface SSEAnalysisState<T = any> {
 interface UseSSEAnalysisReturn<T = any> extends SSEAnalysisState<T> {
   startAnalysis: (url: string, body?: Record<string, unknown>) => Promise<void>
   reset: () => void
+  setData: (data: T) => void
 }
 
 /**
@@ -122,5 +123,15 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
     })
   }, [])
 
-  return { ...state, startAnalysis, reset }
+  const setData = useCallback((data: T) => {
+    setState({
+      isAnalyzing: false,
+      phase: 'Loaded from history',
+      progress: 100,
+      data,
+      error: null,
+    })
+  }, [])
+
+  return { ...state, startAnalysis, reset, setData }
 }

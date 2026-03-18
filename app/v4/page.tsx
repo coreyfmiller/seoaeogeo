@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Sparkles, Zap, CheckCircle2, ArrowRight } from 'lucide-react'
-import { saveScanToHistory } from '@/lib/scan-history'
+import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { SearchInput } from '@/components/dashboard/search-input'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
@@ -11,6 +11,7 @@ import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { Header } from '@/components/dashboard/header'
 import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
 import { InfoTooltip } from '@/components/ui/info-tooltip'
+import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
 import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
 
 interface AnalysisResult {
@@ -42,6 +43,12 @@ interface AnalysisResult {
   }
   pageData?: any
   analyzedAt: string
+  cwv?: {
+    performanceScore: number
+    lcp: { value: number; category: string; displayValue: string; score: number } | null
+    inp: { value: number; category: string; displayValue: string; score: number } | null
+    cls: { value: number; category: string; displayValue: string; score: number } | null
+  }
 }
 
 export default function V4Page() {
@@ -65,9 +72,26 @@ export default function V4Page() {
         type: 'free-v4',
         scores: { seo: result.scores.seo.score, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
         timestamp: new Date().toISOString(),
-      })
+      }, result)
     }
   }, [result, currentUrl])
+
+  useEffect(() => {
+    const entry = consumeLoadFromHistory()
+    if (entry && entry.type === 'free-v4') {
+      const full = getFullScanResult(entry)
+      if (full) {
+        setCurrentUrl(entry.url)
+        sse.setData(full)
+        return
+      }
+    }
+    const latest = getLatestFullScan('free-v4')
+    if (latest) {
+      setCurrentUrl(latest.entry.url)
+      sse.setData(latest.result)
+    }
+  }, [])
 
   return (
     <div className="flex h-screen bg-background">
@@ -81,8 +105,8 @@ export default function V4Page() {
           apiStatus="idle"
         />
 
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
+        <main className="flex-1 overflow-y-auto px-6 pt-6">
+          <div className="max-w-7xl mx-auto space-y-6 pb-6">
       
             <AuditPageHeader
               title="V4 Free Audit"
@@ -103,6 +127,7 @@ export default function V4Page() {
                 primaryType: result.siteTypeResult.primaryType,
                 confidence: result.siteTypeResult.confidence
               } : undefined}
+              cwv={result?.cwv}
             />
 
             {isAnalyzing && (
@@ -188,25 +213,28 @@ export default function V4Page() {
               </div>
             )}
 
-            {error && (
-              <Card className="border-red-500/50 bg-red-500/5">
-                <CardContent className="pt-6">
-                  <p className="text-sm text-red-600">{error}</p>
-                </CardContent>
-              </Card>
-            )}
+            <ScanErrorDialog error={error} onClose={() => sse.reset()} onRetry={() => handleAnalyze(currentUrl)} />
 
             {result && (
               <div className="space-y-6">
                 <div className="grid gap-6 md:grid-cols-3">
                   <Card className="flex items-center justify-center p-6">
+                    <div className="flex flex-col items-center gap-1">
                     <CircularProgress value={result.scores.seo.score} variant="seo" label="SEO Score" size={140} strokeWidth={10} />
+                    <InfoTooltip content="Search Engine Optimization — measures technical health, metadata, crawlability, content structure, and on-page factors. A high SEO score means search engines can easily find, crawl, and understand your page." />
+                    </div>
                   </Card>
                   <Card className="flex items-center justify-center p-6">
+                    <div className="flex flex-col items-center gap-1">
                     <CircularProgress value={result.scores.aeo.score} variant="aeo" label="AEO Score" size={140} strokeWidth={10} />
+                    <InfoTooltip content="Answer Engine Optimization — measures how likely AI assistants like ChatGPT, Perplexity, and Gemini are to cite your content. Factors include structured data, FAQ coverage, direct answer formatting, and schema markup." />
+                    </div>
                   </Card>
                   <Card className="flex items-center justify-center p-6">
+                    <div className="flex flex-col items-center gap-1">
                     <CircularProgress value={result.scores.geo.score} variant="geo" label="GEO Score" size={140} strokeWidth={10} />
+                    <InfoTooltip content="Generative Engine Optimization — measures how well your content is structured for AI-generated search results and summaries. Evaluates brand clarity, topical authority, citation-worthiness, and content uniqueness." />
+                    </div>
                   </Card>
                 </div>
 
@@ -223,22 +251,24 @@ export default function V4Page() {
                   const imgTotal = sd.media?.totalImages || 0
                   const imgWithAlt = sd.media?.imagesWithAlt || 0
                   const altPct = imgTotal > 0 ? Math.round((imgWithAlt / imgTotal) * 100) : 100
+                  const wordCount = sd.wordCount || 0
                   const domainHealth = result.liteAI?.domainHealthScore ?? '–'
                   const brand = result.liteAI?.brandConsistency ?? '–'
                   const metrics = [
-                    { label: "Domain Health", value: `${domainHealth}%`, color: "text-geo", tip: "AI-powered domain quality score combining content, schema, metadata, technical, and architecture health." },
-                    { label: "Brand", value: `${brand}%`, color: "text-aeo", tip: "Brand consistency and messaging clarity. Single-page analysis defaults to 100%." },
-                    { label: "Schema", value: hasSchema ? `${schemas.length} found` : "0%", color: hasSchema ? "text-seo" : "text-red-600", tip: "Number of structured data schemas found on the page. Improves rich snippet eligibility." },
-                    { label: "Metadata", value: hasMeta ? "100%" : "0%", color: hasMeta ? "text-geo" : "text-yellow-600", tip: "Whether the page has both a title tag and meta description." },
-                    { label: "H1 Tag", value: hasH1 ? "100%" : "0%", color: hasH1 ? "text-geo" : "text-red-600", tip: "Whether the page has an H1 heading tag." },
-                    { label: "HTTPS", value: isHttps ? "100%" : "0%", color: isHttps ? "text-geo" : "text-red-600", tip: "Whether the page is served over HTTPS." },
-                    { label: "Response", value: `${responseTime}ms`, color: responseTime < 500 ? "text-geo" : "text-yellow-600", tip: "Server response time. Under 200ms is good." },
-                    { label: "Robots.txt", value: result.robotsTxt ? "Found" : "Missing", color: result.robotsTxt ? "text-green-600" : "text-red-600", tip: "Whether a robots.txt file exists at the domain root." },
-                    { label: "Sitemap", value: result.sitemapFound ? "Found" : "Missing", color: result.sitemapFound ? "text-green-600" : "text-red-600", tip: "Whether an XML sitemap was found." },
-                    { label: "Alt Text", value: `${altPct}%`, color: altPct >= 80 ? "text-green-600" : "text-yellow-600", tip: "Percentage of images with descriptive alt text." },
+                    { label: "Domain Health", value: `${domainHealth}%`, color: "text-geo", tip: "AI-powered domain quality score combining content quality, schema implementation, metadata completeness, technical performance, and site architecture. This is a holistic measure of how well your domain is optimized across all ranking factors." },
+                    { label: "Brand", value: `${brand}%`, color: "text-aeo", tip: "Measures brand consistency and messaging clarity across your page. Strong brand signals help AI engines identify and recommend your content. Single-page analysis defaults to 100% — multi-page deep scans measure cross-page consistency." },
+                    { label: "Schema", value: hasSchema ? `${schemas.length} found` : "0%", color: hasSchema ? "text-seo" : "text-red-600", tip: "Structured data (JSON-LD) schemas found on the page. Schema markup helps search engines understand your content and enables rich snippets — like star ratings, FAQs, and product prices. Missing schema means you're invisible to rich result features." },
+                    { label: "Metadata", value: hasMeta ? "100%" : "0%", color: hasMeta ? "text-geo" : "text-yellow-600", tip: "Whether the page has both a title tag and meta description. These are the first things users see in search results. Missing metadata means Google will auto-generate your snippet, which is almost always worse than a crafted one." },
+                    { label: "H1 Tag", value: hasH1 ? "100%" : "0%", color: hasH1 ? "text-geo" : "text-red-600", tip: "Whether the page has an H1 heading tag. The H1 is the primary heading that tells search engines and users what the page is about. Every page should have exactly one H1." },
+                    { label: "HTTPS", value: isHttps ? "100%" : "0%", color: isHttps ? "text-geo" : "text-red-600", tip: "Whether the page is served over HTTPS. Google uses HTTPS as a ranking signal. Non-HTTPS sites show 'Not Secure' warnings in browsers, destroying user trust." },
+                    { label: "Response", value: `${responseTime}ms`, color: responseTime < 500 ? "text-geo" : "text-yellow-600", tip: "Server response time (Time to First Byte). Under 200ms is excellent, under 500ms is acceptable. Slow response times directly impact Core Web Vitals and user experience." },
+                    { label: "Robots.txt", value: result.robotsTxt ? "Found" : "Missing", color: result.robotsTxt ? "text-green-600" : "text-red-600", tip: "Whether a robots.txt file exists at the domain root. This file tells search engine crawlers which pages to index and which to skip. Without it, crawlers may waste budget on unimportant pages." },
+                    { label: "Sitemap", value: result.sitemapFound ? "Found" : "Missing", color: result.sitemapFound ? "text-green-600" : "text-red-600", tip: "Whether an XML sitemap was found. Sitemaps help search engines discover all your pages efficiently, especially new or deeply nested content." },
+                    { label: "Alt Text", value: `${altPct}%`, color: altPct >= 80 ? "text-green-600" : "text-yellow-600", tip: "Percentage of images with descriptive alt text. Alt text is critical for accessibility (screen readers) and image search rankings. Google Images drives significant traffic — missing alt text means lost opportunities." },
+                    { label: "Word Count", value: `${wordCount.toLocaleString()}`, color: wordCount < 300 ? "text-red-600" : wordCount < 800 ? "text-yellow-600" : "text-green-600", tip: wordCount < 300 ? "Thin content — under 300 words. Pages with very little content struggle to rank because search engines can't determine topical relevance." : wordCount < 800 ? "Moderate content depth. Pages with 800+ words tend to rank better for competitive queries." : "Good content depth. Comprehensive content tends to rank better and earn more backlinks." },
                   ]
                   return (
-                    <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-10 gap-2">
+                    <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-11 gap-2">
                       {metrics.map(m => (
                         <div key={m.label} className="rounded-lg border border-border/50 bg-card/50 px-2.5 py-2">
                           <div className="flex items-center gap-0.5 mb-0.5">
@@ -249,50 +279,6 @@ export default function V4Page() {
                         </div>
                       ))}
                     </div>
-                  )
-                })()}
-
-                {/* Content Analysis — Tier 1 (zero AI cost) */}
-                {(() => {
-                  const sd = result.pageData?.structuralData || {}
-                  const schemas = result.pageData?.schemas || []
-                  const wordCount = sd.wordCount || 0
-                  const internalLinks = sd.links?.internal || 0
-                  const externalLinks = sd.links?.external || 0
-                  const h1 = sd.semanticTags?.h1Count || 0
-                  const h2 = sd.semanticTags?.h2Count || 0
-                  const h3 = sd.semanticTags?.h3Count || 0
-                  const schemaTypes = schemas.map((s: any) => s['@type']).filter(Boolean)
-                  const uniqueSchemas = [...new Set(schemaTypes)] as string[]
-
-                  const items = [
-                    { label: "Word Count", value: wordCount.toLocaleString(), sub: wordCount < 300 ? "Thin content" : wordCount < 800 ? "Moderate" : "Good depth", color: wordCount < 300 ? "text-red-600" : wordCount < 800 ? "text-yellow-600" : "text-green-600" },
-                    { label: "Internal Links", value: internalLinks, sub: internalLinks === 0 ? "None found" : `${internalLinks} link${internalLinks !== 1 ? 's' : ''}`, color: internalLinks === 0 ? "text-red-600" : "text-green-600" },
-                    { label: "External Links", value: externalLinks, sub: externalLinks === 0 ? "None found" : `${externalLinks} link${externalLinks !== 1 ? 's' : ''}`, color: externalLinks === 0 ? "text-yellow-600" : "text-green-600" },
-                    { label: "Headings", value: `H1:${h1} H2:${h2} H3:${h3}`, sub: h1 === 0 ? "Missing H1" : h2 === 0 ? "No H2 structure" : "Good hierarchy", color: h1 === 0 ? "text-red-600" : h2 === 0 ? "text-yellow-600" : "text-green-600" },
-                    { label: "Schema Types", value: uniqueSchemas.length > 0 ? uniqueSchemas.join(', ') : "None", sub: uniqueSchemas.length === 0 ? "No structured data" : `${uniqueSchemas.length} type${uniqueSchemas.length !== 1 ? 's' : ''}`, color: uniqueSchemas.length === 0 ? "text-red-600" : "text-green-600" },
-                  ]
-
-                  return (
-                    <Card>
-                      <CardHeader className="pb-3">
-                        <CardTitle className="text-base flex items-center gap-2">
-                          <Sparkles className="h-4 w-4 text-seo" />
-                          Content Analysis
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                          {items.map(item => (
-                            <div key={item.label} className="space-y-0.5">
-                              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">{item.label}</p>
-                              <p className={`text-sm font-bold ${item.color} truncate`}>{item.value}</p>
-                              <p className="text-[10px] text-muted-foreground">{item.sub}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
                   )
                 })()}
 
@@ -308,6 +294,7 @@ export default function V4Page() {
                       <div className="flex items-center gap-2">
                         <span className={`text-lg font-black ${textColor}`}>{total}</span>
                         <span className="text-sm font-medium">issues found</span>
+                        <InfoTooltip content="Total number of SEO, AEO, and GEO issues detected. Critical issues have the highest impact on your scores. Upgrade to Pro for detailed fix instructions with copy-paste code." />
                         <span className="text-xs text-muted-foreground">
                           {critical > 0 && <span className="text-red-600 font-medium">({critical} critical)</span>}
                         </span>

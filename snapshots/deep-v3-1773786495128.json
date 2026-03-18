@@ -1,18 +1,18 @@
 {
-  "id": "deep-v3-1773678797698",
+  "id": "deep-v3-1773786495128",
   "url": "https://pizzatwice.com",
-  "timestamp": "2026-03-16T16:33:17.698Z",
+  "timestamp": "2026-03-17T22:28:15.128Z",
   "apiRoute": "/api/analyze-deep-v3",
   "scores": {
-    "seo": 76,
-    "aeo": 26,
-    "geo": 61
+    "seo": 87,
+    "aeo": 35,
+    "geo": 58
   },
   "siteType": "restaurant",
   "rawAiScores": {
-    "seoScore": 80,
+    "seoScore": 90,
     "aeoScore": 49,
-    "geoScore": 80,
+    "geoScore": 70,
     "breakdown": {
       "seo": [
         {
@@ -96,18 +96,15 @@
         },
         {
           "name": "Technical Excellence",
-          "score": 12,
+          "score": 22,
           "maxScore": 22,
-          "percentage": 55,
+          "percentage": 100,
           "components": [
             {
-              "score": 0,
+              "score": 10,
               "maxScore": 10,
-              "status": "critical",
-              "feedback": "Very slow page load time - critical performance issue",
-              "issues": [
-                "16389ms response time (target: <1500ms)"
-              ]
+              "status": "excellent",
+              "feedback": "Fast page load (943ms)"
             },
             {
               "score": 6,
@@ -134,9 +131,7 @@
               "maxScore": 5,
               "status": "excellent",
               "feedback": "High-quality schema implementation",
-              "issues": [
-                "'acceptsReservations' property uses string 'True' instead of boolean true"
-              ]
+              "issues": []
             },
             {
               "score": 3,
@@ -174,9 +169,7 @@
               "maxScore": 30,
               "status": "good",
               "feedback": "Schema Quality",
-              "issues": [
-                "'acceptsReservations' property uses string 'True' instead of boolean true"
-              ]
+              "issues": []
             },
             {
               "score": 0,
@@ -214,9 +207,9 @@
       "geo": [
         {
           "name": "GEO Visibility",
-          "score": 80,
+          "score": 70,
           "maxScore": 100,
-          "percentage": 80,
+          "percentage": 70,
           "components": [
             {
               "score": 25,
@@ -246,10 +239,13 @@
               "feedback": "Data & Facts"
             },
             {
-              "score": 10,
+              "score": 0,
               "maxScore": 10,
-              "status": "good",
-              "feedback": "Objectivity"
+              "status": "warning",
+              "feedback": "Objectivity",
+              "issues": [
+                "Heavy first-person usage reduces perceived objectivity"
+              ]
             },
             {
               "score": 10,
@@ -261,11 +257,10 @@
         }
       ]
     },
-    "overallFeedback": "Good SEO foundation for a restaurant - Your site has solid optimization with room for minor improvements.",
+    "overallFeedback": "Exceptional SEO for a restaurant - Your site follows modern best practices and is well-optimized for search engines.",
     "criticalIssues": [
       "No viewport meta tag found",
-      "Need at least 300 words for meaningful content",
-      "16389ms response time (target: <1500ms)"
+      "Need at least 300 words for meaningful content"
     ],
     "version": "v2",
     "siteType": "restaurant"
@@ -353,18 +348,15 @@
       },
       {
         "name": "Technical Excellence",
-        "score": 12,
+        "score": 22,
         "maxScore": 22,
-        "percentage": 55,
+        "percentage": 100,
         "components": [
           {
-            "score": 0,
+            "score": 10,
             "maxScore": 10,
-            "status": "critical",
-            "feedback": "Very slow page load time - critical performance issue",
-            "issues": [
-              "16389ms response time (target: <1500ms)"
-            ]
+            "status": "excellent",
+            "feedback": "Fast page load (943ms)"
           },
           {
             "score": 6,
@@ -391,9 +383,7 @@
             "maxScore": 5,
             "status": "excellent",
             "feedback": "High-quality schema implementation",
-            "issues": [
-              "'acceptsReservations' property uses string 'True' instead of boolean true"
-            ]
+            "issues": []
           },
           {
             "score": 3,
@@ -431,9 +421,7 @@
             "maxScore": 30,
             "status": "good",
             "feedback": "Schema Quality",
-            "issues": [
-              "'acceptsReservations' property uses string 'True' instead of boolean true"
-            ]
+            "issues": []
           },
           {
             "score": 0,
@@ -471,9 +459,9 @@
     "geo": [
       {
         "name": "GEO Visibility",
-        "score": 80,
+        "score": 70,
         "maxScore": 100,
-        "percentage": 80,
+        "percentage": 70,
         "components": [
           {
             "score": 25,
@@ -503,10 +491,13 @@
             "feedback": "Data & Facts"
           },
           {
-            "score": 10,
+            "score": 0,
             "maxScore": 10,
-            "status": "good",
-            "feedback": "Objectivity"
+            "status": "warning",
+            "feedback": "Objectivity",
+            "issues": [
+              "Heavy first-person usage reduces perceived objectivity"
+            ]
           },
           {
             "score": 10,
@@ -526,15 +517,6 @@
       "explanation": "Thin content (under 300 words) rarely ranks. Search engines prefer comprehensive content that thoroughly covers topics. AI systems like ChatGPT, Gemini, and Perplexity need substantial content to cite and reference.",
       "fix": "Expand content to at least 800 words. Add sections covering: what (define your topic), why (explain benefits), how (describe process), benefits (list advantages), examples (provide use cases), and FAQs (answer 5-10 common questions). Focus on depth and value over word count.",
       "pointsDeducted": -20,
-      "severity": "critical"
-    },
-    {
-      "category": "SEO",
-      "component": "SEO Technical Excellence - Very slow page load time - critical performance issue",
-      "penalty": "16389ms response time (target: <1500ms)",
-      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
-      "fix": "Review and update this element following current best practices for search engines and AI systems.",
-      "pointsDeducted": -10,
       "severity": "critical"
     },
     {
@@ -583,6 +565,15 @@
       "severity": "warning"
     },
     {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Objectivity",
+      "penalty": "Heavy first-person usage reduces perceived objectivity",
+      "explanation": "Heavy first-person usage suggests opinion rather than fact. AI systems prefer objective, third-person content for citations.",
+      "fix": "Replace first-person (\"I think\", \"we believe\") with third-person or passive voice. Use \"research shows\" instead of \"I found\". Focus on facts, not opinions.",
+      "pointsDeducted": -10,
+      "severity": "warning"
+    },
+    {
       "category": "SEO",
       "component": "SEO Content Quality - Thin content - needs substantial expansion",
       "penalty": "Only 282 words (recommended: 800+)",
@@ -594,7 +585,7 @@
     {
       "category": "AEO",
       "component": "AEO AEO Readiness - Schema Quality",
-      "penalty": "'acceptsReservations' property uses string 'True' instead of boolean true",
+      "penalty": "Lost 1 points in Schema Quality",
       "explanation": "Incomplete or incorrect schema markup confuses AI systems and prevents them from citing your content accurately.",
       "fix": "Validate schema at schema.org/validator. Fix all errors. Add required properties: name, description, image, url. Remove placeholder data.",
       "pointsDeducted": -1,
@@ -606,27 +597,27 @@
     "perPageScores": [
       {
         "url": "https://www.pizzatwice.com/",
-        "seo": 80,
+        "seo": 90,
         "aeo": 49,
-        "geo": 80
+        "geo": 70
       },
       {
         "url": "https://www.pizzatwice.com/",
-        "seo": 80,
+        "seo": 90,
         "aeo": 49,
         "geo": 70
       },
       {
         "url": "https://www.pizzatwice.com/about-us",
-        "seo": 70,
+        "seo": 80,
         "aeo": 5,
         "geo": 100
       },
       {
         "url": "https://www.pizzatwice.com/locations",
-        "seo": 62,
-        "aeo": 0,
-        "geo": 65
+        "seo": 87,
+        "aeo": 39,
+        "geo": 80
       },
       {
         "url": "https://www.pizzatwice.com/pizza-twice-franchise",
@@ -636,20 +627,20 @@
       },
       {
         "url": "https://www.pizzatwice.com/reviews",
-        "seo": 74,
+        "seo": 84,
         "aeo": 42,
-        "geo": 85
+        "geo": 45
       },
       {
         "url": "https://www.pizzatwice.com/contact-us",
-        "seo": 75,
-        "aeo": 15,
-        "geo": 25
+        "seo": 85,
+        "aeo": 30,
+        "geo": 35
       },
       {
         "url": "https://www.pizzatwice.com/menu",
-        "seo": 79,
-        "aeo": 13,
+        "seo": 89,
+        "aeo": 28,
         "geo": 25
       }
     ]

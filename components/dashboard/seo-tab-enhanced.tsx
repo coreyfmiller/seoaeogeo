@@ -94,7 +94,7 @@ export function SEOTabEnhanced({ data }: SEOTabProps) {
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-6 overflow-hidden">
       {/* Roadmap to 100 - Intelligence Penalty Ledger */}
       {allPenalties.length > 0 && (
         <Card className="border-destructive/30 bg-destructive/5 shadow-sm">
@@ -348,7 +348,7 @@ export function SEOTabEnhanced({ data }: SEOTabProps) {
 
       {/* On-Page AI Analysis */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-seo/20 bg-seo-muted/10">
+        <Card className="border-seo/20 bg-seo-muted/10 min-w-0">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Sparkles className="h-5 w-5 text-seo" />
@@ -377,7 +377,7 @@ export function SEOTabEnhanced({ data }: SEOTabProps) {
           </CardContent>
         </Card>
 
-        <Card className="border-seo/20 bg-seo-muted/10">
+        <Card className="border-seo/20 bg-seo-muted/10 min-w-0 overflow-hidden">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Sparkles className="h-5 w-5 text-seo" />
@@ -385,7 +385,7 @@ export function SEOTabEnhanced({ data }: SEOTabProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 overflow-hidden">
               {aiSeo ? (
                 aiSeo.keywordOpportunities.map((kw: string, i: number) => (
                   <Badge key={i} variant="outline" className="border-seo/30 text-seo bg-seo/5 px-3 py-1.5 text-sm">
@@ -406,7 +406,7 @@ export function SEOTabEnhanced({ data }: SEOTabProps) {
         Extracted DOM Intelligence
       </h2>
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-seo/20 bg-seo-muted/10">
+        <Card className="border-seo/20 bg-seo-muted/10 min-w-0">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Shield className="h-5 w-5 text-seo" />
@@ -439,7 +439,7 @@ export function SEOTabEnhanced({ data }: SEOTabProps) {
           </CardContent>
         </Card>
 
-        <Card className="border-seo/20 bg-seo-muted/10">
+        <Card className="border-seo/20 bg-seo-muted/10 min-w-0">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <FileText className="h-5 w-5 text-seo" />

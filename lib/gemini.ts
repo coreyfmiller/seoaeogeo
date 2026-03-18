@@ -40,7 +40,7 @@ export async function analyzeWithGemini(context: {
     
     CRITICAL EXTRACTION RULES:
     1. You are a Semantic Data Extractor providing objective analysis
-    2. Answer semantic boolean flags objectively (true/false) based on content
+    2. Rate each semantic flag as a SEVERITY SCORE from 0-100 (0 = not present at all, 100 = extremely severe). Be precise and consistent.
     3. Evaluate schema quality using modern standards (not legacy parser rules)
     4. Generate qualitative analysis for dashboard UI
     
@@ -61,18 +61,18 @@ export async function analyzeWithGemini(context: {
     Return a JSON object exactly matching this structure:
     {
       "semanticFlags": {
-        "topicMisalignment": boolean,
-        "keywordStuffing": boolean,
-        "poorReadability": boolean,
-        "noDirectQnAMatching": boolean,
-        "lowEntityDensity": boolean,
-        "poorFormattingConciseness": boolean,
-        "lackOfDefinitionStatements": boolean,
-        "promotionalTone": boolean,
-        "lackOfExpertiseSignals": boolean,
-        "lackOfHardData": boolean,
-        "heavyFirstPersonUsage": boolean,
-        "unsubstantiatedClaims": boolean
+        "topicMisalignment": number (0-100 severity, 0=perfectly aligned, 100=completely off-topic),
+        "keywordStuffing": number (0-100 severity, 0=natural keyword usage, 100=extreme stuffing),
+        "poorReadability": number (0-100 severity, 0=crystal clear, 100=incomprehensible),
+        "noDirectQnAMatching": number (0-100 severity, 0=excellent Q&A coverage, 100=no questions answered),
+        "lowEntityDensity": number (0-100 severity, 0=rich in entities, 100=no specific entities),
+        "poorFormattingConciseness": number (0-100 severity, 0=well formatted, 100=wall of text),
+        "lackOfDefinitionStatements": number (0-100 severity, 0=clear definitions present, 100=no definitions),
+        "promotionalTone": number (0-100 severity, 0=neutral/informative, 100=pure advertisement),
+        "lackOfExpertiseSignals": number (0-100 severity, 0=strong expertise shown, 100=no expertise signals),
+        "lackOfHardData": number (0-100 severity, 0=data-rich content, 100=no facts or data),
+        "heavyFirstPersonUsage": number (0-100 severity, 0=objective third-person, 100=entirely first-person),
+        "unsubstantiatedClaims": number (0-100 severity, 0=all claims backed, 100=all claims unsubstantiated)
       },
       "schemaQuality": {
         "score": number (0-100, quality of schema implementation using modern standards),

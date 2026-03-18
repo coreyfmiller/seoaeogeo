@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'SearchIQ - Search Intelligence Platform',
+  title: 'Vantege - Intelligence Platform',
   description: 'Comprehensive SEO, AEO, and GEO analytics platform for optimizing your search visibility across traditional and AI-powered search engines.',
   generator: 'v0.app',
   icons: {

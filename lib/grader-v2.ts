@@ -178,6 +178,24 @@ export function calculateScoresV2(
 }
 
 /**
+ * Normalize a semantic flag value to 0-100 severity score.
+ * Handles both legacy boolean format and new graduated 0-100 format.
+ */
+function normalizeFlagSeverity(value: any): number {
+    if (typeof value === 'boolean') return value ? 100 : 0;
+    if (typeof value === 'number') return Math.max(0, Math.min(100, value));
+    return 0;
+}
+
+/**
+ * Calculate graduated penalty from a 0-100 severity score.
+ * Returns points to deduct (0 to maxPoints).
+ */
+function graduatedPenalty(severity: number, maxPoints: number): number {
+    return Math.round((severity / 100) * maxPoints);
+}
+
+/**
  * Calculate AEO score based on semantic flags and schema quality
  */
 function calculateAEOScore(data: any): { score: number; breakdown: CategoryScore[] } {
@@ -188,7 +206,7 @@ function calculateAEOScore(data: any): { score: number; breakdown: CategoryScore
     let score = 100;
     const components: ComponentResult[] = [];
 
-    // Content depth (20 points) - NEW
+    // Content depth (20 points)
     const wordCount = data.structuralData?.wordCount || 0;
     if (wordCount < 300) {
         score -= 20;
@@ -218,7 +236,7 @@ function calculateAEOScore(data: any): { score: number; breakdown: CategoryScore
         });
     }
 
-    // Schema presence and quality (30 points) - REDUCED from 40
+    // Schema presence and quality (30 points)
     if (data.schemaQuality) {
         if (!data.schemaQuality.hasSchema) {
             score -= 30;
@@ -251,81 +269,53 @@ function calculateAEOScore(data: any): { score: number; breakdown: CategoryScore
         });
     }
 
-    // Q&A matching (15 points) - REDUCED from 20
-    if (data.semanticFlags?.noDirectQnAMatching) {
-        score -= 20;
-        components.push({
-            score: 0,
-            maxScore: 20,
-            status: 'warning',
-            feedback: 'Question Answering',
-            issues: ['Content does not directly answer common questions']
-        });
-    } else {
-        components.push({
-            score: 20,
-            maxScore: 20,
-            status: 'good',
-            feedback: 'Question Answering'
-        });
-    }
+    // Q&A matching (20 points) - graduated
+    const qnaSeverity = normalizeFlagSeverity(data.semanticFlags?.noDirectQnAMatching);
+    const qnaPenalty = graduatedPenalty(qnaSeverity, 20);
+    score -= qnaPenalty;
+    components.push({
+        score: 20 - qnaPenalty,
+        maxScore: 20,
+        status: qnaPenalty >= 15 ? 'warning' : qnaPenalty >= 8 ? 'warning' : 'good',
+        feedback: 'Question Answering',
+        issues: qnaPenalty > 0 ? [`Q&A coverage needs improvement (severity: ${qnaSeverity}/100)`] : undefined
+    });
 
-    // Entity density (15 points)
-    if (data.semanticFlags?.lowEntityDensity) {
-        score -= 15;
-        components.push({
-            score: 0,
-            maxScore: 15,
-            status: 'warning',
-            feedback: 'Entity Density',
-            issues: ['Low density of named entities and specific facts']
-        });
-    } else {
-        components.push({
-            score: 15,
-            maxScore: 15,
-            status: 'good',
-            feedback: 'Entity Density'
-        });
-    }
+    // Entity density (15 points) - graduated
+    const entitySeverity = normalizeFlagSeverity(data.semanticFlags?.lowEntityDensity);
+    const entityPenalty = graduatedPenalty(entitySeverity, 15);
+    score -= entityPenalty;
+    components.push({
+        score: 15 - entityPenalty,
+        maxScore: 15,
+        status: entityPenalty >= 10 ? 'warning' : entityPenalty >= 5 ? 'warning' : 'good',
+        feedback: 'Entity Density',
+        issues: entityPenalty > 0 ? [`Low density of named entities and specific facts (severity: ${entitySeverity}/100)`] : undefined
+    });
 
-    // Formatting and conciseness (15 points)
-    if (data.semanticFlags?.poorFormattingConciseness) {
-        score -= 15;
-        components.push({
-            score: 0,
-            maxScore: 15,
-            status: 'warning',
-            feedback: 'Formatting',
-            issues: ['Poor formatting or lack of conciseness']
-        });
-    } else {
-        components.push({
-            score: 15,
-            maxScore: 15,
-            status: 'good',
-            feedback: 'Formatting'
-        });
-    }
+    // Formatting and conciseness (15 points) - graduated
+    const formatSeverity = normalizeFlagSeverity(data.semanticFlags?.poorFormattingConciseness);
+    const formatPenalty = graduatedPenalty(formatSeverity, 15);
+    score -= formatPenalty;
+    components.push({
+        score: 15 - formatPenalty,
+        maxScore: 15,
+        status: formatPenalty >= 10 ? 'warning' : formatPenalty >= 5 ? 'warning' : 'good',
+        feedback: 'Formatting',
+        issues: formatPenalty > 0 ? [`Formatting needs improvement (severity: ${formatSeverity}/100)`] : undefined
+    });
 
-    // Definition statements (10 points)
-    if (data.semanticFlags?.lackOfDefinitionStatements) {
-        score -= 10;
-        components.push({
-            score: 0,
-            maxScore: 10,
-            status: 'warning',
-            feedback: 'Definitions',
-            issues: ['Missing clear definition statements']
-        });
-    } else {
-        components.push({
-            score: 10,
-            maxScore: 10,
-            status: 'good',
-            feedback: 'Definitions'
-        });
-    }
+    // Definition statements (10 points) - graduated
+    const defSeverity = normalizeFlagSeverity(data.semanticFlags?.lackOfDefinitionStatements);
+    const defPenalty = graduatedPenalty(defSeverity, 10);
+    score -= defPenalty;
+    components.push({
+        score: 10 - defPenalty,
+        maxScore: 10,
+        status: defPenalty >= 7 ? 'warning' : defPenalty >= 3 ? 'warning' : 'good',
+        feedback: 'Definitions',
+        issues: defPenalty > 0 ? [`Missing clear definition statements (severity: ${defSeverity}/100)`] : undefined
+    });
 
     const breakdown: CategoryScore[] = [{
         name: 'AEO Readiness',
@@ -348,7 +338,7 @@ function calculateGEOScore(data: any): { score: number; breakdown: CategoryScore
     let score = 100;
     const components: ComponentResult[] = [];
 
-    // Image alt text coverage (25 points)
+    // Image alt text coverage (25 points) - deterministic, no change needed
     if (data.structuralData?.media?.totalImages > 0) {
         const altCoverage = data.structuralData.media.imagesWithAlt / data.structuralData.media.totalImages;
         if (altCoverage < 0.5) {
@@ -387,100 +377,65 @@ function calculateGEOScore(data: any): { score: number; breakdown: CategoryScore
         });
     }
 
-    // Promotional tone (20 points)
-    if (data.semanticFlags?.promotionalTone) {
-        score -= 20;
-        components.push({
-            score: 0,
-            maxScore: 20,
-            status: 'warning',
-            feedback: 'Tone',
-            issues: ['Overly promotional tone reduces AI trust']
-        });
-    } else {
-        components.push({
-            score: 20,
-            maxScore: 20,
-            status: 'good',
-            feedback: 'Tone'
-        });
-    }
+    // Promotional tone (20 points) - graduated
+    const promoSeverity = normalizeFlagSeverity(data.semanticFlags?.promotionalTone);
+    const promoPenalty = graduatedPenalty(promoSeverity, 20);
+    score -= promoPenalty;
+    components.push({
+        score: 20 - promoPenalty,
+        maxScore: 20,
+        status: promoPenalty >= 14 ? 'warning' : promoPenalty >= 6 ? 'warning' : 'good',
+        feedback: 'Tone',
+        issues: promoPenalty > 0 ? [`Promotional tone detected (severity: ${promoSeverity}/100)`] : undefined
+    });
 
-    // Expertise signals (20 points)
-    if (data.semanticFlags?.lackOfExpertiseSignals) {
-        score -= 20;
-        components.push({
-            score: 0,
-            maxScore: 20,
-            status: 'warning',
-            feedback: 'Expertise',
-            issues: ['Missing expertise signals and credentials']
-        });
-    } else {
-        components.push({
-            score: 20,
-            maxScore: 20,
-            status: 'good',
-            feedback: 'Expertise'
-        });
-    }
+    // Expertise signals (20 points) - graduated
+    const expertSeverity = normalizeFlagSeverity(data.semanticFlags?.lackOfExpertiseSignals);
+    const expertPenalty = graduatedPenalty(expertSeverity, 20);
+    score -= expertPenalty;
+    components.push({
+        score: 20 - expertPenalty,
+        maxScore: 20,
+        status: expertPenalty >= 14 ? 'warning' : expertPenalty >= 6 ? 'warning' : 'good',
+        feedback: 'Expertise',
+        issues: expertPenalty > 0 ? [`Missing expertise signals (severity: ${expertSeverity}/100)`] : undefined
+    });
 
-    // Hard data and facts (15 points)
-    if (data.semanticFlags?.lackOfHardData) {
-        score -= 15;
-        components.push({
-            score: 0,
-            maxScore: 15,
-            status: 'warning',
-            feedback: 'Data & Facts',
-            issues: ['Lacks specific data, statistics, and facts']
-        });
-    } else {
-        components.push({
-            score: 15,
-            maxScore: 15,
-            status: 'good',
-            feedback: 'Data & Facts'
-        });
-    }
+    // Hard data and facts (15 points) - graduated
+    const dataSeverity = normalizeFlagSeverity(data.semanticFlags?.lackOfHardData);
+    const dataPenalty = graduatedPenalty(dataSeverity, 15);
+    score -= dataPenalty;
+    components.push({
+        score: 15 - dataPenalty,
+        maxScore: 15,
+        status: dataPenalty >= 10 ? 'warning' : dataPenalty >= 5 ? 'warning' : 'good',
+        feedback: 'Data & Facts',
+        issues: dataPenalty > 0 ? [`Lacks specific data and statistics (severity: ${dataSeverity}/100)`] : undefined
+    });
 
-    // First person usage (10 points)
-    if (data.semanticFlags?.heavyFirstPersonUsage) {
-        score -= 10;
-        components.push({
-            score: 0,
-            maxScore: 10,
-            status: 'warning',
-            feedback: 'Objectivity',
-            issues: ['Heavy first-person usage reduces perceived objectivity']
-        });
-    } else {
-        components.push({
-            score: 10,
-            maxScore: 10,
-            status: 'good',
-            feedback: 'Objectivity'
-        });
-    }
+    // First person usage (10 points) - graduated
+    const fpSeverity = normalizeFlagSeverity(data.semanticFlags?.heavyFirstPersonUsage);
+    const fpPenalty = graduatedPenalty(fpSeverity, 10);
+    score -= fpPenalty;
+    components.push({
+        score: 10 - fpPenalty,
+        maxScore: 10,
+        status: fpPenalty >= 7 ? 'warning' : fpPenalty >= 3 ? 'warning' : 'good',
+        feedback: 'Objectivity',
+        issues: fpPenalty > 0 ? [`First-person usage detected (severity: ${fpSeverity}/100)`] : undefined
+    });
 
-    // Unsubstantiated claims (10 points)
-    if (data.semanticFlags?.unsubstantiatedClaims) {
-        score -= 10;
-        components.push({
-            score: 0,
-            maxScore: 10,
-            status: 'warning',
-            feedback: 'Claims',
-            issues: ['Contains unsubstantiated claims']
-        });
-    } else {
-        components.push({
-            score: 10,
-            maxScore: 10,
-            status: 'good',
-            feedback: 'Claims'
-        });
-    }
+    // Unsubstantiated claims (10 points) - graduated
+    const claimsSeverity = normalizeFlagSeverity(data.semanticFlags?.unsubstantiatedClaims);
+    const claimsPenalty = graduatedPenalty(claimsSeverity, 10);
+    score -= claimsPenalty;
+    components.push({
+        score: 10 - claimsPenalty,
+        maxScore: 10,
+        status: claimsPenalty >= 7 ? 'warning' : claimsPenalty >= 3 ? 'warning' : 'good',
+        feedback: 'Claims',
+        issues: claimsPenalty > 0 ? [`Unsubstantiated claims detected (severity: ${claimsSeverity}/100)`] : undefined
+    });
 
     const breakdown: CategoryScore[] = [{
         name: 'GEO Visibility',

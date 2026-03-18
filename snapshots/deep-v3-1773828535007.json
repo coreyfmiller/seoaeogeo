@@ -1,25 +1,25 @@
 {
-  "id": "deep-v3-1773677779281",
+  "id": "deep-v3-1773828535007",
   "url": "https://pizzatwice.com",
-  "timestamp": "2026-03-16T16:16:19.281Z",
+  "timestamp": "2026-03-18T10:08:55.007Z",
   "apiRoute": "/api/analyze-deep-v3",
   "scores": {
-    "seo": 87,
-    "aeo": 35,
-    "geo": 55
+    "seo": 86,
+    "aeo": 37,
+    "geo": 46
   },
   "siteType": "restaurant",
   "rawAiScores": {
-    "seoScore": 90,
-    "aeoScore": 49,
-    "geoScore": 80,
+    "seoScore": 80,
+    "aeoScore": 43,
+    "geoScore": 70,
     "breakdown": {
       "seo": [
         {
           "name": "Foundation",
-          "score": 33,
+          "score": 40,
           "maxScore": 40,
-          "percentage": 83,
+          "percentage": 100,
           "components": [
             {
               "score": 10,
@@ -46,21 +46,18 @@
               "feedback": "HTTPS properly configured"
             },
             {
-              "score": 0,
+              "score": 7,
               "maxScore": 7,
-              "status": "critical",
-              "feedback": "Missing viewport meta tag - not mobile optimized",
-              "issues": [
-                "No viewport meta tag found"
-              ]
+              "status": "excellent",
+              "feedback": "Mobile viewport configured"
             }
           ]
         },
         {
           "name": "Content Quality",
-          "score": 27,
+          "score": 14,
           "maxScore": 42,
-          "percentage": 64,
+          "percentage": 33,
           "components": [
             {
               "score": 7,
@@ -81,30 +78,39 @@
               ]
             },
             {
-              "score": 10,
+              "score": 2,
               "maxScore": 10,
-              "status": "excellent",
-              "feedback": "Strong internal linking architecture (undefined links)"
+              "status": "warning",
+              "feedback": "Excessive internal linking - appears spammy",
+              "issues": [
+                "16 links in 282 words (6% link density)"
+              ]
             },
             {
-              "score": 10,
+              "score": 5,
               "maxScore": 10,
-              "status": "excellent",
-              "feedback": "All images have alt text - excellent accessibility"
+              "status": "warning",
+              "feedback": "Many images missing alt text",
+              "issues": [
+                "5 of 12 images missing alt text (58% coverage)"
+              ]
             }
           ]
         },
         {
           "name": "Technical Excellence",
-          "score": 22,
+          "score": 19,
           "maxScore": 22,
-          "percentage": 100,
+          "percentage": 86,
           "components": [
             {
-              "score": 10,
+              "score": 7,
               "maxScore": 10,
-              "status": "excellent",
-              "feedback": "Fast page load (1120ms)"
+              "status": "good",
+              "feedback": "Acceptable page load time",
+              "issues": [
+                "1789ms response time (optimal: <1500ms)"
+              ]
             },
             {
               "score": 6,
@@ -122,17 +128,21 @@
         },
         {
           "name": "Advanced Optimization",
-          "score": 8,
+          "score": 7,
           "maxScore": 8,
-          "percentage": 100,
+          "percentage": 88,
           "components": [
             {
-              "score": 5,
+              "score": 4,
               "maxScore": 5,
               "status": "excellent",
-              "feedback": "High-quality schema implementation",
+              "feedback": "Schema present but needs improvement",
               "issues": [
-                "'acceptsReservations' property uses string 'True' instead of boolean true"
+                "The 'acceptsReservations' property in Restaurant schema is a string 'True' instead of a boolean 'true'.",
+                "Missing 'dayOfWeek' for Monday in 'openingHoursSpecification' for Restaurant schema.",
+                "Restaurant schema lacks 'servesCuisine' property.",
+                "Restaurant schema lacks 'menu' property.",
+                "Restaurant schema lacks 'AggregateRating' or 'review' properties."
               ]
             },
             {
@@ -153,9 +163,9 @@
       "aeo": [
         {
           "name": "AEO Readiness",
-          "score": 49,
+          "score": 43,
           "maxScore": 100,
-          "percentage": 49,
+          "percentage": 43,
           "components": [
             {
               "score": 0,
@@ -167,12 +177,16 @@
               ]
             },
             {
-              "score": 29,
+              "score": 23,
               "maxScore": 30,
               "status": "good",
               "feedback": "Schema Quality",
               "issues": [
-                "'acceptsReservations' property uses string 'True' instead of boolean true"
+                "The 'acceptsReservations' property in Restaurant schema is a string 'True' instead of a boolean 'true'.",
+                "Missing 'dayOfWeek' for Monday in 'openingHoursSpecification' for Restaurant schema.",
+                "Restaurant schema lacks 'servesCuisine' property.",
+                "Restaurant schema lacks 'menu' property.",
+                "Restaurant schema lacks 'AggregateRating' or 'review' properties."
               ]
             },
             {
@@ -211,15 +225,18 @@
       "geo": [
         {
           "name": "GEO Visibility",
-          "score": 80,
+          "score": 70,
           "maxScore": 100,
-          "percentage": 80,
+          "percentage": 70,
           "components": [
             {
-              "score": 25,
+              "score": 15,
               "maxScore": 25,
-              "status": "good",
-              "feedback": "Image Accessibility"
+              "status": "warning",
+              "feedback": "Image Accessibility",
+              "issues": [
+                "58% alt text coverage - aim for 100%"
+              ]
             },
             {
               "score": 0,
@@ -258,9 +275,8 @@
         }
       ]
     },
-    "overallFeedback": "Exceptional SEO for a restaurant - Your site follows modern best practices and is well-optimized for search engines.",
+    "overallFeedback": "Good SEO foundation for a restaurant - Your site has solid optimization with room for minor improvements.",
     "criticalIssues": [
-      "No viewport meta tag found",
       "Need at least 300 words for meaningful content"
     ],
     "version": "v2",
@@ -270,9 +286,9 @@
     "seo": [
       {
         "name": "Foundation",
-        "score": 33,
+        "score": 40,
         "maxScore": 40,
-        "percentage": 83,
+        "percentage": 100,
         "components": [
           {
             "score": 10,
@@ -299,21 +315,18 @@
             "feedback": "HTTPS properly configured"
           },
           {
-            "score": 0,
+            "score": 7,
             "maxScore": 7,
-            "status": "critical",
-            "feedback": "Missing viewport meta tag - not mobile optimized",
-            "issues": [
-              "No viewport meta tag found"
-            ]
+            "status": "excellent",
+            "feedback": "Mobile viewport configured"
           }
         ]
       },
       {
         "name": "Content Quality",
-        "score": 27,
+        "score": 14,
         "maxScore": 42,
-        "percentage": 64,
+        "percentage": 33,
         "components": [
           {
             "score": 7,
@@ -334,30 +347,39 @@
             ]
           },
           {
-            "score": 10,
+            "score": 2,
             "maxScore": 10,
-            "status": "excellent",
-            "feedback": "Strong internal linking architecture (undefined links)"
+            "status": "warning",
+            "feedback": "Excessive internal linking - appears spammy",
+            "issues": [
+              "16 links in 282 words (6% link density)"
+            ]
           },
           {
-            "score": 10,
+            "score": 5,
             "maxScore": 10,
-            "status": "excellent",
-            "feedback": "All images have alt text - excellent accessibility"
+            "status": "warning",
+            "feedback": "Many images missing alt text",
+            "issues": [
+              "5 of 12 images missing alt text (58% coverage)"
+            ]
           }
         ]
       },
       {
         "name": "Technical Excellence",
-        "score": 22,
+        "score": 19,
         "maxScore": 22,
-        "percentage": 100,
+        "percentage": 86,
         "components": [
           {
-            "score": 10,
+            "score": 7,
             "maxScore": 10,
-            "status": "excellent",
-            "feedback": "Fast page load (1120ms)"
+            "status": "good",
+            "feedback": "Acceptable page load time",
+            "issues": [
+              "1789ms response time (optimal: <1500ms)"
+            ]
           },
           {
             "score": 6,
@@ -375,17 +397,21 @@
       },
       {
         "name": "Advanced Optimization",
-        "score": 8,
+        "score": 7,
         "maxScore": 8,
-        "percentage": 100,
+        "percentage": 88,
         "components": [
           {
-            "score": 5,
+            "score": 4,
             "maxScore": 5,
             "status": "excellent",
-            "feedback": "High-quality schema implementation",
+            "feedback": "Schema present but needs improvement",
             "issues": [
-              "'acceptsReservations' property uses string 'True' instead of boolean true"
+              "The 'acceptsReservations' property in Restaurant schema is a string 'True' instead of a boolean 'true'.",
+              "Missing 'dayOfWeek' for Monday in 'openingHoursSpecification' for Restaurant schema.",
+              "Restaurant schema lacks 'servesCuisine' property.",
+              "Restaurant schema lacks 'menu' property.",
+              "Restaurant schema lacks 'AggregateRating' or 'review' properties."
             ]
           },
           {
@@ -406,9 +432,9 @@
     "aeo": [
       {
         "name": "AEO Readiness",
-        "score": 49,
+        "score": 43,
         "maxScore": 100,
-        "percentage": 49,
+        "percentage": 43,
         "components": [
           {
             "score": 0,
@@ -420,12 +446,16 @@
             ]
           },
           {
-            "score": 29,
+            "score": 23,
             "maxScore": 30,
             "status": "good",
             "feedback": "Schema Quality",
             "issues": [
-              "'acceptsReservations' property uses string 'True' instead of boolean true"
+              "The 'acceptsReservations' property in Restaurant schema is a string 'True' instead of a boolean 'true'.",
+              "Missing 'dayOfWeek' for Monday in 'openingHoursSpecification' for Restaurant schema.",
+              "Restaurant schema lacks 'servesCuisine' property.",
+              "Restaurant schema lacks 'menu' property.",
+              "Restaurant schema lacks 'AggregateRating' or 'review' properties."
             ]
           },
           {
@@ -464,15 +494,18 @@
     "geo": [
       {
         "name": "GEO Visibility",
-        "score": 80,
+        "score": 70,
         "maxScore": 100,
-        "percentage": 80,
+        "percentage": 70,
         "components": [
           {
-            "score": 25,
+            "score": 15,
             "maxScore": 25,
-            "status": "good",
-            "feedback": "Image Accessibility"
+            "status": "warning",
+            "feedback": "Image Accessibility",
+            "issues": [
+              "58% alt text coverage - aim for 100%"
+            ]
           },
           {
             "score": 0,
@@ -523,15 +556,6 @@
     },
     {
       "category": "SEO",
-      "component": "SEO Foundation - Missing viewport meta tag - not mobile optimized",
-      "penalty": "No viewport meta tag found",
-      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
-      "fix": "Review and update this element following current best practices for search engines and AI systems.",
-      "pointsDeducted": -7,
-      "severity": "critical"
-    },
-    {
-      "category": "SEO",
       "component": "SEO Content Quality - Insufficient content to evaluate readability",
       "penalty": "Need at least 300 words for meaningful content",
       "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
@@ -567,6 +591,15 @@
       "severity": "warning"
     },
     {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Image Accessibility",
+      "penalty": "58% alt text coverage - aim for 100%",
+      "explanation": "AI systems cannot \"see\" images without alt text. Missing alt text creates blind spots in AI understanding of your content.",
+      "fix": "Add alt text to all images. Be specific and descriptive. Include context and relevant keywords naturally. Format: \"what + where + why\"",
+      "pointsDeducted": -10,
+      "severity": "warning"
+    },
+    {
       "category": "SEO",
       "component": "SEO Content Quality - Thin content - needs substantial expansion",
       "penalty": "Only 282 words (recommended: 800+)",
@@ -576,11 +609,47 @@
       "severity": "warning"
     },
     {
+      "category": "SEO",
+      "component": "SEO Content Quality - Excessive internal linking - appears spammy",
+      "penalty": "16 links in 282 words (6% link density)",
+      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
+      "fix": "Review and update this element following current best practices for search engines and AI systems.",
+      "pointsDeducted": -8,
+      "severity": "warning"
+    },
+    {
+      "category": "SEO",
+      "component": "SEO Content Quality - Many images missing alt text",
+      "penalty": "5 of 12 images missing alt text (58% coverage)",
+      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
+      "fix": "Review and update this element following current best practices for search engines and AI systems.",
+      "pointsDeducted": -5,
+      "severity": "warning"
+    },
+    {
       "category": "AEO",
       "component": "AEO AEO Readiness - Schema Quality",
-      "penalty": "'acceptsReservations' property uses string 'True' instead of boolean true",
+      "penalty": "The 'acceptsReservations' property in Restaurant schema is a string 'True' instead of a boolean 'true'.",
       "explanation": "Incomplete or incorrect schema markup confuses AI systems and prevents them from citing your content accurately.",
       "fix": "Validate schema at schema.org/validator. Fix all errors. Add required properties: name, description, image, url. Remove placeholder data.",
+      "pointsDeducted": -7,
+      "severity": "info"
+    },
+    {
+      "category": "SEO",
+      "component": "SEO Technical Excellence - Acceptable page load time",
+      "penalty": "1789ms response time (optimal: <1500ms)",
+      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
+      "fix": "Review and update this element following current best practices for search engines and AI systems.",
+      "pointsDeducted": -3,
+      "severity": "info"
+    },
+    {
+      "category": "SEO",
+      "component": "SEO Advanced Optimization - Schema present but needs improvement",
+      "penalty": "The 'acceptsReservations' property in Restaurant schema is a string 'True' instead of a boolean 'true'.",
+      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
+      "fix": "Review and update this element following current best practices for search engines and AI systems.",
       "pointsDeducted": -1,
       "severity": "info"
     }
@@ -590,51 +659,51 @@
     "perPageScores": [
       {
         "url": "https://www.pizzatwice.com/",
-        "seo": 90,
-        "aeo": 49,
-        "geo": 80
+        "seo": 80,
+        "aeo": 43,
+        "geo": 70
       },
       {
         "url": "https://www.pizzatwice.com/",
-        "seo": 90,
-        "aeo": 49,
+        "seo": 83,
+        "aeo": 43,
         "geo": 70
       },
       {
         "url": "https://www.pizzatwice.com/about-us",
-        "seo": 80,
+        "seo": 77,
         "aeo": 20,
-        "geo": 100
+        "geo": 55
       },
       {
         "url": "https://www.pizzatwice.com/locations",
-        "seo": 87,
+        "seo": 92,
         "aeo": 49,
-        "geo": 50
+        "geo": 75
       },
       {
         "url": "https://www.pizzatwice.com/pizza-twice-franchise",
-        "seo": 89,
-        "aeo": 28,
-        "geo": 35
+        "seo": 95,
+        "aeo": 58,
+        "geo": 44
       },
       {
         "url": "https://www.pizzatwice.com/reviews",
-        "seo": 84,
-        "aeo": 42,
-        "geo": 45
+        "seo": 90,
+        "aeo": 32,
+        "geo": 23
       },
       {
         "url": "https://www.pizzatwice.com/contact-us",
-        "seo": 85,
-        "aeo": 30,
-        "geo": 35
+        "seo": 82,
+        "aeo": 20,
+        "geo": 21
       },
       {
         "url": "https://www.pizzatwice.com/menu",
-        "seo": 89,
-        "aeo": 13,
-        "geo": 25
+        "seo": 92,
+        "aeo": 28,
+        "geo": 10
       }
     ]
   }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { Header } from "@/components/dashboard/header"
-import { saveScanToHistory } from '@/lib/scan-history'
+import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan } from '@/lib/scan-history'
 import { DualSearchInput } from "@/components/dashboard/search-input"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -24,6 +24,8 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
+import { InfoTooltip } from '@/components/ui/info-tooltip'
 
 export default function SiteVsSite() {
     const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -64,9 +66,35 @@ export default function SiteVsSite() {
                 type: 'competitive',
                 scores: { seo: c.seo?.siteA || 0, aeo: c.aeo?.siteA || 0, geo: c.geo?.siteA || 0 },
                 timestamp: new Date().toISOString(),
-            })
+            }, comparisonData)
         }
     }, [comparisonData, siteA, siteB])
+
+    // Load from history if navigated from dashboard
+    useEffect(() => {
+        const entry = consumeLoadFromHistory()
+        if (entry && entry.type === 'competitive') {
+            const full = getFullScanResult(entry)
+            if (full) {
+                const parts = entry.url.split(' vs ')
+                if (parts.length === 2) {
+                    setSiteA(parts[0])
+                    setSiteB(parts[1])
+                }
+                setComparisonData(full)
+                return
+            }
+        }
+        const latest = getLatestFullScan('competitive')
+        if (latest) {
+            const parts = latest.entry.url.split(' vs ')
+            if (parts.length === 2) {
+                setSiteA(parts[0])
+                setSiteB(parts[1])
+            }
+            setComparisonData(latest.result)
+        }
+    }, [])
 
     const handleBattle = async (urlA: string, urlB: string) => {
         setIsAnalyzing(true)
@@ -109,8 +137,8 @@ export default function SiteVsSite() {
                     apiStatus={apiStatus}
                 />
 
-                <main className="flex-1 overflow-y-auto p-6">
-                    <div className="max-w-7xl mx-auto">
+                <main className="flex-1 overflow-y-auto px-6 pt-6">
+                    <div className="max-w-7xl mx-auto pb-6">
                         <div className="mb-10 flex items-start justify-between gap-4">
                             <div className="text-center sm:text-left">
                                 <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
@@ -145,19 +173,7 @@ export default function SiteVsSite() {
                             )}
                         </div>
 
-                        {/* Error Message */}
-                        {error && (
-                            <div className="mb-8 p-4 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
-                                <ShieldAlert className="h-5 w-5" />
-                                <div className="flex-1 text-sm font-medium">{error}</div>
-                                <button
-                                    onClick={() => setError(null)}
-                                    className="text-xs uppercase tracking-wider font-bold hover:underline"
-                                >
-                                    Dismiss
-                                </button>
-                            </div>
-                        )}
+                        <ScanErrorDialog error={error} onClose={() => setError(null)} onRetry={() => handleBattle(siteA, siteB)} />
 
                         {/* Battle Form */}
                         {!comparisonData && !isAnalyzing ? (
@@ -223,6 +239,7 @@ export default function SiteVsSite() {
                                         <CardHeader className="pb-2">
                                             <CardTitle className="text-sm font-medium text-muted-foreground flex justify-between items-center">
                                                 SEO AUTHORITY BATTLE
+                                                <InfoTooltip content="Compares traditional SEO strength between both sites — technical health, backlink authority, content optimization, metadata quality, and crawlability. The higher score indicates stronger search engine visibility." />
                                                 {comparisonData.comparison.seo.winner === "siteA" ? <TrendingUp className="h-4 w-4 text-geo" /> : <TrendingDown className="h-4 w-4 text-destructive" />}
                                             </CardTitle>
                                         </CardHeader>
@@ -250,6 +267,7 @@ export default function SiteVsSite() {
                                         <CardHeader className="pb-2">
                                             <CardTitle className="text-sm font-medium text-muted-foreground flex justify-between items-center">
                                                 AEO SNIPPET SHARE
+                                                <InfoTooltip content="Compares Answer Engine Optimization — which site is more likely to be cited by AI assistants like ChatGPT, Perplexity, and Gemini. Measures structured data, FAQ coverage, direct answer formatting, and schema quality." />
                                                 {comparisonData.comparison.aeo.winner === "siteA" ? <TrendingUp className="h-4 w-4 text-geo" /> : <TrendingDown className="h-4 w-4 text-destructive" />}
                                             </CardTitle>
                                         </CardHeader>
@@ -277,6 +295,7 @@ export default function SiteVsSite() {
                                         <CardHeader className="pb-2">
                                             <CardTitle className="text-sm font-medium text-muted-foreground flex justify-between items-center">
                                                 GEO CITATION LIKELIHOOD
+                                                <InfoTooltip content="Compares Generative Engine Optimization — which site is more likely to appear in AI-generated search results and summaries. Measures brand authority, topical depth, content uniqueness, and citation-worthiness." />
                                                 {comparisonData.comparison.geo.winner === "siteA" ? <TrendingUp className="h-4 w-4 text-geo" /> : <TrendingDown className="h-4 w-4 text-destructive" />}
                                             </CardTitle>
                                         </CardHeader>
@@ -300,105 +319,26 @@ export default function SiteVsSite() {
                                     </Card>
                                 </div>
 
-                                {/* Stolen Opportunities & Strategic Gaps */}
-                                <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 mb-8 relative z-20">
-                                    <div className="space-y-6">
-                                        <Card className="border-aeo/20 bg-aeo/5">
-                                            <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                                <div>
-                                                    <CardTitle className="flex items-center gap-2 text-foreground">
-                                                        <Zap className="h-5 w-5 text-aeo" />
-                                                        Stolen Opportunities
-                                                    </CardTitle>
-                                                    <CardDescription>Strategies where they are winning LLM citations</CardDescription>
-                                                </div>
-                                                <button
-                                                    onClick={() => {
-                                                        const text = comparisonData.stolenOpportunities.map((o: any) => `[${o.category.toUpperCase()}] ${o.title}\n${o.description}`).join('\n\n');
-                                                        navigator.clipboard.writeText(text);
-                                                        alert("Opportunities copied!");
-                                                    }}
-                                                    className="bg-muted/50 hover:bg-muted border border-border/50 px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider transition-colors"
-                                                >
-                                                    Copy Insights
-                                                </button>
-                                            </CardHeader>
-                                            <CardContent>
-                                                <div className="space-y-4">
-                                                    {comparisonData.stolenOpportunities.map((opp: any, i: number) => (
-                                                        <div key={i} className="bg-background/80 border border-border/50 rounded-xl p-4 flex gap-4 hover:border-aeo/30 transition-colors min-w-0 overflow-hidden">
-                                                            <div className={cn(
-                                                                "h-10 w-10 shrink-0 rounded-lg flex items-center justify-center",
-                                                                opp.category === 'seo' ? "bg-seo/10 text-seo" : opp.category === 'aeo' ? "bg-aeo/10 text-aeo" : "bg-geo/10 text-geo"
-                                                            )}>
-                                                                {opp.category === 'seo' ? <Search className="h-5 w-5" /> : opp.category === 'aeo' ? <Sparkles className="h-5 w-5" /> : <Bot className="h-5 w-5" />}
-                                                            </div>
-                                                            <div className="flex-1 min-w-0">
-                                                                <div className="flex items-center gap-2 mb-1">
-                                                                    <h4 className="font-bold text-foreground text-sm truncate">{opp.title}</h4>
-                                                                    <Badge className={cn(
-                                                                        "text-[10px]",
-                                                                        opp.priority === 'high' ? "bg-destructive/20 text-destructive" : "bg-muted text-muted-foreground"
-                                                                    )}>
-                                                                        {opp.priority}
-                                                                    </Badge>
-                                                                </div>
-                                                                <p className="text-xs text-muted-foreground leading-relaxed">
-                                                                    {opp.description}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </CardContent>
-                                        </Card>
+                                {/* Expert Verdict */}
+                                {comparisonData.winnerVerdict && (
+                                    <div className="rounded-xl bg-geo/10 border border-geo/20 px-5 py-3 flex items-center gap-3">
+                                        <Zap className="h-5 w-5 text-geo shrink-0" />
+                                        <div>
+                                            <h4 className="text-[10px] font-black uppercase text-geo tracking-widest mb-0.5 flex items-center gap-1.5">Expert Verdict <InfoTooltip content="AI-generated summary of the competitive landscape. Identifies the overall winner and explains the key factors driving the score difference between both sites." /></h4>
+                                            <p className="text-sm font-medium text-foreground leading-relaxed">{comparisonData.winnerVerdict}</p>
+                                        </div>
                                     </div>
-
-                                    <div className="space-y-6">
-                                        <Card className="border-geo/20 bg-geo/5 h-full">
-                                            <CardHeader>
-                                                <CardTitle className="flex items-center gap-2 text-foreground">
-                                                    <ShieldAlert className="h-5 w-5 text-geo" />
-                                                    Critical Strategic Gaps
-                                                </CardTitle>
-                                            </CardHeader>
-                                            <CardContent>
-                                                <div className="space-y-4">
-                                                    {comparisonData.strategicGaps.map((gap: string, i: number) => (
-                                                        <div key={i} className="flex items-start gap-3 text-xs border-b border-border/30 pb-3 last:border-0 italic">
-                                                            <CheckCircle2 className="h-4 w-4 mt-0.5 text-geo" />
-                                                            {gap}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                                <div className="mt-8 p-4 rounded-xl bg-geo/10 border border-geo/20">
-                                                    <h4 className="text-xs font-black uppercase text-geo tracking-widest mb-2">Expert Verdict</h4>
-                                                    <p className="text-sm font-medium text-foreground leading-relaxed">
-                                                        {comparisonData.winnerVerdict}
-                                                    </p>
-                                                </div>
-                                                <div className="mt-6 text-center">
-                                                    <button
-                                                        onClick={() => { setComparisonData(null); setSiteA(""); setSiteB(""); }}
-                                                        className="text-sm text-muted-foreground hover:text-foreground hover:underline flex items-center gap-2 mx-auto"
-                                                    >
-                                                        <RefreshCw className="h-3 w-3" />
-                                                        Reset Intelligence Battle
-                                                    </button>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                </div>
+                                )}
 
                                 {/* ── Top 6 Strategic Fixes (Battle Recommendations) ── */}
                                 {comparisonData.recommendations?.length > 0 && (
-                                    <Card className="border-geo/30 bg-gradient-to-br from-geo/5 to-aeo/5 relative z-10 mb-10">
+                                    <Card className="border-geo/30 bg-gradient-to-br from-geo/5 to-aeo/5 relative z-10">
                                         <CardHeader className="flex flex-row items-center justify-between pb-2">
                                             <div>
                                                 <CardTitle className="flex items-center gap-2">
                                                     <Zap className="h-5 w-5 text-geo" />
                                                     Top 6 Counter-Strategies
+                                                    <InfoTooltip content="AI-generated tactical plan to outperform this competitor. Each strategy is ranked by potential impact and includes specific actions you can take. Categories include content, technical SEO, schema, and brand authority improvements." />
                                                 </CardTitle>
                                                 <CardDescription>AI-generated plan to outmaneuver this competitor in AI search rankings</CardDescription>
                                             </div>
@@ -449,13 +389,10 @@ export default function SiteVsSite() {
                                                                 {fix.rank}
                                                             </div>
                                                         </div>
-
                                                         <h5 className="font-bold text-sm mb-3 group-hover:text-geo transition-colors leading-tight">{fix.title}</h5>
-
                                                         <p className="text-xs text-muted-foreground leading-relaxed italic mb-6">
                                                             &ldquo;{fix.description}&rdquo;
                                                         </p>
-
                                                         <div className="mt-auto pt-4 border-t border-border/20 flex items-end justify-between">
                                                             <div className="space-y-1">
                                                                 <p className="text-[9px] font-black uppercase tracking-tighter text-muted-foreground/50">Impacts</p>
@@ -475,8 +412,6 @@ export default function SiteVsSite() {
                                                                 </div>
                                                             </div>
                                                         </div>
-
-                                                        {/* Accent glow on hover */}
                                                         <div className="absolute inset-0 bg-gradient-to-br from-geo/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                                                     </div>
                                                 ))}
@@ -484,6 +419,89 @@ export default function SiteVsSite() {
                                         </CardContent>
                                     </Card>
                                 )}
+
+                                {/* Stolen Opportunities & Strategic Gaps */}
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 relative z-20 items-stretch">
+                                        <Card className="border-aeo/20 bg-aeo/5 h-full">
+                                            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                                <div>
+                                                    <CardTitle className="flex items-center gap-2 text-foreground">
+                                                        <Zap className="h-5 w-5 text-aeo" />
+                                                        Stolen Opportunities
+                                                        <InfoTooltip content="Specific areas where your competitor is outperforming you in AI search visibility. These are opportunities they've captured that you're missing — fixing these has the highest ROI for reclaiming lost traffic and citations." />
+                                                    </CardTitle>
+                                                    <CardDescription>Strategies where they are winning LLM citations</CardDescription>
+                                                </div>
+                                                <button
+                                                    onClick={() => {
+                                                        const text = comparisonData.stolenOpportunities.map((o: any) => `[${o.category.toUpperCase()}] ${o.title}\n${o.description}`).join('\n\n');
+                                                        navigator.clipboard.writeText(text);
+                                                        alert("Opportunities copied!");
+                                                    }}
+                                                    className="bg-muted/50 hover:bg-muted border border-border/50 px-2 py-1 rounded text-[9px] font-black uppercase tracking-wider transition-colors"
+                                                >
+                                                    Copy Insights
+                                                </button>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="space-y-4">
+                                                    {comparisonData.stolenOpportunities.map((opp: any, i: number) => (
+                                                        <div key={i} className="bg-background/80 border border-border/50 rounded-xl p-4 flex gap-4 hover:border-aeo/30 transition-colors min-w-0 overflow-hidden">
+                                                            <div className={cn(
+                                                                "h-10 w-10 shrink-0 rounded-lg flex items-center justify-center",
+                                                                opp.category === 'seo' ? "bg-seo/10 text-seo" : opp.category === 'aeo' ? "bg-aeo/10 text-aeo" : "bg-geo/10 text-geo"
+                                                            )}>
+                                                                {opp.category === 'seo' ? <Search className="h-5 w-5" /> : opp.category === 'aeo' ? <Sparkles className="h-5 w-5" /> : <Bot className="h-5 w-5" />}
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <h4 className="font-bold text-foreground text-sm truncate">{opp.title}</h4>
+                                                                    <Badge className={cn(
+                                                                        "text-[10px]",
+                                                                        opp.priority === 'high' ? "bg-destructive/20 text-destructive" : "bg-muted text-muted-foreground"
+                                                                    )}>
+                                                                        {opp.priority}
+                                                                    </Badge>
+                                                                </div>
+                                                                <p className="text-xs text-muted-foreground leading-relaxed">
+                                                                    {opp.description}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+
+                                        <Card className="border-geo/20 bg-geo/5 h-full">
+                                            <CardHeader>
+                                                <CardTitle className="flex items-center gap-2 text-foreground">
+                                                    <ShieldAlert className="h-5 w-5 text-geo" />
+                                                    Critical Strategic Gaps
+                                                    <InfoTooltip content="Fundamental weaknesses in your site's strategy compared to the competitor. These are structural or strategic issues that, if left unaddressed, will continue to erode your competitive position in both traditional and AI-powered search." />
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="space-y-4">
+                                                    {comparisonData.strategicGaps.map((gap: string, i: number) => (
+                                                        <div key={i} className="flex items-start gap-3 text-xs border-b border-border/30 pb-3 last:border-0 italic">
+                                                            <CheckCircle2 className="h-4 w-4 mt-0.5 text-geo" />
+                                                            {gap}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="mt-6 text-center">
+                                                    <button
+                                                        onClick={() => { setComparisonData(null); setSiteA(""); setSiteB(""); }}
+                                                        className="text-sm text-muted-foreground hover:text-foreground hover:underline flex items-center gap-2 mx-auto"
+                                                    >
+                                                        <RefreshCw className="h-3 w-3" />
+                                                        Reset Intelligence Battle
+                                                    </button>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                </div>
                             </div>
                         )}
                     </div>

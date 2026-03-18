@@ -278,7 +278,7 @@ export const SEO_CONTENT_COMPONENTS: ScoreComponent[] = [
         maxPoints: 7,
         description: "Content is clear and easy to read",
         evaluate: (data) => {
-            const { poorReadability } = data.semanticFlags || {};
+            const readabilitySeverity = data.semanticFlags?.poorReadability;
             const { wordCount } = data.structuralData || {};
             
             // Thin content can't be properly evaluated for readability
@@ -292,21 +292,28 @@ export const SEO_CONTENT_COMPONENTS: ScoreComponent[] = [
                 };
             }
             
-            if (poorReadability) {
+            // Handle both boolean (legacy) and 0-100 (graduated) formats
+            const severity = typeof readabilitySeverity === 'boolean' 
+                ? (readabilitySeverity ? 100 : 0)
+                : (typeof readabilitySeverity === 'number' ? Math.max(0, Math.min(100, readabilitySeverity)) : 0);
+            
+            const penalty = Math.round((severity / 100) * 7);
+            
+            if (penalty === 0) {
                 return {
-                    score: 2,
+                    score: 7,
                     maxScore: 7,
-                    status: 'warning',
-                    feedback: "Content readability needs improvement",
-                    issues: ["Complex sentences or poor structure detected"]
+                    status: 'excellent',
+                    feedback: "Content is clear and readable"
                 };
             }
             
             return {
-                score: 7,
+                score: 7 - penalty,
                 maxScore: 7,
-                status: 'excellent',
-                feedback: "Content is clear and readable"
+                status: penalty >= 5 ? 'warning' : 'good',
+                feedback: "Content readability needs improvement",
+                issues: [`Readability concerns detected (severity: ${severity}/100)`]
             };
         }
     },

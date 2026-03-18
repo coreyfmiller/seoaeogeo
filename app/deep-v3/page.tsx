@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Activity, Layers, Sparkles, Zap, ShieldCheck, AlertTriangle, FileText, Globe, Image } from 'lucide-react'
-import { saveScanToHistory } from '@/lib/scan-history'
+import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { Header } from '@/components/dashboard/header'
@@ -15,6 +15,7 @@ import { CircularProgress } from '@/components/dashboard/circular-progress'
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { Badge } from '@/components/ui/badge'
+import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
 import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
 
 interface DeepScanResult {
@@ -56,6 +57,12 @@ interface DeepScanResult {
   siteWideIssues: any
   orphanPages: any
   duplicateGroups: any
+  cwv?: {
+    performanceScore: number
+    lcp: { value: number; category: string; displayValue: string; score: number } | null
+    inp: { value: number; category: string; displayValue: string; score: number } | null
+    cls: { value: number; category: string; displayValue: string; score: number } | null
+  }
 }
 
 export default function DeepV3Page() {
@@ -82,9 +89,26 @@ export default function DeepV3Page() {
         type: 'deep',
         scores: { seo: result.scores.seo, aeo: result.scores.aeo, geo: result.scores.geo },
         timestamp: new Date().toISOString(),
-      })
+      }, result)
     }
   }, [result, currentUrl])
+
+  useEffect(() => {
+    const entry = consumeLoadFromHistory()
+    if (entry && entry.type === 'deep') {
+      const full = getFullScanResult(entry)
+      if (full) {
+        setCurrentUrl(entry.url)
+        sse.setData(full)
+        return
+      }
+    }
+    const latest = getLatestFullScan('deep')
+    if (latest) {
+      setCurrentUrl(latest.entry.url)
+      sse.setData(latest.result)
+    }
+  }, [])
 
   return (
     <div className="flex h-screen bg-background">
@@ -102,15 +126,13 @@ export default function DeepV3Page() {
         />
 
         {/* Dashboard Content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
+        <main className="flex-1 overflow-y-auto px-6 pt-6">
+          <div className="max-w-7xl mx-auto space-y-6 pb-6">
       
             {/* Page Header with Actions */}
             <AuditPageHeader
               title="V3 Deep Scan"
               description="AI-powered multi-page analysis with context-aware scoring and comprehensive site audit."
-              badge="BETA AI"
-              badgeVariant="beta"
               currentUrl={currentUrl}
               hasResults={!!result}
               isAnalyzing={isAnalyzing}
@@ -125,6 +147,7 @@ export default function DeepV3Page() {
                 primaryType: result.siteTypeResult.primaryType,
                 confidence: result.siteTypeResult.confidence
               } : undefined}
+              cwv={result?.cwv}
             />
 
             {/* Hero Section - Only show when no results */}
@@ -227,14 +250,7 @@ export default function DeepV3Page() {
               </Card>
             )}
 
-            {/* Error Display */}
-            {error && (
-              <Card className="border-red-500/50 bg-red-500/5">
-                <CardContent className="pt-6">
-                  <p className="text-sm text-red-600">{error}</p>
-                </CardContent>
-              </Card>
-            )}
+            <ScanErrorDialog error={error} onClose={() => sse.reset()} onRetry={() => handleAnalyze(currentUrl)} />
 
             {/* Results Display */}
             {result && (
@@ -272,16 +288,16 @@ export default function DeepV3Page() {
                   const httpsPct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.isHttps === true).length / pages.length) * 100) : 0
                   const metaPct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.hasDescription === true).length / pages.length) * 100) : 0
                   const metrics = [
-                    { label: "Domain Health", value: `${ai?.domainHealthScore ?? '–'}%`, color: "text-geo", tip: "Overall domain quality score combining content, schema, metadata, technical, and architecture health." },
-                    { label: "Brand", value: `${ai?.consistencyScore ?? '–'}%`, color: "text-aeo", tip: "Brand consistency across pages — measures uniform tone, messaging, and visual identity signals." },
-                    { label: "Schema", value: `${ai?.authorityMetrics?.schemaCoverage ?? '–'}%`, color: "text-seo", tip: "Percentage of pages with valid structured data (JSON-LD). Higher coverage improves rich snippet eligibility." },
-                    { label: "Metadata", value: `${metaPct}%`, color: metaPct >= 90 ? "text-geo" : "text-yellow-600", tip: "Percentage of pages with both a title tag and meta description. Essential for search engine display." },
-                    { label: "H1 Tags", value: `${h1Pct}%`, color: h1Pct >= 90 ? "text-geo" : "text-red-600", tip: "Percentage of pages with an H1 heading tag. Every page should have exactly one H1 for SEO best practice." },
-                    { label: "HTTPS", value: `${httpsPct}%`, color: httpsPct === 100 ? "text-geo" : "text-red-600", tip: "Percentage of pages served over HTTPS. Google uses HTTPS as a ranking signal — 100% is expected." },
-                    { label: "Response", value: `${result.aggregateMetrics.avgResponseTime}ms`, color: "text-geo", tip: "Average server response time across all crawled pages. Under 200ms is good, over 500ms needs attention." },
-                    { label: "Robots.txt", value: result.robotsTxt ? "Found" : "Missing", color: result.robotsTxt ? "text-green-600" : "text-red-600", tip: "Whether a robots.txt file exists at the domain root. Controls how search engines crawl your site." },
-                    { label: "Sitemap", value: result.sitemapFound ? "Found" : "Missing", color: result.sitemapFound ? "text-green-600" : "text-red-600", tip: "Whether an XML sitemap was found. Helps search engines discover and index all your pages efficiently." },
-                    { label: "Alt Text", value: `${imgAltPct}%`, color: imgAltPct >= 80 ? "text-green-600" : "text-yellow-600", tip: "Percentage of images with descriptive alt text. Critical for accessibility and image search rankings." },
+                    { label: "Domain Health", value: `${ai?.domainHealthScore ?? '–'}%`, color: "text-geo", tip: "AI-powered aggregate domain quality score combining content quality, schema implementation, metadata completeness, technical performance, and site architecture across all crawled pages. This is the single most important metric for understanding your site's overall health." },
+                    { label: "Brand", value: `${ai?.consistencyScore ?? '–'}%`, color: "text-aeo", tip: "Brand consistency across all crawled pages — measures uniform tone, messaging, visual identity signals, and content voice. Inconsistent branding confuses both users and AI engines, reducing citation likelihood and trust." },
+                    { label: "Schema", value: `${ai?.authorityMetrics?.schemaCoverage ?? '–'}%`, color: "text-seo", tip: "Percentage of crawled pages with valid structured data (JSON-LD). Schema markup enables rich snippets in search results and helps AI engines understand your content. Low coverage means missed opportunities for enhanced search visibility." },
+                    { label: "Metadata", value: `${metaPct}%`, color: metaPct >= 90 ? "text-geo" : "text-yellow-600", tip: "Percentage of crawled pages with both a title tag and meta description. These control how your pages appear in search results. Pages without metadata get auto-generated snippets that rarely perform well." },
+                    { label: "H1 Tags", value: `${h1Pct}%`, color: h1Pct >= 90 ? "text-geo" : "text-red-600", tip: "Percentage of crawled pages with an H1 heading tag. The H1 is the primary heading that tells search engines what each page is about. Every page should have exactly one — missing H1s confuse crawlers and hurt rankings." },
+                    { label: "HTTPS", value: `${httpsPct}%`, color: httpsPct === 100 ? "text-geo" : "text-red-600", tip: "Percentage of crawled pages served over HTTPS. Google uses HTTPS as a ranking signal and browsers show 'Not Secure' warnings for HTTP pages. Anything less than 100% is a critical security and SEO issue." },
+                    { label: "Response", value: `${result.aggregateMetrics.avgResponseTime}ms`, color: "text-geo", tip: "Average server response time (TTFB) across all crawled pages. Under 200ms is excellent, under 500ms is acceptable, over 500ms needs attention. Slow response times compound across a site and hurt Core Web Vitals." },
+                    { label: "Robots.txt", value: result.robotsTxt ? "Found" : "Missing", color: result.robotsTxt ? "text-green-600" : "text-red-600", tip: "Whether a robots.txt file exists at the domain root. This file controls how search engine crawlers navigate your site — which pages to index and which to skip. Without it, crawlers may waste budget on unimportant pages." },
+                    { label: "Sitemap", value: result.sitemapFound ? "Found" : "Missing", color: result.sitemapFound ? "text-green-600" : "text-red-600", tip: "Whether an XML sitemap was found at the domain root. Sitemaps help search engines discover all your pages efficiently, especially new content or deeply nested pages that might not be found through internal links alone." },
+                    { label: "Alt Text", value: `${imgAltPct}%`, color: imgAltPct >= 80 ? "text-green-600" : "text-yellow-600", tip: "Percentage of images across all crawled pages with descriptive alt text. Alt text is critical for accessibility (screen readers rely on it) and image search rankings. Google Images drives significant traffic — missing alt text means lost opportunities." },
                   ]
                   return (
                     <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-10 gap-2">

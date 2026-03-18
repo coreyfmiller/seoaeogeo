@@ -306,3 +306,122 @@
   "consistencyScore": 100,
   "schemaScore": 100
 }
+[2026-03-17T22:22:07.357Z] [GEMINI-SITEWIDE] Starting AI analysis
+{
+  "domain": "fundylogic.com",
+  "pageCount": 10
+}
+[2026-03-17T22:22:07.358Z] [GEMINI-SITEWIDE] Schema health score
+{
+  "score": 100
+}
+[2026-03-17T22:22:07.358Z] [GEMINI-SITEWIDE] Brand consistency score
+{
+  "score": 100
+}
+[2026-03-17T22:22:07.359Z] [GEMINI-SITEWIDE] Calling Gemini API
+[2026-03-17T22:22:53.879Z] [GEMINI-SITEWIDE] Received response
+{
+  "length": 14039,
+  "preview": "```json\n{\n  \"domainHealthScore\": 80,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 95,\n    \"schemaQuality\": 25,\n    \"metadataQuality\": 98,\n    \"technicalHealth\": 100,\n    \"architectureHealth\": 95"
+}
+[2026-03-17T22:22:53.881Z] [GEMINI-SITEWIDE] Parsed AI result
+{
+  "domainHealthScore": 80,
+  "recommendationsCount": 6,
+  "keys": [
+    "domainHealthScore",
+    "domainHealthBreakdown",
+    "domainHealthExplanations",
+    "authorityMetrics",
+    "sitewideInsights",
+    "contentGapAnalysis",
+    "cannibalizationRisks",
+    "internalLinkLeaders",
+    "orphanPageRisks",
+    "navigationAnalysis",
+    "brandClarityVerdict",
+    "aeoReadiness",
+    "socialProofSignals",
+    "topicalClusters",
+    "inventoryEvidence",
+    "recommendations"
+  ]
+}
+[2026-03-17T22:22:53.881Z] [GEMINI-SITEWIDE] Final result assembled
+{
+  "domainHealthScore": 80,
+  "consistencyScore": 100,
+  "schemaScore": 100
+}
+[2026-03-17T22:27:18.031Z] [GEMINI-SITEWIDE] Starting AI analysis
+{
+  "domain": "pizzatwice.com",
+  "pageCount": 8
+}
+[2026-03-17T22:27:18.032Z] [GEMINI-SITEWIDE] Schema health score
+{
+  "score": 25
+}
+[2026-03-17T22:27:18.032Z] [GEMINI-SITEWIDE] Brand consistency score
+{
+  "score": 100
+}
+[2026-03-17T22:27:18.033Z] [GEMINI-SITEWIDE] Calling Gemini API
+[2026-03-17T22:28:15.122Z] [GEMINI-SITEWIDE] Received response
+{
+  "length": 18591,
+  "preview": "```json\n{\n  \"domainHealthScore\": 73,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 75,\n    \"schemaQuality\": 15,\n    \"metadataQuality\": 95,\n    \"technicalHealth\": 90,\n    \"architectureHealth\": 90\n"
+}
+[2026-03-17T22:28:15.126Z] [GEMINI-SITEWIDE] Parsed AI result
+{
+  "domainHealthScore": 73,
+  "recommendationsCount": 6,
+  "keys": [
+    "domainHealthScore",
+    "domainHealthBreakdown",
+    "domainHealthExplanations",
+    "authorityMetrics",
+    "sitewideInsights",
+    "contentGapAnalysis",
+    "cannibalizationRisks",
+    "internalLinkLeaders",
+    "orphanPageRisks",
+    "navigationAnalysis",
+    "brandClarityVerdict",
+    "aeoReadiness",
+    "socialProofSignals",
+    "topicalClusters",
+    "inventoryEvidence",
+    "recommendations"
+  ]
+}
+[2026-03-17T22:28:15.127Z] [GEMINI-SITEWIDE] Final result assembled
+{
+  "domainHealthScore": 73,
+  "consistencyScore": 100,
+  "schemaScore": 25
+}
+[2026-03-18T10:08:13.079Z] [GEMINI-SITEWIDE] Starting AI analysis
+{
+  "domain": "pizzatwice.com",
+  "pageCount": 8
+}
+[2026-03-18T10:08:13.079Z] [GEMINI-SITEWIDE] Schema health score
+{
+  "score": 25
+}
+[2026-03-18T10:08:13.079Z] [GEMINI-SITEWIDE] Brand consistency score
+{
+  "score": 100
+}
+[2026-03-18T10:08:13.080Z] [GEMINI-SITEWIDE] Calling Gemini API
+[2026-03-18T10:08:54.996Z] [GEMINI-SITEWIDE] Received response
+{
+  "length": 15155,
+  "preview": "{\n  \"domainHealthScore\": 59,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 50,\n    \"schemaQuality\": 10,\n    \"metadataQuality\": 90,\n    \"technicalHealth\": 75,\n    \"architectureHealth\": 70\n  },\n  \""
+}
+[2026-03-18T10:08:54.998Z] [GEMINI-SITEWIDE] ERROR
+{
+  "error": "Expected ',' or ']' after array element in JSON at position 10529 (line 146 column 5)"
+}
