@@ -76,6 +76,18 @@ export default function ProPage() {
               </p>
             </div>
 
+            {/* Why Vantege */}
+            <Card className="border-aeo/20 bg-gradient-to-br from-aeo/5 to-geo/5">
+              <CardContent className="p-8 text-center space-y-3">
+                <p className="text-2xl font-bold leading-snug max-w-xl mx-auto">
+                  We use AI to show you what AI thinks of your content.
+                </p>
+                <p className="text-sm text-muted-foreground max-w-xl mx-auto">
+                  ChatGPT, Perplexity, and Gemini don't crawl your site — they read it and decide whether to cite you. Vantege uses the same AI to audit your pages, so you see exactly what they see.
+                </p>
+              </CardContent>
+            </Card>
+
             {/* Feature Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {features.map(f => (

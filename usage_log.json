@@ -6683,5 +6683,239 @@
     "url": "pizzatwice.com",
     "timestamp": "2026-03-18T19:52:42.487Z",
     "cost": 0.049974924999999996
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4772,
+    "outputTokens": 2672,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-18T20:34:56.410Z",
+    "cost": 0.035171499999999994
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4772,
+    "outputTokens": 2666,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-18T20:35:00.579Z",
+    "cost": 0.0351169
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3334,
+    "outputTokens": 2738,
+    "url": "Pizza Twice | About Us",
+    "timestamp": "2026-03-18T20:35:02.284Z",
+    "cost": 0.03250065
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3554,
+    "outputTokens": 2707,
+    "url": "Pizza Twice | Pizza Twice Franchise",
+    "timestamp": "2026-03-18T20:35:21.182Z",
+    "cost": 0.03271905
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3976,
+    "outputTokens": 2499,
+    "url": "Pizza Twice | Reviews",
+    "timestamp": "2026-03-18T20:35:21.665Z",
+    "cost": 0.031786299999999997
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 6704,
+    "outputTokens": 2664,
+    "url": "Pizza Twice | Locations",
+    "timestamp": "2026-03-18T20:35:22.292Z",
+    "cost": 0.039494
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3172,
+    "outputTokens": 2541,
+    "url": "Pizza Twice | Oromocto | Contact Us",
+    "timestamp": "2026-03-18T20:35:40.003Z",
+    "cost": 0.030339399999999996
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3668,
+    "outputTokens": 2739,
+    "url": "Pizzas In Oromocto | Menu | Pizza Twice",
+    "timestamp": "2026-03-18T20:35:43.940Z",
+    "cost": 0.033269599999999996
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 3699,
+    "outputTokens": 5195,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-18T20:36:53.636Z",
+    "cost": 0.055689724999999995
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 798,
+    "outputTokens": 483,
+    "url": "https://pizzatwice.com",
+    "timestamp": "2026-03-18T22:28:31.704Z",
+    "cost": 0.006210749999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4772,
+    "outputTokens": 2669,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-18T22:28:41.391Z",
+    "cost": 0.0351442
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 798,
+    "outputTokens": 451,
+    "url": "https://pizzatwice.com",
+    "timestamp": "2026-03-18T22:29:57.147Z",
+    "cost": 0.00591955
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4772,
+    "outputTokens": 2669,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-18T22:30:07.514Z",
+    "cost": 0.0351442
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 798,
+    "outputTokens": 483,
+    "url": "https://pizzatwice.com",
+    "timestamp": "2026-03-18T22:30:33.047Z",
+    "cost": 0.006210749999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4772,
+    "outputTokens": 2669,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-18T22:30:44.132Z",
+    "cost": 0.0351442
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 798,
+    "outputTokens": 483,
+    "url": "https://pizzatwice.com",
+    "timestamp": "2026-03-18T22:31:57.337Z",
+    "cost": 0.006210749999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4772,
+    "outputTokens": 2672,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-18T22:32:07.257Z",
+    "cost": 0.035171499999999994
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4772,
+    "outputTokens": 2672,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-18T22:33:00.152Z",
+    "cost": 0.035171499999999994
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3334,
+    "outputTokens": 2738,
+    "url": "Pizza Twice | About Us",
+    "timestamp": "2026-03-18T22:33:02.565Z",
+    "cost": 0.03250065
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4772,
+    "outputTokens": 2669,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-18T22:33:02.893Z",
+    "cost": 0.0351442
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3554,
+    "outputTokens": 2726,
+    "url": "Pizza Twice | Pizza Twice Franchise",
+    "timestamp": "2026-03-18T22:33:16.030Z",
+    "cost": 0.03289195
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3976,
+    "outputTokens": 2499,
+    "url": "Pizza Twice | Reviews",
+    "timestamp": "2026-03-18T22:33:22.296Z",
+    "cost": 0.031786299999999997
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 6704,
+    "outputTokens": 2818,
+    "url": "Pizza Twice | Locations",
+    "timestamp": "2026-03-18T22:33:23.669Z",
+    "cost": 0.0408954
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3668,
+    "outputTokens": 2744,
+    "url": "Pizzas In Oromocto | Menu | Pizza Twice",
+    "timestamp": "2026-03-18T22:33:38.769Z",
+    "cost": 0.0333151
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3172,
+    "outputTokens": 2541,
+    "url": "Pizza Twice | Oromocto | Contact Us",
+    "timestamp": "2026-03-18T22:33:41.693Z",
+    "cost": 0.030339399999999996
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 3699,
+    "outputTokens": 4816,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-18T22:34:21.890Z",
+    "cost": 0.052240825
   }
 ]

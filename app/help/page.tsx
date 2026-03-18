@@ -69,6 +69,11 @@ const faqs: FAQItem[] = [
   },
   {
     category: "Scoring",
+    question: "Why did my score change slightly between scans?",
+    answer: "Pro and Deep Scan audits use AI to evaluate your content the same way answer engines and generative search actually read your site. Just like ChatGPT or Perplexity re-evaluates content every time it encounters it, our AI analysis produces a fresh assessment each scan. Minor variations of ±3 points are normal and reflect how AI perception genuinely works. Your technical checks (meta tags, schema, HTTPS, H1s) are always 100% consistent — it's only the AI quality signals that can shift slightly. This isn't a flaw — it's an honest representation of how your content will be judged in the real world."
+  },
+  {
+    category: "Scoring",
     question: "What are site types and why do they matter?",
     answer: "Vantege automatically detects your site type (e-commerce, blog, portfolio, SaaS, news, local business, etc.) and adjusts scoring weights accordingly. An e-commerce site is evaluated differently than a blog because different signals matter for each. This ensures fair, relevant scoring."
   },

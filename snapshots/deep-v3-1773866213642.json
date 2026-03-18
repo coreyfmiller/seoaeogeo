@@ -1,52 +1,43 @@
 {
-  "id": "deep-v3-1773838443855",
-  "url": "https://www.giselespizza.com/",
-  "timestamp": "2026-03-18T12:54:03.855Z",
+  "id": "deep-v3-1773866213642",
+  "url": "https://pizzatwice.com",
+  "timestamp": "2026-03-18T20:36:53.642Z",
   "apiRoute": "/api/analyze-deep-v3",
   "scores": {
-    "seo": 47,
-    "aeo": 45,
+    "seo": 80,
+    "aeo": 44,
     "geo": 45
   },
-  "siteType": "local-business",
+  "siteType": "restaurant",
   "rawAiScores": {
-    "seoScore": 36,
-    "aeoScore": 48,
-    "geoScore": 34,
+    "seoScore": 77,
+    "aeoScore": 63,
+    "geoScore": 61,
     "breakdown": {
       "seo": [
         {
           "name": "Foundation",
-          "score": 12,
+          "score": 33,
           "maxScore": 40,
-          "percentage": 30,
+          "percentage": 83,
           "components": [
             {
-              "score": 5,
+              "score": 10,
               "maxScore": 10,
-              "status": "warning",
-              "feedback": "Title tag too short - should be 30-60 characters",
-              "issues": [
-                "Title is only 24 characters"
-              ]
+              "status": "excellent",
+              "feedback": "Title tag is well-optimized"
             },
             {
-              "score": 0,
+              "score": 8,
               "maxScore": 8,
-              "status": "critical",
-              "feedback": "Missing meta description",
-              "issues": [
-                "No meta description found"
-              ]
+              "status": "excellent",
+              "feedback": "Meta description is well-optimized"
             },
             {
-              "score": 0,
+              "score": 8,
               "maxScore": 8,
-              "status": "critical",
-              "feedback": "Missing H1 heading",
-              "issues": [
-                "No H1 tag found on page"
-              ]
+              "status": "excellent",
+              "feedback": "H1 heading is properly implemented"
             },
             {
               "score": 7,
@@ -67,17 +58,17 @@
         },
         {
           "name": "Content Quality",
-          "score": 6,
+          "score": 14,
           "maxScore": 42,
-          "percentage": 14,
+          "percentage": 33,
           "components": [
             {
-              "score": 4,
+              "score": 7,
               "maxScore": 15,
               "status": "warning",
               "feedback": "Thin content - needs substantial expansion",
               "issues": [
-                "Only 98 words (recommended: 800+)"
+                "Only 282 words (recommended: 800+)"
               ]
             },
             {
@@ -95,34 +86,31 @@
               "status": "warning",
               "feedback": "Excessive internal linking - appears spammy",
               "issues": [
-                "30 links in 98 words (31% link density)"
+                "16 links in 282 words (6% link density)"
               ]
             },
             {
-              "score": 0,
+              "score": 5,
               "maxScore": 10,
-              "status": "critical",
-              "feedback": "No images have alt text - major accessibility issue",
+              "status": "warning",
+              "feedback": "Many images missing alt text",
               "issues": [
-                "All 12 images missing alt text"
+                "5 of 12 images missing alt text (58% coverage)"
               ]
             }
           ]
         },
         {
           "name": "Technical Excellence",
-          "score": 12,
+          "score": 22,
           "maxScore": 22,
-          "percentage": 55,
+          "percentage": 100,
           "components": [
             {
-              "score": 0,
+              "score": 10,
               "maxScore": 10,
-              "status": "critical",
-              "feedback": "Very slow page load time - critical performance issue",
-              "issues": [
-                "5006ms response time (target: <1500ms)"
-              ]
+              "status": "excellent",
+              "feedback": "Fast page load (1307ms)"
             },
             {
               "score": 6,
@@ -140,21 +128,16 @@
         },
         {
           "name": "Advanced Optimization",
-          "score": 6,
+          "score": 8,
           "maxScore": 8,
-          "percentage": 75,
+          "percentage": 100,
           "components": [
             {
-              "score": 3,
+              "score": 5,
               "maxScore": 5,
-              "status": "good",
-              "feedback": "Schema present but needs improvement",
-              "issues": [
-                "Missing LocalBusiness schema, crucial for local search visibility.",
-                "Missing Restaurant or FoodEstablishment schema to describe the business type.",
-                "Missing Menu or MenuItem schema for detailed food offerings.",
-                "The 'description' property in the WebSite schema is empty, a missed SEO opportunity."
-              ]
+              "status": "excellent",
+              "feedback": "High-quality schema implementation",
+              "issues": []
             },
             {
               "score": 3,
@@ -174,9 +157,9 @@
       "aeo": [
         {
           "name": "AEO Readiness",
-          "score": 48,
+          "score": 63,
           "maxScore": 100,
-          "percentage": 48,
+          "percentage": 63,
           "components": [
             {
               "score": 0,
@@ -184,28 +167,23 @@
               "status": "critical",
               "feedback": "Content Depth",
               "issues": [
-                "Only 98 words - thin content is invisible to AI (need 800+ words)"
+                "Only 282 words - thin content is invisible to AI (need 800+ words)"
               ]
             },
             {
-              "score": 18,
+              "score": 29,
               "maxScore": 30,
-              "status": "warning",
+              "status": "good",
               "feedback": "Schema Quality",
-              "issues": [
-                "Missing LocalBusiness schema, crucial for local search visibility.",
-                "Missing Restaurant or FoodEstablishment schema to describe the business type.",
-                "Missing Menu or MenuItem schema for detailed food offerings.",
-                "The 'description' property in the WebSite schema is empty, a missed SEO opportunity."
-              ]
+              "issues": []
             },
             {
-              "score": 8,
+              "score": 14,
               "maxScore": 20,
-              "status": "warning",
+              "status": "good",
               "feedback": "Question Answering",
               "issues": [
-                "Q&A coverage needs improvement (severity: 60/100)"
+                "Q&A coverage needs improvement (severity: 30/100)"
               ]
             },
             {
@@ -214,7 +192,7 @@
               "status": "good",
               "feedback": "Entity Density",
               "issues": [
-                "Low density of named entities and specific facts (severity: 10/100)"
+                "Low density of named entities and specific facts (severity: 15/100)"
               ]
             },
             {
@@ -227,10 +205,13 @@
               ]
             },
             {
-              "score": 10,
+              "score": 8,
               "maxScore": 10,
               "status": "good",
-              "feedback": "Definitions"
+              "feedback": "Definitions",
+              "issues": [
+                "Missing clear definition statements (severity: 20/100)"
+              ]
             }
           ]
         }
@@ -238,17 +219,17 @@
       "geo": [
         {
           "name": "GEO Visibility",
-          "score": 34,
+          "score": 61,
           "maxScore": 100,
-          "percentage": 34,
+          "percentage": 61,
           "components": [
             {
-              "score": 0,
+              "score": 15,
               "maxScore": 25,
-              "status": "critical",
+              "status": "warning",
               "feedback": "Image Accessibility",
               "issues": [
-                "Only 0% of images have alt text - AI cannot understand images"
+                "58% alt text coverage - aim for 100%"
               ]
             },
             {
@@ -261,85 +242,78 @@
               ]
             },
             {
-              "score": 4,
+              "score": 18,
               "maxScore": 20,
-              "status": "warning",
+              "status": "good",
               "feedback": "Expertise",
               "issues": [
-                "Missing expertise signals (severity: 80/100)"
+                "Missing expertise signals (severity: 10/100)"
+              ]
+            },
+            {
+              "score": 12,
+              "maxScore": 15,
+              "status": "good",
+              "feedback": "Data & Facts",
+              "issues": [
+                "Lacks specific data and statistics (severity: 20/100)"
+              ]
+            },
+            {
+              "score": 6,
+              "maxScore": 10,
+              "status": "warning",
+              "feedback": "Objectivity",
+              "issues": [
+                "First-person usage detected (severity: 40/100)"
               ]
             },
             {
               "score": 4,
-              "maxScore": 15,
+              "maxScore": 10,
               "status": "warning",
-              "feedback": "Data & Facts",
+              "feedback": "Claims",
               "issues": [
-                "Lacks specific data and statistics (severity: 70/100)"
+                "Unsubstantiated claims detected (severity: 60/100)"
               ]
-            },
-            {
-              "score": 10,
-              "maxScore": 10,
-              "status": "good",
-              "feedback": "Objectivity"
-            },
-            {
-              "score": 10,
-              "maxScore": 10,
-              "status": "good",
-              "feedback": "Claims"
             }
           ]
         }
       ]
     },
-    "overallFeedback": "Critical SEO issues for a local business - Your site has fundamental problems that severely impact search visibility.",
+    "overallFeedback": "Good SEO foundation for a restaurant - Your site has solid optimization with room for minor improvements.",
     "criticalIssues": [
-      "No meta description found",
-      "No H1 tag found on page",
       "No viewport meta tag found",
-      "Need at least 300 words for meaningful content",
-      "All 12 images missing alt text",
-      "5006ms response time (target: <1500ms)"
+      "Need at least 300 words for meaningful content"
     ],
     "version": "v2",
-    "siteType": "local-business"
+    "siteType": "restaurant"
   },
   "graderBreakdown": {
     "seo": [
       {
         "name": "Foundation",
-        "score": 12,
+        "score": 33,
         "maxScore": 40,
-        "percentage": 30,
+        "percentage": 83,
         "components": [
           {
-            "score": 5,
+            "score": 10,
             "maxScore": 10,
-            "status": "warning",
-            "feedback": "Title tag too short - should be 30-60 characters",
-            "issues": [
-              "Title is only 24 characters"
-            ]
+            "status": "excellent",
+            "feedback": "Title tag is well-optimized"
           },
           {
-            "score": 0,
+            "score": 8,
             "maxScore": 8,
-            "status": "critical",
-            "feedback": "Missing meta description",
-            "issues": [
-              "No meta description found"
-            ]
+            "status": "excellent",
+            "feedback": "Meta description is well-optimized"
           },
           {
-            "score": 0,
+            "score": 8,
             "maxScore": 8,
-            "status": "critical",
-            "feedback": "Missing H1 heading",
-            "issues": [
-              "No H1 tag found on page"
-            ]
+            "status": "excellent",
+            "feedback": "H1 heading is properly implemented"
           },
           {
             "score": 7,
@@ -360,17 +334,17 @@
       },
       {
         "name": "Content Quality",
-        "score": 6,
+        "score": 14,
         "maxScore": 42,
-        "percentage": 14,
+        "percentage": 33,
         "components": [
           {
-            "score": 4,
+            "score": 7,
             "maxScore": 15,
             "status": "warning",
             "feedback": "Thin content - needs substantial expansion",
             "issues": [
-              "Only 98 words (recommended: 800+)"
+              "Only 282 words (recommended: 800+)"
             ]
           },
           {
@@ -388,34 +362,31 @@
             "status": "warning",
             "feedback": "Excessive internal linking - appears spammy",
             "issues": [
-              "30 links in 98 words (31% link density)"
+              "16 links in 282 words (6% link density)"
             ]
           },
           {
-            "score": 0,
+            "score": 5,
             "maxScore": 10,
-            "status": "critical",
-            "feedback": "No images have alt text - major accessibility issue",
+            "status": "warning",
+            "feedback": "Many images missing alt text",
             "issues": [
-              "All 12 images missing alt text"
+              "5 of 12 images missing alt text (58% coverage)"
             ]
           }
         ]
       },
       {
         "name": "Technical Excellence",
-        "score": 12,
+        "score": 22,
         "maxScore": 22,
-        "percentage": 55,
+        "percentage": 100,
         "components": [
           {
-            "score": 0,
+            "score": 10,
             "maxScore": 10,
-            "status": "critical",
-            "feedback": "Very slow page load time - critical performance issue",
-            "issues": [
-              "5006ms response time (target: <1500ms)"
-            ]
+            "status": "excellent",
+            "feedback": "Fast page load (1307ms)"
           },
           {
             "score": 6,
@@ -433,21 +404,16 @@
       },
       {
         "name": "Advanced Optimization",
-        "score": 6,
+        "score": 8,
         "maxScore": 8,
-        "percentage": 75,
+        "percentage": 100,
         "components": [
           {
-            "score": 3,
+            "score": 5,
             "maxScore": 5,
-            "status": "good",
-            "feedback": "Schema present but needs improvement",
-            "issues": [
-              "Missing LocalBusiness schema, crucial for local search visibility.",
-              "Missing Restaurant or FoodEstablishment schema to describe the business type.",
-              "Missing Menu or MenuItem schema for detailed food offerings.",
-              "The 'description' property in the WebSite schema is empty, a missed SEO opportunity."
-            ]
+            "status": "excellent",
+            "feedback": "High-quality schema implementation",
+            "issues": []
           },
           {
             "score": 3,
@@ -467,9 +433,9 @@
     "aeo": [
       {
         "name": "AEO Readiness",
-        "score": 48,
+        "score": 63,
         "maxScore": 100,
-        "percentage": 48,
+        "percentage": 63,
         "components": [
           {
             "score": 0,
@@ -477,28 +443,23 @@
             "status": "critical",
             "feedback": "Content Depth",
             "issues": [
-              "Only 98 words - thin content is invisible to AI (need 800+ words)"
+              "Only 282 words - thin content is invisible to AI (need 800+ words)"
             ]
           },
           {
-            "score": 18,
+            "score": 29,
             "maxScore": 30,
-            "status": "warning",
+            "status": "good",
             "feedback": "Schema Quality",
-            "issues": [
-              "Missing LocalBusiness schema, crucial for local search visibility.",
-              "Missing Restaurant or FoodEstablishment schema to describe the business type.",
-              "Missing Menu or MenuItem schema for detailed food offerings.",
-              "The 'description' property in the WebSite schema is empty, a missed SEO opportunity."
-            ]
+            "issues": []
           },
           {
-            "score": 8,
+            "score": 14,
             "maxScore": 20,
-            "status": "warning",
+            "status": "good",
             "feedback": "Question Answering",
             "issues": [
-              "Q&A coverage needs improvement (severity: 60/100)"
+              "Q&A coverage needs improvement (severity: 30/100)"
             ]
           },
           {
@@ -507,7 +468,7 @@
             "status": "good",
             "feedback": "Entity Density",
             "issues": [
-              "Low density of named entities and specific facts (severity: 10/100)"
+              "Low density of named entities and specific facts (severity: 15/100)"
             ]
           },
           {
@@ -520,10 +481,13 @@
             ]
           },
           {
-            "score": 10,
+            "score": 8,
             "maxScore": 10,
             "status": "good",
-            "feedback": "Definitions"
+            "feedback": "Definitions",
+            "issues": [
+              "Missing clear definition statements (severity: 20/100)"
+            ]
           }
         ]
       }
@@ -531,17 +495,17 @@
     "geo": [
       {
         "name": "GEO Visibility",
-        "score": 34,
+        "score": 61,
         "maxScore": 100,
-        "percentage": 34,
+        "percentage": 61,
         "components": [
           {
-            "score": 0,
+            "score": 15,
             "maxScore": 25,
-            "status": "critical",
+            "status": "warning",
             "feedback": "Image Accessibility",
             "issues": [
-              "Only 0% of images have alt text - AI cannot understand images"
+              "58% alt text coverage - aim for 100%"
             ]
           },
           {
@@ -554,34 +518,40 @@
             ]
           },
           {
-            "score": 4,
+            "score": 18,
             "maxScore": 20,
-            "status": "warning",
+            "status": "good",
             "feedback": "Expertise",
             "issues": [
-              "Missing expertise signals (severity: 80/100)"
+              "Missing expertise signals (severity: 10/100)"
+            ]
+          },
+          {
+            "score": 12,
+            "maxScore": 15,
+            "status": "good",
+            "feedback": "Data & Facts",
+            "issues": [
+              "Lacks specific data and statistics (severity: 20/100)"
+            ]
+          },
+          {
+            "score": 6,
+            "maxScore": 10,
+            "status": "warning",
+            "feedback": "Objectivity",
+            "issues": [
+              "First-person usage detected (severity: 40/100)"
             ]
           },
           {
             "score": 4,
-            "maxScore": 15,
+            "maxScore": 10,
             "status": "warning",
-            "feedback": "Data & Facts",
+            "feedback": "Claims",
             "issues": [
-              "Lacks specific data and statistics (severity: 70/100)"
+              "Unsubstantiated claims detected (severity: 60/100)"
             ]
-          },
-          {
-            "score": 10,
-            "maxScore": 10,
-            "status": "good",
-            "feedback": "Objectivity"
-          },
-          {
-            "score": 10,
-            "maxScore": 10,
-            "status": "good",
-            "feedback": "Claims"
           }
         ]
       }
@@ -589,57 +559,12 @@
   },
   "enhancedPenalties": [
     {
-      "category": "GEO",
-      "component": "GEO GEO Visibility - Image Accessibility",
-      "penalty": "Only 0% of images have alt text - AI cannot understand images",
-      "explanation": "AI systems cannot \"see\" images without alt text. Missing alt text creates blind spots in AI understanding of your content.",
-      "fix": "Add alt text to all images. Be specific and descriptive. Include context and relevant keywords naturally. Format: \"what + where + why\"",
-      "pointsDeducted": -25,
-      "severity": "critical"
-    },
-    {
       "category": "AEO",
       "component": "AEO AEO Readiness - Content Depth",
-      "penalty": "Only 98 words - thin content is invisible to AI (need 800+ words)",
+      "penalty": "Only 282 words - thin content is invisible to AI (need 800+ words)",
       "explanation": "Thin content (under 300 words) rarely ranks. Search engines prefer comprehensive content that thoroughly covers topics. AI systems like ChatGPT, Gemini, and Perplexity need substantial content to cite and reference.",
       "fix": "Expand content to at least 800 words. Add sections covering: what (define your topic), why (explain benefits), how (describe process), benefits (list advantages), examples (provide use cases), and FAQs (answer 5-10 common questions). Focus on depth and value over word count.",
       "pointsDeducted": -20,
-      "severity": "critical"
-    },
-    {
-      "category": "SEO",
-      "component": "SEO Content Quality - No images have alt text - major accessibility issue",
-      "penalty": "All 12 images missing alt text",
-      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
-      "fix": "Review and update this element following current best practices for search engines and AI systems.",
-      "pointsDeducted": -10,
-      "severity": "critical"
-    },
-    {
-      "category": "SEO",
-      "component": "SEO Technical Excellence - Very slow page load time - critical performance issue",
-      "penalty": "5006ms response time (target: <1500ms)",
-      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
-      "fix": "Review and update this element following current best practices for search engines and AI systems.",
-      "pointsDeducted": -10,
-      "severity": "critical"
-    },
-    {
-      "category": "SEO",
-      "component": "SEO Foundation - Missing meta description",
-      "penalty": "No meta description found",
-      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
-      "fix": "Review and update this element following current best practices for search engines and AI systems.",
-      "pointsDeducted": -8,
-      "severity": "critical"
-    },
-    {
-      "category": "SEO",
-      "component": "SEO Foundation - Missing H1 heading",
-      "penalty": "No H1 tag found on page",
-      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
-      "fix": "Review and update this element following current best practices for search engines and AI systems.",
-      "pointsDeducted": -8,
       "severity": "critical"
     },
     {
@@ -662,15 +587,6 @@
     },
     {
       "category": "GEO",
-      "component": "GEO GEO Visibility - Expertise",
-      "penalty": "Missing expertise signals (severity: 80/100)",
-      "explanation": "AI systems look for expertise signals (credentials, experience, data). Content without these signals is considered less authoritative.",
-      "fix": "Add author bio with credentials. Include \"About the Author\" section. Link to LinkedIn/professional profiles. Cite experience and qualifications.",
-      "pointsDeducted": -16,
-      "severity": "warning"
-    },
-    {
-      "category": "GEO",
       "component": "GEO GEO Visibility - Tone",
       "penalty": "Promotional tone detected (severity: 70/100)",
       "explanation": "Overly promotional content is flagged as biased by AI systems. Neutral, informative tone increases trust and citation likelihood.",
@@ -679,45 +595,27 @@
       "severity": "warning"
     },
     {
-      "category": "AEO",
-      "component": "AEO AEO Readiness - Schema Quality",
-      "penalty": "Missing LocalBusiness schema, crucial for local search visibility.",
-      "explanation": "Incomplete or incorrect schema markup confuses AI systems and prevents them from citing your content accurately.",
-      "fix": "Validate schema at schema.org/validator. Fix all errors. Add required properties: name, description, image, url. Remove placeholder data.",
-      "pointsDeducted": -12,
-      "severity": "warning"
-    },
-    {
-      "category": "AEO",
-      "component": "AEO AEO Readiness - Question Answering",
-      "penalty": "Q&A coverage needs improvement (severity: 60/100)",
-      "explanation": "AI systems prioritize content that directly answers questions. Content without clear Q&A patterns gets ignored.",
-      "fix": "Add FAQ section with 5-10 common questions. Use <h3> for questions, <p> for answers. Start answers with direct responses (Yes/No, specific number).",
-      "pointsDeducted": -12,
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Image Accessibility",
+      "penalty": "58% alt text coverage - aim for 100%",
+      "explanation": "AI systems cannot \"see\" images without alt text. Missing alt text creates blind spots in AI understanding of your content.",
+      "fix": "Add alt text to all images. Be specific and descriptive. Include context and relevant keywords naturally. Format: \"what + where + why\"",
+      "pointsDeducted": -10,
       "severity": "warning"
     },
     {
       "category": "SEO",
       "component": "SEO Content Quality - Thin content - needs substantial expansion",
-      "penalty": "Only 98 words (recommended: 800+)",
+      "penalty": "Only 282 words (recommended: 800+)",
       "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
       "fix": "Review and update this element following current best practices for search engines and AI systems.",
-      "pointsDeducted": -11,
-      "severity": "warning"
-    },
-    {
-      "category": "GEO",
-      "component": "GEO GEO Visibility - Data & Facts",
-      "penalty": "Lacks specific data and statistics (severity: 70/100)",
-      "explanation": "AI systems prioritize content with specific data, statistics, and facts. Vague claims without evidence are ignored.",
-      "fix": "Add specific statistics, percentages, and numbers. Cite sources for all data. Include dates for time-sensitive information. Use \"According to [source]\" format.",
-      "pointsDeducted": -11,
+      "pointsDeducted": -8,
       "severity": "warning"
     },
     {
       "category": "SEO",
       "component": "SEO Content Quality - Excessive internal linking - appears spammy",
-      "penalty": "30 links in 98 words (31% link density)",
+      "penalty": "16 links in 282 words (6% link density)",
       "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
       "fix": "Review and update this element following current best practices for search engines and AI systems.",
       "pointsDeducted": -8,
@@ -733,95 +631,137 @@
       "severity": "warning"
     },
     {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Claims",
+      "penalty": "Unsubstantiated claims detected (severity: 60/100)",
+      "explanation": "Unsubstantiated claims reduce content credibility. AI systems require evidence and sources to consider content trustworthy.",
+      "fix": "Add citations for all claims. Link to studies, reports, or authoritative sources. Use footnotes or inline citations. Format: \"According to [Source], [claim].\"",
+      "pointsDeducted": -6,
+      "severity": "warning"
+    },
+    {
       "category": "SEO",
-      "component": "SEO Foundation - Title tag too short - should be 30-60 characters",
-      "penalty": "Title is only 24 characters",
+      "component": "SEO Content Quality - Many images missing alt text",
+      "penalty": "5 of 12 images missing alt text (58% coverage)",
       "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
       "fix": "Review and update this element following current best practices for search engines and AI systems.",
       "pointsDeducted": -5,
       "severity": "warning"
     },
     {
-      "category": "SEO",
-      "component": "SEO Advanced Optimization - Schema present but needs improvement",
-      "penalty": "Missing LocalBusiness schema, crucial for local search visibility.",
-      "explanation": "This issue impacts how search engines and AI systems understand and rank your content.",
-      "fix": "Review and update this element following current best practices for search engines and AI systems.",
-      "pointsDeducted": -2,
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Objectivity",
+      "penalty": "First-person usage detected (severity: 40/100)",
+      "explanation": "Heavy first-person usage suggests opinion rather than fact. AI systems prefer objective, third-person content for citations.",
+      "fix": "Replace first-person (\"I think\", \"we believe\") with third-person or passive voice. Use \"research shows\" instead of \"I found\". Focus on facts, not opinions.",
+      "pointsDeducted": -4,
+      "severity": "warning"
+    },
+    {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Question Answering",
+      "penalty": "Q&A coverage needs improvement (severity: 30/100)",
+      "explanation": "AI systems prioritize content that directly answers questions. Content without clear Q&A patterns gets ignored.",
+      "fix": "Add FAQ section with 5-10 common questions. Use <h3> for questions, <p> for answers. Start answers with direct responses (Yes/No, specific number).",
+      "pointsDeducted": -6,
+      "severity": "info"
+    },
+    {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Data & Facts",
+      "penalty": "Lacks specific data and statistics (severity: 20/100)",
+      "explanation": "AI systems prioritize content with specific data, statistics, and facts. Vague claims without evidence are ignored.",
+      "fix": "Add specific statistics, percentages, and numbers. Cite sources for all data. Include dates for time-sensitive information. Use \"According to [source]\" format.",
+      "pointsDeducted": -3,
       "severity": "info"
     },
     {
       "category": "AEO",
       "component": "AEO AEO Readiness - Entity Density",
-      "penalty": "Low density of named entities and specific facts (severity: 10/100)",
+      "penalty": "Low density of named entities and specific facts (severity: 15/100)",
       "explanation": "AI systems look for specific entities (people, places, things, concepts). Low entity density suggests vague, unhelpful content.",
       "fix": "Add specific names, numbers, dates, and locations. Replace vague terms (\"many\", \"some\") with exact figures. Link to Wikipedia for key entities.",
       "pointsDeducted": -2,
       "severity": "info"
+    },
+    {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Definitions",
+      "penalty": "Missing clear definition statements (severity: 20/100)",
+      "explanation": "Clear definition statements help AI systems understand and explain concepts. Missing definitions reduce citation likelihood.",
+      "fix": "Start with a clear definition: \"X is [category] that [key characteristic]\". Example: \"SEO is a marketing strategy that improves website visibility in search results.\"",
+      "pointsDeducted": -2,
+      "severity": "info"
+    },
+    {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Expertise",
+      "penalty": "Missing expertise signals (severity: 10/100)",
+      "explanation": "AI systems look for expertise signals (credentials, experience, data). Content without these signals is considered less authoritative.",
+      "fix": "Add author bio with credentials. Include \"About the Author\" section. Link to LinkedIn/professional profiles. Cite experience and qualifications.",
+      "pointsDeducted": -2,
+      "severity": "info"
+    },
+    {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Schema Quality",
+      "penalty": "Lost 1 points in Schema Quality",
+      "explanation": "Incomplete or incorrect schema markup confuses AI systems and prevents them from citing your content accurately.",
+      "fix": "Validate schema at schema.org/validator. Fix all errors. Add required properties: name, description, image, url. Remove placeholder data.",
+      "pointsDeducted": -1,
+      "severity": "info"
     }
   ],
   "fullResult": {
-    "pagesCrawled": 10,
+    "pagesCrawled": 8,
     "perPageScores": [
       {
-        "url": "https://www.giselespizza.com/",
-        "seo": 36,
-        "aeo": 48,
-        "geo": 34
+        "url": "https://pizzatwice.com",
+        "seo": 77,
+        "aeo": 63,
+        "geo": 61
       },
       {
-        "url": "https://www.giselespizza.com/contact",
-        "seo": 44,
-        "aeo": 57,
-        "geo": 75
+        "url": "https://www.pizzatwice.com",
+        "seo": 77,
+        "aeo": 68,
+        "geo": 56
       },
       {
-        "url": "https://www.giselespizza.com/burgers",
-        "seo": 44,
-        "aeo": 46,
-        "geo": 30
-      },
-      {
-        "url": "https://www.giselespizza.com/pizza",
-        "seo": 62,
-        "aeo": 61,
-        "geo": 35
-      },
-      {
-        "url": "https://www.giselespizza.com/apps-breads",
-        "seo": 54,
-        "aeo": 40,
-        "geo": 54
-      },
-      {
-        "url": "https://www.giselespizza.com/wraps",
-        "seo": 46,
-        "aeo": 49,
-        "geo": 37
-      },
-      {
-        "url": "https://www.giselespizza.com/subs",
-        "seo": 44,
-        "aeo": 38,
+        "url": "https://www.pizzatwice.com/about-us",
+        "seo": 70,
+        "aeo": 28,
         "geo": 48
       },
       {
-        "url": "https://www.giselespizza.com/poutines",
-        "seo": 46,
-        "aeo": 29,
-        "geo": 35
+        "url": "https://www.pizzatwice.com/locations",
+        "seo": 84,
+        "aeo": 63,
+        "geo": 49
       },
       {
-        "url": "https://www.giselespizza.com/platters",
-        "seo": 46,
-        "aeo": 42,
+        "url": "https://www.pizzatwice.com/pizza-twice-franchise",
+        "seo": 87,
+        "aeo": 43,
+        "geo": 34
+      },
+      {
+        "url": "https://www.pizzatwice.com/reviews",
+        "seo": 83,
+        "aeo": 32,
+        "geo": 39
+      },
+      {
+        "url": "https://www.pizzatwice.com/contact-us",
+        "seo": 75,
+        "aeo": 26,
         "geo": 57
       },
       {
-        "url": "https://www.giselespizza.com/salads",
-        "seo": 46,
-        "aeo": 42,
-        "geo": 40
+        "url": "https://www.pizzatwice.com/menu",
+        "seo": 83,
+        "aeo": 27,
+        "geo": 19
       }
     ]
   }

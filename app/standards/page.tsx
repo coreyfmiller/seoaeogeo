@@ -166,20 +166,7 @@ export default function StandardsPage() {
                   </section>
 
                   <section className="pt-6 border-t border-border/50">
-                    <p className="text-sm text-muted-foreground">
-                      <strong>Full Documentation:</strong> For complete details on every standard, scoring criterion, 
-                      and semantic flag, see our comprehensive{" "}
-                      <a 
-                        href="https://github.com/coreyfmiller/seoaeogeo/blob/main/AUDIT_STANDARDS_2026.md" 
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-seo hover:underline"
-                      >
-                        AUDIT_STANDARDS_2026.md
-                      </a>
-                      {" "}document.
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-3">
+                    <p className="text-xs text-muted-foreground">
                       Last Updated: March 2026 • Next Review: June 2026
                     </p>
                   </section>

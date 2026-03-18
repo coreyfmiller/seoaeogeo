@@ -10,10 +10,10 @@ import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
 import { CrawlConfig } from '@/components/dashboard/crawl-config'
 import { PageComparisonTable } from '@/components/dashboard/page-comparison-table'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
-import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { Badge } from '@/components/ui/badge'
 import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
+import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
 
 interface DeepScanResult {
@@ -70,7 +70,6 @@ export default function DeepV3Page() {
     maxPages: 10,
     respectRobotsTxt: true
   })
-
   const handleAnalyze = async (submittedUrl: string) => {
     setCurrentUrl(submittedUrl)
     await sse.startAnalysis(submittedUrl, { maxPages: crawlConfig.maxPages })
@@ -363,7 +362,7 @@ export default function DeepV3Page() {
                       <div className="flex items-center gap-2">
                         <Zap className="h-5 w-5 text-geo" />
                         <CardTitle>Prioritized Site Improvements</CardTitle>
-                        <InfoTooltip content="AI-generated strategic roadmap ranked by impact. Actions to unify authority, fix crawl issues, and expand semantic reach." />
+                        <InfoTooltip content="AI-generated strategic roadmap ranked by impact. Each recommendation includes step-by-step fix instructions, code snippets, and validation links tailored to your site type." />
                       </div>
                       <CardDescription>Sitewide actions ranked by impact</CardDescription>
                     </CardHeader>
@@ -373,14 +372,16 @@ export default function DeepV3Page() {
                           <FixInstructionCard
                             key={i}
                             title={rec.title}
-                            category={rec.category || 'Medium Priority'}
+                            category={rec.category === 'Quick Win' ? 'Quick Win' : rec.priority === 'CRITICAL' ? 'High Priority' : rec.priority === 'HIGH' ? 'Medium Priority' : 'Long-term Investment'}
                             priority={rec.priority || 'MEDIUM'}
-                            steps={[{ step: 1, title: rec.title, description: rec.description }]}
-                            platform="general"
-                            estimatedTime={rec.effort === 1 ? '30 min' : rec.effort === 3 ? '4+ hours' : '1-2 hours'}
-                            difficulty={rec.effort === 1 ? 'easy' : rec.effort === 3 ? 'difficult' : 'moderate'}
-                            impact={rec.impact === 'High' ? 'high' : 'medium'}
+                            steps={rec.steps || [{ step: 1, title: 'Implementation', description: rec.description }]}
+                            code={rec.code}
+                            platform={rec.platform || 'Any'}
+                            estimatedTime={rec.estimatedTime || `${rec.effort || 1}h`}
+                            difficulty={rec.effort >= 3 ? 'difficult' : rec.effort >= 2 ? 'moderate' : 'easy'}
+                            impact={rec.priority === 'CRITICAL' ? 'high' : rec.priority === 'HIGH' ? 'medium' : 'low'}
                             affectedPages={result.pagesCrawled}
+                            validationLinks={rec.validationLinks}
                           />
                         ))}
                       </div>
