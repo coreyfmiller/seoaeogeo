@@ -82,6 +82,18 @@ export default function DeepV3Page() {
   const isAnalyzing = sse.isAnalyzing
   const error = sse.error
 
+  const handleSiteTypeChange = async (newType: string) => {
+    if (!result) return
+    // For deep scan, update the site type on the result
+    // The per-page scores were already calculated server-side
+    // A full recalculation would require re-grading all pages
+    // For now, update the displayed site type so future scans use it
+    sse.setData({
+      ...result,
+      siteTypeResult: { ...result.siteTypeResult, primaryType: newType },
+    })
+  }
+
   useEffect(() => {
     if (result && currentUrl) {
       saveScanToHistory({
@@ -147,6 +159,8 @@ export default function DeepV3Page() {
                 primaryType: result.siteTypeResult.primaryType,
                 confidence: result.siteTypeResult.confidence
               } : undefined}
+              onSiteTypeConfirm={handleSiteTypeChange}
+              onSiteTypeChange={handleSiteTypeChange}
               cwv={result?.cwv}
             />
 

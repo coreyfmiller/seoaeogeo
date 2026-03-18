@@ -223,6 +223,19 @@
     animation: progress-slow 20s ease-in-out infinite;
     width: 100%;
   }
+
+  @keyframes pulse-subtle {
+    0%, 100% {
+      background-color: transparent;
+    }
+    50% {
+      background-color: oklch(0.55 0.22 25 / 0.3);
+    }
+  }
+
+  .animate-pulse-subtle {
+    animation: pulse-subtle 3s ease-in-out infinite;
+  }
 }
 
 @layer base {

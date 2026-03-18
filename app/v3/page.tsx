@@ -127,6 +127,38 @@ export default function V3Page() {
   const isAnalyzing = sse.isAnalyzing
   const error = sse.error
 
+  // Recalculate scores when user confirms or changes site type
+  const handleSiteTypeChange = async (newType: string) => {
+    if (!result?.pageData) return
+    try {
+      const res = await fetch('/api/recalculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scanData: {
+            ...result.pageData,
+            schemas: result.pageData.structuralData?.schemas || result.aiAnalysis?.schemaQuality ? result.pageData.schemas : [],
+            semanticFlags: result.aiAnalysis?.semanticFlags || {},
+            schemaQuality: result.aiAnalysis?.schemaQuality,
+            siteType: newType,
+          },
+          siteType: newType,
+        }),
+      })
+      if (!res.ok) return
+      const recalc = await res.json()
+      sse.setData({
+        ...result,
+        scores: recalc.scores,
+        graderResult: recalc.graderResult,
+        enhancedPenalties: recalc.enhancedPenalties,
+        siteTypeResult: { ...result.siteTypeResult!, primaryType: newType },
+      })
+    } catch (e) {
+      console.error('[V3] Recalculate failed:', e)
+    }
+  }
+
   useEffect(() => {
     if (result && currentUrl) {
       saveScanToHistory({
@@ -234,6 +266,8 @@ export default function V3Page() {
           primaryType: result.siteTypeResult.primaryType,
           confidence: result.siteTypeResult.confidence
         } : undefined}
+        onSiteTypeConfirm={handleSiteTypeChange}
+        onSiteTypeChange={handleSiteTypeChange}
       />
 
       {/* Loading Overlay */}

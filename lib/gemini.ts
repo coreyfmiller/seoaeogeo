@@ -118,25 +118,77 @@ export async function analyzeWithGemini(context: {
 
 
   try {
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    // Run 2 parallel Gemini calls and average semanticFlags for scoring stability
+    const [result1, result2] = await Promise.all([
+      model.generateContent(prompt),
+      model.generateContent(prompt),
+    ]);
 
-    // Log Usage
-    if (result.response.usageMetadata) {
+    const responseText1 = result1.response.text();
+    const responseText2 = result2.response.text();
+
+    // Log combined usage
+    const totalInput = (result1.response.usageMetadata?.promptTokenCount || 0) +
+                       (result2.response.usageMetadata?.promptTokenCount || 0);
+    const totalOutput = (result1.response.usageMetadata?.candidatesTokenCount || 0) +
+                        (result2.response.usageMetadata?.candidatesTokenCount || 0);
+    if (totalInput > 0) {
       logUsage({
         model: "gemini-2.5-flash",
-        type: "Single Page Audit",
-        inputTokens: result.response.usageMetadata.promptTokenCount || 0,
-        outputTokens: result.response.usageMetadata.candidatesTokenCount || 0,
+        type: "Single Page Audit (2-call avg)",
+        inputTokens: totalInput,
+        outputTokens: totalOutput,
         url: context.title
       });
     }
 
-    // Extract JSON from potential markdown code blocks
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error("Could not parse AI response as JSON");
+    const jsonMatch1 = responseText1.match(/\{[\s\S]*\}/);
+    const jsonMatch2 = responseText2.match(/\{[\s\S]*\}/);
+    if (!jsonMatch1) throw new Error("Could not parse AI response 1 as JSON");
 
-    return JSON.parse(jsonMatch[0]);
+    const parsed1 = JSON.parse(jsonMatch1[0]);
+
+    // If second call failed, just use first result
+    if (!jsonMatch2) {
+      console.warn("[Gemini] Second call failed to parse, using single result");
+      return parsed1;
+    }
+
+    const parsed2 = JSON.parse(jsonMatch2[0]);
+
+    // Average the semanticFlags severity scores for stability
+    const flags1 = parsed1.semanticFlags || {};
+    const flags2 = parsed2.semanticFlags || {};
+    const flagKeys = [
+      'topicMisalignment', 'keywordStuffing', 'poorReadability',
+      'noDirectQnAMatching', 'lowEntityDensity', 'poorFormattingConciseness',
+      'lackOfDefinitionStatements', 'promotionalTone', 'lackOfExpertiseSignals',
+      'lackOfHardData', 'heavyFirstPersonUsage', 'unsubstantiatedClaims'
+    ];
+
+    const averagedFlags: Record<string, number> = {};
+    for (const key of flagKeys) {
+      const v1 = typeof flags1[key] === 'number' ? flags1[key] : (flags1[key] ? 100 : 0);
+      const v2 = typeof flags2[key] === 'number' ? flags2[key] : (flags2[key] ? 100 : 0);
+      averagedFlags[key] = Math.round((v1 + v2) / 2);
+    }
+
+    // Average schemaQuality score too
+    const sq1 = parsed1.schemaQuality?.score || 0;
+    const sq2 = parsed2.schemaQuality?.score || 0;
+
+    // Use first result as base, override with averaged values
+    const merged = {
+      ...parsed1,
+      semanticFlags: averagedFlags,
+      schemaQuality: {
+        ...parsed1.schemaQuality,
+        score: Math.round((sq1 + sq2) / 2),
+      },
+    };
+
+    console.log('[Gemini] Averaged semanticFlags from 2 calls:', JSON.stringify(averagedFlags));
+    return merged;
   } catch (error) {
     console.error("Gemini Analysis Error:", error);
     throw error;

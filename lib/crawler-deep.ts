@@ -21,6 +21,20 @@ export interface PageScan {
     imgTotal: number;
     imgWithAlt: number;
     outboundLinks: string[]; // Actual internal URLs found on this page
+    // Fields matching Pro Audit's ScanResult shape for grader parity
+    semanticTags: { article: number; main: number; nav: number; aside: number; headers: number; h1Count: number; h2Count: number; h3Count: number };
+    socialLinksCount: number;
+    metaChecks: {
+        titleLength: number;
+        descriptionLength: number;
+        hasCanonical: boolean;
+        canonicalUrl: string;
+        hasViewport: boolean;
+        hasOgTitle: boolean;
+        hasOgDescription: boolean;
+        hasOgImage: boolean;
+        hasTwitterCard: boolean;
+    };
 }
 
 interface DeepSiteScanResult {
@@ -62,7 +76,7 @@ export async function performDeepScan(baseUrl: string, maxPages: number = 10): P
         });
 
         const context = await browser.newContext({
-            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 SearchIQ-Bot/1.0'
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Vantege-Bot/1.0'
         });
 
         // 1. DISCOVERY PHASE
@@ -169,6 +183,39 @@ async function extractPageData(page: Page, domain: string, responseTimeMs: numbe
         const imgTotal = allImgs.length;
         const imgWithAlt = allImgs.filter(img => img.alt && img.alt.trim().length > 0).length;
 
+        // Semantic tags (matching Pro Audit crawler)
+        const semanticTags = {
+            article: document.querySelectorAll('article').length,
+            main: document.querySelectorAll('main').length,
+            nav: document.querySelectorAll('nav').length,
+            aside: document.querySelectorAll('aside').length,
+            headers: document.querySelectorAll('h1, h2, h3, h4, h5, h6').length,
+            h1Count: document.querySelectorAll('h1').length,
+            h2Count: document.querySelectorAll('h2').length,
+            h3Count: document.querySelectorAll('h3').length,
+        };
+
+        // Social links count
+        const socialDomains = ['linkedin.com', 'twitter.com', 'x.com', 'facebook.com', 'instagram.com', 'github.com', 'youtube.com'];
+        const socialLinksCount = allLinks.filter(a => a.href.startsWith('http') && !a.href.includes(domainStr) && socialDomains.some(d => a.href.toLowerCase().includes(d))).length;
+
+        // Meta checks (matching Pro Audit crawler)
+        const canonical = document.querySelector('link[rel="canonical"]');
+        const viewport = document.querySelector('meta[name="viewport"]');
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        const ogDesc = document.querySelector('meta[property="og:description"]');
+        const ogImage = document.querySelector('meta[property="og:image"]');
+        const twitterCard = document.querySelector('meta[name="twitter:card"]') || document.querySelector('meta[property="twitter:card"]');
+        const metaChecks = {
+            hasCanonical: !!canonical,
+            canonicalUrl: canonical?.getAttribute('href') || '',
+            hasViewport: !!viewport,
+            hasOgTitle: !!ogTitle && !!(ogTitle as HTMLMetaElement).content,
+            hasOgDescription: !!ogDesc && !!(ogDesc as HTMLMetaElement).content,
+            hasOgImage: !!ogImage && !!(ogImage as HTMLMetaElement).content,
+            hasTwitterCard: !!twitterCard,
+        };
+
         // NEW: Get actual internal URLs for mapping
         const internalUrls = Array.from(new Set(
             allLinks
@@ -176,7 +223,7 @@ async function extractPageData(page: Page, domain: string, responseTimeMs: numbe
                 .filter(href => href.includes(domainStr) && !href.match(/\.(jpg|jpeg|png|gif|pdf|zip|css|js)$/i))
         ));
 
-        return { wordCount: words.length, internalLinks, externalLinks, hasH1, h2Count, h3Count, imgTotal, imgWithAlt, internalUrls };
+        return { wordCount: words.length, internalLinks, externalLinks, hasH1, h2Count, h3Count, imgTotal, imgWithAlt, internalUrls, semanticTags, socialLinksCount, metaChecks };
     }, domain);
 
     return {
@@ -198,5 +245,12 @@ async function extractPageData(page: Page, domain: string, responseTimeMs: numbe
         outboundLinks: pageSignals.internalUrls,
         isHttps: url.startsWith('https://'),
         responseTimeMs,
+        semanticTags: pageSignals.semanticTags,
+        socialLinksCount: pageSignals.socialLinksCount,
+        metaChecks: {
+            titleLength: title.length,
+            descriptionLength: description.length,
+            ...pageSignals.metaChecks,
+        },
     };
 }

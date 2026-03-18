@@ -5441,5 +5441,509 @@
     "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
     "timestamp": "2026-03-18T10:28:25.203Z",
     "cost": 0.01755845
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 798,
+    "outputTokens": 451,
+    "url": "https://pizzatwice.com",
+    "timestamp": "2026-03-18T11:07:59.409Z",
+    "cost": 0.00591955
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 2386,
+    "outputTokens": 1333,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-18T11:08:10.115Z",
+    "cost": 0.01755845
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 798,
+    "outputTokens": 483,
+    "url": "https://pizzatwice.com",
+    "timestamp": "2026-03-18T11:09:51.342Z",
+    "cost": 0.006210749999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 2386,
+    "outputTokens": 1336,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-18T11:09:59.964Z",
+    "cost": 0.017585749999999997
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 798,
+    "outputTokens": 483,
+    "url": "https://pizzatwice.com",
+    "timestamp": "2026-03-18T11:10:23.825Z",
+    "cost": 0.006210749999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 2386,
+    "outputTokens": 1336,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-18T11:10:33.834Z",
+    "cost": 0.017585749999999997
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 481,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-18T11:12:47.543Z",
+    "cost": 0.006035575
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit",
+    "inputTokens": 5345,
+    "outputTokens": 1629,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-18T11:12:59.468Z",
+    "cost": 0.026983774999999998
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 459,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-18T11:20:02.697Z",
+    "cost": 0.005835375
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 10690,
+    "outputTokens": 3210,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-18T11:20:07.134Z",
+    "cost": 0.05353075
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 459,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-18T11:20:42.974Z",
+    "cost": 0.005835375
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 10690,
+    "outputTokens": 3234,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-18T11:20:51.515Z",
+    "cost": 0.053749149999999996
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 459,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-18T11:22:04.572Z",
+    "cost": 0.005835375
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 10690,
+    "outputTokens": 3210,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-18T11:22:10.867Z",
+    "cost": 0.05353075
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 459,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-18T11:24:11.235Z",
+    "cost": 0.005835375
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 10690,
+    "outputTokens": 3234,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-18T11:24:11.704Z",
+    "cost": 0.053749149999999996
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 798,
+    "outputTokens": 451,
+    "url": "https://pizzatwice.com",
+    "timestamp": "2026-03-18T11:26:26.489Z",
+    "cost": 0.00591955
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4772,
+    "outputTokens": 2666,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-18T11:26:37.881Z",
+    "cost": 0.0351169
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 665,
+    "outputTokens": 473,
+    "url": "https://www.giselespizza.com/",
+    "timestamp": "2026-03-18T11:27:20.735Z",
+    "cost": 0.005817174999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4192,
+    "outputTokens": 3172,
+    "url": "Home - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T11:27:35.394Z",
+    "cost": 0.038402
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 665,
+    "outputTokens": 487,
+    "url": "https://www.giselespizza.com/",
+    "timestamp": "2026-03-18T11:29:20.882Z",
+    "cost": 0.0059445750000000006
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4192,
+    "outputTokens": 2996,
+    "url": "Home - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T11:29:36.042Z",
+    "cost": 0.0368004
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 665,
+    "outputTokens": 487,
+    "url": "https://www.giselespizza.com/",
+    "timestamp": "2026-03-18T11:34:11.970Z",
+    "cost": 0.0059445750000000006
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4192,
+    "outputTokens": 2996,
+    "url": "Home - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T11:34:29.830Z",
+    "cost": 0.0368004
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 665,
+    "outputTokens": 473,
+    "url": "https://www.giselespizza.com/",
+    "timestamp": "2026-03-18T11:41:19.809Z",
+    "cost": 0.005817174999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4192,
+    "outputTokens": 3084,
+    "url": "Home - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T11:41:35.227Z",
+    "cost": 0.0376012
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 795,
+    "outputTokens": 489,
+    "url": "https://www.williamsseafood.ca/",
+    "timestamp": "2026-03-18T11:49:26.833Z",
+    "cost": 0.006258524999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5402,
+    "outputTokens": 3110,
+    "url": "Seafood Restaurant Fredericton - Fish & Chips, Clams, Scallops, Shrimp | Fast Food",
+    "timestamp": "2026-03-18T11:49:50.365Z",
+    "cost": 0.040590549999999996
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 6590,
+    "outputTokens": 2862,
+    "url": "Pizza - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:00:59.650Z",
+    "cost": 0.04103645
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4572,
+    "outputTokens": 3062,
+    "url": "Contact - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:01:02.093Z",
+    "cost": 0.038265499999999994
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4090,
+    "outputTokens": 3037,
+    "url": "Home - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:01:02.591Z",
+    "cost": 0.03694145
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4778,
+    "outputTokens": 2870,
+    "url": "Burgers - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:01:03.072Z",
+    "cost": 0.036986950000000005
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4090,
+    "outputTokens": 3037,
+    "url": "Home - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:01:03.487Z",
+    "cost": 0.03694145
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4508,
+    "outputTokens": 2893,
+    "url": "Wraps - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:01:25.995Z",
+    "cost": 0.036582
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4498,
+    "outputTokens": 2876,
+    "url": "Poutines - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:01:26.444Z",
+    "cost": 0.03640455
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4602,
+    "outputTokens": 2834,
+    "url": "Subs - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:01:28.673Z",
+    "cost": 0.03625895
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5306,
+    "outputTokens": 3054,
+    "url": "Apps and Breads - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:01:29.655Z",
+    "cost": 0.03986255
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4406,
+    "outputTokens": 3156,
+    "url": "Platters - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:01:30.115Z",
+    "cost": 0.03874325
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 4476,
+    "outputTokens": 3786,
+    "url": "www.giselespizza.com",
+    "timestamp": "2026-03-18T12:02:21.304Z",
+    "cost": 0.0446355
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 665,
+    "outputTokens": 473,
+    "url": "https://www.giselespizza.com/",
+    "timestamp": "2026-03-18T12:03:50.614Z",
+    "cost": 0.005817174999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4192,
+    "outputTokens": 3084,
+    "url": "Home - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:04:07.242Z",
+    "cost": 0.0376012
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 665,
+    "outputTokens": 473,
+    "url": "https://www.giselespizza.com/",
+    "timestamp": "2026-03-18T12:14:42.326Z",
+    "cost": 0.005817174999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4192,
+    "outputTokens": 3084,
+    "url": "Home - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:14:57.401Z",
+    "cost": 0.0376012
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4090,
+    "outputTokens": 3172,
+    "url": "Home - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:15:15.904Z",
+    "cost": 0.038169949999999994
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 6590,
+    "outputTokens": 2911,
+    "url": "Pizza - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:15:16.082Z",
+    "cost": 0.04148235
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4090,
+    "outputTokens": 3172,
+    "url": "Home - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:15:16.329Z",
+    "cost": 0.038169949999999994
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4778,
+    "outputTokens": 2954,
+    "url": "Burgers - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:15:16.780Z",
+    "cost": 0.03775135
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4572,
+    "outputTokens": 3066,
+    "url": "Contact - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:15:18.407Z",
+    "cost": 0.0383019
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4498,
+    "outputTokens": 2830,
+    "url": "Poutines - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:15:40.046Z",
+    "cost": 0.035985949999999996
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4602,
+    "outputTokens": 2834,
+    "url": "Subs - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:15:42.734Z",
+    "cost": 0.03625895
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4508,
+    "outputTokens": 2956,
+    "url": "Wraps - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:15:43.169Z",
+    "cost": 0.0371553
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4406,
+    "outputTokens": 3065,
+    "url": "Platters - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:15:43.690Z",
+    "cost": 0.03791515
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5306,
+    "outputTokens": 3115,
+    "url": "Apps and Breads - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:15:46.830Z",
+    "cost": 0.04041765
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 4476,
+    "outputTokens": 3457,
+    "url": "www.giselespizza.com",
+    "timestamp": "2026-03-18T12:16:23.086Z",
+    "cost": 0.0416416
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 665,
+    "outputTokens": 487,
+    "url": "https://www.giselespizza.com/",
+    "timestamp": "2026-03-18T12:18:00.001Z",
+    "cost": 0.0059445750000000006
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4192,
+    "outputTokens": 3084,
+    "url": "Home - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:18:15.578Z",
+    "cost": 0.0376012
   }
 ]

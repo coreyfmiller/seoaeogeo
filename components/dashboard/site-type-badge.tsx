@@ -334,7 +334,7 @@ export function SiteTypeBadge({ siteType, onConfirm, onManualSelect }: SiteTypeB
   }
 
   return (
-    <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg border bg-background/60" style={{
+    <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg border bg-background/60 animate-pulse-subtle" style={{
       borderColor: confidenceConfig.low.borderColor.replace('border-', ''),
       backgroundColor: confidenceConfig.low.bgColor.replace('bg-', '')
     }}>

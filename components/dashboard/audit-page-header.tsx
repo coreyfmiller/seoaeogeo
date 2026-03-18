@@ -38,6 +38,8 @@ interface AuditPageHeaderProps {
     primaryType: string
     confidence: number
   }
+  onSiteTypeConfirm?: (confirmedType: string) => void
+  onSiteTypeChange?: (selectedType: string) => void
   cwv?: CWVData
   proLocked?: boolean
 }
@@ -55,6 +57,8 @@ export function AuditPageHeader({
   analysisData,
   pageCount = 1,
   siteType,
+  onSiteTypeConfirm,
+  onSiteTypeChange,
   cwv,
   proLocked = false
 }: AuditPageHeaderProps) {
@@ -169,6 +173,8 @@ export function AuditPageHeader({
                       primaryType: siteType.primaryType as any,
                       confidence: siteType.confidence
                     }}
+                    onConfirm={onSiteTypeConfirm}
+                    onManualSelect={onSiteTypeChange}
                   />
                   {cwv && (
                     <div className="flex items-center gap-2 flex-wrap mt-1.5 pt-1.5 border-t border-purple-500/20">
