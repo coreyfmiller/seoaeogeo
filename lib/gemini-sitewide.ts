@@ -285,8 +285,8 @@ export async function analyzeSitewideIntelligence(context: {
         "totalLinksFound": number,
         "contentDepthVerdict": string
       },
-      "recommendations": Array of exactly 6 objects: {
-        "rank": number (1 through 6),
+      "recommendations": Array of up to 12 objects: {
+        "rank": number (1 through 12),
         "title": string (RUTHLESS ACTION - e.g. "Deploy Product Schema Sitewide"),
         "description": string (THE WHY/IMPACT REASONING),
         "impact": "High" | "Medium",
@@ -298,7 +298,7 @@ export async function analyzeSitewideIntelligence(context: {
     }
 
     IMPORTANT FINAL INSTRUCTIONS:
-    - You MUST generate EXACTLY 6 recommendations.
+    - You MUST generate up to 12 recommendations, prioritized by impact.
     - For schemaHealthAudit.issues, identify ONLY problems that would harm modern SEO/AEO (Google 2026, Bing 2026).
     - DO NOT flag valid JSON-LD patterns (arrays, @graph) as issues.
     - DO NOT penalize modern implementation patterns (distributed schema, multiple scripts).

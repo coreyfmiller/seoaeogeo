@@ -65,19 +65,27 @@ export function AuditPageHeader({
   const [reportCopied, setReportCopied] = useState(false)
   const router = useRouter()
 
+  const buildExportData = () => {
+    if (!analysisData) return null
+    // Deep scan: has pages array and sitewideIntelligence
+    const isDeepScan = !!(analysisData.pages && analysisData.sitewideIntelligence)
+    if (isDeepScan) {
+      return { url: currentUrl, timestamp: new Date().toLocaleString(), deepScan: analysisData } as any
+    }
+    return {
+      url: currentUrl,
+      timestamp: new Date().toLocaleString(),
+      scores: analysisData.scores || analysisData.ai?.scores || { seo: 0, aeo: 0, geo: 0 },
+      penalties: analysisData.enhancedPenalties || analysisData.ai?.enhancedPenalties || [],
+      technical: analysisData.technical,
+      structuralData: analysisData.structuralData
+    }
+  }
+
   const handleExportReport = () => {
-    if (!analysisData) return
-    
+    const exportData = buildExportData()
+    if (!exportData) return
     try {
-      const exportData = {
-        url: currentUrl,
-        timestamp: new Date().toLocaleString(),
-        scores: analysisData.scores || analysisData.ai?.scores || { seo: 0, aeo: 0, geo: 0 },
-        penalties: analysisData.enhancedPenalties || analysisData.ai?.enhancedPenalties || [],
-        technical: analysisData.technical,
-        structuralData: analysisData.structuralData
-      }
-      
       downloadReport(exportData)
     } catch (error) {
       console.error('Export failed:', error)
@@ -86,17 +94,8 @@ export function AuditPageHeader({
   }
 
   const handleCopyReport = async () => {
-    if (!analysisData) return
-    
-    const exportData = {
-      url: currentUrl,
-      timestamp: new Date().toLocaleString(),
-      scores: analysisData.scores || analysisData.ai?.scores || { seo: 0, aeo: 0, geo: 0 },
-      penalties: analysisData.enhancedPenalties || analysisData.ai?.enhancedPenalties || [],
-      technical: analysisData.technical,
-      structuralData: analysisData.structuralData
-    }
-    
+    const exportData = buildExportData()
+    if (!exportData) return
     const success = await copyReportToClipboard(exportData)
     if (success) {
       setReportCopied(true)

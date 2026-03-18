@@ -129,7 +129,7 @@ export function FixInstructionCard({
 
   return (
     <Card className={cn(
-      "border-2 transition-all hover:shadow-lg",
+      "border-2 transition-all hover:shadow-lg h-full flex flex-col",
       isCompleted ? "opacity-60 border-muted" : categoryStyle.border,
       isCompleted && "bg-muted/20"
     )}>
