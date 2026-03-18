@@ -84,14 +84,44 @@ export default function DeepV3Page() {
 
   const handleSiteTypeChange = async (newType: string) => {
     if (!result) return
-    // For deep scan, update the site type on the result
-    // The per-page scores were already calculated server-side
-    // A full recalculation would require re-grading all pages
-    // For now, update the displayed site type so future scans use it
-    sse.setData({
-      ...result,
-      siteTypeResult: { ...result.siteTypeResult, primaryType: newType },
-    })
+
+    // Recalculate every page's scores with the new site type (no AI calls, just re-grading)
+    try {
+      const recalculated = await Promise.all(
+        result.pages.map(async (page: any) => {
+          if (!page.scanData) return page // fallback if no scanData stashed
+          const res = await fetch('/api/recalculate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ scanData: page.scanData, siteType: newType }),
+          })
+          if (!res.ok) return page
+          const data = await res.json()
+          return {
+            ...page,
+            scores: data.scores,
+            graderResult: data.graderResult,
+            enhancedPenalties: data.enhancedPenalties,
+          }
+        })
+      )
+
+      // Recompute averages from recalculated per-page scores
+      const avgScores = {
+        seo: Math.round(recalculated.reduce((s: number, p: any) => s + p.scores.seo.score, 0) / recalculated.length),
+        aeo: Math.round(recalculated.reduce((s: number, p: any) => s + p.scores.aeo.score, 0) / recalculated.length),
+        geo: Math.round(recalculated.reduce((s: number, p: any) => s + p.scores.geo.score, 0) / recalculated.length),
+      }
+
+      sse.setData({
+        ...result,
+        pages: recalculated,
+        scores: avgScores,
+        siteTypeResult: { ...result.siteTypeResult, primaryType: newType },
+      })
+    } catch (err) {
+      console.error('[Deep Scan] Recalculation failed:', err)
+    }
   }
 
   useEffect(() => {

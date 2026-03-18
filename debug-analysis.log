@@ -617,3 +617,51 @@
   "consistencyScore": 60,
   "schemaScore": 100
 }
+[2026-03-18T12:53:33.809Z] [GEMINI-SITEWIDE] Starting AI analysis
+{
+  "domain": "www.giselespizza.com",
+  "pageCount": 10
+}
+[2026-03-18T12:53:33.809Z] [GEMINI-SITEWIDE] Schema health score
+{
+  "score": 100
+}
+[2026-03-18T12:53:33.809Z] [GEMINI-SITEWIDE] Brand consistency score
+{
+  "score": 60
+}
+[2026-03-18T12:53:33.811Z] [GEMINI-SITEWIDE] Calling Gemini API
+[2026-03-18T12:54:03.849Z] [GEMINI-SITEWIDE] Received response
+{
+  "length": 13500,
+  "preview": "```json\n{\n  \"domainHealthScore\": 70,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 70,\n    \"schemaQuality\": 35,\n    \"metadataQuality\": 80,\n    \"technicalHealth\": 65,\n    \"architectureHealth\": 100"
+}
+[2026-03-18T12:54:03.853Z] [GEMINI-SITEWIDE] Parsed AI result
+{
+  "domainHealthScore": 70,
+  "recommendationsCount": 6,
+  "keys": [
+    "domainHealthScore",
+    "domainHealthBreakdown",
+    "domainHealthExplanations",
+    "authorityMetrics",
+    "sitewideInsights",
+    "contentGapAnalysis",
+    "cannibalizationRisks",
+    "internalLinkLeaders",
+    "orphanPageRisks",
+    "navigationAnalysis",
+    "brandClarityVerdict",
+    "aeoReadiness",
+    "socialProofSignals",
+    "topicalClusters",
+    "inventoryEvidence",
+    "recommendations"
+  ]
+}
+[2026-03-18T12:54:03.854Z] [GEMINI-SITEWIDE] Final result assembled
+{
+  "domainHealthScore": 70,
+  "consistencyScore": 60,
+  "schemaScore": 100
+}

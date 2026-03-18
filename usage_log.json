@@ -6179,5 +6179,104 @@
     "url": "www.giselespizza.com",
     "timestamp": "2026-03-18T12:32:23.897Z",
     "cost": 0.0389298
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4668,
+    "outputTokens": 2801,
+    "url": "Contact - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:52:19.371Z",
+    "cost": 0.0361088
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4192,
+    "outputTokens": 2996,
+    "url": "Home - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:52:22.850Z",
+    "cost": 0.0368004
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4872,
+    "outputTokens": 2788,
+    "url": "Burgers - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:52:23.287Z",
+    "cost": 0.0364546
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4602,
+    "outputTokens": 2774,
+    "url": "Wraps - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:52:41.647Z",
+    "cost": 0.03571295
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 7478,
+    "outputTokens": 3114,
+    "url": "Pizza - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:52:45.603Z",
+    "cost": 0.04534985
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5398,
+    "outputTokens": 3086,
+    "url": "Apps and Breads - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:52:48.853Z",
+    "cost": 0.04036305
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4500,
+    "outputTokens": 2858,
+    "url": "Platters - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:53:08.389Z",
+    "cost": 0.036245299999999994
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4592,
+    "outputTokens": 2888,
+    "url": "Poutines - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:53:09.716Z",
+    "cost": 0.0367276
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4698,
+    "outputTokens": 3128,
+    "url": "Subs - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:53:10.578Z",
+    "cost": 0.03915275
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4572,
+    "outputTokens": 2913,
+    "url": "Salads - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T12:53:31.664Z",
+    "cost": 0.0369096
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 4477,
+    "outputTokens": 3157,
+    "url": "www.giselespizza.com",
+    "timestamp": "2026-03-18T12:54:03.850Z",
+    "cost": 0.038913875
   }
 ]

@@ -166,6 +166,17 @@ export async function POST(request: NextRequest) {
                 hasDescription: !!scanResult.description,
                 schemaCount: (scanResult.schemas || []).length,
                 responseTimeMs: scanResult.technical.responseTimeMs,
+                // Stash scan data for client-side recalculation on site type change
+                scanData: {
+                  structuralData: scanResult.structuralData,
+                  schemas: scanResult.schemas,
+                  semanticFlags: (scanResult as any).semanticFlags,
+                  schemaQuality: (scanResult as any).schemaQuality,
+                  title: scanResult.title,
+                  description: scanResult.description,
+                  url: scanResult.url,
+                  technical: scanResult.technical,
+                },
               }
             } catch (error) {
               console.error(`[Deep Scan] AI analysis failed for ${pageUrl}:`, error)
