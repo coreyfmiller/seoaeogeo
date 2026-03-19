@@ -10,10 +10,23 @@ CREATE TABLE public.profiles (
   credits_pro_audits INTEGER NOT NULL DEFAULT 0,
   credits_deep_scans INTEGER NOT NULL DEFAULT 0,
   credits_competitive_intel INTEGER NOT NULL DEFAULT 0,
+  referral_code TEXT UNIQUE,
+  referred_by UUID REFERENCES public.profiles(id),
   stripe_customer_id TEXT,
   stripe_subscription_id TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Referral tracking table
+CREATE TABLE public.referrals (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  referrer_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  referred_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'credited')),
+  credited_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE(referred_id) -- each referred user can only count once
 );
 
 -- 2. Monthly usage tracking
@@ -29,38 +42,63 @@ CREATE TABLE public.usage (
   UNIQUE(user_id, period)
 );
 
--- 3. Enable Row Level Security on both tables
+-- 3. Enable Row Level Security
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.usage ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.referrals ENABLE ROW LEVEL SECURITY;
 
 -- 4. RLS Policies — users can only access their own data
 
--- Profiles: users can read their own profile
 CREATE POLICY "Users can read own profile"
   ON public.profiles FOR SELECT
   USING (auth.uid() = id);
 
--- Profiles: users can update their own profile (name only, not plan)
 CREATE POLICY "Users can update own profile"
   ON public.profiles FOR UPDATE
   USING (auth.uid() = id)
   WITH CHECK (auth.uid() = id);
 
--- Usage: users can read their own usage
 CREATE POLICY "Users can read own usage"
   ON public.usage FOR SELECT
   USING (auth.uid() = user_id);
 
--- 5. Auto-create profile on signup via trigger
+CREATE POLICY "Users can read own referrals"
+  ON public.referrals FOR SELECT
+  USING (auth.uid() = referrer_id);
+
+-- 5. Auto-create profile on signup via trigger (with referral code + referred_by)
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
+DECLARE
+  ref_code TEXT;
+  ref_by UUID;
 BEGIN
-  INSERT INTO public.profiles (id, email, full_name)
+  -- Generate unique 8-char referral code
+  ref_code := upper(substr(md5(NEW.id::text || now()::text), 1, 8));
+
+  -- Check if signup included a referral code
+  ref_by := NULL;
+  IF NEW.raw_user_meta_data->>'referred_by' IS NOT NULL THEN
+    SELECT id INTO ref_by FROM public.profiles
+    WHERE referral_code = upper(NEW.raw_user_meta_data->>'referred_by')
+    LIMIT 1;
+  END IF;
+
+  INSERT INTO public.profiles (id, email, full_name, referral_code, referred_by)
   VALUES (
     NEW.id,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', '')
+    COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
+    ref_code,
+    ref_by
   );
+
+  -- Create pending referral record if referred
+  IF ref_by IS NOT NULL THEN
+    INSERT INTO public.referrals (referrer_id, referred_id, status)
+    VALUES (ref_by, NEW.id, 'pending');
+  END IF;
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

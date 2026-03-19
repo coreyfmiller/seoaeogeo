@@ -234,89 +234,93 @@ export default function SiteVsSite() {
                             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
                                 {/* Score Comparison Board */}
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    {/* SEO Battle */}
-                                    <Card className="border-seo/20 bg-seo/5">
-                                        <CardHeader className="pb-2">
-                                            <CardTitle className="text-sm font-medium text-muted-foreground flex justify-between items-center">
-                                                SEO AUTHORITY BATTLE
-                                                <InfoTooltip content="Compares traditional SEO strength between both sites — technical health, backlink authority, content optimization, metadata quality, and crawlability. The higher score indicates stronger search engine visibility." />
-                                                {comparisonData.comparison.seo.winner === "siteA" ? <TrendingUp className="h-4 w-4 text-geo" /> : <TrendingDown className="h-4 w-4 text-destructive" />}
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="flex items-end justify-between gap-4">
-                                                <div className="flex flex-col items-center flex-1">
-                                                    <div className="text-3xl font-black text-seo">{comparisonData.comparison.seo.siteA}</div>
-                                                    <div className="text-[10px] uppercase font-bold text-muted-foreground truncate w-full text-center">Your Site</div>
-                                                </div>
-                                                <div className="text-xs font-black italic text-muted-foreground mb-4 opacity-50">VS</div>
-                                                <div className="flex flex-col items-center flex-1">
-                                                    <div className="text-3xl font-black text-aeo">{comparisonData.comparison.seo.siteB}</div>
-                                                    <div className="text-[10px] uppercase font-bold text-muted-foreground truncate w-full text-center">Competitor</div>
-                                                </div>
-                                            </div>
-                                            <div className="mt-4 h-1.5 w-full bg-muted rounded-full overflow-hidden flex">
-                                                <div className="h-full bg-seo" style={{ width: `${(comparisonData.comparison.seo.siteA / (comparisonData.comparison.seo.siteA + comparisonData.comparison.seo.siteB)) * 100}%` }}></div>
-                                                <div className="h-full bg-aeo" style={{ width: `${(comparisonData.comparison.seo.siteB / (comparisonData.comparison.seo.siteA + comparisonData.comparison.seo.siteB)) * 100}%` }}></div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
+                                    {[
+                                        {
+                                            label: "SEO AUTHORITY BATTLE",
+                                            tooltip: "Compares traditional SEO strength between both sites — technical health, backlink authority, content optimization, metadata quality, and crawlability. The higher score indicates stronger search engine visibility.",
+                                            data: comparisonData.comparison.seo,
+                                            color: "seo",
+                                            titleColor: "text-seo",
+                                            icon: <Search className="h-3.5 w-3.5" />,
+                                        },
+                                        {
+                                            label: "AEO SNIPPET SHARE",
+                                            tooltip: "Compares Answer Engine Optimization — which site is more likely to be cited by AI assistants like ChatGPT, Perplexity, and Gemini. Measures structured data, FAQ coverage, direct answer formatting, and schema quality.",
+                                            data: comparisonData.comparison.aeo,
+                                            color: "aeo",
+                                            titleColor: "text-aeo",
+                                            icon: <Sparkles className="h-3.5 w-3.5" />,
+                                        },
+                                        {
+                                            label: "GEO CITATION LIKELIHOOD",
+                                            tooltip: "Compares Generative Engine Optimization — which site is more likely to appear in AI-generated search results and summaries. Measures brand authority, topical depth, content uniqueness, and citation-worthiness.",
+                                            data: comparisonData.comparison.geo,
+                                            color: "geo",
+                                            titleColor: "text-geo",
+                                            icon: <Globe className="h-3.5 w-3.5" />,
+                                        },
+                                    ].map((battle) => {
+                                        const scoreA = battle.data.siteA
+                                        const scoreB = battle.data.siteB
+                                        const delta = scoreA - scoreB
+                                        const isWinning = delta > 0
+                                        const isTied = delta === 0
+                                        const total = scoreA + scoreB || 1
+                                        const pctA = (scoreA / total) * 100
 
-                                    {/* AEO Battle */}
-                                    <Card className="border-aeo/20 bg-aeo/5">
-                                        <CardHeader className="pb-2">
-                                            <CardTitle className="text-sm font-medium text-muted-foreground flex justify-between items-center">
-                                                AEO SNIPPET SHARE
-                                                <InfoTooltip content="Compares Answer Engine Optimization — which site is more likely to be cited by AI assistants like ChatGPT, Perplexity, and Gemini. Measures structured data, FAQ coverage, direct answer formatting, and schema quality." />
-                                                {comparisonData.comparison.aeo.winner === "siteA" ? <TrendingUp className="h-4 w-4 text-geo" /> : <TrendingDown className="h-4 w-4 text-destructive" />}
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="flex items-end justify-between gap-4">
-                                                <div className="flex flex-col items-center flex-1">
-                                                    <div className="text-3xl font-black text-seo">{comparisonData.comparison.aeo.siteA}</div>
-                                                    <div className="text-[10px] uppercase font-bold text-muted-foreground truncate w-full text-center">Your Site</div>
-                                                </div>
-                                                <div className="text-xs font-black italic text-muted-foreground mb-4 opacity-50">VS</div>
-                                                <div className="flex flex-col items-center flex-1">
-                                                    <div className="text-3xl font-black text-aeo">{comparisonData.comparison.aeo.siteB}</div>
-                                                    <div className="text-[10px] uppercase font-bold text-muted-foreground truncate w-full text-center">Competitor</div>
-                                                </div>
-                                            </div>
-                                            <div className="mt-4 h-1.5 w-full bg-muted rounded-full overflow-hidden flex">
-                                                <div className="h-full bg-seo" style={{ width: `${(comparisonData.comparison.aeo.siteA / (comparisonData.comparison.aeo.siteA + comparisonData.comparison.aeo.siteB)) * 100}%` }}></div>
-                                                <div className="h-full bg-aeo" style={{ width: `${(comparisonData.comparison.aeo.siteB / (comparisonData.comparison.aeo.siteA + comparisonData.comparison.aeo.siteB)) * 100}%` }}></div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
+                                        return (
+                                            <Card key={battle.label} className={cn("border-border/30 bg-card/80 relative overflow-hidden group hover:border-border/60 transition-all")}>
+                                                {/* Subtle top accent line */}
+                                                <div className={cn("absolute top-0 left-0 right-0 h-0.5", `bg-${battle.color}`)} />
 
-                                    {/* GEO Battle */}
-                                    <Card className="border-geo/20 bg-geo/5">
-                                        <CardHeader className="pb-2">
-                                            <CardTitle className="text-sm font-medium text-muted-foreground flex justify-between items-center">
-                                                GEO CITATION LIKELIHOOD
-                                                <InfoTooltip content="Compares Generative Engine Optimization — which site is more likely to appear in AI-generated search results and summaries. Measures brand authority, topical depth, content uniqueness, and citation-worthiness." />
-                                                {comparisonData.comparison.geo.winner === "siteA" ? <TrendingUp className="h-4 w-4 text-geo" /> : <TrendingDown className="h-4 w-4 text-destructive" />}
-                                            </CardTitle>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="flex items-end justify-between gap-4">
-                                                <div className="flex flex-col items-center flex-1">
-                                                    <div className="text-3xl font-black text-seo">{comparisonData.comparison.geo.siteA}</div>
-                                                    <div className="text-[10px] uppercase font-bold text-muted-foreground truncate w-full text-center">Your Site</div>
-                                                </div>
-                                                <div className="text-xs font-black italic text-muted-foreground mb-4 opacity-50">VS</div>
-                                                <div className="flex flex-col items-center flex-1">
-                                                    <div className="text-3xl font-black text-aeo">{comparisonData.comparison.geo.siteB}</div>
-                                                    <div className="text-[10px] uppercase font-bold text-muted-foreground truncate w-full text-center">Competitor</div>
-                                                </div>
-                                            </div>
-                                            <div className="mt-4 h-1.5 w-full bg-muted rounded-full overflow-hidden flex">
-                                                <div className="h-full bg-seo" style={{ width: `${(comparisonData.comparison.geo.siteA / (comparisonData.comparison.geo.siteA + comparisonData.comparison.geo.siteB)) * 100}%` }}></div>
-                                                <div className="h-full bg-aeo" style={{ width: `${(comparisonData.comparison.geo.siteB / (comparisonData.comparison.geo.siteA + comparisonData.comparison.geo.siteB)) * 100}%` }}></div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
+                                                <CardHeader className="pb-1">
+                                                    <CardTitle className={cn("text-[10px] font-black uppercase tracking-widest flex justify-between items-center", battle.titleColor)}>
+                                                        <span className="flex items-center gap-1.5">
+                                                            {battle.icon}
+                                                            {battle.label}
+                                                        </span>
+                                                        <span className="flex items-center gap-1.5">
+                                                            <InfoTooltip content={battle.tooltip} />
+                                                        </span>
+                                                    </CardTitle>
+                                                </CardHeader>
+                                                <CardContent className="pt-2">
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <div className="flex flex-col items-center flex-1">
+                                                            <div className="text-4xl font-black tabular-nums text-seo">{scoreA}</div>
+                                                            <div className="text-[9px] uppercase font-bold text-muted-foreground truncate w-full text-center mt-0.5 max-w-[100px]" title={siteA}>
+                                                                {siteA ? siteA.replace(/^https?:\/\//, '').replace(/\/$/, '') : 'Your Site'}
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex flex-col items-center gap-1 px-2">
+                                                            <Swords className="h-4 w-4 text-muted-foreground/30" />
+                                                            <span className="text-[9px] font-black italic text-muted-foreground/40">VS</span>
+                                                        </div>
+                                                        <div className="flex flex-col items-center flex-1">
+                                                            <div className="text-4xl font-black tabular-nums text-aeo">{scoreB}</div>
+                                                            <div className="text-[9px] uppercase font-bold text-muted-foreground truncate w-full text-center mt-0.5 max-w-[100px]" title={siteB}>
+                                                                {siteB ? siteB.replace(/^https?:\/\//, '').replace(/\/$/, '') : 'Competitor'}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Progress bar */}
+                                                    <div className="mt-4 h-2 w-full bg-muted/50 rounded-full overflow-hidden flex relative">
+                                                        <div className={cn("h-full rounded-l-full transition-all duration-700 bg-seo")} style={{ width: `${pctA}%` }} />
+                                                        <div className={cn("h-full rounded-r-full transition-all duration-700 bg-aeo")} style={{ width: `${100 - pctA}%` }} />
+                                                        {/* Center marker */}
+                                                        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-foreground/20" />
+                                                    </div>
+
+                                                    {/* Legend */}
+                                                    <div className="flex justify-between mt-2">
+                                                        <span className="text-[8px] font-bold text-seo uppercase">{Math.round(pctA)}% share</span>
+                                                        <span className="text-[8px] font-bold text-aeo uppercase">{Math.round(100 - pctA)}% share</span>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        )
+                                    })}
                                 </div>
 
                                 {/* Expert Verdict */}

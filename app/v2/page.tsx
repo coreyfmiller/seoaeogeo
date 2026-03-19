@@ -191,10 +191,10 @@ export default function V2Page() {
       
       {/* Page Header with Actions */}
       <AuditPageHeader
-        title="V3 Free Audit"
+        title="Free Audit"
         description="Fast heuristic scoring with Core Web Vitals and site-type detection."
         badge="FREE"
-        badgeVariant="beta"
+        badgeVariant="default"
         currentUrl={currentUrl}
         hasResults={!!result}
         isAnalyzing={isAnalyzing}
@@ -222,7 +222,7 @@ export default function V2Page() {
             <div className="flex flex-col items-center gap-4 py-8">
               <div className="h-12 w-12 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
               <div className="text-center min-h-[48px]">
-                <h3 className="text-lg font-bold text-foreground">V3 Free Audit in Progress</h3>
+                <h3 className="text-lg font-bold text-foreground">Free Audit in Progress</h3>
                 <p className="text-sm text-muted-foreground mt-1 transition-opacity duration-500">{sse.phase || 'Initializing...'}</p>
               </div>
               <div className="w-64 h-1.5 bg-muted rounded-full overflow-hidden">
@@ -246,7 +246,7 @@ export default function V2Page() {
               The Future of SEO Auditing
             </CardTitle>
             <CardDescription className="text-base max-w-2xl mx-auto">
-              V3 Free Audit includes Core Web Vitals, mobile-first scoring, and AI-powered insights.
+              Free Audit includes Core Web Vitals, mobile-first scoring, and AI-powered insights.
               Built for the 2026 search landscape.
             </CardDescription>
           </div>
@@ -259,13 +259,7 @@ export default function V2Page() {
             variant="large"
           />
           
-          {/* Beta Badge */}
-          <div className="mt-4 text-center">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-600 border border-purple-500/20">
-              <Zap className="h-3 w-3" />
-              BETA - Testing Phase
-            </span>
-          </div>
+          {/* Score Cards */}
         </CardContent>
       </Card>
       )}

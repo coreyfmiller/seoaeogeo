@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Mail, Lock, Eye, EyeOff, ArrowRight, User } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
@@ -16,6 +16,8 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const refCode = searchParams.get('ref') || ''
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -33,7 +35,10 @@ export default function SignupPage() {
       email,
       password,
       options: {
-        data: { full_name: fullName },
+        data: {
+          full_name: fullName,
+          ...(refCode ? { referred_by: refCode } : {}),
+        },
       },
     })
 

@@ -7,12 +7,12 @@
 - [x] Webhook endpoint for `customer.subscription.deleted` → downgrade to free
 - [x] Store `stripe_customer_id` and `stripe_subscription_id` on profiles table (columns already exist)
 
-## 🔴 Register Stripe Webhook (TOMORROW — March 19)
-- [ ] Go to Stripe → Developers → Webhooks → Add endpoint
-- [ ] URL: `https://yourdomain.com/api/stripe/webhook` (use your actual Vercel domain)
-- [ ] Events: `checkout.session.completed`, `invoice.payment_succeeded`, `customer.subscription.deleted`, `customer.subscription.updated`
-- [ ] Copy the `whsec_` signing secret from Stripe
-- [ ] Replace `STRIPE_WEBHOOK_SECRET=whsec_PLACEHOLDER` in `.env.local` and Vercel with the real value
+## ✅ Register Stripe Webhook (DONE — March 19)
+- [x] Go to Stripe → Developers → Webhooks → Add endpoint
+- [x] URL: production Vercel domain + `/api/stripe/webhook`
+- [x] Events: `checkout.session.completed`, `invoice.payment_succeeded`, `customer.subscription.deleted`, `customer.subscription.updated`
+- [x] Copy the `whsec_` signing secret from Stripe
+- [x] Replace `STRIPE_WEBHOOK_SECRET` in `.env.local` and Vercel with the real value
 - [ ] Test a checkout flow end-to-end
 
 ## 🔴 Referral System (piggybacks on Stripe webhooks)

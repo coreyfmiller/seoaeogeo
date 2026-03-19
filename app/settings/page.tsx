@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Settings, User, Lock, Trash2, CreditCard, BarChart3, CheckCircle2, AlertTriangle, Crown } from 'lucide-react'
+import { Settings, User, Lock, Trash2, CreditCard, BarChart3, CheckCircle2, AlertTriangle, Crown, Gift, Copy, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
@@ -40,16 +40,21 @@ export default function SettingsPage() {
   const [deleteConfirm, setDeleteConfirm] = useState('')
   const [deleting, setDeleting] = useState(false)
 
+  // Referral states
+  const [referralCode, setReferralCode] = useState<string | null>(null)
+  const [referralCopied, setReferralCopied] = useState(false)
+
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.push('/login'); return }
       setUser(user)
 
-      const { data: prof } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+      const { data: prof } = await supabase.from('profiles').select('id, email, full_name, plan, is_admin, credits_pro_audits, credits_deep_scans, credits_competitive_intel, referral_code').eq('id', user.id).single()
       if (prof) {
         setProfile(prof)
         setFullName(prof.full_name || '')
+        setReferralCode(prof.referral_code || null)
       }
 
       const period = new Date().toISOString().slice(0, 7)
@@ -202,6 +207,40 @@ export default function SettingsPage() {
                     : <>Credits never expire. <a href="/pro" className="text-seo hover:underline">Buy more credits</a></>
                   }
                 </p>
+              </CardContent>
+            </Card>
+
+            {/* Referral */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Gift className="h-5 w-5 text-geo" />
+                  Refer &amp; Earn
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  Share your referral link. When someone signs up and makes their first purchase, you get a free Pro credit pack — 20 Pro Audits, 10 Deep Scans, and 10 Competitive Intel scans. No limits on how many times you can earn.
+                </p>
+                {referralCode ? (
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 rounded-lg border border-border/50 bg-muted/30 px-3 py-2.5 text-sm text-muted-foreground truncate font-mono">
+                      https://vantege.ai/signup?ref={referralCode}
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(`https://vantege.ai/signup?ref=${referralCode}`)
+                        setReferralCopied(true)
+                        setTimeout(() => setReferralCopied(false), 2000)
+                      }}
+                      className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-lg bg-geo hover:bg-geo/90 text-white text-sm font-medium transition-colors"
+                    >
+                      {referralCopied ? <><Check className="h-4 w-4" /> Copied</> : <><Copy className="h-4 w-4" /> Copy Link</>}
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground italic">Referral code not available yet.</p>
+                )}
               </CardContent>
             </Card>
 

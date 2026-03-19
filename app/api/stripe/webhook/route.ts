@@ -50,6 +50,27 @@ export async function POST(req: NextRequest) {
           await addCredits(userId, plan)
 
           console.log(`[Stripe] User ${userId} purchased ${plan} credit pack`)
+
+          // Referral bonus: check if this user was referred and referral hasn't been credited yet
+          const { data: referral } = await supabaseAdmin
+            .from('referrals')
+            .select('id, referrer_id, status')
+            .eq('referred_id', userId)
+            .eq('status', 'pending')
+            .single()
+
+          if (referral) {
+            // Credit the referrer with Pro-equivalent credits (+20/+10/+10)
+            await addCredits(referral.referrer_id, 'pro')
+
+            // Mark referral as credited
+            await supabaseAdmin
+              .from('referrals')
+              .update({ status: 'credited', credited_at: new Date().toISOString() })
+              .eq('id', referral.id)
+
+            console.log(`[Stripe] Referral bonus credited to ${referral.referrer_id} for referring ${userId}`)
+          }
         }
         break
       }

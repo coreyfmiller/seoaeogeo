@@ -15,7 +15,6 @@ import {
   Bot,
   TrendingUp,
   Layers,
-  Crown,
   Home,
   ChevronDown,
   ChevronRight,
@@ -24,6 +23,10 @@ import {
   LogIn,
   Sun,
   Moon,
+  Gift,
+  Copy,
+  Check,
+  X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
@@ -66,10 +69,16 @@ const bottomNav: NavItem[] = [
 export function AppSidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const { theme, setTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
   const [eolOpen, setEolOpen] = useState(false)
+  const [referralOpen, setReferralOpen] = useState(false)
+  const [referralCode, setReferralCode] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<{ full_name: string | null; plan: string; is_admin?: boolean } | null>(null)
+
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     const supabase = createClient()
@@ -78,8 +87,13 @@ export function AppSidebar() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user)
       if (user) {
-        supabase.from('profiles').select('full_name, plan, is_admin').eq('id', user.id).single()
-          .then(({ data }) => { if (data) setProfile(data) })
+        supabase.from('profiles').select('full_name, plan, is_admin, referral_code').eq('id', user.id).single()
+          .then(({ data }) => {
+            if (data) {
+              setProfile(data)
+              setReferralCode(data.referral_code || null)
+            }
+          })
       }
     })
 
@@ -87,10 +101,16 @@ export function AppSidebar() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
       if (session?.user) {
-        supabase.from('profiles').select('full_name, plan, is_admin').eq('id', session.user.id).single()
-          .then(({ data }) => { if (data) setProfile(data) })
+        supabase.from('profiles').select('full_name, plan, is_admin, referral_code').eq('id', session.user.id).single()
+          .then(({ data }) => {
+            if (data) {
+              setProfile(data)
+              setReferralCode(data.referral_code || null)
+            }
+          })
       } else {
         setProfile(null)
+        setReferralCode(null)
       }
     })
 
@@ -116,6 +136,17 @@ export function AppSidebar() {
 
   const isAdmin = profile?.is_admin === true
   const isFreeUser = !isAdmin && (!profile || profile.plan === 'free')
+
+  const referralUrl = referralCode
+    ? `https://vantege.ai/signup?ref=${referralCode}`
+    : ''
+
+  const handleCopyReferral = async () => {
+    if (!referralUrl) return
+    await navigator.clipboard.writeText(referralUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   return (
     <aside className="hidden lg:flex flex-col w-64 border-r border-border/50 bg-sidebar">
@@ -196,6 +227,56 @@ export function AppSidebar() {
 
       </nav>
       <div className="px-3 py-4 border-t border-border/50 space-y-3">
+        {/* Referral Link — only show when logged in */}
+        {user && (
+          <div className="relative">
+            <button
+              onClick={() => setReferralOpen(!referralOpen)}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors w-full",
+                referralOpen
+                  ? "bg-geo/10 text-geo font-medium"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              )}
+            >
+              <Gift className="h-4 w-4" />
+              <span className="flex-1 text-left">Refer &amp; Earn</span>
+              <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-geo/10 text-geo border border-geo/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                FREE
+              </span>
+            </button>
+
+            {/* Referral Popup */}
+            {referralOpen && (
+              <div className="absolute bottom-full left-0 right-0 mb-2 p-4 rounded-xl border border-geo/30 bg-card shadow-xl z-50 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-bold text-foreground">Get a Free Pro Pack</p>
+                  <button onClick={() => setReferralOpen(false)} className="text-muted-foreground hover:text-foreground">
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Share your link. When someone signs up and makes their first purchase, you get a free Pro credit pack — 20 Pro Audits, 10 Deep Scans, and 10 Competitive Intel scans added to your account. No limits on how many times you can earn.
+                </p>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 rounded-lg border border-border/50 bg-muted/30 px-3 py-2 text-xs text-muted-foreground truncate font-mono">
+                    {referralCode ? referralUrl : 'Run the DB migration to enable referrals'}
+                  </div>
+                  <button
+                    onClick={handleCopyReferral}
+                    disabled={!referralCode}
+                    className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-geo hover:bg-geo/90 text-white text-xs font-medium transition-colors disabled:opacity-50"
+                    title="Copy referral link"
+                  >
+                    {copied ? <><Check className="h-3.5 w-3.5" /> Copied</> : <><Copy className="h-3.5 w-3.5" /> Copy Link</>}
+                  </button>
+                </div>
+                {copied && <p className="text-[10px] text-geo font-medium">Copied to clipboard</p>}
+              </div>
+            )}
+          </div>
+        )}
+
         <ul className="space-y-1">
           {bottomNav
             .filter(item => item.badge !== 'ADMIN' || isAdmin)
@@ -287,11 +368,11 @@ export function AppSidebar() {
               <p className="text-xs text-muted-foreground truncate">{planLabel} Plan</p>
             </div>
             <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
               className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              title={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             >
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {mounted ? (resolvedTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />) : <div className="h-4 w-4" />}
             </button>
             <button
               onClick={handleSignOut}
