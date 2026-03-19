@@ -438,7 +438,7 @@ export default function V2Page() {
                   <h3 className="text-2xl font-bold mb-1">Get Step-by-Step Fix Instructions</h3>
                   <p className="text-lg text-geo font-bold mb-2">Plans starting at $20</p>
                   <p className="text-muted-foreground mb-4">
-                    Stop guessing. Get exact implementation guides with copy-paste code for every issue.
+                    Stop guessing. Get exact implementation guides for every issue.
                   </p>
                   <ul className="space-y-2 mb-6">
                     <li className="flex items-center gap-2 text-sm">
@@ -447,7 +447,7 @@ export default function V2Page() {
                     </li>
                     <li className="flex items-center gap-2 text-sm">
                       <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
-                      <span>Copy-paste code examples ready to implement</span>
+                      <span>Auto-generated schema markup for your site type</span>
                     </li>
                     <li className="flex items-center gap-2 text-sm">
                       <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />

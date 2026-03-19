@@ -291,7 +291,7 @@ export default function FreeDashboard() {
                           Plans starting at $20
                         </p>
                         <p className="text-muted-foreground mb-4">
-                          Stop guessing. Get exact implementation guides with copy-paste code for every issue.
+                          Stop guessing. Get exact implementation guides for every issue.
                         </p>
                         <ul className="space-y-2 mb-6">
                           <li className="flex items-center gap-2 text-sm">
@@ -300,7 +300,7 @@ export default function FreeDashboard() {
                           </li>
                           <li className="flex items-center gap-2 text-sm">
                             <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
-                            <span><strong>Copy-paste code examples</strong> ready to implement</span>
+                            <span><strong>Auto-generated schema markup</strong> for your site type</span>
                           </li>
                           <li className="flex items-center gap-2 text-sm">
                             <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />

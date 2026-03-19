@@ -325,7 +325,7 @@ export default function V4Page() {
                       <div className="flex items-center gap-2">
                         <span className={`text-lg font-black ${textColor}`}>{total}</span>
                         <span className="text-sm font-medium">issues found</span>
-                        <InfoTooltip content="Total number of SEO, AEO, and GEO issues detected. Critical issues have the highest impact on your scores. Upgrade to Pro for detailed fix instructions with copy-paste code." />
+                        <InfoTooltip content="Total number of SEO, AEO, and GEO issues detected. Critical issues have the highest impact on your scores. Upgrade to Pro for detailed fix instructions." />
                         <span className="text-xs text-muted-foreground">
                           {critical > 0 && <span className="text-red-600 font-medium">({critical} critical)</span>}
                         </span>
@@ -358,7 +358,7 @@ export default function V4Page() {
                         <h3 className="text-2xl font-bold mb-1">Get Step-by-Step Fix Instructions</h3>
                         <p className="text-lg text-geo font-bold mb-2">Plans starting at $20</p>
                         <p className="text-muted-foreground mb-4">
-                          Stop guessing. Get exact implementation guides with copy-paste code for every issue.
+                          Stop guessing. Get exact implementation guides for every issue.
                         </p>
                         <ul className="space-y-2 mb-6">
                           <li className="flex items-center gap-2 text-sm">
@@ -367,7 +367,7 @@ export default function V4Page() {
                           </li>
                           <li className="flex items-center gap-2 text-sm">
                             <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
-                            <span>Copy-paste code examples ready to implement</span>
+                            <span>Auto-generated schema markup for your site type</span>
                           </li>
                           <li className="flex items-center gap-2 text-sm">
                             <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />

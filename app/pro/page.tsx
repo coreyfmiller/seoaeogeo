@@ -9,7 +9,7 @@ import { Header } from '@/components/dashboard/header'
 const features = [
   { icon: Bot, title: "AI-Powered Analysis", desc: "Full Gemini AI sitewide intelligence with deep content analysis" },
   { icon: FileText, title: "Step-by-Step Fix Instructions", desc: "Detailed explanations of why each issue matters and how to fix it" },
-  { icon: Code, title: "Copy-Paste Code Examples", desc: "Ready-to-implement code snippets for every fix" },
+  { icon: Code, title: "Schema Code Generation", desc: "Auto-generated JSON-LD schema markup tailored to your site type" },
   { icon: Layers, title: "Deep Crawl (50 Pages)", desc: "Comprehensive multi-page site analysis with page comparison" },
   { icon: Sparkles, title: "Competitive Intelligence", desc: "Compare your site against competitors with gap analysis" },
   { icon: BarChart3, title: "ROI & Priority Scoring", desc: "Know which fixes deliver the biggest impact first" },
@@ -24,7 +24,7 @@ const plans = [
     price: "$20",
     period: "",
     desc: "For freelancers and consultants",
-    highlights: ["20 Pro Audits", "10 Deep Crawls (up to 50 pages)", "10 Competitive Intelligence scans", "AI fix instructions with code examples", "Priority scoring & ROI", "Platform-specific guides", "Export reports"],
+    highlights: ["20 Pro Audits", "10 Deep Crawls (up to 50 pages)", "10 Competitive Intelligence scans", "AI fix instructions", "Priority scoring & ROI", "Platform-specific guides", "Export reports"],
     cta: "Go Pro",
     popular: true,
   },
@@ -34,7 +34,7 @@ const plans = [
     price: "$50",
     period: "",
     desc: "For growing agencies",
-    highlights: ["60 Pro Audits", "60 Deep Crawls (up to 50 pages)", "25 Competitive Intelligence scans", "AI fix instructions with code examples", "Priority scoring & ROI", "Platform-specific guides", "White-label reports", "Export reports", "Priority support"],
+    highlights: ["60 Pro Audits", "60 Deep Crawls (up to 50 pages)", "25 Competitive Intelligence scans", "AI fix instructions", "Priority scoring & ROI", "Platform-specific guides", "White-label reports", "Export reports", "Priority support"],
     cta: "Go Pro Plus",
     popular: false,
   },
@@ -44,7 +44,7 @@ const plans = [
     price: "$100",
     period: "",
     desc: "For high-volume professionals",
-    highlights: ["150 Pro Audits", "150 Deep Crawls (up to 50 pages)", "50 Competitive Intelligence scans", "AI fix instructions with code examples", "Priority scoring & ROI", "Platform-specific guides", "White-label reports", "Export reports", "Scan history & snapshots", "Priority support"],
+    highlights: ["150 Pro Audits", "150 Deep Crawls (up to 50 pages)", "50 Competitive Intelligence scans", "AI fix instructions", "Priority scoring & ROI", "Platform-specific guides", "White-label reports", "Export reports", "Scan history & snapshots", "Priority support"],
     cta: "Go Agency",
     popular: false,
   },
@@ -85,38 +85,18 @@ export default function ProPage() {
           <div className="max-w-5xl mx-auto space-y-10 pb-6">
 
             {/* Hero */}
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-5">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-geo/10 text-geo text-sm font-bold border border-geo/20">
                 <Zap className="h-4 w-4" />
                 UPGRADE TO PRO
               </div>
               <h1 className="text-4xl font-bold">Stop Guessing. Start Fixing.</h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Get AI-powered fix instructions, copy-paste code, and deep multi-page crawling. Everything you need to actually improve your rankings.
+                ChatGPT, Perplexity, and Gemini don't crawl your site — they read it and decide whether to cite you. SitePulse uses the same AI to audit your pages, so you see exactly what they see.
               </p>
-            </div>
-
-            {/* Why SitePulse */}
-            <Card className="border-aeo/20 bg-gradient-to-br from-aeo/5 to-geo/5">
-              <CardContent className="p-8 text-center space-y-3">
-                <p className="text-2xl font-bold leading-snug max-w-xl mx-auto">
-                  We use AI to show you what AI thinks of your content.
-                </p>
-                <p className="text-sm text-muted-foreground max-w-xl mx-auto">
-                  ChatGPT, Perplexity, and Gemini don't crawl your site — they read it and decide whether to cite you. SitePulse uses the same AI to audit your pages, so you see exactly what they see.
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Feature Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {features.map(f => (
-                <div key={f.title} className="rounded-xl border border-border/50 bg-card/50 p-4 space-y-2">
-                  <f.icon className="h-5 w-5 text-geo" />
-                  <p className="text-sm font-bold">{f.title}</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
-                </div>
-              ))}
+              <p className="text-base text-muted-foreground max-w-xl mx-auto">
+                Get AI-powered fix instructions, priority scoring, and deep multi-page crawling. Everything you need to actually improve your rankings.
+              </p>
             </div>
 
             {/* Pricing Cards */}
@@ -131,9 +111,9 @@ export default function ProPage() {
                   <CardHeader className="text-center pb-2">
                     <CardTitle className="text-lg">{plan.name}</CardTitle>
                     <div className="flex items-baseline justify-center gap-1 mt-2">
-                      <span className="text-4xl font-black">{plan.price}</span>
+                      <span className="text-5xl font-black">{plan.price}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">{plan.desc}</p>
+                    <p className="text-xs text-muted-foreground mt-2">one-time • credits never expire</p>
                   </CardHeader>
                   <CardContent className="flex flex-col flex-1 space-y-4">
                     <ul className="space-y-2 flex-1">
@@ -166,6 +146,17 @@ export default function ProPage() {
               ))}
             </div>
 
+            {/* Feature Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {features.map(f => (
+                <div key={f.title} className="rounded-xl border border-border/50 bg-card/50 p-4 space-y-2">
+                  <f.icon className="h-5 w-5 text-geo" />
+                  <p className="text-sm font-bold">{f.title}</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
+                </div>
+              ))}
+            </div>
+
             {/* Compare Plans */}
             <Card className="border-border/50 overflow-hidden">
               <CardHeader>
@@ -190,7 +181,7 @@ export default function ProPage() {
                         ["Key Metrics Strip", "✓", "✓", "✓", "✓"],
                         ["Pro Audits", "—", "20", "60", "150"],
                         ["AI Fix Instructions", "—", "✓", "✓", "✓"],
-                        ["Copy-Paste Code", "—", "✓", "✓", "✓"],
+                        ["Schema Code Generation", "—", "✓", "✓", "✓"],
                         ["Export Reports", "—", "✓", "✓", "✓"],
                         ["Deep Crawls (50 pages)", "—", "10", "60", "150"],
                         ["Competitive Intelligence", "—", "10", "25", "50"],

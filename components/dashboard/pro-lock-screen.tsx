@@ -33,7 +33,7 @@ export function ProLockScreen({ featureName, description }: ProLockScreenProps) 
             <div className="flex items-start gap-3">
               <CheckCircle2 className="h-5 w-5 text-geo shrink-0 mt-0.5" />
               <p className="text-sm text-foreground">
-                <strong>Detailed fix instructions</strong> with copy-paste code
+                <strong>Detailed fix instructions</strong> with schema code generation
               </p>
             </div>
             <div className="flex items-start gap-3">
