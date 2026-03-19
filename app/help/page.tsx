@@ -95,7 +95,7 @@ const faqs: FAQItem[] = [
   {
     category: "Plans & Limits",
     question: "What are the plan limits?",
-    answer: "Starter: 5 audits/month. Pro: 20 audits/month + 10 deep crawls (50 pages each). Agency: 60 audits/month + 50 deep crawls (50 pages each). Agency+: 140 audits/month + 100 deep crawls (50 pages each). Free audits don't count against your quota."
+    answer: "Pro ($20): 20 audits, 10 deep crawls (50 pages each), 10 competitive intel scans. Pro Plus ($50): 60 audits, 60 deep crawls (50 pages each), 25 competitive intel scans. Agency ($100): 150 audits, 150 deep crawls (50 pages each), 50 competitive intel scans. Credits are one-time purchases — buy more when you need them. Free audits don't count against your credits."
   },
   {
     category: "Plans & Limits",

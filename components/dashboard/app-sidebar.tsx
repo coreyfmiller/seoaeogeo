@@ -1,8 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useState } from "react"
+import { usePathname, useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
 import {
   LayoutDashboard,
   Search,
@@ -20,8 +20,15 @@ import {
   ChevronDown,
   ChevronRight,
   Archive,
+  LogOut,
+  LogIn,
+  Sun,
+  Moon,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { createClient } from "@/lib/supabase/client"
+import { useTheme } from "next-themes"
+import type { User } from "@supabase/supabase-js"
 
 interface NavItem {
   name: string
@@ -35,8 +42,10 @@ const mainNav: NavItem[] = [
   { name: "Pro Audit", icon: Bot, href: "/v3", badge: "PRO AI" },
   { name: "Deep Scan", icon: Layers, href: "/deep-v3", badge: "PRO AI" },
   { name: "Competitive Intel", icon: Globe, href: "/intelligence", badge: "PRO AI" },
-  { name: "Dashboard", icon: Home, href: "/dashboard" },
+  { name: "Dashboard", icon: Home, href: "/dashboard", badge: "PRO AI" },
 ]
+
+const proOnlyPaths = ['/v3', '/deep-v3', '/intelligence', '/dashboard']
 
 const eolNav: NavItem[] = [
   { name: "V4 Free Audit", icon: Sparkles, href: "/v4", badge: "BETA AI" },
@@ -50,13 +59,63 @@ const comingSoonNav: NavItem[] = []
 const bottomNav: NavItem[] = [
   { name: "Our Standards", icon: FileText, href: "/standards" },
   { name: "Help & Support", icon: HelpCircle, href: "/help", badge: "" },
-  { name: "Settings", icon: Settings, href: "#", badge: "SOON" },
+  { name: "Settings", icon: Settings, href: "/settings" },
   { name: "Usage & Costs", icon: BarChart3, href: "/usage", badge: "ADMIN" },
 ]
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const { theme, setTheme } = useTheme()
   const [eolOpen, setEolOpen] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
+  const [profile, setProfile] = useState<{ full_name: string | null; plan: string; is_admin?: boolean } | null>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+
+    // Get initial session
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user)
+      if (user) {
+        supabase.from('profiles').select('full_name, plan, is_admin').eq('id', user.id).single()
+          .then(({ data }) => { if (data) setProfile(data) })
+      }
+    })
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+      if (session?.user) {
+        supabase.from('profiles').select('full_name, plan, is_admin').eq('id', session.user.id).single()
+          .then(({ data }) => { if (data) setProfile(data) })
+      } else {
+        setProfile(null)
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const handleSignOut = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/')
+    router.refresh()
+  }
+
+  const userInitials = profile?.full_name
+    ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    : user?.email?.slice(0, 2).toUpperCase() || '??'
+
+  const planLabel = profile?.is_admin
+    ? 'Admin'
+    : profile?.plan
+      ? profile.plan === 'pro_plus' ? 'Pro Plus' : profile.plan === 'agency' ? 'Agency' : profile.plan.charAt(0).toUpperCase() + profile.plan.slice(1)
+      : 'Free'
+
+  const isAdmin = profile?.is_admin === true
+  const isFreeUser = !isAdmin && (!profile || profile.plan === 'free')
 
   return (
     <aside className="hidden lg:flex flex-col w-64 border-r border-border/50 bg-sidebar">
@@ -78,19 +137,26 @@ export function AppSidebar() {
             Main
           </p>
           <ul className="space-y-1">
-            {mainNav.map((item) => (
+            {mainNav.map((item) => {
+              const isProOnly = proOnlyPaths.includes(item.href)
+              const isLocked = isProOnly && isFreeUser
+              const href = isLocked ? '/pro' : item.href
+
+              return (
               <li key={item.name}>
                 <Link
-                  href={item.href}
+                  href={href}
                   className={cn(
                     "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
                     pathname === item.href
                       ? "bg-seo/10 text-seo font-medium"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      : isLocked
+                        ? "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/30"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                   )}
                 >
-                  <item.icon className="h-4 w-4" />
-                  <span className="flex-1">{item.name}</span>
+                  <item.icon className={cn("h-4 w-4", isLocked && "opacity-50")} />
+                  <span className={cn("flex-1", isLocked && "opacity-50")}>{item.name}</span>
                   {item.badge === "PRO" && (
                     <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-green-500/10 text-green-600 border border-green-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       {item.badge}
@@ -123,14 +189,17 @@ export function AppSidebar() {
                   )}
                 </Link>
               </li>
-            ))}
+              )
+            })}
           </ul>
         </div>
 
       </nav>
       <div className="px-3 py-4 border-t border-border/50 space-y-3">
         <ul className="space-y-1">
-          {bottomNav.map((item) => (
+          {bottomNav
+            .filter(item => item.badge !== 'ADMIN' || isAdmin)
+            .map((item) => (
             <li key={item.name}>
               <Link
                 href={item.href}
@@ -158,7 +227,8 @@ export function AppSidebar() {
           ))}
         </ul>
 
-        {/* EOL Section */}
+        {/* EOL Section — Admin only */}
+        {isAdmin && (
         <div>
           <button
             onClick={() => setEolOpen(!eolOpen)}
@@ -202,19 +272,44 @@ export function AppSidebar() {
             </ul>
           )}
         </div>
+        )}
       </div>
 
       {/* User */}
       <div className="px-3 py-4 border-t border-border/50">
-        <div className="flex items-center gap-3 px-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-seo to-aeo flex items-center justify-center text-white text-sm font-medium">
-            JD
+        {user ? (
+          <div className="flex items-center gap-3 px-3">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-seo to-aeo flex items-center justify-center text-white text-sm font-medium">
+              {userInitials}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground truncate">{profile?.full_name || user.email}</p>
+              <p className="text-xs text-muted-foreground truncate">{planLabel} Plan</p>
+            </div>
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+            <button
+              onClick={handleSignOut}
+              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+              title="Sign out"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground truncate">John Doe</p>
-            <p className="text-xs text-muted-foreground truncate">Pro Plan</p>
-          </div>
-        </div>
+        ) : (
+          <Link
+            href="/login"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+          >
+            <LogIn className="h-4 w-4" />
+            <span>Sign In</span>
+          </Link>
+        )}
       </div>
     </aside>
   )

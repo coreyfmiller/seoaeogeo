@@ -6917,5 +6917,50 @@
     "url": "pizzatwice.com",
     "timestamp": "2026-03-18T22:34:21.890Z",
     "cost": 0.052240825
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 873,
+    "outputTokens": 462,
+    "url": "https://sunriseseedlings.com",
+    "timestamp": "2026-03-18T23:20:34.333Z",
+    "cost": 0.006190275
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 9170,
+    "outputTokens": 3088,
+    "url": "Sunrise Seedlings – Kid-Grown Plants in Quispamsis, NB",
+    "timestamp": "2026-03-18T23:20:41.271Z",
+    "cost": 0.048962549999999994
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 665,
+    "outputTokens": 487,
+    "url": "https://www.giselespizza.com/",
+    "timestamp": "2026-03-18T23:22:02.525Z",
+    "cost": 0.0059445750000000006
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4192,
+    "outputTokens": 2996,
+    "url": "Home - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T23:22:16.338Z",
+    "cost": 0.0368004
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Competitive Battle",
+    "inputTokens": 2024,
+    "outputTokens": 1683,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice vs Home - Gisele's Pizzeria",
+    "timestamp": "2026-03-18T23:24:58.238Z",
+    "cost": 0.0199199
   }
 ]

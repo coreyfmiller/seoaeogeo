@@ -288,7 +288,7 @@ export default function FreeDashboard() {
                           Get Step-by-Step Fix Instructions
                         </h3>
                         <p className="text-lg text-geo font-bold mb-2">
-                          Plans starting at $5/month
+                          Plans starting at $20
                         </p>
                         <p className="text-muted-foreground mb-4">
                           Stop guessing. Get exact implementation guides with copy-paste code for every issue.

@@ -155,6 +155,7 @@ export function SiteTypeBadge({ siteType, onConfirm, onManualSelect }: SiteTypeB
   const [isManualSelecting, setIsManualSelecting] = useState(false)
   const [selectedType, setSelectedType] = useState<SiteType>(siteType.primaryType)
   const [isConfirmed, setIsConfirmed] = useState(false)
+  const [showWhy, setShowWhy] = useState(false)
 
   const config = siteTypeConfig[siteType.primaryType]
   const Icon = config.icon
@@ -334,33 +335,48 @@ export function SiteTypeBadge({ siteType, onConfirm, onManualSelect }: SiteTypeB
   }
 
   return (
-    <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg border bg-background/60 animate-pulse-subtle" style={{
+    <div className="rounded-lg border bg-background/60" style={{
       borderColor: confidenceConfig.low.borderColor.replace('border-', ''),
       backgroundColor: confidenceConfig.low.bgColor.replace('bg-', '')
     }}>
-      <div className={cn("h-7 w-7 rounded-md flex items-center justify-center", confidenceConfig.low.bgColor)}>
-        <HelpCircle className={cn("h-4 w-4", confidenceConfig.low.color)} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs font-bold">Site Type Uncertain</span>
-          <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0", confidenceConfig.low.borderColor, confidenceConfig.low.color)}>
-            {siteType.confidence}%
-          </Badge>
+      <div className="flex items-center gap-2 px-2 py-1.5 animate-pulse-subtle">
+        <div className={cn("h-7 w-7 rounded-md flex items-center justify-center", confidenceConfig.low.bgColor)}>
+          <HelpCircle className={cn("h-4 w-4", confidenceConfig.low.color)} />
         </div>
-        <p className="text-[10px] text-muted-foreground truncate">
-          Best guess: {config.label} • Please confirm
-        </p>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-bold">Site Type Uncertain</span>
+            <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0", confidenceConfig.low.borderColor, confidenceConfig.low.color)}>
+              {siteType.confidence}%
+            </Badge>
+          </div>
+          <p className="text-[10px] text-muted-foreground truncate">
+            Best guess: {config.label} • Please confirm
+          </p>
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setIsManualSelecting(true)}
+          className="shrink-0 h-7 text-xs px-2"
+        >
+          <Sparkles className="h-3 w-3 mr-1" />
+          Select Type
+        </Button>
       </div>
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={() => setIsManualSelecting(true)}
-        className="shrink-0 h-7 text-xs px-2"
-      >
-        <Sparkles className="h-3 w-3 mr-1" />
-        Select Type
-      </Button>
+      <div className="px-2 pb-1.5">
+        <button
+          onClick={() => setShowWhy(!showWhy)}
+          className="text-[10px] text-muted-foreground hover:text-foreground transition-colors underline decoration-dashed underline-offset-2"
+        >
+          Why am I seeing this?
+        </button>
+        {showWhy && (
+          <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+            Vantege scores each site differently based on its type — an e-commerce store is evaluated differently than a blog or a SaaS product. Our AI couldn't confidently determine what kind of site this is, which usually means the page is missing clear signals like structured data, descriptive headings, or focused content. Please select your site type so we can score it accurately.
+          </p>
+        )}
+      </div>
     </div>
   )
 }

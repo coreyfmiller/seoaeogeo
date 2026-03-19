@@ -1,6 +1,7 @@
 'use client'
 
-import { CheckCircle2, Zap, ArrowRight, Shield, Sparkles, Layers, Bot, FileText, Code, BarChart3 } from 'lucide-react'
+import { useState } from 'react'
+import { CheckCircle2, Zap, ArrowRight, Shield, Sparkles, Layers, Bot, FileText, Code, BarChart3, Loader2 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { Header } from '@/components/dashboard/header'
@@ -18,16 +19,8 @@ const features = [
 
 const plans = [
   {
-    name: "Starter",
-    price: "$5",
-    period: "",
-    desc: "For individual site owners",
-    highlights: ["5 Pro Audits", "AI fix instructions with code examples", "Export reports"],
-    cta: "Go Pro",
-    popular: false,
-  },
-  {
     name: "Pro",
+    planId: "pro",
     price: "$20",
     period: "",
     desc: "For freelancers and consultants",
@@ -36,26 +29,53 @@ const plans = [
     popular: true,
   },
   {
-    name: "Agency",
+    name: "Pro Plus",
+    planId: "pro_plus",
     price: "$50",
     period: "",
     desc: "For growing agencies",
-    highlights: ["60 Pro Audits", "50 Deep Crawls (up to 50 pages)", "25 Competitive Intelligence scans", "AI fix instructions with code examples", "Priority scoring & ROI", "Platform-specific guides", "White-label reports", "Export reports", "Priority support"],
-    cta: "Go Pro",
+    highlights: ["60 Pro Audits", "60 Deep Crawls (up to 50 pages)", "25 Competitive Intelligence scans", "AI fix instructions with code examples", "Priority scoring & ROI", "Platform-specific guides", "White-label reports", "Export reports", "Priority support"],
+    cta: "Go Pro Plus",
     popular: false,
   },
   {
-    name: "Agency+",
+    name: "Agency",
+    planId: "agency",
     price: "$100",
     period: "",
     desc: "For high-volume professionals",
-    highlights: ["140 Pro Audits", "100 Deep Crawls (up to 50 pages)", "50 Competitive Intelligence scans", "AI fix instructions with code examples", "Priority scoring & ROI", "Platform-specific guides", "White-label reports", "Export reports", "Scan history & snapshots", "Priority support"],
-    cta: "Go Pro",
+    highlights: ["150 Pro Audits", "150 Deep Crawls (up to 50 pages)", "50 Competitive Intelligence scans", "AI fix instructions with code examples", "Priority scoring & ROI", "Platform-specific guides", "White-label reports", "Export reports", "Scan history & snapshots", "Priority support"],
+    cta: "Go Agency",
     popular: false,
   },
 ]
 
 export default function ProPage() {
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
+
+  const handleCheckout = async (planId: string) => {
+    setLoadingPlan(planId)
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: planId }),
+      })
+      const data = await res.json()
+      if (data.url) {
+        window.location.href = data.url
+      } else if (data.error === 'Not authenticated') {
+        window.location.href = '/login?redirect=/pro'
+      } else {
+        console.error('Checkout error:', data.error)
+      }
+    } catch (err) {
+      console.error('Checkout failed:', err)
+    } finally {
+      setLoadingPlan(null)
+    }
+  }
+
   return (
     <div className="flex h-screen bg-background">
       <AppSidebar />
@@ -100,7 +120,7 @@ export default function ProPage() {
             </div>
 
             {/* Pricing Cards */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
               {plans.map(plan => (
                 <Card key={plan.name} className={`relative flex flex-col ${plan.popular ? 'border-geo shadow-lg shadow-geo/10' : 'border-border/50'}`}>
                   {plan.popular && (
@@ -112,7 +132,6 @@ export default function ProPage() {
                     <CardTitle className="text-lg">{plan.name}</CardTitle>
                     <div className="flex items-baseline justify-center gap-1 mt-2">
                       <span className="text-4xl font-black">{plan.price}</span>
-                      <span className="text-muted-foreground text-sm">{plan.period}</span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">{plan.desc}</p>
                   </CardHeader>
@@ -125,13 +144,22 @@ export default function ProPage() {
                         </li>
                       ))}
                     </ul>
-                    <button className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors ${
+                    <button
+                      onClick={() => handleCheckout(plan.planId)}
+                      disabled={loadingPlan !== null}
+                      className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors ${
                       plan.popular
                         ? 'bg-geo hover:bg-geo/90 text-white shadow-md'
                         : 'border border-border hover:border-geo/50 hover:bg-geo/5'
                     }`}>
-                      {plan.cta}
-                      <ArrowRight className="h-4 w-4" />
+                      {loadingPlan === plan.planId ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <>
+                          {plan.cta}
+                          <ArrowRight className="h-4 w-4" />
+                        </>
+                      )}
                     </button>
                   </CardContent>
                 </Card>
@@ -150,33 +178,32 @@ export default function ProPage() {
                       <tr className="border-b border-border/50">
                         <th className="text-left py-3 px-4 font-bold text-muted-foreground w-[200px]">Feature</th>
                         <th className="text-center py-3 px-3 font-bold text-muted-foreground">Free</th>
-                        <th className="text-center py-3 px-3 font-bold">Starter</th>
                         <th className="text-center py-3 px-3 font-bold text-geo bg-geo/5 border-x border-geo/20">Pro</th>
+                        <th className="text-center py-3 px-3 font-bold">Pro Plus</th>
                         <th className="text-center py-3 px-3 font-bold">Agency</th>
-                        <th className="text-center py-3 px-3 font-bold">Agency+</th>
                       </tr>
                     </thead>
                     <tbody>
                       {[
-                        ["SEO / AEO / GEO Scores", "✓", "✓", "✓", "✓", "✓"],
-                        ["Quick Health Check", "✓", "✓", "✓", "✓", "✓"],
-                        ["Key Metrics Strip", "✓", "✓", "✓", "✓", "✓"],
-                        ["Pro Audits", "—", "5", "20", "60", "140"],
-                        ["AI Fix Instructions", "—", "✓", "✓", "✓", "✓"],
-                        ["Copy-Paste Code", "—", "✓", "✓", "✓", "✓"],
-                        ["Export Reports", "—", "✓", "✓", "✓", "✓"],
-                        ["Deep Crawls (50 pages)", "—", "—", "10", "50", "100"],
-                        ["Competitive Intelligence", "—", "—", "10", "25", "50"],
-                        ["Priority Scoring & ROI", "—", "—", "✓", "✓", "✓"],
-                        ["Platform Guides", "—", "—", "✓", "✓", "✓"],
-                        ["White-Label Reports", "—", "—", "—", "✓", "✓"],
-                        ["Scan History & Snapshots", "—", "—", "—", "—", "✓"],
-                        ["Priority Support", "—", "—", "—", "✓", "✓"],
-                      ].map(([feature, free, starter, pro, agency, agencyPlus], i) => (
+                        ["SEO / AEO / GEO Scores", "✓", "✓", "✓", "✓"],
+                        ["Quick Health Check", "✓", "✓", "✓", "✓"],
+                        ["Key Metrics Strip", "✓", "✓", "✓", "✓"],
+                        ["Pro Audits", "—", "20", "60", "150"],
+                        ["AI Fix Instructions", "—", "✓", "✓", "✓"],
+                        ["Copy-Paste Code", "—", "✓", "✓", "✓"],
+                        ["Export Reports", "—", "✓", "✓", "✓"],
+                        ["Deep Crawls (50 pages)", "—", "10", "60", "150"],
+                        ["Competitive Intelligence", "—", "10", "25", "50"],
+                        ["Priority Scoring & ROI", "—", "✓", "✓", "✓"],
+                        ["Platform Guides", "—", "✓", "✓", "✓"],
+                        ["White-Label Reports", "—", "—", "✓", "✓"],
+                        ["Scan History & Snapshots", "—", "—", "—", "✓"],
+                        ["Priority Support", "—", "—", "✓", "✓"],
+                      ].map(([feature, free, pro, proPlus, agency], i) => (
                         <tr key={feature} className={`border-b border-border/20 ${i % 2 === 0 ? 'bg-muted/20' : ''}`}>
                           <td className="py-2.5 px-4 font-medium">{feature}</td>
-                          {[free, starter, pro, agency, agencyPlus].map((val, j) => {
-                            const isPro = j === 2
+                          {[free, pro, proPlus, agency].map((val, j) => {
+                            const isPro = j === 1
                             const isCheck = val === '✓'
                             const isDash = val === '—'
                             const isNumber = !isCheck && !isDash
