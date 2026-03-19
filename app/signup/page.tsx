@@ -58,9 +58,9 @@ export default function SignupPage() {
         <div className="w-full max-w-md space-y-6 text-center">
           <div className="inline-flex items-center gap-2">
             <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-seo via-aeo to-geo flex items-center justify-center">
-              <span className="text-white font-black text-lg">V</span>
+              <span className="text-white font-black text-lg">S</span>
             </div>
-            <span className="text-2xl font-black tracking-tight">Vantege</span>
+            <span className="text-2xl font-black tracking-tight">SitePulse</span>
           </div>
           <Card>
             <CardContent className="p-8 space-y-4">
@@ -89,9 +89,9 @@ export default function SignupPage() {
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2">
             <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-seo via-aeo to-geo flex items-center justify-center">
-              <span className="text-white font-black text-lg">V</span>
+              <span className="text-white font-black text-lg">S</span>
             </div>
-            <span className="text-2xl font-black tracking-tight">Vantege</span>
+            <span className="text-2xl font-black tracking-tight">SitePulse</span>
           </div>
           <p className="text-sm text-muted-foreground">Create your account</p>
         </div>

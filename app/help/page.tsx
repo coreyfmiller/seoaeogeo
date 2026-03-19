@@ -39,8 +39,8 @@ interface FAQItem {
 const faqs: FAQItem[] = [
   {
     category: "Getting Started",
-    question: "What is Vantege?",
-    answer: "Vantege is a search intelligence platform that audits your website across three pillars: SEO (Search Engine Optimization), AEO (Answer Engine Optimization), and GEO (Generative Engine Optimization). We help you optimize for traditional search, featured snippets, and AI-generated responses."
+    question: "What is SitePulse?",
+    answer: "SitePulse is a search intelligence platform that audits your website across three pillars: SEO (Search Engine Optimization), AEO (Answer Engine Optimization), and GEO (Generative Engine Optimization). We help you optimize for traditional search, featured snippets, and AI-generated responses."
   },
   {
     category: "Getting Started",
@@ -75,7 +75,7 @@ const faqs: FAQItem[] = [
   {
     category: "Scoring",
     question: "What are site types and why do they matter?",
-    answer: "Vantege automatically detects your site type (e-commerce, blog, portfolio, SaaS, news, local business, etc.) and adjusts scoring weights accordingly. An e-commerce site is evaluated differently than a blog because different signals matter for each. This ensures fair, relevant scoring."
+    answer: "SitePulse automatically detects your site type (e-commerce, blog, portfolio, SaaS, news, local business, etc.) and adjusts scoring weights accordingly. An e-commerce site is evaluated differently than a blog because different signals matter for each. This ensures fair, relevant scoring."
   },
   {
     category: "Data & Privacy",
@@ -115,7 +115,7 @@ const faqs: FAQItem[] = [
   {
     category: "Troubleshooting",
     question: "The page looks different than what was analyzed",
-    answer: "Vantege fetches the server-rendered HTML of your page. If your site relies heavily on client-side JavaScript rendering, some content may not be visible to our crawler. This is also how search engines see your page — if we can't see it, neither can Google."
+    answer: "SitePulse fetches the server-rendered HTML of your page. If your site relies heavily on client-side JavaScript rendering, some content may not be visible to our crawler. This is also how search engines see your page — if we can't see it, neither can Google."
   },
 ]
 
@@ -182,7 +182,7 @@ export default function HelpPage() {
               </div>
               <h1 className="text-3xl font-bold">Help & Support</h1>
               <p className="text-muted-foreground max-w-xl mx-auto">
-                Everything you need to get the most out of Vantege. Browse guides, FAQs, and tips below.
+                Everything you need to get the most out of SitePulse. Browse guides, FAQs, and tips below.
               </p>
             </div>
 
@@ -409,10 +409,22 @@ export default function HelpPage() {
                         </button>
                       </div>
                     ) : (
-                      <form onSubmit={(e) => {
+                      <form onSubmit={async (e) => {
                         e.preventDefault()
-                        // In production this would POST to an API
-                        setContactSubmitted(true)
+                        try {
+                          const res = await fetch('/api/contact', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(contactForm),
+                          })
+                          if (res.ok) {
+                            setContactSubmitted(true)
+                          } else {
+                            alert('Failed to send message. Please try again or email support@sitepulse.ai directly.')
+                          }
+                        } catch {
+                          alert('Failed to send message. Please try again or email support@sitepulse.ai directly.')
+                        }
                       }} className="space-y-4">
                         <div className="grid sm:grid-cols-2 gap-4">
                           <div className="space-y-1.5">
@@ -496,9 +508,9 @@ export default function HelpPage() {
                   <Card>
                     <CardContent className="p-5 space-y-3">
                       <h3 className="font-bold text-sm">Direct Email</h3>
-                      <a href="mailto:support@vantege.dev" className="flex items-center gap-2 text-sm text-seo hover:underline">
+                      <a href="mailto:support@sitepulse.ai" className="flex items-center gap-2 text-sm text-seo hover:underline">
                         <Mail className="h-4 w-4" />
-                        support@vantege.dev
+                        support@sitepulse.ai
                       </a>
                       <p className="text-xs text-muted-foreground">For urgent issues or account-specific questions.</p>
                     </CardContent>

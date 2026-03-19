@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Vantege - Intelligence Platform',
+  title: 'SitePulse - Search Intelligence Platform',
   description: 'Comprehensive SEO, AEO, and GEO analytics platform for optimizing your search visibility across traditional and AI-powered search engines.',
   generator: 'v0.app',
   icons: {

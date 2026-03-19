@@ -103,9 +103,21 @@ export default function SettingsPage() {
   const handleDeleteAccount = async () => {
     if (deleteConfirm !== 'DELETE' || !user) return
     setDeleting(true)
-    // Sign out first, then the actual deletion would need a server-side admin call
-    await supabase.auth.signOut()
-    router.push('/')
+    try {
+      const res = await fetch('/api/account/delete', { method: 'POST' })
+      if (!res.ok) {
+        const data = await res.json()
+        alert(data.error || 'Failed to delete account. Please contact support.')
+        setDeleting(false)
+        return
+      }
+      // Account deleted server-side, now sign out locally
+      await supabase.auth.signOut()
+      router.push('/')
+    } catch {
+      alert('Failed to delete account. Please contact support.')
+      setDeleting(false)
+    }
   }
 
   const planLabel = profile?.is_admin ? 'Admin'
@@ -225,11 +237,11 @@ export default function SettingsPage() {
                 {referralCode ? (
                   <div className="flex items-center gap-2">
                     <div className="flex-1 rounded-lg border border-border/50 bg-muted/30 px-3 py-2.5 text-sm text-muted-foreground truncate font-mono">
-                      https://vantege.ai/signup?ref={referralCode}
+                      https://sitepulse.ai/signup?ref={referralCode}
                     </div>
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText(`https://vantege.ai/signup?ref=${referralCode}`)
+                        navigator.clipboard.writeText(`https://sitepulse.ai/signup?ref=${referralCode}`)
                         setReferralCopied(true)
                         setTimeout(() => setReferralCopied(false), 2000)
                       }}

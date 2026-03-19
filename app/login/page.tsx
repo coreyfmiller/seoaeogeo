@@ -42,9 +42,9 @@ export default function LoginPage() {
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2">
             <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-seo via-aeo to-geo flex items-center justify-center">
-              <span className="text-white font-black text-lg">V</span>
+              <span className="text-white font-black text-lg">S</span>
             </div>
-            <span className="text-2xl font-black tracking-tight">Vantege</span>
+            <span className="text-2xl font-black tracking-tight">SitePulse</span>
           </div>
           <p className="text-sm text-muted-foreground">Sign in to your account</p>
         </div>

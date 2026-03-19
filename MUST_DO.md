@@ -1,35 +1,45 @@
-# Vantege — Must Do List
+# SitePulse — Must Do List
 
-## 🔴 Stripe Integration
-- [x] Set up Stripe account + products for Pro ($20/mo), Pro Plus ($50/mo), Agency ($100/mo)
+## ✅ Stripe Integration (DONE)
+- [x] Set up Stripe account + products for Pro ($20), Pro Plus ($50), Agency ($100)
 - [x] Build checkout flow (Get Pro page → Stripe Checkout → plan activation)
-- [x] Webhook endpoint for `invoice.payment_succeeded` → update `profiles.plan` in Supabase
+- [x] Webhook endpoint for `checkout.session.completed` → add credits + update plan
 - [x] Webhook endpoint for `customer.subscription.deleted` → downgrade to free
-- [x] Store `stripe_customer_id` and `stripe_subscription_id` on profiles table (columns already exist)
+- [x] Store `stripe_customer_id` on profiles table
 
 ## ✅ Register Stripe Webhook (DONE — March 19)
-- [x] Go to Stripe → Developers → Webhooks → Add endpoint
+- [x] Stripe → Developers → Webhooks → Add endpoint
 - [x] URL: production Vercel domain + `/api/stripe/webhook`
 - [x] Events: `checkout.session.completed`, `invoice.payment_succeeded`, `customer.subscription.deleted`, `customer.subscription.updated`
-- [x] Copy the `whsec_` signing secret from Stripe
-- [x] Replace `STRIPE_WEBHOOK_SECRET` in `.env.local` and Vercel with the real value
-- [ ] Test a checkout flow end-to-end
+- [x] Webhook secret set in `.env.local` and Vercel
 
-## 🔴 Referral System (piggybacks on Stripe webhooks)
-- [ ] `referrals` table in Supabase: referrer_id, referred_id, status (pending/paid), credited_at, period
-- [ ] Generate unique referral code per user (show on Settings page)
-- [ ] Referral link: signup page accepts `?ref=CODE` param, stores `referred_by` on profile
-- [ ] On `invoice.payment_succeeded` webhook: check if new paying user has `referred_by` → credit referrer
-- [ ] Bonus per paid referral: +20 Pro Audits, +10 Deep Scans, +10 Competitive Intel (added to current period)
-- [ ] Bonuses stack unlimited, expire at end of billing period
-- [ ] Only triggers on first successful payment (not renewals)
-- [ ] Show referral stats on Settings page (total referrals, bonus credits earned)
+## 🔴 Test End-to-End Purchase
+- [ ] Make a real $20 Pro purchase on production
+- [ ] Verify webhook fires and credits are added to profile
+- [ ] Verify referral bonus triggers if referred user
+- [ ] Confirm plan label updates in sidebar and settings
 
-## 🔴 Finish Starter Tier Removal
-- [ ] Run ALTER TABLE in Supabase to update CHECK constraint (drop old, add new without 'starter')
-- [ ] Verify no existing users have plan='starter' in DB
+## ✅ Referral System (DONE — March 19)
+- [x] `referrals` table in Supabase with referrer_id, referred_id, status, credited_at
+- [x] Unique referral code per user (auto-generated on signup)
+- [x] Referral link: signup page accepts `?ref=CODE`, stores `referred_by` on profile
+- [x] On `checkout.session.completed` webhook: credit referrer with +20/+10/+10
+- [x] Only triggers on first successful payment (pending → credited)
+- [x] Refer & Earn popup in sidebar with copy link
+- [x] Referral section on Settings page with copy link
+- [x] Domain hardcoded to `https://sitepulse.ai`
+
+## ✅ Starter Tier Removal (DONE — March 19)
+- [x] Run ALTER TABLE to update CHECK constraint (see SQL below)
+- [x] Verify no existing users have plan='starter'
+
+## ✅ Contact Form (DONE — March 19)
+- [x] API route `/api/contact` sends email via Resend
+- [x] Help page form wired to API
+
+## ✅ Delete Account (DONE — March 19)
+- [x] API route `/api/account/delete` with server-side Supabase admin call
+- [x] Settings page wired to API
 
 ## 🟡 Post-Launch
 - [ ] Update PRODUCT_ROADMAP_2026.md (outdated — still says SearchIQ, old pricing)
-- [ ] Contact form on Help page needs a real backend (currently just sets state)
-- [ ] Delete account on Settings page needs server-side admin call to actually remove the user

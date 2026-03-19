@@ -90,7 +90,6 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" 
           {apiStatus === "healthy" ? <Activity className="h-3 w-3" /> : <ShieldAlert className="h-3 w-3" />}
           API {apiStatus}
         </div>
-
       </div>
 
       {/* Get Pro Button - pushed to far right */}

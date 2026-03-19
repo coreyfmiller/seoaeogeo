@@ -138,7 +138,7 @@ export function AppSidebar() {
   const isFreeUser = !isAdmin && (!profile || profile.plan === 'free')
 
   const referralUrl = referralCode
-    ? `https://vantege.ai/signup?ref=${referralCode}`
+    ? `https://sitepulse.ai/signup?ref=${referralCode}`
     : ''
 
   const handleCopyReferral = async () => {
@@ -151,14 +151,8 @@ export function AppSidebar() {
   return (
     <aside className="hidden lg:flex flex-col w-64 border-r border-border/50 bg-sidebar">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-6 py-5 border-b border-border/50">
-        <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-seo text-seo-foreground">
-          <Search className="h-5 w-5" />
-        </div>
-        <div>
-          <h1 className="font-semibold text-foreground">Vantege</h1>
-          <p className="text-xs text-muted-foreground">Intelligence Platform</p>
-        </div>
+      <div className="flex items-center justify-center px-6 py-5 border-b border-border/50">
+        <img src="/logo.png" alt="SitePulse" className="h-11 w-auto" />
       </div>
 
       {/* Main Navigation */}
