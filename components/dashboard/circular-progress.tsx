@@ -31,13 +31,13 @@ export function CircularProgress({
   const colorMap = {
     seo: "stroke-seo",
     aeo: "stroke-aeo",
-    geo: "stroke-geo",
+    geo: "stroke-[#fe3f8c]",
   }
 
   const glowMap = {
     seo: "drop-shadow-[0_0_8px_oklch(0.7_0.2_250)]",
     aeo: "drop-shadow-[0_0_8px_oklch(0.65_0.25_300)]",
-    geo: "drop-shadow-[0_0_8px_oklch(0.7_0.2_160)]",
+    geo: "drop-shadow-[0_0_8px_#fe3f8c]",
   }
 
   return (

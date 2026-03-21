@@ -100,8 +100,8 @@ export async function analyzeWithGemini(context: {
         "llmContextClarity": number (0-100),
         "visibilityGaps": string[]
       },
-      "recommendations": Array of exactly 6 objects: {
-        "rank": number (1-6),
+      "recommendations": Array of up to 15 objects: {
+        "rank": number (1-15),
         "title": string (RUTHLESS ACTION - e.g. "Fix H1 Tag Hierarchy"),
         "description": string (THE WHY/IMPACT REASONING),
         "priority": "high" | "medium" | "low",
@@ -111,7 +111,7 @@ export async function analyzeWithGemini(context: {
     }
     
     IMPORTANT: 
-    - You MUST generate EXACTLY 6 recommendations
+    - You MUST generate up to 15 recommendations, prioritized by impact. Include every actionable issue you find — do not artificially limit.
     - Evaluate schema using modern 2026 standards (arrays and @graph are valid)
     - Only flag real problems, not implementation style choices
   `;

@@ -80,7 +80,7 @@ export async function analyzeCompetitive(siteA: {
     }
     
     IMPORTANT: 
-    - You MUST generate EXACTLY 6 recommendations
+    - You MUST generate up to 15 recommendations, prioritized by impact. Include every actionable issue you find — do not artificially limit.
     - Use modern 2026 crawler standards (arrays and @graph are valid)
     - Focus on real competitive advantages, not implementation style
     `;

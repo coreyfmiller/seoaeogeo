@@ -356,8 +356,8 @@ export default function MergedDashboard() {
                           value="geo"
                           className={cn(
                             "gap-2 border border-transparent transition-all duration-200",
-                            "hover:border-geo/30 hover:bg-geo/10 hover:text-geo cursor-pointer",
-                            "data-[state=active]:border-geo/50 data-[state=active]:bg-geo/20 data-[state=active]:text-geo data-[state=active]:shadow-sm"
+                            "hover:border-[#fe3f8c]/30 hover:bg-[#fe3f8c]/10 hover:text-[#fe3f8c] cursor-pointer",
+                            "data-[state=active]:border-[#fe3f8c]/50 data-[state=active]:bg-[#fe3f8c]/20 data-[state=active]:text-[#fe3f8c] data-[state=active]:shadow-sm"
                           )}
                         >
                           <Bot className="h-4 w-4" />

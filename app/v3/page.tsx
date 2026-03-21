@@ -449,9 +449,9 @@ export default function V3Page() {
                 value="geo"
                 className={cn(
                   "gap-2 border transition-all duration-200",
-                  "border-geo/10 bg-geo/5 text-geo/40 cursor-pointer",
-                  "hover:border-geo/30 hover:bg-geo/10 hover:text-geo/60",
-                  "data-[state=active]:!border-geo/50 data-[state=active]:!bg-geo data-[state=active]:!text-white data-[state=active]:!shadow-lg data-[state=active]:!font-bold data-[state=active]:!opacity-100"
+                  "border-[#fe3f8c]/10 bg-[#fe3f8c]/5 text-[#fe3f8c]/40 cursor-pointer",
+                  "hover:border-[#fe3f8c]/30 hover:bg-[#fe3f8c]/10 hover:text-[#fe3f8c]/60",
+                  "data-[state=active]:!border-[#fe3f8c]/50 data-[state=active]:!bg-[#fe3f8c] data-[state=active]:!text-white data-[state=active]:!shadow-lg data-[state=active]:!font-bold data-[state=active]:!opacity-100"
                 )}
               >
                 <Bot className="h-4 w-4" />

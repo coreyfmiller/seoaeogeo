@@ -21,8 +21,6 @@ import {
   Archive,
   LogOut,
   LogIn,
-  Sun,
-  Moon,
   Gift,
   Copy,
   Check,
@@ -30,7 +28,6 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
-import { useTheme } from "next-themes"
 import type { User } from "@supabase/supabase-js"
 
 interface NavItem {
@@ -69,16 +66,12 @@ const bottomNav: NavItem[] = [
 export function AppSidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const { resolvedTheme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
   const [eolOpen, setEolOpen] = useState(false)
   const [referralOpen, setReferralOpen] = useState(false)
   const [referralCode, setReferralCode] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<{ full_name: string | null; plan: string; is_admin?: boolean } | null>(null)
-
-  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     const supabase = createClient()
@@ -152,7 +145,7 @@ export function AppSidebar() {
     <aside className="hidden lg:flex flex-col w-64 border-r border-border/50 bg-sidebar">
       {/* Logo */}
       <div className="flex items-center justify-center px-6 py-5 border-b border-border/50">
-        <img src="/logo.png" alt="SitePulse" className="h-11 w-auto" />
+        <img src="/logo.png" alt="SitePulse" className="h-[66px] w-auto" />
       </div>
 
       {/* Main Navigation */}
@@ -193,7 +186,7 @@ export function AppSidebar() {
                     </span>
                   )}
                   {item.badge === "FREE" && (
-                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 border border-blue-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       FREE
                     </span>
                   )}
@@ -229,20 +222,17 @@ export function AppSidebar() {
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors w-full",
                 referralOpen
-                  ? "bg-geo/10 text-geo font-medium"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  ? "bg-[#fe3f8c]/10 text-[#fe3f8c] font-medium"
+                  : "text-[#fe3f8c] hover:bg-[#fe3f8c]/5"
               )}
             >
               <Gift className="h-4 w-4" />
-              <span className="flex-1 text-left">Refer &amp; Earn</span>
-              <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-geo/10 text-geo border border-geo/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
-                FREE
-              </span>
+              <span className="flex-1 text-left">Refer &amp; Earn Credits</span>
             </button>
 
             {/* Referral Popup */}
             {referralOpen && (
-              <div className="absolute bottom-full left-0 right-0 mb-2 p-4 rounded-xl border border-geo/30 bg-card shadow-xl z-50 space-y-3">
+              <div className="absolute bottom-full left-0 right-0 mb-2 p-4 rounded-xl border border-[#fe3f8c]/30 bg-card shadow-xl z-50 space-y-3">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-bold text-foreground">Get a Free Pro Pack</p>
                   <button onClick={() => setReferralOpen(false)} className="text-muted-foreground hover:text-foreground">
@@ -259,13 +249,13 @@ export function AppSidebar() {
                   <button
                     onClick={handleCopyReferral}
                     disabled={!referralCode}
-                    className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-geo hover:bg-geo/90 text-white text-xs font-medium transition-colors disabled:opacity-50"
+                    className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#fe3f8c] hover:bg-[#fe3f8c]/90 text-white text-xs font-medium transition-colors disabled:opacity-50"
                     title="Copy referral link"
                   >
                     {copied ? <><Check className="h-3.5 w-3.5" /> Copied</> : <><Copy className="h-3.5 w-3.5" /> Copy Link</>}
                   </button>
                 </div>
-                {copied && <p className="text-[10px] text-geo font-medium">Copied to clipboard</p>}
+                {copied && <p className="text-[10px] text-[#fe3f8c] font-medium">Copied to clipboard</p>}
               </div>
             )}
           </div>
@@ -361,13 +351,6 @@ export function AppSidebar() {
               <p className="text-sm font-medium text-foreground truncate">{profile?.full_name || user.email}</p>
               <p className="text-xs text-muted-foreground truncate">{planLabel} Plan</p>
             </div>
-            <button
-              onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
-              title={resolvedTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {mounted ? (resolvedTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />) : <div className="h-4 w-4" />}
-            </button>
             <button
               onClick={handleSignOut}
               className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"

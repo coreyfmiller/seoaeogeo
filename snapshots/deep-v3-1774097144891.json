@@ -1,18 +1,18 @@
 {
-  "id": "deep-v3-1773861832282",
+  "id": "deep-v3-1774097144891",
   "url": "https://pizzatwice.com",
-  "timestamp": "2026-03-18T19:23:52.282Z",
+  "timestamp": "2026-03-21T12:45:44.891Z",
   "apiRoute": "/api/analyze-deep-v3",
   "scores": {
-    "seo": 79,
-    "aeo": 42,
-    "geo": 45
+    "seo": 80,
+    "aeo": 41,
+    "geo": 47
   },
   "siteType": "restaurant",
   "rawAiScores": {
     "seoScore": 77,
-    "aeoScore": 68,
-    "geoScore": 56,
+    "aeoScore": 61,
+    "geoScore": 60,
     "breakdown": {
       "seo": [
         {
@@ -110,7 +110,7 @@
               "score": 10,
               "maxScore": 10,
               "status": "excellent",
-              "feedback": "Fast page load (1065ms)"
+              "feedback": "Fast page load (1287ms)"
             },
             {
               "score": 6,
@@ -137,7 +137,9 @@
               "maxScore": 5,
               "status": "excellent",
               "feedback": "High-quality schema implementation",
-              "issues": []
+              "issues": [
+                "'acceptsReservations' property uses string 'True' instead of boolean true"
+              ]
             },
             {
               "score": 3,
@@ -157,9 +159,9 @@
       "aeo": [
         {
           "name": "AEO Readiness",
-          "score": 68,
+          "score": 61,
           "maxScore": 100,
-          "percentage": 68,
+          "percentage": 61,
           "components": [
             {
               "score": 0,
@@ -171,19 +173,21 @@
               ]
             },
             {
-              "score": 29,
+              "score": 27,
               "maxScore": 30,
               "status": "good",
               "feedback": "Schema Quality",
-              "issues": []
+              "issues": [
+                "'acceptsReservations' property uses string 'True' instead of boolean true"
+              ]
             },
             {
-              "score": 14,
+              "score": 9,
               "maxScore": 20,
-              "status": "good",
+              "status": "warning",
               "feedback": "Question Answering",
               "issues": [
-                "Q&A coverage needs improvement (severity: 30/100)"
+                "Q&A coverage needs improvement (severity: 55/100)"
               ]
             },
             {
@@ -192,7 +196,7 @@
               "status": "good",
               "feedback": "Entity Density",
               "issues": [
-                "Low density of named entities and specific facts (severity: 20/100)"
+                "Low density of named entities and specific facts (severity: 23/100)"
               ]
             },
             {
@@ -201,7 +205,7 @@
               "status": "good",
               "feedback": "Formatting",
               "issues": [
-                "Formatting needs improvement (severity: 15/100)"
+                "Formatting needs improvement (severity: 13/100)"
               ]
             },
             {
@@ -216,9 +220,9 @@
       "geo": [
         {
           "name": "GEO Visibility",
-          "score": 56,
+          "score": 60,
           "maxScore": 100,
-          "percentage": 56,
+          "percentage": 60,
           "components": [
             {
               "score": 15,
@@ -230,21 +234,21 @@
               ]
             },
             {
-              "score": 8,
+              "score": 9,
               "maxScore": 20,
               "status": "warning",
               "feedback": "Tone",
               "issues": [
-                "Promotional tone detected (severity: 60/100)"
+                "Promotional tone detected (severity: 55/100)"
               ]
             },
             {
-              "score": 12,
+              "score": 16,
               "maxScore": 20,
-              "status": "warning",
+              "status": "good",
               "feedback": "Expertise",
               "issues": [
-                "Missing expertise signals (severity: 40/100)"
+                "Missing expertise signals (severity: 20/100)"
               ]
             },
             {
@@ -262,16 +266,16 @@
               "status": "warning",
               "feedback": "Objectivity",
               "issues": [
-                "First-person usage detected (severity: 40/100)"
+                "First-person usage detected (severity: 35/100)"
               ]
             },
             {
-              "score": 5,
+              "score": 4,
               "maxScore": 10,
               "status": "warning",
               "feedback": "Claims",
               "issues": [
-                "Unsubstantiated claims detected (severity: 50/100)"
+                "Unsubstantiated claims detected (severity: 55/100)"
               ]
             }
           ]
@@ -383,7 +387,7 @@
             "score": 10,
             "maxScore": 10,
             "status": "excellent",
-            "feedback": "Fast page load (1065ms)"
+            "feedback": "Fast page load (1287ms)"
           },
           {
             "score": 6,
@@ -410,7 +414,9 @@
             "maxScore": 5,
             "status": "excellent",
             "feedback": "High-quality schema implementation",
-            "issues": []
+            "issues": [
+              "'acceptsReservations' property uses string 'True' instead of boolean true"
+            ]
           },
           {
             "score": 3,
@@ -430,9 +436,9 @@
     "aeo": [
       {
         "name": "AEO Readiness",
-        "score": 68,
+        "score": 61,
         "maxScore": 100,
-        "percentage": 68,
+        "percentage": 61,
         "components": [
           {
             "score": 0,
@@ -444,19 +450,21 @@
             ]
           },
           {
-            "score": 29,
+            "score": 27,
             "maxScore": 30,
             "status": "good",
             "feedback": "Schema Quality",
-            "issues": []
+            "issues": [
+              "'acceptsReservations' property uses string 'True' instead of boolean true"
+            ]
           },
           {
-            "score": 14,
+            "score": 9,
             "maxScore": 20,
-            "status": "good",
+            "status": "warning",
             "feedback": "Question Answering",
             "issues": [
-              "Q&A coverage needs improvement (severity: 30/100)"
+              "Q&A coverage needs improvement (severity: 55/100)"
             ]
           },
           {
@@ -465,7 +473,7 @@
             "status": "good",
             "feedback": "Entity Density",
             "issues": [
-              "Low density of named entities and specific facts (severity: 20/100)"
+              "Low density of named entities and specific facts (severity: 23/100)"
             ]
           },
           {
@@ -474,7 +482,7 @@
             "status": "good",
             "feedback": "Formatting",
             "issues": [
-              "Formatting needs improvement (severity: 15/100)"
+              "Formatting needs improvement (severity: 13/100)"
             ]
           },
           {
@@ -489,9 +497,9 @@
     "geo": [
       {
         "name": "GEO Visibility",
-        "score": 56,
+        "score": 60,
         "maxScore": 100,
-        "percentage": 56,
+        "percentage": 60,
         "components": [
           {
             "score": 15,
@@ -503,21 +511,21 @@
             ]
           },
           {
-            "score": 8,
+            "score": 9,
             "maxScore": 20,
             "status": "warning",
             "feedback": "Tone",
             "issues": [
-              "Promotional tone detected (severity: 60/100)"
+              "Promotional tone detected (severity: 55/100)"
             ]
           },
           {
-            "score": 12,
+            "score": 16,
             "maxScore": 20,
-            "status": "warning",
+            "status": "good",
             "feedback": "Expertise",
             "issues": [
-              "Missing expertise signals (severity: 40/100)"
+              "Missing expertise signals (severity: 20/100)"
             ]
           },
           {
@@ -535,16 +543,16 @@
             "status": "warning",
             "feedback": "Objectivity",
             "issues": [
-              "First-person usage detected (severity: 40/100)"
+              "First-person usage detected (severity: 35/100)"
             ]
           },
           {
-            "score": 5,
+            "score": 4,
             "maxScore": 10,
             "status": "warning",
             "feedback": "Claims",
             "issues": [
-              "Unsubstantiated claims detected (severity: 50/100)"
+              "Unsubstantiated claims detected (severity: 55/100)"
             ]
           }
         ]
@@ -580,12 +588,21 @@
       "severity": "critical"
     },
     {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Question Answering",
+      "penalty": "Q&A coverage needs improvement (severity: 55/100)",
+      "explanation": "AI systems prioritize content that directly answers questions. Content without clear Q&A patterns gets ignored.",
+      "fix": "Add FAQ section with 5-10 common questions. Use <h3> for questions, <p> for answers. Start answers with direct responses (Yes/No, specific number).",
+      "pointsDeducted": -11,
+      "severity": "warning"
+    },
+    {
       "category": "GEO",
       "component": "GEO GEO Visibility - Tone",
-      "penalty": "Promotional tone detected (severity: 60/100)",
+      "penalty": "Promotional tone detected (severity: 55/100)",
       "explanation": "Overly promotional content is flagged as biased by AI systems. Neutral, informative tone increases trust and citation likelihood.",
       "fix": "Remove promotional language (\"best\", \"amazing\", \"revolutionary\"). Use neutral, factual tone. Replace \"we offer\" with \"this includes\". Focus on information, not selling.",
-      "pointsDeducted": -12,
+      "pointsDeducted": -11,
       "severity": "warning"
     },
     {
@@ -617,11 +634,11 @@
     },
     {
       "category": "GEO",
-      "component": "GEO GEO Visibility - Expertise",
-      "penalty": "Missing expertise signals (severity: 40/100)",
-      "explanation": "AI systems look for expertise signals (credentials, experience, data). Content without these signals is considered less authoritative.",
-      "fix": "Add author bio with credentials. Include \"About the Author\" section. Link to LinkedIn/professional profiles. Cite experience and qualifications.",
-      "pointsDeducted": -8,
+      "component": "GEO GEO Visibility - Claims",
+      "penalty": "Unsubstantiated claims detected (severity: 55/100)",
+      "explanation": "Unsubstantiated claims reduce content credibility. AI systems require evidence and sources to consider content trustworthy.",
+      "fix": "Add citations for all claims. Link to studies, reports, or authoritative sources. Use footnotes or inline citations. Format: \"According to [Source], [claim].\"",
+      "pointsDeducted": -6,
       "severity": "warning"
     },
     {
@@ -644,35 +661,35 @@
     },
     {
       "category": "GEO",
-      "component": "GEO GEO Visibility - Claims",
-      "penalty": "Unsubstantiated claims detected (severity: 50/100)",
-      "explanation": "Unsubstantiated claims reduce content credibility. AI systems require evidence and sources to consider content trustworthy.",
-      "fix": "Add citations for all claims. Link to studies, reports, or authoritative sources. Use footnotes or inline citations. Format: \"According to [Source], [claim].\"",
-      "pointsDeducted": -5,
-      "severity": "warning"
-    },
-    {
-      "category": "GEO",
       "component": "GEO GEO Visibility - Objectivity",
-      "penalty": "First-person usage detected (severity: 40/100)",
+      "penalty": "First-person usage detected (severity: 35/100)",
       "explanation": "Heavy first-person usage suggests opinion rather than fact. AI systems prefer objective, third-person content for citations.",
       "fix": "Replace first-person (\"I think\", \"we believe\") with third-person or passive voice. Use \"research shows\" instead of \"I found\". Focus on facts, not opinions.",
       "pointsDeducted": -4,
       "severity": "warning"
     },
     {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Expertise",
+      "penalty": "Missing expertise signals (severity: 20/100)",
+      "explanation": "AI systems look for expertise signals (credentials, experience, data). Content without these signals is considered less authoritative.",
+      "fix": "Add author bio with credentials. Include \"About the Author\" section. Link to LinkedIn/professional profiles. Cite experience and qualifications.",
+      "pointsDeducted": -4,
+      "severity": "info"
+    },
+    {
       "category": "AEO",
-      "component": "AEO AEO Readiness - Question Answering",
-      "penalty": "Q&A coverage needs improvement (severity: 30/100)",
-      "explanation": "AI systems prioritize content that directly answers questions. Content without clear Q&A patterns gets ignored.",
-      "fix": "Add FAQ section with 5-10 common questions. Use <h3> for questions, <p> for answers. Start answers with direct responses (Yes/No, specific number).",
-      "pointsDeducted": -6,
+      "component": "AEO AEO Readiness - Schema Quality",
+      "penalty": "'acceptsReservations' property uses string 'True' instead of boolean true",
+      "explanation": "Incomplete or incorrect schema markup confuses AI systems and prevents them from citing your content accurately.",
+      "fix": "Validate schema at schema.org/validator. Fix all errors. Add required properties: name, description, image, url. Remove placeholder data.",
+      "pointsDeducted": -3,
       "severity": "info"
     },
     {
       "category": "AEO",
       "component": "AEO AEO Readiness - Entity Density",
-      "penalty": "Low density of named entities and specific facts (severity: 20/100)",
+      "penalty": "Low density of named entities and specific facts (severity: 23/100)",
       "explanation": "AI systems look for specific entities (people, places, things, concepts). Low entity density suggests vague, unhelpful content.",
       "fix": "Add specific names, numbers, dates, and locations. Replace vague terms (\"many\", \"some\") with exact figures. Link to Wikipedia for key entities.",
       "pointsDeducted": -3,
@@ -681,19 +698,10 @@
     {
       "category": "AEO",
       "component": "AEO AEO Readiness - Formatting",
-      "penalty": "Formatting needs improvement (severity: 15/100)",
+      "penalty": "Formatting needs improvement (severity: 13/100)",
       "explanation": "AI systems prefer well-formatted, concise content. Walls of text or poor structure make content hard to parse and cite.",
       "fix": "Use bullet points for lists. Keep paragraphs to 3-4 sentences. Add subheadings every 200-300 words. Use bold for key terms (sparingly).",
       "pointsDeducted": -2,
-      "severity": "info"
-    },
-    {
-      "category": "AEO",
-      "component": "AEO AEO Readiness - Schema Quality",
-      "penalty": "Lost 1 points in Schema Quality",
-      "explanation": "Incomplete or incorrect schema markup confuses AI systems and prevents them from citing your content accurately.",
-      "fix": "Validate schema at schema.org/validator. Fix all errors. Add required properties: name, description, image, url. Remove placeholder data.",
-      "pointsDeducted": -1,
       "severity": "info"
     }
   ],
@@ -703,50 +711,50 @@
       {
         "url": "https://pizzatwice.com",
         "seo": 77,
-        "aeo": 68,
-        "geo": 56
+        "aeo": 61,
+        "geo": 60
       },
       {
         "url": "https://www.pizzatwice.com",
         "seo": 77,
-        "aeo": 63,
-        "geo": 61
+        "aeo": 61,
+        "geo": 60
       },
       {
         "url": "https://www.pizzatwice.com/about-us",
         "seo": 70,
         "aeo": 28,
-        "geo": 48
+        "geo": 51
       },
       {
         "url": "https://www.pizzatwice.com/locations",
-        "seo": 83,
-        "aeo": 54,
-        "geo": 47
+        "seo": 84,
+        "aeo": 56,
+        "geo": 46
       },
       {
         "url": "https://www.pizzatwice.com/pizza-twice-franchise",
         "seo": 87,
-        "aeo": 42,
-        "geo": 34
+        "aeo": 45,
+        "geo": 42
       },
       {
         "url": "https://www.pizzatwice.com/reviews",
         "seo": 83,
-        "aeo": 30,
-        "geo": 35
+        "aeo": 33,
+        "geo": 45
       },
       {
         "url": "https://www.pizzatwice.com/contact-us",
         "seo": 75,
-        "aeo": 26,
-        "geo": 57
+        "aeo": 23,
+        "geo": 56
       },
       {
         "url": "https://www.pizzatwice.com/menu",
         "seo": 83,
-        "aeo": 27,
-        "geo": 18
+        "aeo": 22,
+        "geo": 14
       }
     ]
   }
