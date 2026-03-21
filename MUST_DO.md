@@ -41,5 +41,13 @@
 - [x] API route `/api/account/delete` with server-side Supabase admin call
 - [x] Settings page wired to API
 
+## ✅ Promo Code System (DONE — March 20)
+- [x] `promo_codes` + `promo_redemptions` tables (SQL migration ready)
+- [x] `/api/promo/generate` — admin-only, batch code generation
+- [x] `/api/promo/redeem` — validates code, checks expiry/max uses/already redeemed, adds credits
+- [x] User "Redeem Promo Code" card on Settings page
+- [x] Admin "Generate Promo Codes" card on Settings page (admin-only)
+- [ ] Run `supabase/promo-codes.sql` in Supabase SQL Editor
+
 ## 🟡 Post-Launch
 - [ ] Update PRODUCT_ROADMAP_2026.md (outdated — still says SearchIQ, old pricing)

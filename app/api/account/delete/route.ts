@@ -11,6 +11,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
 
+    // Prevent admin accounts from being deleted
+    const { data: profile } = await supabaseAdmin.from('profiles').select('is_admin').eq('id', user.id).single()
+    if (profile?.is_admin) {
+      return NextResponse.json({ error: 'Admin accounts cannot be deleted' }, { status: 403 })
+    }
+
     // Delete profile data (cascades to usage, referrals via FK)
     await supabaseAdmin.from('referrals').delete().or(`referrer_id.eq.${user.id},referred_id.eq.${user.id}`)
     await supabaseAdmin.from('usage').delete().eq('user_id', user.id)
