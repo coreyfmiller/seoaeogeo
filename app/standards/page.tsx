@@ -36,7 +36,7 @@ export default function StandardsPage() {
             {/* Content */}
             <div className="prose prose-invert max-w-none">
               <div className="bg-card/50 border border-border/50 rounded-2xl p-8">
-                <h2 className="text-2xl font-bold mb-4">SitePulse Audit Standards & Methodology</h2>
+                <h2 className="text-2xl font-bold mb-4">Citatom Audit Standards & Methodology</h2>
                 <p className="text-muted-foreground mb-6">
                   Our comprehensive testing framework evaluates websites against modern search intelligence standards 
                   that reflect the evolving landscape of how content is discovered, understood, and recommended in 2026.

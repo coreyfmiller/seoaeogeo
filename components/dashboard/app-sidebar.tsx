@@ -131,7 +131,7 @@ export function AppSidebar() {
   const isFreeUser = !isAdmin && (!profile || profile.plan === 'free')
 
   const referralUrl = referralCode
-    ? `https://sitepulse.ai/signup?ref=${referralCode}`
+    ? `https://citatom.com/signup?ref=${referralCode}`
     : ''
 
   const handleCopyReferral = async () => {
@@ -145,7 +145,9 @@ export function AppSidebar() {
     <aside className="hidden lg:flex flex-col w-64 border-r border-border/50 bg-sidebar">
       {/* Logo */}
       <div className="flex items-center justify-center px-6 py-5 border-b border-border/50">
-        <img src="/logo.png" alt="SitePulse" className="h-[66px] w-auto" />
+        <a href="/v3">
+          <img src="/logo.png" alt="Citatom" className="h-[66px] w-auto" />
+        </a>
       </div>
 
       {/* Main Navigation */}
@@ -181,7 +183,7 @@ export function AppSidebar() {
                     </span>
                   )}
                   {item.badge === "PRO AI" && (
-                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-green-500/10 to-purple-500/10 text-green-600 border border-green-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-[#118fff]/10 to-[#842ce0]/10 text-[#118fff] border border-[#118fff]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       PRO AI
                     </span>
                   )}
@@ -191,7 +193,7 @@ export function AppSidebar() {
                     </span>
                   )}
                   {item.badge === "ADMIN" && (
-                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-600 border border-purple-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-[#842ce0]/10 text-[#842ce0] border border-[#842ce0]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       {item.badge}
                     </span>
                   )}
@@ -201,7 +203,7 @@ export function AppSidebar() {
                     </span>
                   )}
                   {item.badge === "BETA AI" && (
-                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-orange-500/10 to-purple-500/10 text-purple-600 border border-purple-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-orange-500/10 to-[#842ce0]/10 text-[#842ce0] border border-[#842ce0]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       BETA AI
                     </span>
                   )}
@@ -278,7 +280,7 @@ export function AppSidebar() {
                 <item.icon className="h-4 w-4" />
                 <span className="flex-1">{item.name}</span>
                 {item.badge === "ADMIN" && (
-                  <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-600 border border-purple-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                  <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-[#842ce0]/10 text-[#842ce0] border border-[#842ce0]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                     {item.badge}
                   </span>
                 )}
@@ -302,7 +304,7 @@ export function AppSidebar() {
             {eolOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
             <Archive className="h-3 w-3" />
             <span>EOL</span>
-            <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-600 border border-purple-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm ml-auto">
+            <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-[#842ce0]/10 text-[#842ce0] border border-[#842ce0]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm ml-auto">
               ADMIN
             </span>
           </button>
@@ -327,7 +329,7 @@ export function AppSidebar() {
                       </span>
                     )}
                     {item.badge === "BETA AI" && (
-                      <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-orange-500/10 to-purple-500/10 text-purple-600 border border-purple-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                      <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-orange-500/10 to-[#842ce0]/10 text-[#842ce0] border border-[#842ce0]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                         BETA AI
                       </span>
                     )}

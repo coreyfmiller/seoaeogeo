@@ -41,9 +41,9 @@ const categoryConfig = {
     label: 'Medium'
   },
   'Long-term Investment': {
-    color: 'text-purple-600',
-    bg: 'bg-purple-500/10',
-    border: 'border-purple-500/30',
+    color: 'text-[#842ce0]',
+    bg: 'bg-[#842ce0]/10',
+    border: 'border-[#842ce0]/30',
     label: 'Long-term'
   },
   'Low Priority': {
@@ -119,7 +119,7 @@ export function PriorityMatrix({ recommendations, onRecommendationClick }: Prior
               {/* Top Right - Quick Wins */}
               <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-geo/5 rounded-tl-lg" />
               {/* Top Left - Long-term */}
-              <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-purple-500/5 rounded-tr-lg" />
+              <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-[#842ce0]/5 rounded-tr-lg" />
               {/* Bottom Right - High Priority */}
               <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-aeo/5 rounded-bl-lg" />
               {/* Bottom Left - Low Priority */}

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle2, Zap, ArrowRight, Shield, Sparkles, Layers, Bot, FileText, Code, BarChart3, Loader2 } from 'lucide-react'
+import { CheckCircle2, Zap, ArrowRight, Shield, Sparkles, Layers, Bot, FileText, Code, BarChart3, Loader2, Coins } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
 import { Header } from '@/components/dashboard/header'
@@ -10,56 +10,63 @@ const features = [
   { icon: Bot, title: "AI-Powered Analysis", desc: "Full Gemini AI sitewide intelligence with deep content analysis" },
   { icon: FileText, title: "Step-by-Step Fix Instructions", desc: "Detailed explanations of why each issue matters and how to fix it" },
   { icon: Code, title: "Schema Code Generation", desc: "Auto-generated JSON-LD schema markup tailored to your site type" },
-  { icon: Layers, title: "Deep Crawl (50 Pages)", desc: "Comprehensive multi-page site analysis with page comparison" },
+  { icon: Layers, title: "Deep Crawl (up to 50 Pages)", desc: "Comprehensive multi-page site analysis with page comparison" },
   { icon: Sparkles, title: "Competitive Intelligence", desc: "Compare your site against competitors with gap analysis" },
   { icon: BarChart3, title: "ROI & Priority Scoring", desc: "Know which fixes deliver the biggest impact first" },
-  { icon: Shield, title: "Platform-Specific Guides", desc: "WordPress, Shopify, and custom platform implementation guides" },
+  { icon: Shield, title: "Platform-Specific Guides", desc: "WordPress, Shopify, Wix, and more — tailored fix instructions" },
   { icon: FileText, title: "Export & Copy Reports", desc: "Download full audit reports or copy to clipboard" },
 ]
 
-const plans = [
+const creditPacks = [
   {
-    name: "Pro",
-    planId: "pro",
+    name: "Starter",
+    packId: "credits_200",
     price: "$20",
-    period: "",
-    desc: "For freelancers and consultants",
-    highlights: ["20 Pro Audits", "10 Deep Crawls (up to 50 pages)", "10 Competitive Intelligence scans", "AI fix instructions", "Priority scoring & ROI", "Platform-specific guides", "Export reports"],
-    cta: "Go Pro",
-    popular: true,
-  },
-  {
-    name: "Pro Plus",
-    planId: "pro_plus",
-    price: "$50",
-    period: "",
-    desc: "For growing agencies",
-    highlights: ["60 Pro Audits", "60 Deep Crawls (up to 50 pages)", "25 Competitive Intelligence scans", "AI fix instructions", "Priority scoring & ROI", "Platform-specific guides", "White-label reports", "Export reports", "Priority support"],
-    cta: "Go Pro Plus",
+    credits: 200,
+    perCredit: "$0.10",
+    examples: ["20 Pro Audits", "or 13 Deep Scans (5 pages)", "or 10 Competitive Intel scans", "or a mix of all three"],
+    cta: "Buy 200 Credits",
     popular: false,
   },
   {
-    name: "Agency",
-    planId: "agency",
+    name: "Growth",
+    packId: "credits_600",
+    price: "$50",
+    credits: 600,
+    perCredit: "$0.083",
+    examples: ["60 Pro Audits", "or 40 Deep Scans (5 pages)", "or 30 Competitive Intel scans", "or a mix of all three"],
+    cta: "Buy 600 Credits",
+    popular: true,
+  },
+  {
+    name: "Scale",
+    packId: "credits_1500",
     price: "$100",
-    period: "",
-    desc: "For high-volume professionals",
-    highlights: ["150 Pro Audits", "150 Deep Crawls (up to 50 pages)", "50 Competitive Intelligence scans", "AI fix instructions", "Priority scoring & ROI", "Platform-specific guides", "White-label reports", "Export reports", "Scan history & snapshots", "Priority support"],
-    cta: "Go Agency",
+    credits: 1500,
+    perCredit: "$0.067",
+    examples: ["150 Pro Audits", "or 100 Deep Scans (5 pages)", "or 75 Competitive Intel scans", "or a mix of all three"],
+    cta: "Buy 1,500 Credits",
     popular: false,
   },
 ]
 
-export default function ProPage() {
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
+const creditCosts = [
+  { action: "Pro Audit", cost: "10 credits", note: "Single page AI-powered audit" },
+  { action: "Deep Scan", cost: "10 + 1/page", note: "e.g. 5 pages = 15 credits, 50 pages = 60 credits" },
+  { action: "Competitive Intel", cost: "20 credits", note: "Head-to-head comparison of two sites" },
+  { action: "Free Audit", cost: "0 credits", note: "Always free, unlimited" },
+]
 
-  const handleCheckout = async (planId: string) => {
-    setLoadingPlan(planId)
+export default function ProPage() {
+  const [loadingPack, setLoadingPack] = useState<string | null>(null)
+
+  const handleCheckout = async (packId: string) => {
+    setLoadingPack(packId)
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: planId }),
+        body: JSON.stringify({ plan: packId }),
       })
       const data = await res.json()
       if (data.url) {
@@ -72,7 +79,7 @@ export default function ProPage() {
     } catch (err) {
       console.error('Checkout failed:', err)
     } finally {
-      setLoadingPlan(null)
+      setLoadingPack(null)
     }
   }
 
@@ -80,63 +87,65 @@ export default function ProPage() {
     <div className="flex h-screen bg-background">
       <AppSidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header apiStatus="idle" />
+        <Header apiStatus="idle" hideSearch />
         <main className="flex-1 overflow-y-auto px-6 pt-6">
           <div className="max-w-5xl mx-auto space-y-10 pb-6">
 
             {/* Hero */}
             <div className="text-center space-y-5">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-geo/10 text-geo text-sm font-bold border border-geo/20">
-                <Zap className="h-4 w-4" />
-                UPGRADE TO PRO
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#118fff]/10 text-[#118fff] text-sm font-bold border border-[#118fff]/20">
+                <Coins className="h-4 w-4" />
+                BUY CREDITS
               </div>
               <h1 className="text-4xl font-bold">Stop Guessing. Start Fixing.</h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                ChatGPT, Perplexity, and Gemini don't crawl your site — they read it and decide whether to cite you. SitePulse uses the same AI to audit your pages, so you see exactly what they see.
+                ChatGPT, Perplexity, and Gemini don't crawl your site — they read it and decide whether to cite you. Citatom uses the same AI to audit your pages, so you see exactly what they see.
               </p>
               <p className="text-base text-muted-foreground max-w-xl mx-auto">
-                Get AI-powered fix instructions, priority scoring, and deep multi-page crawling. Everything you need to actually improve your rankings.
+                Buy credits once, use them however you want. No subscriptions, no plans — just credits that never expire.
               </p>
             </div>
 
-            {/* Pricing Cards */}
+            {/* Credit Pack Cards */}
             <div className="grid md:grid-cols-3 gap-6">
-              {plans.map(plan => (
-                <Card key={plan.name} className={`relative flex flex-col ${plan.popular ? 'border-geo shadow-lg shadow-geo/10' : 'border-border/50'}`}>
-                  {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-geo text-white text-xs font-bold">
-                      Most Popular
+              {creditPacks.map(pack => (
+                <Card key={pack.name} className={`relative flex flex-col ${pack.popular ? 'border-[#118fff] shadow-lg shadow-[#118fff]/10' : 'border-border/50'}`}>
+                  {pack.popular && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#118fff] text-white text-xs font-bold">
+                      Best Value
                     </div>
                   )}
                   <CardHeader className="text-center pb-2">
-                    <CardTitle className="text-lg">{plan.name}</CardTitle>
+                    <CardTitle className="text-lg">{pack.name}</CardTitle>
                     <div className="flex items-baseline justify-center gap-1 mt-2">
-                      <span className="text-5xl font-black">{plan.price}</span>
+                      <span className="text-5xl font-black">{pack.price}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">one-time • credits never expire</p>
+                    <p className="text-2xl font-bold text-[#118fff] mt-2">{pack.credits.toLocaleString()} credits</p>
+                    <p className="text-xs text-muted-foreground mt-1">{pack.perCredit} per credit • never expire</p>
                   </CardHeader>
                   <CardContent className="flex flex-col flex-1 space-y-4">
                     <ul className="space-y-2 flex-1">
-                      {plan.highlights.map(h => (
-                        <li key={h} className="flex items-center gap-2 text-sm">
-                          <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
-                          {h}
+                      {pack.examples.map(ex => (
+                        <li key={ex} className="flex items-center gap-2 text-sm">
+                          <CheckCircle2 className="h-4 w-4 text-[#118fff] shrink-0" />
+                          {ex}
                         </li>
                       ))}
                     </ul>
                     <button
-                      onClick={() => handleCheckout(plan.planId)}
-                      disabled={loadingPlan !== null}
+                      onClick={() => handleCheckout(pack.packId)}
+                      disabled={loadingPack !== null}
                       className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors ${
-                      plan.popular
-                        ? 'bg-geo hover:bg-geo/90 text-white shadow-md'
-                        : 'border border-border hover:border-geo/50 hover:bg-geo/5'
-                    }`}>
-                      {loadingPlan === plan.planId ? (
+                        pack.popular
+                          ? 'bg-[#118fff] hover:bg-[#118fff]/90 text-white shadow-md'
+                          : 'border border-border hover:border-[#118fff]/50 hover:bg-[#118fff]/5'
+                      }`}
+                    >
+                      {loadingPack === pack.packId ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <>
-                          {plan.cta}
+                          {pack.cta}
                           <ArrowRight className="h-4 w-4" />
                         </>
                       )}
@@ -146,73 +155,38 @@ export default function ProPage() {
               ))}
             </div>
 
+            {/* Credit Cost Reference */}
+            <Card className="border-border/50">
+              <CardHeader>
+                <CardTitle className="text-center flex items-center justify-center gap-2">
+                  <Coins className="h-5 w-5 text-[#118fff]" />
+                  Credit Costs
+                </CardTitle>
+                <p className="text-sm text-muted-foreground text-center">Use your credits on any scan type — mix and match however you want</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {creditCosts.map(item => (
+                    <div key={item.action} className="rounded-xl border border-border/50 bg-muted/20 p-4 text-center space-y-1">
+                      <p className="text-sm font-bold">{item.action}</p>
+                      <p className="text-xl font-black text-[#118fff]">{item.cost}</p>
+                      <p className="text-[10px] text-muted-foreground">{item.note}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Feature Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {features.map(f => (
                 <div key={f.title} className="rounded-xl border border-border/50 bg-card/50 p-4 space-y-2">
-                  <f.icon className="h-5 w-5 text-geo" />
+                  <f.icon className="h-5 w-5 text-[#118fff]" />
                   <p className="text-sm font-bold">{f.title}</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
                 </div>
               ))}
             </div>
-
-            {/* Compare Plans */}
-            <Card className="border-border/50 overflow-hidden">
-              <CardHeader>
-                <CardTitle className="text-center">Compare Plans</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-border/50">
-                        <th className="text-left py-3 px-4 font-bold text-muted-foreground w-[200px]">Feature</th>
-                        <th className="text-center py-3 px-3 font-bold text-muted-foreground">Free</th>
-                        <th className="text-center py-3 px-3 font-bold text-geo bg-geo/5 border-x border-geo/20">Pro</th>
-                        <th className="text-center py-3 px-3 font-bold">Pro Plus</th>
-                        <th className="text-center py-3 px-3 font-bold">Agency</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[
-                        ["SEO / AEO / GEO Scores", "✓", "✓", "✓", "✓"],
-                        ["Quick Health Check", "✓", "✓", "✓", "✓"],
-                        ["Key Metrics Strip", "✓", "✓", "✓", "✓"],
-                        ["Pro Audits", "—", "20", "60", "150"],
-                        ["AI Fix Instructions", "—", "✓", "✓", "✓"],
-                        ["Schema Code Generation", "—", "✓", "✓", "✓"],
-                        ["Export Reports", "—", "✓", "✓", "✓"],
-                        ["Deep Crawls (50 pages)", "—", "10", "60", "150"],
-                        ["Competitive Intelligence", "—", "10", "25", "50"],
-                        ["Priority Scoring & ROI", "—", "✓", "✓", "✓"],
-                        ["Platform Guides", "—", "✓", "✓", "✓"],
-                        ["White-Label Reports", "—", "—", "✓", "✓"],
-                        ["Scan History & Snapshots", "—", "—", "—", "✓"],
-                        ["Priority Support", "—", "—", "✓", "✓"],
-                      ].map(([feature, free, pro, proPlus, agency], i) => (
-                        <tr key={feature} className={`border-b border-border/20 ${i % 2 === 0 ? 'bg-muted/20' : ''}`}>
-                          <td className="py-2.5 px-4 font-medium">{feature}</td>
-                          {[free, pro, proPlus, agency].map((val, j) => {
-                            const isPro = j === 1
-                            const isCheck = val === '✓'
-                            const isDash = val === '—'
-                            const isNumber = !isCheck && !isDash
-                            return (
-                              <td key={j} className={`py-2.5 px-3 text-center ${isPro ? 'bg-geo/5 border-x border-geo/20' : ''}`}>
-                                {isCheck && <CheckCircle2 className={`h-4 w-4 mx-auto ${isPro ? 'text-geo' : 'text-green-600'}`} />}
-                                {isDash && <span className="text-muted-foreground/40">—</span>}
-                                {isNumber && <span className={`font-bold ${isPro ? 'text-geo' : 'text-foreground'}`}>{val}</span>}
-                              </td>
-                            )
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
 
           </div>
         </main>

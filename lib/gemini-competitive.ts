@@ -16,7 +16,7 @@ export async function analyzeCompetitive(siteA: {
   description: string;
   thinnedText: string;
   schemas: any[];
-}) {
+}, options?: { platform?: string }) {
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
   const model = genAI.getGenerativeModel({
     model: "gemini-2.5-flash",
@@ -51,7 +51,10 @@ export async function analyzeCompetitive(siteA: {
     Identify specific "Stolen Opportunities" where Site B is outperforming Site A in LLM citations or Answer Box presence.
     
     IMPORTANT FOR VERDICT: Use the actual site URLs (${siteA.url} and ${siteB.url}) in your winnerVerdict instead of generic terms like "Site A" or "Site B". Make it personal and specific.
-    
+${options?.platform ? `
+    DETECTED PLATFORM FOR SITE A: ${options.platform}
+    All fix instructions and recommendations for Site A MUST be tailored to ${options.platform}. Reference specific ${options.platform} admin paths, plugins/apps/extensions, template files, and platform-specific approaches.
+` : ''}
     Return a JSON object exactly matching this structure:
     {
       "comparison": {
@@ -71,6 +74,9 @@ export async function analyzeCompetitive(siteA: {
         "rank": number (1-6),
         "title": string (RUTHLESS ACTION - e.g. "Clone Competitor's FAQ Structure"),
         "description": string (THE WHY/IMPACT REASONING),
+        "howToFix": string (STEP-BY-STEP fix instructions, platform-specific if platform detected. Be thorough.),
+        "codeSnippet": string (Before/after code example if applicable, or empty string),
+        "affectedElement": string (What specific element or area needs attention),
         "roi": "CRITICAL" | "HIGH" | "STEADY",
         "effort": 1 | 2 | 3,
         "impactedScores": string (e.g. "AEO Score, Brand Clarity, Trust"),
@@ -80,7 +86,7 @@ export async function analyzeCompetitive(siteA: {
     }
     
     IMPORTANT: 
-    - You MUST generate up to 15 recommendations, prioritized by impact. Include every actionable issue you find — do not artificially limit.
+    - You MUST generate exactly 6 recommendations, prioritized by impact. Focus on the highest-ROI actions only.
     - Use modern 2026 crawler standards (arrays and @graph are valid)
     - Focus on real competitive advantages, not implementation style
     `;

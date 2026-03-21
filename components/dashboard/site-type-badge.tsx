@@ -64,9 +64,9 @@ const siteTypeConfig: Record<SiteType, {
   'e-commerce': {
     label: 'E-Commerce',
     icon: Store,
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-500/10',
-    borderColor: 'border-purple-500/30',
+    color: 'text-[#842ce0]',
+    bgColor: 'bg-[#842ce0]/10',
+    borderColor: 'border-[#842ce0]/30',
     description: 'Online store selling products'
   },
   'local-business': {
@@ -373,7 +373,7 @@ export function SiteTypeBadge({ siteType, onConfirm, onManualSelect }: SiteTypeB
         </button>
         {showWhy && (
           <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
-            SitePulse scores each site differently based on its type — an e-commerce store is evaluated differently than a blog or a SaaS product. Our AI couldn't confidently determine what kind of site this is, which usually means the page is missing clear signals like structured data, descriptive headings, or focused content. Please select your site type so we can score it accurately.
+            Citatom scores each site differently based on its type — an e-commerce store is evaluated differently than a blog or a SaaS product. Our AI couldn't confidently determine what kind of site this is, which usually means the page is missing clear signals like structured data, descriptive headings, or focused content. Please select your site type so we can score it accurately.
           </p>
         )}
       </div>

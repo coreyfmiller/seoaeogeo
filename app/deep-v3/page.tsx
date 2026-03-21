@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
+import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
 
 interface DeepScanResult {
   url: string
@@ -23,6 +24,12 @@ interface DeepScanResult {
     primaryType: string
     secondaryTypes: string[]
     confidence: number
+  }
+  platformDetection?: {
+    platform: string
+    confidence: string
+    label: string
+    signals: string[]
   }
   pagesCrawled: number
   scores: {
@@ -67,12 +74,25 @@ export default function DeepV3Page() {
   const [currentUrl, setCurrentUrl] = useState('')
   const sse = useSSEAnalysis<DeepScanResult>('/api/analyze-deep-v3')
   const [crawlConfig, setCrawlConfig] = useState({
-    maxPages: 10,
+    maxPages: 5,
     respectRobotsTxt: true
   })
-  const handleAnalyze = async (submittedUrl: string) => {
-    setCurrentUrl(submittedUrl)
-    await sse.startAnalysis(submittedUrl, { maxPages: crawlConfig.maxPages })
+  const [creditDialogOpen, setCreditDialogOpen] = useState(false)
+  const [pendingUrl, setPendingUrl] = useState('')
+  const [pendingMaxPages, setPendingMaxPages] = useState(5)
+
+  const handleAnalyze = async (submittedUrl: string, maxPages?: number) => {
+    setPendingUrl(submittedUrl)
+    if (maxPages) setPendingMaxPages(maxPages)
+    setCreditDialogOpen(true)
+  }
+
+  const handleConfirmAnalyze = async (pageCount?: number) => {
+    setCreditDialogOpen(false)
+    const pages = pageCount || pendingMaxPages
+    setCrawlConfig(prev => ({ ...prev, maxPages: pages }))
+    setCurrentUrl(pendingUrl)
+    await sse.startAnalysis(pendingUrl, { maxPages: pages })
   }
 
   const result = sse.data
@@ -118,6 +138,44 @@ export default function DeepV3Page() {
       })
     } catch (err) {
       console.error('[Deep Scan] Recalculation failed:', err)
+    }
+  }
+
+  // Recalculate penalties when user overrides the detected platform
+  const handlePlatformChange = async (newPlatform: string) => {
+    if (!result?.pages) return
+    try {
+      const recalculated = await Promise.all(
+        result.pages.map(async (page: any) => {
+          const res = await fetch('/api/recalculate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              scanData: {
+                ...page.scanResult,
+                siteType: result.siteTypeResult?.primaryType,
+              },
+              siteType: result.siteTypeResult?.primaryType,
+              platformOverride: newPlatform,
+            }),
+          })
+          if (!res.ok) return page
+          const data = await res.json()
+          return { ...page, enhancedPenalties: data.enhancedPenalties }
+        })
+      )
+      sse.setData({
+        ...result,
+        pages: recalculated,
+        platformDetection: {
+          platform: newPlatform,
+          confidence: result.platformDetection?.confidence || 'high',
+          label: newPlatform.charAt(0).toUpperCase() + newPlatform.slice(1),
+          signals: result.platformDetection?.signals || [],
+        },
+      })
+    } catch (err) {
+      console.error('[Deep Scan] Platform recalculation failed:', err)
     }
   }
 
@@ -171,7 +229,7 @@ export default function DeepV3Page() {
             {/* Page Header with Actions */}
             <AuditPageHeader
               title="V3 Deep Scan"
-              description="AI-powered multi-page analysis with context-aware scoring and comprehensive site audit."
+              description="AI-powered multi-page analysis with site intelligence and comprehensive site audit."
               currentUrl={currentUrl}
               hasResults={!!result}
               isAnalyzing={isAnalyzing}
@@ -186,17 +244,19 @@ export default function DeepV3Page() {
                 primaryType: result.siteTypeResult.primaryType,
                 confidence: result.siteTypeResult.confidence
               } : undefined}
+              platformDetection={result?.platformDetection}
               onSiteTypeConfirm={handleSiteTypeChange}
               onSiteTypeChange={handleSiteTypeChange}
+              onPlatformChange={handlePlatformChange}
               cwv={result?.cwv}
             />
 
             {/* Hero Section - Only show when no results */}
             {!result && !isAnalyzing && (
-              <Card className="border-2 border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-transparent">
+              <Card className="border-2 border-[#842ce0]/20 bg-gradient-to-br from-[#842ce0]/5 to-transparent">
                 <CardHeader className="text-center space-y-4 pb-8">
-                  <div className="mx-auto w-16 h-16 rounded-full bg-purple-500/10 flex items-center justify-center">
-                    <Layers className="h-8 w-8 text-purple-600" />
+                  <div className="mx-auto w-16 h-16 rounded-full bg-[#842ce0]/10 flex items-center justify-center">
+                    <Layers className="h-8 w-8 text-[#842ce0]" />
                   </div>
                   <div>
                     <CardTitle className="text-3xl mb-2">
@@ -204,19 +264,19 @@ export default function DeepV3Page() {
                     </CardTitle>
                     <CardDescription className="text-base max-w-2xl mx-auto">
                       Combines V3's AI-powered intelligence with multi-page deep crawling. 
-                      Get context-aware scoring, actionable fixes, and comprehensive site analysis.
+                      Get site intelligence, actionable fixes, and comprehensive site analysis.
                     </CardDescription>
                   </div>
                 </CardHeader>
                 <CardContent className="max-w-2xl mx-auto space-y-6">
                   <CrawlConfig
-                    onStartCrawl={(config) => handleAnalyze(config.url)}
+                    onStartCrawl={(config) => handleAnalyze(config.url, config.pageCount)}
                     isAnalyzing={isAnalyzing}
                   />
                   
                   {/* Beta Badge */}
                   <div className="text-center">
-                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-600 border border-purple-500/20">
+                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-[#842ce0]/10 text-[#842ce0] border border-[#842ce0]/20">
                       <Sparkles className="h-3 w-3" />
                       BETA - AI-Powered Multi-Page Analysis
                     </span>
@@ -231,13 +291,13 @@ export default function DeepV3Page() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-purple-600" />
+                      <Sparkles className="h-5 w-5 text-[#842ce0]" />
                       AI Content Analysis
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground">
-                      Gemini AI analyzes every page for tone, expertise, and content quality with context-aware scoring.
+                      Gemini AI analyzes every page for tone, expertise, and content quality with site intelligence.
                     </p>
                   </CardContent>
                 </Card>
@@ -245,7 +305,7 @@ export default function DeepV3Page() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
-                      <Layers className="h-5 w-5 text-purple-600" />
+                      <Layers className="h-5 w-5 text-[#842ce0]" />
                       Multi-Page Crawling
                     </CardTitle>
                   </CardHeader>
@@ -259,7 +319,7 @@ export default function DeepV3Page() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
-                      <Zap className="h-5 w-5 text-purple-600" />
+                      <Zap className="h-5 w-5 text-[#842ce0]" />
                       Priority Matrix
                     </CardTitle>
                   </CardHeader>
@@ -274,7 +334,7 @@ export default function DeepV3Page() {
 
             {/* Crawl Progress */}
             {isAnalyzing && (
-              <Card className="border-purple-500/30">
+              <Card className="border-[#842ce0]/30">
                 <CardContent className="pt-6">
                   <div className="flex flex-col items-center gap-4 py-8">
                     <div className="h-12 w-12 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
@@ -291,6 +351,18 @@ export default function DeepV3Page() {
               </Card>
             )}
 
+            {/* Credit Confirmation Dialog */}
+            <CreditConfirmDialog
+              open={creditDialogOpen}
+              onConfirm={handleConfirmAnalyze}
+              onCancel={() => setCreditDialogOpen(false)}
+              creditCost={10 + pendingMaxPages}
+              scanType="Deep Scan"
+              costBreakdown={`10 base + ${pendingMaxPages} pages × 1 credit = ${10 + pendingMaxPages} credits`}
+              showPageSelector
+              defaultPageCount={pendingMaxPages}
+            />
+
             <ScanErrorDialog error={error} onClose={() => sse.reset()} onRetry={() => handleAnalyze(currentUrl)} />
 
             {/* Results Display */}
@@ -301,7 +373,7 @@ export default function DeepV3Page() {
                   <Card className="flex items-center justify-center p-6">
                     <div className="flex flex-col items-center gap-1">
                       <CircularProgress value={result.scores.seo} variant="seo" label="Avg SEO Score" size={140} strokeWidth={10} />
-                      <InfoTooltip content="Average SEO score across all crawled pages, using context-aware scoring weights." />
+                      <InfoTooltip content="Average SEO score across all crawled pages, using site-intelligence scoring weights." />
                     </div>
                   </Card>
                   <Card className="flex items-center justify-center p-6">
@@ -328,17 +400,19 @@ export default function DeepV3Page() {
                   const h1Pct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.hasH1 === true).length / pages.length) * 100) : 0
                   const httpsPct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.isHttps === true).length / pages.length) * 100) : 0
                   const metaPct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.hasDescription === true).length / pages.length) * 100) : 0
+                  const pctColor = (v: number) => v >= 75 ? "text-green-500" : v >= 50 ? "text-amber-500" : "text-red-500"
+                  const respColor = (ms: number) => ms <= 300 ? "text-green-500" : ms <= 600 ? "text-amber-500" : "text-red-500"
                   const metrics = [
-                    { label: "Domain Health", value: `${ai?.domainHealthScore ?? '–'}%`, color: "text-geo", tip: "AI-powered aggregate domain quality score combining content quality, schema implementation, metadata completeness, technical performance, and site architecture across all crawled pages. This is the single most important metric for understanding your site's overall health." },
-                    { label: "Brand", value: `${ai?.consistencyScore ?? '–'}%`, color: "text-aeo", tip: "Brand consistency across all crawled pages — measures uniform tone, messaging, visual identity signals, and content voice. Inconsistent branding confuses both users and AI engines, reducing citation likelihood and trust." },
-                    { label: "Schema", value: `${ai?.authorityMetrics?.schemaCoverage ?? '–'}%`, color: "text-seo", tip: "Percentage of crawled pages with valid structured data (JSON-LD). Schema markup enables rich snippets in search results and helps AI engines understand your content. Low coverage means missed opportunities for enhanced search visibility." },
-                    { label: "Metadata", value: `${metaPct}%`, color: metaPct >= 90 ? "text-geo" : "text-yellow-600", tip: "Percentage of crawled pages with both a title tag and meta description. These control how your pages appear in search results. Pages without metadata get auto-generated snippets that rarely perform well." },
-                    { label: "H1 Tags", value: `${h1Pct}%`, color: h1Pct >= 90 ? "text-geo" : "text-red-600", tip: "Percentage of crawled pages with an H1 heading tag. The H1 is the primary heading that tells search engines what each page is about. Every page should have exactly one — missing H1s confuse crawlers and hurt rankings." },
-                    { label: "HTTPS", value: `${httpsPct}%`, color: httpsPct === 100 ? "text-geo" : "text-red-600", tip: "Percentage of crawled pages served over HTTPS. Google uses HTTPS as a ranking signal and browsers show 'Not Secure' warnings for HTTP pages. Anything less than 100% is a critical security and SEO issue." },
-                    { label: "Response", value: `${result.aggregateMetrics.avgResponseTime}ms`, color: "text-geo", tip: "Average server response time (TTFB) across all crawled pages. Under 200ms is excellent, under 500ms is acceptable, over 500ms needs attention. Slow response times compound across a site and hurt Core Web Vitals." },
-                    { label: "Robots.txt", value: result.robotsTxt ? "Found" : "Missing", color: result.robotsTxt ? "text-green-600" : "text-red-600", tip: "Whether a robots.txt file exists at the domain root. This file controls how search engine crawlers navigate your site — which pages to index and which to skip. Without it, crawlers may waste budget on unimportant pages." },
-                    { label: "Sitemap", value: result.sitemapFound ? "Found" : "Missing", color: result.sitemapFound ? "text-green-600" : "text-red-600", tip: "Whether an XML sitemap was found at the domain root. Sitemaps help search engines discover all your pages efficiently, especially new content or deeply nested pages that might not be found through internal links alone." },
-                    { label: "Alt Text", value: `${imgAltPct}%`, color: imgAltPct >= 80 ? "text-green-600" : "text-yellow-600", tip: "Percentage of images across all crawled pages with descriptive alt text. Alt text is critical for accessibility (screen readers rely on it) and image search rankings. Google Images drives significant traffic — missing alt text means lost opportunities." },
+                    { label: "Domain Health", value: `${ai?.domainHealthScore ?? '–'}%`, color: pctColor(ai?.domainHealthScore ?? 0), tip: "AI-powered aggregate domain quality score combining content quality, schema implementation, metadata completeness, technical performance, and site architecture across all crawled pages. This is the single most important metric for understanding your site's overall health." },
+                    { label: "Brand", value: `${ai?.consistencyScore ?? '–'}%`, color: pctColor(ai?.consistencyScore ?? 0), tip: "Brand consistency across all crawled pages — measures uniform tone, messaging, visual identity signals, and content voice. Inconsistent branding confuses both users and AI engines, reducing citation likelihood and trust." },
+                    { label: "Schema", value: `${ai?.authorityMetrics?.schemaCoverage ?? '–'}%`, color: pctColor(ai?.authorityMetrics?.schemaCoverage ?? 0), tip: "Percentage of crawled pages with valid structured data (JSON-LD). Schema markup enables rich snippets in search results and helps AI engines understand your content. Low coverage means missed opportunities for enhanced search visibility." },
+                    { label: "Metadata", value: `${metaPct}%`, color: pctColor(metaPct), tip: "Percentage of crawled pages with both a title tag and meta description. These control how your pages appear in search results. Pages without metadata get auto-generated snippets that rarely perform well." },
+                    { label: "H1 Tags", value: `${h1Pct}%`, color: pctColor(h1Pct), tip: "Percentage of crawled pages with an H1 heading tag. The H1 is the primary heading that tells search engines what each page is about. Every page should have exactly one — missing H1s confuse crawlers and hurt rankings." },
+                    { label: "HTTPS", value: `${httpsPct}%`, color: pctColor(httpsPct), tip: "Percentage of crawled pages served over HTTPS. Google uses HTTPS as a ranking signal and browsers show 'Not Secure' warnings for HTTP pages. Anything less than 100% is a critical security and SEO issue." },
+                    { label: "Response", value: `${result.aggregateMetrics.avgResponseTime}ms`, color: respColor(result.aggregateMetrics.avgResponseTime), tip: "Average server response time (TTFB) across all crawled pages. Under 300ms is good, under 600ms is acceptable, over 600ms needs attention. Slow response times compound across a site and hurt Core Web Vitals." },
+                    { label: "Robots.txt", value: result.robotsTxt ? "Found" : "Missing", color: result.robotsTxt ? "text-green-500" : "text-red-500", tip: "Whether a robots.txt file exists at the domain root. This file controls how search engine crawlers navigate your site — which pages to index and which to skip. Without it, crawlers may waste budget on unimportant pages." },
+                    { label: "Sitemap", value: result.sitemapFound ? "Found" : "Missing", color: result.sitemapFound ? "text-green-500" : "text-red-500", tip: "Whether an XML sitemap was found at the domain root. Sitemaps help search engines discover all your pages efficiently, especially new content or deeply nested pages that might not be found through internal links alone." },
+                    { label: "Alt Text", value: `${imgAltPct}%`, color: pctColor(imgAltPct), tip: "Percentage of images across all crawled pages with descriptive alt text. Alt text is critical for accessibility (screen readers rely on it) and image search rankings. Google Images drives significant traffic — missing alt text means lost opportunities." },
                   ]
                   return (
                     <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-10 gap-2">
@@ -430,7 +504,7 @@ export default function DeepV3Page() {
                           { label: "Content", value: result.sitewideIntelligence.domainHealthBreakdown.contentQuality, color: "text-geo" },
                           { label: "Schema", value: result.sitewideIntelligence.domainHealthBreakdown.schemaQuality, color: "text-seo" },
                           { label: "Metadata", value: result.sitewideIntelligence.domainHealthBreakdown.metadataQuality, color: "text-aeo" },
-                          { label: "Technical", value: result.sitewideIntelligence.domainHealthBreakdown.technicalHealth, color: "text-purple-500" },
+                          { label: "Technical", value: result.sitewideIntelligence.domainHealthBreakdown.technicalHealth, color: "text-[#842ce0]" },
                           { label: "Architecture", value: result.sitewideIntelligence.domainHealthBreakdown.architectureHealth, color: "text-blue-500" },
                         ].map(item => (
                           <div key={item.label} className="text-center">
@@ -572,13 +646,13 @@ export default function DeepV3Page() {
 
                 {/* AEO Readiness */}
                 {result.sitewideIntelligence?.aeoReadiness && (
-                  <Card className="border-purple-500/20 bg-purple-500/5">
+                  <Card className="border-[#842ce0]/20 bg-[#842ce0]/5">
                     <CardHeader>
                       <div className="flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-purple-600" />
+                        <Sparkles className="h-5 w-5 text-[#842ce0]" />
                         <CardTitle>AEO Readiness</CardTitle>
                         <InfoTooltip content="How ready your domain is to be cited by AI assistants like ChatGPT, Perplexity, and Gemini." />
-                        <Badge className="ml-auto bg-purple-500/10 text-purple-600 border-purple-500/30 text-xs font-black">
+                        <Badge className="ml-auto bg-[#842ce0]/10 text-[#842ce0] border-[#842ce0]/30 text-xs font-black">
                           {result.sitewideIntelligence.aeoReadiness.score}/100
                         </Badge>
                       </div>

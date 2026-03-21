@@ -7,7 +7,7 @@ import { calculateScoresFromScanResult, convertBreakdownToEnhancedPenalties } fr
  */
 export async function POST(request: NextRequest) {
   try {
-    const { scanData, siteType } = await request.json()
+    const { scanData, siteType, platformOverride } = await request.json()
 
     if (!scanData) {
       return new Response(JSON.stringify({ error: 'scanData is required' }), {
@@ -24,7 +24,8 @@ export async function POST(request: NextRequest) {
       enhancedPenalties = convertBreakdownToEnhancedPenalties(
         graderResult.breakdown.seo,
         graderResult.breakdown.aeo,
-        graderResult.breakdown.geo
+        graderResult.breakdown.geo,
+        platformOverride || scanData?.platformDetection?.platform
       )
     } catch (e: any) {
       console.error('[Recalculate] Penalty error:', e.message)

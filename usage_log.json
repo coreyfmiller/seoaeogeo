@@ -7124,5 +7124,284 @@
     "url": "pizzatwice.com",
     "timestamp": "2026-03-21T12:49:18.609Z",
     "cost": 0.050875825
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3574,
+    "outputTokens": 8918,
+    "url": "Pizza Twice | About Us",
+    "timestamp": "2026-03-21T13:19:45.916Z",
+    "cost": 0.08928465
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5012,
+    "outputTokens": 8250,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-21T13:19:46.773Z",
+    "cost": 0.08647730000000001
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5012,
+    "outputTokens": 8250,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-21T13:19:50.157Z",
+    "cost": 0.08647730000000001
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 6944,
+    "outputTokens": 8343,
+    "url": "Pizza Twice | Locations",
+    "timestamp": "2026-03-21T13:20:29.637Z",
+    "cost": 0.09171889999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3794,
+    "outputTokens": 8361,
+    "url": "Pizza Twice | Pizza Twice Franchise",
+    "timestamp": "2026-03-21T13:20:32.129Z",
+    "cost": 0.08471645
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4216,
+    "outputTokens": 8556,
+    "url": "Pizza Twice | Reviews",
+    "timestamp": "2026-03-21T13:20:35.509Z",
+    "cost": 0.08745099999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3412,
+    "outputTokens": 8266,
+    "url": "Pizza Twice | Oromocto | Contact Us",
+    "timestamp": "2026-03-21T13:21:17.917Z",
+    "cost": 0.0829829
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3908,
+    "outputTokens": 8756,
+    "url": "Pizzas In Oromocto | Menu | Pizza Twice",
+    "timestamp": "2026-03-21T13:21:18.555Z",
+    "cost": 0.08857029999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 3841,
+    "outputTokens": 9865,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-21T13:22:33.753Z",
+    "cost": 0.09850977500000001
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 798,
+    "outputTokens": 483,
+    "url": "https://pizzatwice.com",
+    "timestamp": "2026-03-21T14:13:50.606Z",
+    "cost": 0.006210749999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5124,
+    "outputTokens": 8812,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-21T14:14:35.248Z",
+    "cost": 0.0918463
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 798,
+    "outputTokens": 483,
+    "url": "https://pizzatwice.com",
+    "timestamp": "2026-03-21T14:41:45.494Z",
+    "cost": 0.006210749999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5124,
+    "outputTokens": 9173,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-21T14:42:27.982Z",
+    "cost": 0.0951314
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 481,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-21T17:56:54.035Z",
+    "cost": 0.006035575
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 11058,
+    "outputTokens": 14842,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-21T17:57:48.148Z",
+    "cost": 0.16021915
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3574,
+    "outputTokens": 8553,
+    "url": "Pizza Twice | About Us",
+    "timestamp": "2026-03-21T18:34:55.850Z",
+    "cost": 0.08596314999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5012,
+    "outputTokens": 8250,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-21T18:35:00.183Z",
+    "cost": 0.08647730000000001
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5012,
+    "outputTokens": 8250,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-21T18:35:01.506Z",
+    "cost": 0.08647730000000001
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3794,
+    "outputTokens": 8120,
+    "url": "Pizza Twice | Pizza Twice Franchise",
+    "timestamp": "2026-03-21T18:35:41.145Z",
+    "cost": 0.08252335
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 6944,
+    "outputTokens": 8252,
+    "url": "Pizza Twice | Locations",
+    "timestamp": "2026-03-21T18:35:41.804Z",
+    "cost": 0.0908908
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 4216,
+    "outputTokens": 8709,
+    "url": "Pizza Twice | Reviews",
+    "timestamp": "2026-03-21T18:35:45.411Z",
+    "cost": 0.0888433
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3908,
+    "outputTokens": 8756,
+    "url": "Pizzas In Oromocto | Menu | Pizza Twice",
+    "timestamp": "2026-03-21T18:36:24.202Z",
+    "cost": 0.08857029999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3412,
+    "outputTokens": 8414,
+    "url": "Pizza Twice | Oromocto | Contact Us",
+    "timestamp": "2026-03-21T18:36:24.574Z",
+    "cost": 0.0843297
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 3840,
+    "outputTokens": 8373,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-21T18:37:43.827Z",
+    "cost": 0.08493029999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 798,
+    "outputTokens": 451,
+    "url": "https://pizzatwice.com",
+    "timestamp": "2026-03-21T18:56:04.365Z",
+    "cost": 0.00591955
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5124,
+    "outputTokens": 9173,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-21T18:56:45.918Z",
+    "cost": 0.0951314
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Competitive Battle",
+    "inputTokens": 4793,
+    "outputTokens": 6645,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB vs Valley Marketing - Branding And Marketing | Video | Photo",
+    "timestamp": "2026-03-21T19:24:10.806Z",
+    "cost": 0.071373575
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Competitive Battle",
+    "inputTokens": 4793,
+    "outputTokens": 6645,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB vs Valley Marketing - Branding And Marketing | Video | Photo",
+    "timestamp": "2026-03-21T19:47:18.271Z",
+    "cost": 0.071373575
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Competitive Battle",
+    "inputTokens": 4793,
+    "outputTokens": 8320,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB vs Valley Marketing - Branding And Marketing | Video | Photo",
+    "timestamp": "2026-03-21T19:50:34.193Z",
+    "cost": 0.08661607499999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Competitive Battle",
+    "inputTokens": 4793,
+    "outputTokens": 6645,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB vs Valley Marketing - Branding And Marketing | Video | Photo",
+    "timestamp": "2026-03-21T20:00:40.524Z",
+    "cost": 0.071373575
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Competitive Battle",
+    "inputTokens": 3761,
+    "outputTokens": 4512,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice vs FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-21T22:09:55.964Z",
+    "cost": 0.049615475000000006
   }
 ]

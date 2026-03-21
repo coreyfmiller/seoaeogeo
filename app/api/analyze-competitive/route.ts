@@ -17,8 +17,8 @@ export async function POST(req: Request) {
         // 1. Crawler Core (Deep Retrieval - Parallel)
         console.log(`[API] Starting dual crawl for: ${siteAUrl} VS ${siteBUrl}`);
         const [scanA, scanB] = await Promise.all([
-            performScan(siteAUrl),
-            performScan(siteBUrl)
+            performScan(siteAUrl, { lightweight: true }),
+            performScan(siteBUrl, { lightweight: true })
         ]);
 
         // 2. Comparative Gemini Analysis
@@ -37,7 +37,8 @@ export async function POST(req: Request) {
                 description: scanB.description,
                 thinnedText: scanB.thinnedText,
                 schemas: scanB.schemas
-            }
+            },
+            { platform: scanA.platformDetection?.label }
         );
 
         console.log(`[API] Comparison Analysis complete.`);
@@ -47,7 +48,8 @@ export async function POST(req: Request) {
             data: {
                 siteA: scanA,
                 siteB: scanB,
-                comparison: compareResult
+                comparison: compareResult,
+                platformDetection: scanA.platformDetection,
             }
         });
 

@@ -68,7 +68,8 @@ export async function POST(req: Request) {
           scores: { seo: v2Results.seoScore, aeo: v2Results.aeoScore, geo: v2Results.geoScore },
           penaltyLedger: convertBreakdownToPenaltyLedger(v2Results.breakdown.seo),
           enhancedPenalties: convertBreakdownToEnhancedPenalties(
-            v2Results.breakdown.seo, v2Results.breakdown.aeo, v2Results.breakdown.geo
+            v2Results.breakdown.seo, v2Results.breakdown.aeo, v2Results.breakdown.geo,
+            scanResult?.platformDetection?.platform
           ),
           scoringVersion: 'v2', breakdown: v2Results.breakdown,
           overallFeedback: v2Results.overallFeedback, criticalIssues: v2Results.criticalIssues

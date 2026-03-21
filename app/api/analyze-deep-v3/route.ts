@@ -147,7 +147,8 @@ export async function POST(request: NextRequest) {
               // Same grader call as Pro Audit
               const graderResult = calculateScoresFromScanResult(scanResult)
               const enhancedPenalties = convertBreakdownToEnhancedPenalties(
-                graderResult.breakdown.seo, graderResult.breakdown.aeo, graderResult.breakdown.geo
+                graderResult.breakdown.seo, graderResult.breakdown.aeo, graderResult.breakdown.geo,
+                scanResult.platformDetection?.platform
               )
 
               return {
@@ -237,6 +238,7 @@ export async function POST(request: NextRequest) {
             imgWithAlt: sr.structuralData.media.imagesWithAlt,
           })),
           siteType: siteTypeResult.primaryType as any,
+          platform: scanResults[0]?.scanResult?.platformDetection?.label,
         })
       } catch (err) {
         console.error('[Deep Scan] Sitewide intelligence failed:', err instanceof Error ? err.message : err)
@@ -304,6 +306,7 @@ export async function POST(request: NextRequest) {
       send({ type: 'progress', phase: 'Deep scan complete!', progress: 100 })
       send({ type: 'result', success: true, data: {
         url, analyzedAt: new Date().toISOString(), siteTypeResult,
+        platformDetection: scanResults[0]?.scanResult?.platformDetection,
         pagesCrawled: pageAnalyses.length, scores: avgScores, pages: pageAnalyses,
         schemaCoverage, siteWideIssues,
         orphanPages: [], duplicateGroups: [],

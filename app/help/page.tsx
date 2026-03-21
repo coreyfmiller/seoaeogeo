@@ -39,8 +39,8 @@ interface FAQItem {
 const faqs: FAQItem[] = [
   {
     category: "Getting Started",
-    question: "What is SitePulse?",
-    answer: "SitePulse is a search intelligence platform that audits your website across three pillars: SEO (Search Engine Optimization), AEO (Answer Engine Optimization), and GEO (Generative Engine Optimization). We help you optimize for traditional search, featured snippets, and AI-generated responses."
+    question: "What is Citatom?",
+    answer: "Citatom is a search intelligence platform that audits your website across three pillars: SEO (Search Engine Optimization), AEO (Answer Engine Optimization), and GEO (Generative Engine Optimization). We help you optimize for traditional search, featured snippets, and AI-generated responses."
   },
   {
     category: "Getting Started",
@@ -75,7 +75,7 @@ const faqs: FAQItem[] = [
   {
     category: "Scoring",
     question: "What are site types and why do they matter?",
-    answer: "SitePulse automatically detects your site type (e-commerce, blog, portfolio, SaaS, news, local business, etc.) and adjusts scoring weights accordingly. An e-commerce site is evaluated differently than a blog because different signals matter for each. This ensures fair, relevant scoring."
+    answer: "Citatom automatically detects your site type (e-commerce, blog, portfolio, SaaS, news, local business, etc.) and adjusts scoring weights accordingly. An e-commerce site is evaluated differently than a blog because different signals matter for each. This ensures fair, relevant scoring."
   },
   {
     category: "Data & Privacy",
@@ -115,7 +115,7 @@ const faqs: FAQItem[] = [
   {
     category: "Troubleshooting",
     question: "The page looks different than what was analyzed",
-    answer: "SitePulse fetches the server-rendered HTML of your page. If your site relies heavily on client-side JavaScript rendering, some content may not be visible to our crawler. This is also how search engines see your page — if we can't see it, neither can Google."
+    answer: "Citatom fetches the server-rendered HTML of your page. If your site relies heavily on client-side JavaScript rendering, some content may not be visible to our crawler. This is also how search engines see your page — if we can't see it, neither can Google."
   },
 ]
 
@@ -144,8 +144,8 @@ const quickStartGuides = [
     title: "Deep Scan",
     desc: "Crawl multiple pages for site-wide insights.",
     icon: Layers,
-    color: "text-purple-600",
-    bg: "bg-purple-500/10",
+    color: "text-[#842ce0]",
+    bg: "bg-[#842ce0]/10",
     href: "/deep-v3",
     steps: ["Enter your domain", "Configure crawl depth & page limit", "Review page-by-page comparison", "Identify site-wide patterns & issues"],
   },
@@ -182,7 +182,7 @@ export default function HelpPage() {
               </div>
               <h1 className="text-3xl font-bold">Help & Support</h1>
               <p className="text-muted-foreground max-w-xl mx-auto">
-                Everything you need to get the most out of SitePulse. Browse guides, FAQs, and tips below.
+                Everything you need to get the most out of Citatom. Browse guides, FAQs, and tips below.
               </p>
             </div>
 
@@ -192,7 +192,7 @@ export default function HelpPage() {
                 { label: "Quick Start", icon: Zap, color: "text-seo", anchor: "#quickstart" },
                 { label: "FAQs", icon: MessageSquare, color: "text-aeo", anchor: "#faq" },
                 { label: "Our Standards", icon: FileText, color: "text-geo", anchor: "/standards" },
-                { label: "Contact Us", icon: Mail, color: "text-purple-600", anchor: "#contact" },
+                { label: "Contact Us", icon: Mail, color: "text-[#842ce0]", anchor: "#contact" },
               ].map(link => (
                 <a
                   key={link.label}
@@ -362,7 +362,7 @@ export default function HelpPage() {
             {/* Tips & Best Practices */}
             <section>
               <div className="flex items-center gap-2 mb-4">
-                <Shield className="h-5 w-5 text-purple-600" />
+                <Shield className="h-5 w-5 text-[#842ce0]" />
                 <h2 className="text-xl font-bold">Tips & Best Practices</h2>
               </div>
               <div className="grid md:grid-cols-2 gap-4">
@@ -420,10 +420,10 @@ export default function HelpPage() {
                           if (res.ok) {
                             setContactSubmitted(true)
                           } else {
-                            alert('Failed to send message. Please try again or email support@sitepulse.ai directly.')
+                            alert('Failed to send message. Please try again or email support@citatom.com directly.')
                           }
                         } catch {
-                          alert('Failed to send message. Please try again or email support@sitepulse.ai directly.')
+                          alert('Failed to send message. Please try again or email support@citatom.com directly.')
                         }
                       }} className="space-y-4">
                         <div className="grid sm:grid-cols-2 gap-4">
@@ -508,9 +508,9 @@ export default function HelpPage() {
                   <Card>
                     <CardContent className="p-5 space-y-3">
                       <h3 className="font-bold text-sm">Direct Email</h3>
-                      <a href="mailto:support@sitepulse.ai" className="flex items-center gap-2 text-sm text-seo hover:underline">
+                      <a href="mailto:support@citatom.com" className="flex items-center gap-2 text-sm text-seo hover:underline">
                         <Mail className="h-4 w-4" />
-                        support@sitepulse.ai
+                        support@citatom.com
                       </a>
                       <p className="text-xs text-muted-foreground">For urgent issues or account-specific questions.</p>
                     </CardContent>

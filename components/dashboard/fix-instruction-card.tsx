@@ -58,9 +58,9 @@ const categoryConfig = {
     border: 'border-yellow-500/30'
   },
   'Long-term Investment': {
-    color: 'text-purple-600',
-    bg: 'bg-purple-500/10',
-    border: 'border-purple-500/30'
+    color: 'text-[#842ce0]',
+    bg: 'bg-[#842ce0]/10',
+    border: 'border-[#842ce0]/30'
   },
   'Low Priority': {
     color: 'text-muted-foreground',

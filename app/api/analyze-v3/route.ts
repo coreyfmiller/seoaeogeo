@@ -33,7 +33,8 @@ export async function POST(request: NextRequest) {
       const geminiPromise = analyzeWithGemini({
         title: pageData.title, description: pageData.description,
         thinnedText: pageData.thinnedText, summarizedContent: pageData.summarizedContent,
-        schemas: pageData.schemas, structuralData: pageData.structuralData
+        schemas: pageData.schemas, structuralData: pageData.structuralData,
+        platform: pageData.platformDetection?.label,
       })
       const interrogationPromise = performLiveInterrogation({
         domain: pageData.url, title: pageData.title,
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
       // Step 5: Enhanced penalties
       let enhancedPenalties: any[] = []
       try {
-        enhancedPenalties = convertBreakdownToEnhancedPenalties(graderResult.breakdown.seo, graderResult.breakdown.aeo, graderResult.breakdown.geo)
+        enhancedPenalties = convertBreakdownToEnhancedPenalties(graderResult.breakdown.seo, graderResult.breakdown.aeo, graderResult.breakdown.geo, pageData.platformDetection?.platform)
       } catch (e: any) { console.error('[V3 API] Penalty error:', e.message) }
 
       send({ type: 'progress', phase: 'Finalizing report...', progress: 95 })
@@ -80,6 +81,7 @@ export async function POST(request: NextRequest) {
       send({ type: 'progress', phase: 'Audit complete!', progress: 100 })
       send({ type: 'result', success: true, data: {
         url, pageData, scores, graderResult, enhancedPenalties, siteTypeResult,
+        platformDetection: pageData.platformDetection,
         aiAnalysis, liveInterrogation, cwv, analyzedAt: new Date().toISOString(), version: 'v3'
       }})
     } catch (error: any) {

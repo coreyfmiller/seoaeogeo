@@ -25,7 +25,7 @@ interface CrawlConfigProps {
 
 export interface CrawlConfiguration {
   url: string
-  pageCount: 1 | 10 | 20 | 50
+  pageCount: 5 | 10 | 20 | 30 | 40 | 50
   competitorUrls: string[]
   respectRobotsTxt: boolean
 }
@@ -43,7 +43,7 @@ function InfoTooltip({ text }: { text: string }) {
 
 export function CrawlConfig({ onStartCrawl, isAnalyzing }: CrawlConfigProps) {
   const [url, setUrl] = useState("")
-  const [pageCount, setPageCount] = useState<1 | 10 | 20 | 50>(20)
+  const [pageCount, setPageCount] = useState<5 | 10 | 20 | 30 | 40 | 50>(5)
   const [respectRobotsTxt, setRespectRobotsTxt] = useState(true)
   const [urlError, setUrlError] = useState("")
 
@@ -77,10 +77,12 @@ export function CrawlConfig({ onStartCrawl, isAnalyzing }: CrawlConfigProps) {
   }
 
   const pageOptions = [
-    { value: 1, label: "1 Page", time: "~5s", desc: "Single page" },
-    { value: 10, label: "10 Pages", time: "~60s", desc: "Quick scan" },
-    { value: 20, label: "20 Pages", time: "~120s", desc: "Standard" },
-    { value: 50, label: "50 Pages", time: "~180s", desc: "Deep scan" }
+    { value: 5, label: "5 Pages" },
+    { value: 10, label: "10 Pages" },
+    { value: 20, label: "20 Pages" },
+    { value: 30, label: "30 Pages" },
+    { value: 40, label: "40 Pages" },
+    { value: 50, label: "50 Pages" }
   ] as const
 
   return (
@@ -132,10 +134,7 @@ export function CrawlConfig({ onStartCrawl, isAnalyzing }: CrawlConfigProps) {
                   : "border-border/50 bg-background text-muted-foreground"
               )}
             >
-              <div className="flex items-center gap-2">
-                <span className="font-bold">{option.label}</span>
-                <span className="text-xs opacity-70">({option.time})</span>
-              </div>
+              <span className="font-bold">{option.label}</span>
             </button>
           ))}
         </div>

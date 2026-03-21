@@ -25,6 +25,9 @@ interface Recommendation {
   rank?: number
   title: string // Now used for the "Action/Solution"
   description: string // Now used for the "Reasoning/Impact"
+  howToFix?: string // Step-by-step fix instructions (platform-specific)
+  codeSnippet?: string // Before/after code example
+  affectedElement?: string // What specific element is the problem
   priority: Priority
   category: "seo" | "aeo" | "geo" | "Schema" | "Technical" | "Content" | "Trust" | "AEO"
   impact: string
@@ -148,7 +151,10 @@ function RecommendationItem({ rec }: { rec: Recommendation }) {
   const PriorityIcon = config.icon
 
   const handleCopy = () => {
-    const textToCopy = `[ACTION]: ${rec.title}\n[CATEGORY]: ${rec.category.toUpperCase()}\n[WHY]: ${rec.description}\n[IMPACT]: ${rec.impact}`
+    let textToCopy = `[ACTION]: ${rec.title}\n[CATEGORY]: ${rec.category.toUpperCase()}\n[WHY]: ${rec.description}\n[IMPACT]: ${rec.impact}`
+    if (rec.howToFix) textToCopy += `\n[HOW TO FIX]: ${rec.howToFix}`
+    if (rec.codeSnippet) textToCopy += `\n[CODE]: ${rec.codeSnippet}`
+    if (rec.affectedElement) textToCopy += `\n[AFFECTED]: ${rec.affectedElement}`
     navigator.clipboard.writeText(textToCopy)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
@@ -189,13 +195,34 @@ function RecommendationItem({ rec }: { rec: Recommendation }) {
           className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors mb-2"
         >
           {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-          Why this matters?
+          {expanded ? 'Collapse' : 'How to fix'}
         </button>
 
         {expanded && (
-          <p className="text-xs text-muted-foreground leading-relaxed animate-in fade-in slide-in-from-top-1 mb-3">
-            {rec.description}
-          </p>
+          <div className="space-y-3 animate-in fade-in slide-in-from-top-1 mb-3">
+            {rec.affectedElement && (
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Affected:</span>
+                <p className="text-xs text-foreground/80 mt-0.5">{rec.affectedElement}</p>
+              </div>
+            )}
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Why this matters:</span>
+              <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{rec.description}</p>
+            </div>
+            {rec.howToFix && (
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Fix instructions:</span>
+                <p className="text-xs text-foreground/80 leading-relaxed mt-0.5 whitespace-pre-line">{rec.howToFix}</p>
+              </div>
+            )}
+            {rec.codeSnippet && (
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Code:</span>
+                <pre className="text-[11px] text-foreground/80 bg-background/80 border border-border/50 rounded-lg p-3 mt-0.5 overflow-x-auto whitespace-pre-wrap font-mono">{rec.codeSnippet}</pre>
+              </div>
+            )}
+          </div>
         )}
 
         {/* Metadata Row */}

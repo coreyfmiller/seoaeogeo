@@ -2,32 +2,32 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, Layers, Globe, Zap, ArrowRight, Clock, BarChart3, Activity } from 'lucide-react'
+import { Search, Layers, Globe, Zap, ArrowRight, Clock, Activity } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
-import { getScanHistory, ScanHistoryEntry, setLoadFromHistory, getRouteForType, exportScanHistory, importScanHistory } from '@/lib/scan-history'
+import { getScanHistory, ScanHistoryEntry, setLoadFromHistory, getRouteForType, exportScanHistory, importScanHistory, clearScanHistory } from '@/lib/scan-history'
 import { Button } from '@/components/ui/button'
-import { Download, Upload } from 'lucide-react'
+import { Download, Upload, Trash2 } from 'lucide-react'
 import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { cn } from '@/lib/utils'
 
 const quickActions = [
-  { label: "Pro Audit", desc: "AI-powered fix instructions", icon: Zap, href: "/v3", color: "text-geo", bg: "bg-geo/10", tip: "Run a full AI-powered audit with Gemini analysis, context-aware scoring, and detailed fix instructions for every issue found." },
-  { label: "Deep Crawl", desc: "Multi-page site analysis", icon: Layers, href: "/deep-v3", color: "text-purple-600", bg: "bg-purple-500/10", tip: "Crawl up to 20 pages of your site to find sitewide issues like duplicate titles, missing schemas, orphan pages, and content gaps." },
-  { label: "Competitive Intel", desc: "Compare against competitors", icon: Globe, href: "/intelligence", color: "text-aeo", bg: "bg-aeo/10", tip: "Benchmark your site against a competitor across SEO, AEO, and GEO. Get AI-generated counter-strategies to outperform them." },
+  { label: "Pro Audit", desc: "AI-powered fix instructions", icon: Zap, href: "/v3", color: "text-seo", bg: "bg-seo/10", tip: "Run a full AI-powered audit with Gemini analysis, site intelligence, and detailed fix instructions for every issue found." },
+  { label: "Deep Crawl", desc: "Multi-page site analysis", icon: Layers, href: "/deep-v3", color: "text-[#842ce0]", bg: "bg-[#842ce0]/10", tip: "Crawl up to 20 pages of your site to find sitewide issues like duplicate titles, missing schemas, orphan pages, and content gaps." },
+  { label: "Competitive Intel", desc: "Compare against competitors", icon: Globe, href: "/intelligence", color: "text-[#fe3f8c]", bg: "bg-[#fe3f8c]/10", tip: "Benchmark your site against a competitor across SEO, AEO, and GEO. Get AI-generated counter-strategies to outperform them." },
 ]
 
 export default function DashboardPage() {
   const router = useRouter()
   const [recentScans, setRecentScans] = useState<ScanHistoryEntry[]>([])
-  const [stats, setStats] = useState({ totalScans: 0, proAudits: 0, deepCrawls: 0, compIntel: 0 })
+  const [stats, setStats] = useState({ proAudits: 0, deepCrawls: 0, compIntel: 0 })
+  const [confirmClear, setConfirmClear] = useState(false)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
     const scans = getScanHistory()
-    setRecentScans(scans.slice(0, 10))
+    setRecentScans(scans.slice(0, 20))
     setStats({
-      totalScans: scans.length,
       proAudits: scans.filter(s => s.type === 'pro').length,
       deepCrawls: scans.filter(s => s.type === 'deep').length,
       compIntel: scans.filter(s => s.type === 'competitive').length,
@@ -40,7 +40,7 @@ export default function DashboardPage() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `sitepulse-scans-${new Date().toISOString().slice(0, 10)}.json`
+    a.download = `citatom-scans-${new Date().toISOString().slice(0, 10)}.json`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -58,9 +58,8 @@ export default function DashboardPage() {
           const { imported } = importScanHistory(reader.result as string)
           // Refresh the page data
           const scans = getScanHistory()
-          setRecentScans(scans.slice(0, 10))
+          setRecentScans(scans.slice(0, 20))
           setStats({
-            totalScans: scans.length,
             proAudits: scans.filter(s => s.type === 'pro').length,
             deepCrawls: scans.filter(s => s.type === 'deep').length,
             compIntel: scans.filter(s => s.type === 'competitive').length,
@@ -78,8 +77,8 @@ export default function DashboardPage() {
   const getTypeLabel = (type: string) => {
     switch (type) {
       case 'free-v3': return { label: 'V3 Free', color: 'bg-blue-500/10 text-blue-600 border-blue-500/20' }
-      case 'free-v4': return { label: 'V4 Free', color: 'bg-purple-500/10 text-purple-600 border-purple-500/20' }
-      case 'pro': return { label: 'Pro Audit', color: 'bg-green-500/10 text-green-600 border-green-500/20' }
+      case 'free-v4': return { label: 'V4 Free', color: 'bg-[#842ce0]/10 text-[#842ce0] border-[#842ce0]/20' }
+      case 'pro': return { label: 'Pro Audit', color: 'bg-seo/10 text-seo border-seo/20' }
       case 'deep': return { label: 'Deep Scan', color: 'bg-orange-500/10 text-orange-600 border-orange-500/20' }
       case 'competitive': return { label: 'Competitive', color: 'bg-aeo/10 text-aeo border-aeo/20' }
       default: return { label: 'Scan', color: 'bg-muted text-muted-foreground' }
@@ -103,12 +102,11 @@ export default function DashboardPage() {
             </div>
 
             {/* Stats Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               {[
-                { label: "Total Scans", value: stats.totalScans, icon: BarChart3, color: "text-seo", tip: "Total number of audits you've run across all scan types. Each scan counts individually, even repeat scans of the same URL." },
-                { label: "Pro Audits", value: stats.proAudits, icon: Zap, color: "text-geo", tip: "Number of AI-powered Pro Audits completed. Pro Audits use Gemini AI for deep content analysis, context-aware scoring, and step-by-step fix instructions." },
-                { label: "Deep Crawls", value: stats.deepCrawls, icon: Layers, color: "text-purple-600", tip: "Number of multi-page Deep Scans completed. Deep Scans crawl up to 20 pages per site, analyzing schema coverage, content gaps, and sitewide health." },
-                { label: "Competitive Intel", value: stats.compIntel, icon: Globe, color: "text-aeo", tip: "Number of competitive intelligence battles run. Each battle compares your site against a competitor across SEO, AEO, and GEO metrics with AI-generated counter-strategies." },
+                { label: "Pro Audits", value: stats.proAudits, icon: Zap, color: "text-seo", tip: "Number of AI-powered Pro Audits completed. Pro Audits use Gemini AI for deep content analysis, site intelligence, and step-by-step fix instructions." },
+                { label: "Deep Crawls", value: stats.deepCrawls, icon: Layers, color: "text-[#842ce0]", tip: "Number of multi-page Deep Scans completed. Deep Scans crawl up to 20 pages per site, analyzing schema coverage, content gaps, and sitewide health." },
+                { label: "Competitive Intel", value: stats.compIntel, icon: Globe, color: "text-[#fe3f8c]", tip: "Number of competitive intelligence battles run. Each battle compares your site against a competitor across SEO, AEO, and GEO metrics with AI-generated counter-strategies." },
               ].map(s => (
                 <Card key={s.label}>
                   <CardContent className="p-4 flex items-center gap-3">
@@ -164,6 +162,26 @@ export default function DashboardPage() {
                       <Upload className="h-3.5 w-3.5 mr-1" />
                       Import
                     </Button>
+                    {!confirmClear ? (
+                      <Button variant="ghost" size="sm" onClick={() => setConfirmClear(true)} className="text-xs text-muted-foreground hover:text-destructive">
+                        <Trash2 className="h-3.5 w-3.5 mr-1" />
+                        Clear
+                      </Button>
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        <Button variant="destructive" size="sm" onClick={() => {
+                          clearScanHistory()
+                          setRecentScans([])
+                          setStats({ proAudits: 0, deepCrawls: 0, compIntel: 0 })
+                          setConfirmClear(false)
+                        }} className="text-xs">
+                          Confirm
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => setConfirmClear(false)} className="text-xs text-muted-foreground">
+                          Cancel
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardHeader>

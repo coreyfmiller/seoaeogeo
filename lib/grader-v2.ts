@@ -545,174 +545,256 @@ export interface EnhancedPenalty {
 export function convertBreakdownToEnhancedPenalties(
     seoBreakdown: CategoryScore[],
     aeoBreakdown: CategoryScore[],
-    geoBreakdown: CategoryScore[]
+    geoBreakdown: CategoryScore[],
+    platform?: string
 ): EnhancedPenalty[] {
     const penalties: EnhancedPenalty[] = [];
-    
-    // Process SEO penalties
-    for (const category of seoBreakdown) {
-        for (const component of category.components) {
-            const pointsLost = component.maxScore - component.score;
-            if (pointsLost > 0) {
-                // If there are explicit issues, use them
-                const issueText = component.issues && component.issues.length > 0 
-                    ? component.issues[0]
-                    : `Lost ${pointsLost} points in ${component.feedback}`;
-                    
-                penalties.push({
-                    category: 'SEO',
-                    component: `SEO ${category.name} - ${component.feedback}`,
-                    penalty: issueText,
-                    explanation: getExplanation('SEO', component.feedback, issueText),
-                    fix: getFix('SEO', component.feedback, issueText),
-                    pointsDeducted: -pointsLost,
-                    severity: component.status === 'critical' ? 'critical' : component.status === 'warning' ? 'warning' : 'info'
-                });
+    const plat = platform || 'custom';
+
+    const processBreakdown = (breakdown: CategoryScore[], cat: 'SEO' | 'AEO' | 'GEO') => {
+        for (const category of breakdown) {
+            for (const component of category.components) {
+                const pointsLost = component.maxScore - component.score;
+                if (pointsLost > 0) {
+                    const issueText = component.issues && component.issues.length > 0
+                        ? component.issues[0]
+                        : `Lost ${pointsLost} points in ${component.feedback}`;
+                    const key = resolveComponentKey(component.feedback, cat);
+                    penalties.push({
+                        category: cat,
+                        component: `${cat} ${category.name} - ${component.feedback}`,
+                        penalty: issueText,
+                        explanation: getExplanation(key, cat),
+                        fix: getFix(key, cat, plat),
+                        pointsDeducted: -pointsLost,
+                        severity: component.status === 'critical' ? 'critical' : component.status === 'warning' ? 'warning' : 'info'
+                    });
+                }
             }
         }
-    }
-    
-    // Process AEO penalties
-    for (const category of aeoBreakdown) {
-        for (const component of category.components) {
-            const pointsLost = component.maxScore - component.score;
-            if (pointsLost > 0) {
-                const issueText = component.issues && component.issues.length > 0 
-                    ? component.issues[0]
-                    : `Lost ${pointsLost} points in ${component.feedback}`;
-                    
-                penalties.push({
-                    category: 'AEO',
-                    component: `AEO ${category.name} - ${component.feedback}`,
-                    penalty: issueText,
-                    explanation: getExplanation('AEO', component.feedback, issueText),
-                    fix: getFix('AEO', component.feedback, issueText),
-                    pointsDeducted: -pointsLost,
-                    severity: component.status === 'critical' ? 'critical' : component.status === 'warning' ? 'warning' : 'info'
-                });
-            }
-        }
-    }
-    
-    // Process GEO penalties
-    for (const category of geoBreakdown) {
-        for (const component of category.components) {
-            const pointsLost = component.maxScore - component.score;
-            if (pointsLost > 0) {
-                const issueText = component.issues && component.issues.length > 0 
-                    ? component.issues[0]
-                    : `Lost ${pointsLost} points in ${component.feedback}`;
-                    
-                penalties.push({
-                    category: 'GEO',
-                    component: `GEO ${category.name} - ${component.feedback}`,
-                    penalty: issueText,
-                    explanation: getExplanation('GEO', component.feedback, issueText),
-                    fix: getFix('GEO', component.feedback, issueText),
-                    pointsDeducted: -pointsLost,
-                    severity: component.status === 'critical' ? 'critical' : component.status === 'warning' ? 'warning' : 'info'
-                });
-            }
-        }
-    }
-    
-    // Sort by severity and points lost
+    };
+
+    processBreakdown(seoBreakdown, 'SEO');
+    processBreakdown(aeoBreakdown, 'AEO');
+    processBreakdown(geoBreakdown, 'GEO');
+
     return penalties.sort((a, b) => {
-        // Critical first, then warning, then info
         if (a.severity !== b.severity) {
             const severityOrder = { critical: 0, warning: 1, info: 2 };
             return severityOrder[a.severity] - severityOrder[b.severity];
         }
-        // Then by points lost (most first)
         return a.pointsDeducted - b.pointsDeducted;
     });
 }
 
+
 /**
- * Get detailed explanation for a penalty
+ * Resolve a feedback string from scoring components to a canonical component key.
+ * SEO components use descriptive feedback like "Missing title tag - critical SEO issue"
+ * while AEO/GEO use clean names like "Content Depth". This maps both to canonical keys.
  */
-function getExplanation(category: string, component: string, issue: string): string {
-    const explanations: Record<string, string> = {
-        // SEO Explanations
-        'Title Tag': 'Title tags are the first thing users see in search results and are a critical ranking factor. Search engines use them to understand page content.',
-        'Meta Description': 'Meta descriptions appear in search results and influence click-through rates. While not a direct ranking factor, they significantly impact organic traffic.',
-        'H1 Heading': 'H1 tags tell search engines and users what the page is about. Missing or multiple H1s confuse crawlers and hurt rankings.',
-        'HTTPS': 'HTTPS is a confirmed ranking signal. Sites without SSL certificates are marked "Not Secure" in browsers, hurting trust and rankings.',
-        'Mobile Responsive': 'Google uses mobile-first indexing. Sites that aren\'t mobile-friendly are penalized in mobile search results.',
-        'Word Count': 'Thin content (under 300 words) rarely ranks. Search engines prefer comprehensive content that thoroughly covers topics.',
-        'Readability': 'Content that\'s hard to read gets lower engagement metrics (time on page, bounce rate), which negatively impacts rankings.',
-        'Internal Links': 'Internal linking distributes page authority and helps search engines discover and understand your site structure.',
-        'Images': 'Images without alt text are invisible to search engines and screen readers, hurting both SEO and accessibility.',
-        'Performance': 'Page speed is a confirmed ranking factor. Slow sites have higher bounce rates and lower rankings.',
-        'Semantic HTML': 'Semantic tags (main, article, nav) help search engines understand page structure and content hierarchy.',
-        'URL Structure': 'Clean, descriptive URLs help both users and search engines understand page content before visiting.',
-        'Schema Markup (SEO)': 'Structured data helps search engines understand your content and can trigger rich results in search.',
-        'External Links': 'Linking to authoritative sources signals that your content is well-researched and trustworthy.',
-        'Content Freshness': 'Regularly updated content signals that your site is active and relevant, which can boost rankings.',
-        
-        // AEO Explanations
-        'Content Depth': 'Thin content (under 300 words) rarely ranks. Search engines prefer comprehensive content that thoroughly covers topics. AI systems like ChatGPT, Gemini, and Perplexity need substantial content to cite and reference.',
-        'Schema Markup': 'AI systems rely heavily on structured data to understand and cite content. Without schema, your content is invisible to AI.',
-        'Schema Markup (AEO)': 'AI systems rely heavily on structured data to understand and cite content. Without schema, your content is invisible to AI.',
-        'Schema Quality': 'Incomplete or incorrect schema markup confuses AI systems and prevents them from citing your content accurately.',
-        'Question Answering': 'AI systems prioritize content that directly answers questions. Content without clear Q&A patterns gets ignored.',
-        'Entity Density': 'AI systems look for specific entities (people, places, things, concepts). Low entity density suggests vague, unhelpful content.',
-        'Formatting': 'AI systems prefer well-formatted, concise content. Walls of text or poor structure make content hard to parse and cite.',
-        'Definitions': 'Clear definition statements help AI systems understand and explain concepts. Missing definitions reduce citation likelihood.',
-        
-        // GEO Explanations
-        'Image Accessibility': 'AI systems cannot "see" images without alt text. Missing alt text creates blind spots in AI understanding of your content.',
-        'Tone': 'Overly promotional content is flagged as biased by AI systems. Neutral, informative tone increases trust and citation likelihood.',
-        'Expertise': 'AI systems look for expertise signals (credentials, experience, data). Content without these signals is considered less authoritative.',
-        'Data & Facts': 'AI systems prioritize content with specific data, statistics, and facts. Vague claims without evidence are ignored.',
-        'Objectivity': 'Heavy first-person usage suggests opinion rather than fact. AI systems prefer objective, third-person content for citations.',
-        'Claims': 'Unsubstantiated claims reduce content credibility. AI systems require evidence and sources to consider content trustworthy.',
-    };
-    
-    return explanations[component] || 'This issue impacts how search engines and AI systems understand and rank your content.';
+function resolveComponentKey(feedback: string, category: string): string {
+    const fb = feedback.toLowerCase();
+
+    // SEO keyword matching (scoring-components.ts uses descriptive feedback strings)
+    if (fb.includes('title')) return 'title';
+    if (fb.includes('meta description')) return 'meta_description';
+    if (fb.includes('h1')) return 'h1';
+    if (fb.includes('https') || fb.includes('ssl')) return 'https';
+    if (fb.includes('viewport') || fb.includes('mobile')) return 'viewport';
+    if (fb.includes('thin content') || fb.includes('content') && fb.includes('word')) return 'word_count';
+    if (fb.includes('readability') || fb.includes('insufficient content to evaluate')) return 'readability';
+    if (fb.includes('internal link')) return 'internal_links';
+    if (fb.includes('alt text') || fb.includes('image')) return 'images';
+    if (fb.includes('performance') || fb.includes('load time') || fb.includes('slow')) return 'performance';
+    if (fb.includes('semantic')) return 'semantic_html';
+    if (fb.includes('url') || fb.includes('session')) return 'url_structure';
+    if (fb.includes('schema')) return 'schema';
+    if (fb.includes('external link') || fb.includes('authority')) return 'external_links';
+    if (fb.includes('freshness') || fb.includes('updated')) return 'content_freshness';
+
+    // AEO clean name matching
+    if (fb === 'content depth') return 'content_depth';
+    if (fb === 'schema markup' || fb === 'schema quality') return 'schema';
+    if (fb === 'question answering') return 'question_answering';
+    if (fb === 'entity density') return 'entity_density';
+    if (fb === 'formatting') return 'formatting';
+    if (fb === 'definitions') return 'definitions';
+
+    // GEO clean name matching
+    if (fb === 'image accessibility') return 'image_accessibility';
+    if (fb === 'tone') return 'tone';
+    if (fb === 'expertise') return 'expertise';
+    if (fb === 'data & facts') return 'data_facts';
+    if (fb === 'objectivity') return 'objectivity';
+    if (fb === 'claims') return 'claims';
+
+    return 'unknown';
 }
 
 /**
- * Get actionable fix for a penalty
+ * Get detailed, specific explanation for why a penalty matters
  */
-function getFix(category: string, component: string, issue: string): string {
-    const fixes: Record<string, string> = {
-        // SEO Fixes
-        'Title Tag': 'Add a unique, descriptive title tag (50-60 characters) that includes your primary keyword near the beginning. Format: "Primary Keyword - Secondary Keyword | Brand"',
-        'Meta Description': 'Write a compelling meta description (120-160 characters) that includes your primary keyword and a clear call-to-action. Make it unique for each page.',
-        'H1 Heading': 'Add exactly one H1 tag per page that clearly describes the page content. Include your primary keyword naturally. Use H2-H6 for subheadings.',
-        'HTTPS': 'Install an SSL certificate (free via Let\'s Encrypt or your hosting provider). Update all internal links to use https://. Set up 301 redirects from http to https.',
-        'Mobile Responsive': 'Use responsive CSS (media queries) or a mobile-first framework. Test on real devices. Ensure text is readable without zooming and buttons are tap-friendly.',
-        'Word Count': 'Expand content to at least 800 words. Add sections covering: what, why, how, benefits, examples, and FAQs. Focus on depth over length.',
-        'Readability': 'Break up long paragraphs (3-4 sentences max). Use bullet points, subheadings, and short sentences. Aim for 8th-grade reading level or lower.',
-        'Internal Links': 'Add 3-5 contextual internal links to related pages. Use descriptive anchor text (not "click here"). Link to both deeper pages and category pages.',
-        'Images': 'Add descriptive alt text to all images. Format: "what the image shows + context". Example: "blue running shoes on wooden floor in gym"',
-        'Performance': 'Optimize images (use WebP, compress to <100KB). Minify CSS/JS. Enable browser caching. Use a CDN. Aim for <2 second load time.',
-        'Semantic HTML': 'Wrap main content in <main>, navigation in <nav>, articles in <article>. Use <aside> for sidebars. This helps crawlers understand page structure.',
-        'URL Structure': 'Use clean URLs with hyphens: /category/product-name instead of /page?id=123. Keep URLs under 60 characters. Include primary keyword.',
-        'Schema Markup': 'Add JSON-LD schema to <head>. Minimum: Organization schema with name, logo, url. For articles: add Article schema with headline, author, datePublished.',
-        'External Links': 'Link to 2-3 authoritative sources (Wikipedia, .gov, .edu, industry leaders). Use rel="noopener" for security. Open in new tab.',
-        'Content Freshness': 'Add "Last Updated" date. Update content quarterly. Add new sections, examples, or data. Update statistics and remove outdated information.',
-        
-        // AEO Fixes
-        'Content Depth': 'Expand content to at least 800 words. Add sections covering: what (define your topic), why (explain benefits), how (describe process), benefits (list advantages), examples (provide use cases), and FAQs (answer 5-10 common questions). Focus on depth and value over word count.',
-        'Schema Markup (AEO)': 'Add JSON-LD schema to <head>. Start with Organization schema. For content pages, add Article, FAQPage, or HowTo schema as appropriate.',
-        'Schema Quality': 'Validate schema at schema.org/validator. Fix all errors. Add required properties: name, description, image, url. Remove placeholder data.',
-        'Question Answering': 'Add FAQ section with 5-10 common questions. Use <h3> for questions, <p> for answers. Start answers with direct responses (Yes/No, specific number).',
-        'Entity Density': 'Add specific names, numbers, dates, and locations. Replace vague terms ("many", "some") with exact figures. Link to Wikipedia for key entities.',
-        'Formatting': 'Use bullet points for lists. Keep paragraphs to 3-4 sentences. Add subheadings every 200-300 words. Use bold for key terms (sparingly).',
-        'Definitions': 'Start with a clear definition: "X is [category] that [key characteristic]". Example: "SEO is a marketing strategy that improves website visibility in search results."',
-        
-        // GEO Fixes
-        'Image Accessibility': 'Add alt text to all images. Be specific and descriptive. Include context and relevant keywords naturally. Format: "what + where + why"',
-        'Tone': 'Remove promotional language ("best", "amazing", "revolutionary"). Use neutral, factual tone. Replace "we offer" with "this includes". Focus on information, not selling.',
-        'Expertise': 'Add author bio with credentials. Include "About the Author" section. Link to LinkedIn/professional profiles. Cite experience and qualifications.',
-        'Data & Facts': 'Add specific statistics, percentages, and numbers. Cite sources for all data. Include dates for time-sensitive information. Use "According to [source]" format.',
-        'Objectivity': 'Replace first-person ("I think", "we believe") with third-person or passive voice. Use "research shows" instead of "I found". Focus on facts, not opinions.',
-        'Claims': 'Add citations for all claims. Link to studies, reports, or authoritative sources. Use footnotes or inline citations. Format: "According to [Source], [claim]."',
+function getExplanation(key: string, category: string): string {
+    const explanations: Record<string, string> = {
+        // SEO
+        title: 'Title tags are the single most important on-page SEO element. They appear as the clickable headline in search results and browser tabs. Google uses them as a primary ranking signal to understand what your page is about. A missing or poorly optimized title means search engines cannot properly index your page, and users have no reason to click your result.',
+        meta_description: 'Meta descriptions appear as the snippet text below your title in search results. While not a direct ranking factor, they are the primary driver of click-through rate (CTR). A compelling meta description can increase clicks by 5-10%. Without one, Google auto-generates a snippet that may not represent your page well, leading to lower CTR and fewer visitors.',
+        h1: 'The H1 tag is the main heading of your page and tells both users and search engines what the page is about. Google uses H1 as a strong relevance signal. Missing H1 means crawlers cannot determine your page topic. Multiple H1s dilute the signal and confuse the content hierarchy. This directly impacts your ability to rank for target keywords.',
+        https: 'HTTPS is a confirmed Google ranking signal since 2014. Sites without SSL are marked "Not Secure" in Chrome and other browsers, which destroys user trust. HTTPS also protects user data in transit. Google has stated that HTTPS is a lightweight ranking factor, but the trust impact on users is massive — 85% of users will not continue browsing on an insecure site.',
+        viewport: 'Google uses mobile-first indexing, meaning it primarily uses the mobile version of your site for ranking. Without a viewport meta tag, your site renders at desktop width on mobile devices, making text unreadable and buttons untappable. This results in a poor mobile experience, higher bounce rates, and significantly lower rankings in mobile search results, which account for over 60% of all searches.',
+        word_count: 'Content depth is a strong ranking signal. Pages with fewer than 300 words are considered "thin content" by search engines and rarely rank for competitive terms. Studies show that top-ranking pages average 1,400+ words. Thin content also provides insufficient material for AI systems like ChatGPT and Perplexity to cite, making your page invisible in AI-generated answers.',
+        readability: 'Content readability directly impacts user engagement metrics that Google tracks — time on page, bounce rate, and scroll depth. Hard-to-read content causes users to leave quickly, sending negative signals to search engines. The average web reader reads at an 8th-grade level. Content written above this level loses a significant portion of your potential audience.',
+        internal_links: 'Internal links are how search engines discover and understand your site architecture. They distribute "link equity" (ranking power) across your pages. Pages with no internal links are orphaned — search engines may never find them. Good internal linking also keeps users on your site longer, reducing bounce rate and increasing the chance of conversion.',
+        images: 'Images without alt text are completely invisible to search engines and screen readers. Google Image Search drives 22% of all web searches. Missing alt text means you lose this traffic entirely. Alt text also provides context to search engines about your page content, and is legally required for accessibility compliance (WCAG 2.1 AA).',
+        performance: 'Page speed is a confirmed Google ranking factor (Core Web Vitals). Pages that take longer than 3 seconds to load lose 53% of mobile visitors. Slow sites have higher bounce rates, lower conversion rates, and worse rankings. Google specifically measures Largest Contentful Paint (LCP), First Input Delay (FID), and Cumulative Layout Shift (CLS).',
+        semantic_html: 'Semantic HTML5 tags (<main>, <nav>, <article>, <header>, <footer>) help search engines understand your page structure and content hierarchy. Without them, crawlers see a flat document with no structural meaning. Semantic markup also improves accessibility for screen readers and can influence how Google generates featured snippets.',
+        url_structure: 'Clean, descriptive URLs help both users and search engines understand page content before visiting. URLs with excessive parameters, session IDs, or random strings look spammy and reduce click-through rates. Google has confirmed that words in URLs are a minor ranking factor. Clean URLs are also easier to share and link to.',
+        schema: category === 'AEO'
+            ? 'Structured data (schema.org markup) is how AI systems like ChatGPT, Gemini, and Perplexity understand your content programmatically. Without schema, AI cannot reliably parse your page type, author, dates, or key facts. Sites with proper schema are 2-3x more likely to be cited in AI-generated answers. Schema also enables rich results in Google (stars, FAQs, breadcrumbs).'
+            : 'Structured data (schema.org markup) helps search engines understand your content beyond plain text. It enables rich results in Google — star ratings, FAQ dropdowns, breadcrumbs, product prices — which dramatically increase click-through rates. Pages with rich results get 58% more clicks than standard results.',
+        external_links: 'Linking to authoritative external sources signals to search engines that your content is well-researched and trustworthy. Pages that cite credible sources rank higher because they demonstrate expertise and provide additional value. Not linking out can make your content appear isolated and less credible.',
+        content_freshness: 'Google uses content freshness as a ranking signal, especially for time-sensitive queries. Outdated content with old statistics or broken references loses rankings over time. Regularly updated content signals that your site is active and authoritative. Adding "Last Updated" dates also builds user trust.',
+
+        // AEO
+        content_depth: 'AI systems like ChatGPT, Gemini, and Perplexity need substantial, well-structured content to cite and reference. Pages with fewer than 300 words provide insufficient material for AI to extract meaningful answers. When users ask AI assistants questions, the AI looks for comprehensive pages that thoroughly cover the topic. Thin content is essentially invisible to AI search.',
+        question_answering: 'AI systems are fundamentally designed to answer questions. They actively seek content that directly addresses common queries in a clear Q&A format. Pages without explicit question-answer patterns get bypassed in favor of pages that do. Adding FAQ sections and direct-answer paragraphs dramatically increases your chances of being cited in AI responses.',
+        entity_density: 'AI systems identify and index specific entities — people, places, organizations, products, dates, and statistics. Content with low entity density (vague language like "many years" or "some people") gives AI nothing concrete to reference. High entity density makes your content a reliable source of specific, citable facts.',
+        formatting: 'AI systems parse content structure to extract relevant information. Walls of text, inconsistent formatting, and poor hierarchy make it harder for AI to identify key points. Well-formatted content with clear headings, bullet points, and concise paragraphs is significantly easier for AI to process, understand, and cite.',
+        definitions: 'AI systems frequently need to define concepts for users. Content that starts with clear, concise definitions (e.g., "SEO is a marketing strategy that...") is highly likely to be pulled directly into AI responses. Missing definitions force AI to look elsewhere for explanations, reducing your citation likelihood.',
+
+        // GEO
+        image_accessibility: 'AI systems cannot interpret images without alt text. Every image missing alt text is a blind spot in AI understanding of your content. Alt text provides the textual context AI needs to understand visual content. This is also critical for accessibility — screen readers rely entirely on alt text to describe images to visually impaired users.',
+        tone: 'AI systems are trained to identify and deprioritize promotional or biased content. Overly sales-oriented language ("best in class", "amazing results", "revolutionary") triggers bias detection, causing AI to prefer more neutral, informative sources. Factual, balanced tone increases trust scores and citation likelihood across all major AI platforms.',
+        expertise: 'AI systems evaluate E-E-A-T signals (Experience, Expertise, Authoritativeness, Trust) to determine source credibility. Content without author credentials, professional experience, or expertise indicators is considered less authoritative. Adding author bios, credentials, and experience signals significantly increases the likelihood of AI citation.',
+        data_facts: 'AI systems prioritize content with specific, verifiable data — statistics, percentages, dates, measurements, and cited research. Vague claims without supporting evidence are deprioritized. Content rich in specific data points becomes a preferred citation source because AI can confidently reference concrete facts.',
+        objectivity: 'Heavy first-person usage ("I think", "we believe", "in my opinion") signals subjective opinion rather than objective fact. AI systems prefer third-person, evidence-based content for citations because it appears more authoritative and unbiased. Reducing first-person language and replacing opinions with data-backed statements improves AI citation rates.',
+        claims: 'Unsubstantiated claims are a red flag for AI credibility assessment. Every claim without a citation, source, or supporting evidence reduces your content trustworthiness score. AI systems cross-reference claims against known facts — unsupported statements cause your entire page to be rated as less reliable.',
     };
-    
-    return fixes[component] || 'Review and update this element following current best practices for search engines and AI systems.';
+
+    return explanations[key] || `This issue impacts how search engines and AI systems understand and rank your content. The ${category} scoring system detected a problem that reduces your visibility.`;
+}
+
+/**
+ * Platform-specific fix instructions for each component.
+ * Returns comprehensive, actionable steps tailored to the detected platform.
+ */
+function getFix(key: string, category: string, platform: string): string {
+    const plat = platform.toLowerCase();
+
+    // Platform-specific prefixes for common operations
+    const platformTips: Record<string, Record<string, string>> = {
+        wordpress: {
+            title: 'In WordPress: Go to Pages/Posts > Edit > scroll to "SEO" section (Yoast/RankMath). Enter your title in the "SEO Title" field. If no SEO plugin: install Yoast SEO or RankMath (free). Alternatively, edit the <title> in your theme\'s header.php or use the wp_title filter.',
+            meta_description: 'In WordPress: Use Yoast SEO or RankMath plugin > Edit page > "SEO" meta box > "Meta Description" field. Without a plugin: add to functions.php or use "All in One SEO" plugin. Each page needs a unique description.',
+            h1: 'In WordPress: The page/post title automatically becomes the H1. If missing, check your theme — some themes use <div> instead of <h1> for titles. Edit in Appearance > Theme Editor > single.php/page.php. Ensure only one <h1> exists per page.',
+            https: 'In WordPress: 1) Get SSL from your host (most offer free Let\'s Encrypt). 2) Install "Really Simple SSL" plugin — it handles redirects automatically. 3) Update WordPress Address and Site Address in Settings > General to https://. 4) Run "Better Search Replace" plugin to update all http:// URLs in your database.',
+            viewport: 'In WordPress: Most modern themes include viewport meta. If missing, add to your theme\'s header.php inside <head>: <meta name="viewport" content="width=device-width, initial-scale=1">. Better: switch to a responsive theme (Astra, GeneratePress, Kadence). Check with Theme > Customize > verify mobile preview.',
+            schema: 'In WordPress: Install "Schema Pro" or "Yoast SEO" (both add JSON-LD automatically). For manual control: use "WP Schema Plugin" or add JSON-LD to header.php. Minimum: Organization + WebPage schema. For blog posts: Article schema with author, datePublished, headline.',
+            images: 'In WordPress: Go to Media Library > click each image > fill in "Alt Text" field. For bulk editing: use "Auto Image Alt Text" plugin. When uploading new images, always fill the alt text field. Format: descriptive text of what the image shows.',
+            performance: 'In WordPress: 1) Install WP Rocket or LiteSpeed Cache for caching. 2) Use ShortPixel or Imagify for image compression. 3) Install Autoptimize to minify CSS/JS. 4) Use a CDN (Cloudflare free tier). 5) Remove unused plugins. Target: <2s load time.',
+            internal_links: 'In WordPress: Use "Link Whisper" plugin for AI-suggested internal links. Manually: when editing a post, highlight text > click link icon > search for related posts. Add "Related Posts" section using Yoast or a related posts plugin. Aim for 3-5 contextual links per page.',
+            word_count: 'In WordPress: Edit the page/post and expand the content. Use the block editor to add sections: Introduction, Main Content (with H2 subheadings), FAQ section (use the FAQ block), and Conclusion. Aim for 800+ words. Use Yoast\'s content analysis to track word count.',
+        },
+        shopify: {
+            title: 'In Shopify: Go to the page/product > scroll to "Search engine listing preview" > click "Edit website SEO" > enter your title in "Page title". For the homepage: Online Store > Preferences > "Homepage title". Keep it 50-60 characters with your primary keyword first.',
+            meta_description: 'In Shopify: Edit any page/product > "Search engine listing preview" > "Edit website SEO" > "Meta description" field. For homepage: Online Store > Preferences > "Homepage meta description". Write 120-160 characters with a clear call-to-action.',
+            h1: 'In Shopify: The page/product title is automatically the H1. If you need to change it without affecting the visible title, edit your theme\'s Liquid template. Go to Online Store > Themes > Edit Code > find the relevant template (product.liquid, page.liquid) and ensure there\'s exactly one <h1> tag.',
+            https: 'Shopify includes SSL/HTTPS automatically for all stores — no action needed. If you\'re seeing HTTP issues, go to Online Store > Domains and ensure your primary domain has "SSL certificate" showing as active. Force HTTPS redirect is enabled by default.',
+            viewport: 'Shopify themes include viewport meta by default. If missing, go to Online Store > Themes > Edit Code > theme.liquid > add inside <head>: <meta name="viewport" content="width=device-width, initial-scale=1">. All official Shopify themes are mobile-responsive.',
+            schema: 'In Shopify: Install "JSON-LD for SEO" app (by Ilana Davis) or "Smart SEO" app. These automatically add Product, Organization, BreadcrumbList, and Article schema. For manual: edit theme.liquid to add JSON-LD scripts. Product pages should have Product schema with price, availability, reviews.',
+            images: 'In Shopify: Go to Products > edit product > click each image > fill "Alt text" field. For pages: edit the page > click images in the content editor > add alt text. For theme images: Online Store > Themes > Customize > click image sections > fill alt text.',
+            performance: 'In Shopify: 1) Compress images before uploading (use TinyPNG). 2) Remove unused apps — each adds JavaScript. 3) Use Shopify\'s built-in lazy loading. 4) Minimize custom Liquid code. 5) Use system fonts instead of custom fonts. 6) Enable Shopify\'s built-in CDN (automatic).',
+        },
+        wix: {
+            title: 'In Wix: Click the page in the editor > "Page SEO (Google)" or go to Site Dashboard > Marketing & SEO > SEO Tools > click the page > "SEO Basics" tab > "Title tag". Keep it 50-60 characters. For the homepage: same process, select the Home page.',
+            meta_description: 'In Wix: Site Dashboard > Marketing & SEO > SEO Tools > select page > "SEO Basics" > "Meta description". Or in the editor: click page > "Page SEO (Google)" > "What\'s this page about?". Write 120-160 characters.',
+            h1: 'In Wix: The main heading you add to your page becomes the H1. In the editor, click your main title text > change the style to "Heading 1" in the text settings. Ensure only one Heading 1 exists per page. Other headings should be Heading 2-6.',
+            viewport: 'Wix automatically handles viewport and mobile responsiveness. Use the mobile editor (phone icon in the editor) to verify your mobile layout. Adjust element positions and sizes for mobile view. Wix sites are responsive by default.',
+            schema: 'In Wix: Go to Marketing & SEO > SEO Tools > select page > "Advanced SEO" tab > "Structured Data Markup". Add JSON-LD code here. Wix also auto-generates some schema. For more control, use Wix\'s "Structured Data" feature or add custom code via "Custom Code" in site settings.',
+            images: 'In Wix: Click any image in the editor > "Settings" icon > fill in the "Alt text" field. For gallery images: click gallery > "Manage Media" > click each image > add alt text. Describe what the image shows specifically.',
+            performance: 'In Wix: 1) Compress images before uploading. 2) Reduce the number of elements on each page. 3) Remove unused apps. 4) Use Wix\'s built-in image optimization. 5) Minimize animations and videos. 6) Wix handles CDN and caching automatically.',
+        },
+        squarespace: {
+            title: 'In Squarespace: Edit page > Settings (gear icon) > "SEO" tab > "SEO Title". For the homepage: Home > Settings > SEO. If the SEO title is empty, Squarespace uses the page title. Keep it 50-60 characters with your primary keyword.',
+            meta_description: 'In Squarespace: Edit page > Settings (gear icon) > "SEO" tab > "SEO Description". Write 120-160 characters. For site-wide default: Settings > SEO > "SEO Description". Each page should have a unique description.',
+            h1: 'In Squarespace: The page title or first heading block is typically the H1. In the editor, add a "Text" block and set it to "Heading 1" format. Check your template — some Squarespace templates use the page title as H1 automatically. Ensure only one H1 per page.',
+            schema: 'In Squarespace: Go to Settings > Advanced > Code Injection > "Header" section. Paste your JSON-LD schema code here. Squarespace auto-generates basic schema for products and blog posts. For custom schema, use the code injection feature. Validate at schema.org/validator.',
+            images: 'In Squarespace: Click any image > "Edit" > "Image" tab > fill in the "Alt Text" field (under "Filename"). For gallery images: click gallery > edit each image > add alt text. For background images: section settings > "Alt Text" field.',
+            performance: 'In Squarespace: 1) Use "Image Loader" setting (Settings > Design > Image Loading) set to "Lazy". 2) Compress images before uploading. 3) Minimize custom CSS/JavaScript. 4) Reduce page sections. Squarespace handles CDN, caching, and minification automatically.',
+        },
+        webflow: {
+            title: 'In Webflow: Select the page in the Pages panel > Settings tab > "SEO Title". Use dynamic fields for CMS pages: click the purple dot to bind to a CMS field. Keep it 50-60 characters. For the homepage: select Home page > Settings > SEO Title.',
+            meta_description: 'In Webflow: Pages panel > select page > Settings > "SEO Meta Description". For CMS pages, bind to a CMS field for dynamic descriptions. Write 120-160 characters per page.',
+            h1: 'In Webflow: Select your main heading element > in the Settings panel (right side), change the tag from "Heading" to "H1" if needed. Check the HTML tag dropdown. Ensure only one H1 per page. Use H2-H6 for subheadings in the hierarchy.',
+            schema: 'In Webflow: Go to Pages > page settings > "Custom Code" > "Inside <head> tag". Paste JSON-LD schema here. For site-wide schema: Project Settings > Custom Code > "Head Code". Webflow doesn\'t auto-generate schema, so you need to add it manually or use a third-party tool like Schema App.',
+            images: 'In Webflow: Select any image element > Settings panel (right side) > "Alt Text" field. For background images: you\'ll need to add aria-label to the div. For CMS images: bind alt text to a CMS text field. Always describe what the image shows.',
+            performance: 'In Webflow: 1) Enable "Lazy Load" on images (element settings > Loading > Lazy). 2) Use WebP format for images. 3) Minimize interactions and animations. 4) Reduce custom code. 5) Webflow handles CDN, minification, and caching automatically. 6) Use Webflow\'s built-in image compression.',
+        },
+        nextjs: {
+            title: 'In Next.js: Use the Metadata API. In your page.tsx/page.js, export a metadata object: export const metadata = { title: "Your Title Here" }. For dynamic titles, use generateMetadata(). For the app router, this goes in layout.tsx or page.tsx. For pages router, use <Head> from next/head.',
+            meta_description: 'In Next.js: Add to your metadata export: export const metadata = { title: "...", description: "Your 120-160 char description" }. For dynamic pages, use generateMetadata() async function. For pages router: <Head><meta name="description" content="..." /></Head>.',
+            h1: 'In Next.js: Add an <h1> tag in your page component JSX. Ensure only one <h1> per page. Example: <h1 className="text-3xl font-bold">Your Page Title</h1>. Check that layout components don\'t add additional H1s.',
+            schema: 'In Next.js: Add JSON-LD in your page component using a <script> tag: <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />. Or use the next-seo package for structured schema helpers. Place in your page.tsx or layout.tsx.',
+            performance: 'In Next.js: 1) Use next/image for automatic image optimization. 2) Enable ISR or SSG for static pages. 3) Use dynamic imports for heavy components: dynamic(() => import("./Heavy")). 4) Analyze bundle with @next/bundle-analyzer. 5) Use next/font for font optimization. 6) Enable compression in next.config.js.',
+        },
+        gatsby: {
+            title: 'In Gatsby: Use gatsby-plugin-react-helmet or the Head API (Gatsby 4.19+). In your page component: export const Head = () => <title>Your Title</title>. Or with Helmet: <Helmet><title>Your Title</title></Helmet>. For dynamic pages, pass title via pageContext.',
+            meta_description: 'In Gatsby: Using Head API: export const Head = () => (<><title>...</title><meta name="description" content="Your description" /></>). Or with gatsby-plugin-react-helmet: <Helmet><meta name="description" content="..." /></Helmet>.',
+            schema: 'In Gatsby: Add JSON-LD using the Head API or gatsby-plugin-react-helmet. Install gatsby-plugin-schema-snapshot for automatic schema. Or manually add <script type="application/ld+json"> in your Head export. Use gatsby-plugin-sitemap for additional SEO.',
+        },
+        drupal: {
+            title: 'In Drupal: Install the "Metatag" module (drupal.org/project/metatag). Go to Configuration > Search and metadata > Metatag. Set title patterns per content type. For individual pages: edit the node > "Meta tags" fieldset > "Page title". Use token replacements like [node:title].',
+            meta_description: 'In Drupal: With Metatag module installed: edit any node > "Meta tags" section > "Description" field. For defaults: Configuration > Metatag > edit content type defaults. Use [node:summary] token for automatic descriptions from the body summary.',
+            schema: 'In Drupal: Install the "Schema.org Metatag" module (drupal.org/project/schema_metatag). Configure at Configuration > Search and metadata > Metatag. This adds JSON-LD automatically based on content type. For custom schema, use the "JSON-LD" module.',
+        },
+    };
+
+    // Generic (non-platform-specific) comprehensive fixes
+    const genericFixes: Record<string, string> = {
+        title: 'Add a <title> tag inside your <head> section. Keep it 50-60 characters. Include your primary keyword near the beginning. Format: "Primary Keyword - Secondary Info | Brand Name". Make each page title unique. Example: <title>Best Running Shoes for Beginners - 2026 Guide | YourBrand</title>',
+        meta_description: 'Add a <meta name="description" content="..."> tag inside <head>. Write 120-160 characters that summarize the page and include a call-to-action. Include your primary keyword naturally. Make it unique per page. Example: <meta name="description" content="Find the best running shoes for beginners. Compare top brands, read expert reviews, and get fitted today. Free shipping available.">',
+        h1: 'Add exactly one <h1> tag per page containing your main topic keyword. Place it at the top of your main content area. Use H2-H6 for subheadings to create a clear hierarchy. Example: <h1>Best Running Shoes for Beginners in 2026</h1>. Never use more than one H1 — it confuses search engines about your page topic.',
+        https: 'Install an SSL certificate: 1) Check if your host offers free SSL (most do via Let\'s Encrypt). 2) Enable SSL in your hosting control panel. 3) Update your site URL to https://. 4) Set up 301 redirects from http:// to https://. 5) Update all internal links to use https://. 6) Update your sitemap and Google Search Console.',
+        viewport: 'Add this tag inside your <head> section: <meta name="viewport" content="width=device-width, initial-scale=1">. This tells mobile browsers to render the page at the device width instead of a desktop viewport. Then ensure your CSS uses responsive design: use relative units (%, rem, vw), media queries, and flexible layouts. Test on real mobile devices.',
+        word_count: 'Expand your content to at least 800 words. Add these sections: 1) Introduction explaining the topic. 2) Main content with H2 subheadings covering different aspects. 3) Step-by-step instructions or how-to guide. 4) Benefits or advantages section. 5) FAQ section with 5-10 common questions and direct answers. 6) Conclusion with next steps. Focus on providing genuine value, not padding.',
+        readability: 'Improve readability: 1) Keep paragraphs to 3-4 sentences max. 2) Use bullet points and numbered lists for steps or features. 3) Add subheadings (H2, H3) every 200-300 words. 4) Use short sentences (under 20 words). 5) Write at an 8th-grade reading level — use simple words. 6) Bold key terms sparingly for scanning. 7) Use transition words between paragraphs.',
+        internal_links: 'Add 3-5 contextual internal links per page: 1) Link to related content pages using descriptive anchor text (not "click here"). 2) Link to category/pillar pages from detail pages. 3) Add a "Related Articles" or "You May Also Like" section. 4) Use breadcrumb navigation. 5) Ensure every important page is reachable within 3 clicks from the homepage.',
+        images: 'Add descriptive alt text to every image: 1) Describe what the image shows specifically. 2) Include relevant keywords naturally. 3) Keep alt text under 125 characters. 4) Format: "[subject] [action/context] [location/setting]". Example: alt="woman running in blue Nike shoes on a forest trail". 5) For decorative images, use alt="" (empty). 6) Never start with "image of" or "picture of".',
+        performance: 'Improve page speed: 1) Compress images to WebP format, keep under 100KB each. 2) Minify CSS and JavaScript files. 3) Enable browser caching with proper Cache-Control headers. 4) Use a CDN (Cloudflare free tier works well). 5) Defer non-critical JavaScript with async/defer attributes. 6) Reduce server response time to under 200ms. 7) Remove unused CSS/JS. Target: under 2 second total load time.',
+        semantic_html: 'Add HTML5 semantic tags to your page structure: 1) Wrap your main content in <main>. 2) Use <nav> for navigation menus. 3) Wrap blog posts/articles in <article>. 4) Use <header> for page/section headers. 5) Use <footer> for page/section footers. 6) Use <aside> for sidebars and related content. 7) Use <section> to group related content with headings.',
+        url_structure: 'Clean up your URLs: 1) Use hyphens to separate words: /running-shoes-guide instead of /running_shoes_guide. 2) Keep URLs under 60 characters. 3) Include your primary keyword. 4) Remove unnecessary parameters (?id=123&session=abc). 5) Use lowercase only. 6) Avoid stop words (the, and, of). Example: /best-running-shoes-beginners instead of /page?cat=shoes&id=42.',
+        schema: category === 'AEO'
+            ? 'Add JSON-LD structured data to help AI systems understand your content: 1) Add Organization schema with name, logo, url, sameAs (social profiles). 2) For articles: add Article schema with headline, author, datePublished, dateModified, image. 3) For products: add Product schema with name, price, availability, reviews. 4) For FAQs: add FAQPage schema with question/answer pairs. 5) Validate at search.google.com/test/rich-results. Place the <script type="application/ld+json"> tag in your <head> section.'
+            : 'Add JSON-LD structured data inside <head>: 1) Start with Organization schema: {"@context":"https://schema.org","@type":"Organization","name":"...","url":"...","logo":"..."}. 2) Add WebPage schema for each page. 3) For blog posts: Article schema with headline, author, datePublished. 4) For products: Product schema with price, availability. 5) For FAQs: FAQPage schema. 6) Validate at search.google.com/test/rich-results.',
+        external_links: 'Add 2-3 outbound links to authoritative sources: 1) Link to .gov, .edu, Wikipedia, or recognized industry leaders. 2) Use descriptive anchor text that tells users what they\'ll find. 3) Add rel="noopener noreferrer" and target="_blank" for security. 4) Only link to relevant, high-quality sources. 5) Avoid linking to competitors\' product pages.',
+        content_freshness: 'Keep content current: 1) Add a visible "Last Updated: [date]" near the top of the page. 2) Review and update content quarterly. 3) Replace outdated statistics with current data. 4) Add new sections covering recent developments. 5) Fix broken links. 6) Update screenshots and examples. 7) Add a dateModified property to your Article schema.',
+
+        // AEO-specific
+        content_depth: 'Expand content for AI visibility: 1) Write at least 800 words of substantive content. 2) Structure with clear H2/H3 subheadings. 3) Add a "What is [topic]?" definition section. 4) Include a "How does [topic] work?" explanation. 5) Add a "Benefits of [topic]" section. 6) Create an FAQ with 5-10 questions and direct answers. 7) Include specific examples, data, and case studies. AI systems need comprehensive content to cite.',
+        question_answering: 'Add Q&A content that AI can cite: 1) Create an FAQ section with 5-10 common questions. 2) Use <h3> or <h2> for each question. 3) Start each answer with a direct response (yes/no, a number, a definition). 4) Keep answers concise (2-4 sentences for the direct answer, then expand). 5) Add FAQPage schema markup. 6) Use question formats like "What is...", "How do I...", "Why does...".',
+        entity_density: 'Increase entity density for AI: 1) Replace vague terms with specifics — "many years" becomes "since 2008", "some people" becomes "42% of users". 2) Name specific products, people, places, and organizations. 3) Include exact dates, prices, measurements, and statistics. 4) Link to Wikipedia for key entities. 5) Use proper nouns instead of pronouns where possible.',
+        formatting: 'Improve content formatting for AI parsing: 1) Break paragraphs to 3-4 sentences max. 2) Use bullet points for lists of items or features. 3) Use numbered lists for sequential steps. 4) Add H2/H3 subheadings every 200-300 words. 5) Bold key terms and definitions (sparingly). 6) Use tables for comparative data. 7) Keep sentences under 20 words.',
+        definitions: 'Add clear definitions AI can extract: 1) Start your content with a clear definition: "[Topic] is [category] that [key characteristic]." 2) Example: "SEO is a digital marketing strategy that improves website visibility in search engine results." 3) Define technical terms when first used. 4) Use "is defined as", "refers to", or "means" for clarity. 5) Add a glossary section for pages with many technical terms.',
+
+        // GEO-specific
+        image_accessibility: 'Fix image accessibility for AI and users: 1) Add alt text to every image — describe what it shows specifically. 2) Include context: "chef preparing sushi in a Tokyo restaurant kitchen" not just "food". 3) For infographics, describe the key data points in alt text. 4) For decorative images, use alt="" (empty string). 5) Keep alt text under 125 characters. 6) Never use "image of" or "photo of" as a prefix.',
+        tone: 'Reduce promotional tone for AI trust: 1) Remove superlatives: "best", "amazing", "revolutionary", "world-class". 2) Replace "we offer the best" with "this service includes". 3) Use factual statements instead of claims: "serves 10,000 customers" not "loved by everyone". 4) Write in third person where possible. 5) Let data and facts speak instead of adjectives. 6) Focus on informing, not selling.',
+        expertise: 'Add expertise signals for AI credibility: 1) Add an "About the Author" section with credentials, experience, and qualifications. 2) Link to the author\'s LinkedIn or professional profile. 3) Mention relevant certifications, degrees, or years of experience. 4) Include "Reviewed by [Expert Name], [Credentials]" for medical/legal/financial content. 5) Add author schema markup with sameAs links.',
+        data_facts: 'Add specific data for AI citation: 1) Include exact statistics: "increased by 47%" not "increased significantly". 2) Cite sources: "According to [Source Name] (2025)..." 3) Add dates to time-sensitive data. 4) Use specific numbers: "$2.4 million" not "millions of dollars". 5) Include research findings with study names. 6) Add a "Sources" or "References" section at the bottom.',
+        objectivity: 'Improve objectivity for AI trust: 1) Replace "I think" with "research indicates" or "data shows". 2) Replace "we believe" with "evidence suggests". 3) Use third-person perspective: "users report" instead of "we found". 4) Support opinions with data: "this approach is effective, as shown by a 34% improvement in [study]". 5) Present multiple viewpoints on debatable topics.',
+        claims: 'Substantiate all claims for AI credibility: 1) Add inline citations: "According to [Source], [claim]." 2) Link to studies, reports, or authoritative sources for every factual claim. 3) Use footnotes or a references section. 4) Replace unsupported claims with data-backed statements. 5) Remove claims you cannot verify. 6) Use hedging language for uncertain claims: "research suggests" rather than "this proves".',
+    };
+
+    // Try platform-specific fix first, fall back to generic
+    const platformFix = platformTips[plat]?.[key];
+    const genericFix = genericFixes[key];
+
+    if (platformFix && genericFix) {
+        return `${platformFix}\n\nGeneral best practice: ${genericFix}`;
+    }
+
+    return genericFix || platformFix || `Review and address this ${category} issue. Check your page source code and update the relevant element following current best practices. If you are unsure how to fix this on your platform, search for "[your platform name] + ${key.replace(/_/g, ' ')}" for specific tutorials.`;
 }
 
 /**

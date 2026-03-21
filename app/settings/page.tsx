@@ -330,11 +330,11 @@ export default function SettingsPage() {
                 {referralCode ? (
                   <div className="flex items-center gap-2">
                     <div className="flex-1 rounded-lg border border-border/50 bg-muted/30 px-3 py-2.5 text-sm text-muted-foreground truncate font-mono">
-                      https://sitepulse.ai/signup?ref={referralCode}
+                      https://citatom.com/signup?ref={referralCode}
                     </div>
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText(`https://sitepulse.ai/signup?ref=${referralCode}`)
+                        navigator.clipboard.writeText(`https://citatom.com/signup?ref=${referralCode}`)
                         setReferralCopied(true)
                         setTimeout(() => setReferralCopied(false), 2000)
                       }}
@@ -544,7 +544,7 @@ export default function SettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Lock className="h-5 w-5 text-purple-600" />
+                  <Lock className="h-5 w-5 text-[#842ce0]" />
                   Change Password
                 </CardTitle>
               </CardHeader>
@@ -586,7 +586,7 @@ export default function SettingsPage() {
                 <button
                   onClick={handleChangePassword}
                   disabled={changingPassword || !newPassword}
-                  className="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-600/90 text-white font-medium text-sm transition-colors disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-[#842ce0] hover:bg-[#842ce0]/90 text-white font-medium text-sm transition-colors disabled:opacity-50"
                 >
                   {changingPassword ? 'Updating...' : 'Update Password'}
                 </button>

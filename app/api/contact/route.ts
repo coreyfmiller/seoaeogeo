@@ -13,8 +13,8 @@ export async function POST(req: NextRequest) {
 
     // Send email to support
     await resend.emails.send({
-      from: 'SitePulse Contact <onboarding@resend.dev>',
-      to: 'support@sitepulse.ai',
+      from: 'Citatom Contact <onboarding@resend.dev>',
+      to: 'support@citatom.com',
       replyTo: email,
       subject: `[${category.toUpperCase()}] Contact from ${name}`,
       text: `Name: ${name}\nEmail: ${email}\nCategory: ${category}\n\nMessage:\n${message}`,

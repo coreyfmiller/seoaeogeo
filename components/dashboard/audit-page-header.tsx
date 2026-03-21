@@ -38,8 +38,14 @@ interface AuditPageHeaderProps {
     primaryType: string
     confidence: number
   }
+  platformDetection?: {
+    platform: string
+    confidence: string
+    label: string
+  }
   onSiteTypeConfirm?: (confirmedType: string) => void
   onSiteTypeChange?: (selectedType: string) => void
+  onPlatformChange?: (selectedPlatform: string) => void
   cwv?: CWVData
   proLocked?: boolean
 }
@@ -60,10 +66,29 @@ export function AuditPageHeader({
   onSiteTypeConfirm,
   onSiteTypeChange,
   cwv,
-  proLocked = false
+  proLocked = false,
+  platformDetection,
+  onPlatformChange,
 }: AuditPageHeaderProps) {
   const [reportCopied, setReportCopied] = useState(false)
+  const [platformOverride, setPlatformOverride] = useState<string | null>(null)
   const router = useRouter()
+
+  const platformOptions = [
+    { value: 'wordpress', label: 'WordPress' },
+    { value: 'shopify', label: 'Shopify' },
+    { value: 'wix', label: 'Wix' },
+    { value: 'squarespace', label: 'Squarespace' },
+    { value: 'webflow', label: 'Webflow' },
+    { value: 'drupal', label: 'Drupal' },
+    { value: 'joomla', label: 'Joomla' },
+    { value: 'magento', label: 'Magento' },
+    { value: 'nextjs', label: 'Next.js' },
+    { value: 'gatsby', label: 'Gatsby' },
+    { value: 'ghost', label: 'Ghost' },
+    { value: 'hubspot', label: 'HubSpot' },
+    { value: 'custom', label: 'Custom / Other' },
+  ]
 
   const buildExportData = () => {
     if (!analysisData) return null
@@ -105,7 +130,7 @@ export function AuditPageHeader({
 
   const getBadgeStyles = () => {
     if (badgeVariant === "beta") {
-      return "bg-purple-500/10 text-purple-600 border-purple-500/20"
+      return "bg-[#842ce0]/10 text-[#842ce0] border-[#842ce0]/20"
     }
     return "bg-green-500/10 text-green-600 border-green-500/20"
   }
@@ -135,11 +160,11 @@ export function AuditPageHeader({
             </span>
             {hasResults && (
               <>
-                <Badge variant="outline" className="border-geo/50 text-geo">
+                <Badge variant="outline" className="border-[#fe3f8c]/50 text-[#fe3f8c]">
                   <Clock className="h-3 w-3 mr-1" />
                   Analysis Live
                 </Badge>
-                <Badge variant="outline" className="border-geo/50 text-geo bg-geo/5">
+                <Badge variant="outline" className="border-[#fe3f8c]/50 text-[#fe3f8c] bg-[#fe3f8c]/5">
                   <Activity className="h-3 w-3 mr-1.5" />
                   {pageCount} Page{pageCount !== 1 ? 's' : ''} Scanned
                 </Badge>
@@ -148,21 +173,21 @@ export function AuditPageHeader({
           </div>
         </div>
         
-        {/* Right Side: Context-Aware Scoring + Action Buttons */}
+        {/* Right Side: Site Intelligence + Action Buttons */}
         <div className="lg:w-[480px] shrink-0 space-y-2">
           {hasResults && (
             <>
               {siteType && (
-                <div className="px-2 py-1.5 rounded-lg border border-purple-500/30 bg-purple-500/5">
+                <div className="px-2 py-1.5 rounded-lg border border-[#842ce0]/30 bg-[#842ce0]/5">
                   <div className="flex items-center gap-2 mb-1">
-                    <Sparkles className="h-3.5 w-3.5 text-purple-600" />
-                    <span className="text-[10px] text-purple-600 font-bold uppercase tracking-wide">Context-Aware Scoring</span>
+                    <Sparkles className="h-3.5 w-3.5 text-[#842ce0]" />
+                    <span className="text-[10px] text-[#842ce0] font-bold uppercase tracking-wide">Site Intelligence</span>
                     <div className="group relative inline-flex ml-auto">
-                      <HelpCircle className="h-3.5 w-3.5 text-purple-600/60 hover:text-purple-600 cursor-help transition-colors" />
+                      <HelpCircle className="h-3.5 w-3.5 text-[#842ce0]/60 hover:text-[#842ce0] cursor-help transition-colors" />
                       <div className="absolute bottom-full right-0 mb-2 w-64 px-3 py-2 bg-popover border border-border rounded-lg text-xs shadow-2xl z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150">
-                        <p className="text-foreground font-semibold mb-1">What is Context-Aware Scoring?</p>
+                        <p className="text-foreground font-semibold mb-1">What is Site Intelligence?</p>
                         <p className="text-muted-foreground leading-relaxed">
-                          Our AI detects your site type (e-commerce, restaurant, blog, etc.) and applies specialized scoring weights to each category. This ensures your audit reflects what matters most for your specific business model.
+                          Our AI detects your site type, platform, and applies specialized scoring weights. Fix instructions are tailored to your specific platform (WordPress, Shopify, etc.) so you get actionable, relevant guidance.
                         </p>
                       </div>
                     </div>
@@ -175,8 +200,43 @@ export function AuditPageHeader({
                     onConfirm={onSiteTypeConfirm}
                     onManualSelect={onSiteTypeChange}
                   />
+                  {(platformDetection || onPlatformChange) && (
+                    <div className="flex items-center gap-2 mt-1.5 pt-1.5 border-t border-[#842ce0]/20">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase">Built With:</span>
+                      <select
+                        value={platformOverride || platformDetection?.platform || 'custom'}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setPlatformOverride(val);
+                          onPlatformChange?.(val);
+                        }}
+                        className="text-[10px] font-bold text-foreground bg-transparent border border-[#842ce0]/30 rounded px-1.5 py-0.5 cursor-pointer hover:border-[#842ce0]/60 transition-colors focus:outline-none focus:ring-1 focus:ring-[#842ce0]/50"
+                        aria-label="Select platform"
+                      >
+                        {platformOptions.map(opt => (
+                          <option key={opt.value} value={opt.value} className="bg-background text-foreground">
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                      {!platformOverride && platformDetection && (
+                        <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${
+                          platformDetection.confidence === 'high' ? 'border-[#fe3f8c]/30 text-[#fe3f8c] bg-[#fe3f8c]/10' :
+                          platformDetection.confidence === 'medium' ? 'border-[#fe3f8c]/30 text-[#fe3f8c]/70 bg-[#fe3f8c]/5' :
+                          'border-[#fe3f8c]/20 text-[#fe3f8c]/50 bg-[#fe3f8c]/5'
+                        }`}>
+                          auto-detected
+                        </Badge>
+                      )}
+                      {platformOverride && platformOverride !== platformDetection?.platform && (
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-[#842ce0]/30 text-[#842ce0] bg-[#842ce0]/10">
+                          manual
+                        </Badge>
+                      )}
+                    </div>
+                  )}
                   {cwv && (
-                    <div className="flex items-center gap-2 flex-wrap mt-1.5 pt-1.5 border-t border-purple-500/20">
+                    <div className="flex items-center gap-2 flex-wrap mt-1.5 pt-1.5 border-t border-[#842ce0]/20">
                       <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-bold uppercase tracking-wide">
                         <Zap className="h-3 w-3" />
                         <span>Core Web Vitals</span>

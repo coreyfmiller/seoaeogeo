@@ -20,9 +20,10 @@ interface HeaderProps {
   isAnalyzing?: boolean
   currentUrl?: string
   apiStatus?: "healthy" | "error" | "idle"
+  hideSearch?: boolean
 }
 
-export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" }: HeaderProps) {
+export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle", hideSearch = false }: HeaderProps) {
   const [url, setUrl] = useState(currentUrl || "")
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -40,6 +41,7 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" 
       </Button>
 
       {/* Search Bar */}
+      {!hideSearch && (
       <form onSubmit={handleSubmit} className="flex-1 max-w-2xl">
         <div className="relative">
           <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -77,6 +79,7 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" 
           </Button>
         </div>
       </form>
+      )}
 
       {/* Right side actions */}
       <div className="flex items-center gap-3">
@@ -92,13 +95,13 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle" 
         </div>
       </div>
 
-      {/* Get Pro Button - pushed to far right */}
+      {/* Buy Credits Button - pushed to far right */}
       <Link href="/pro" className="ml-auto">
         <Button
-          className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 text-base shadow-md"
+          className="bg-[#118fff] hover:bg-[#118fff]/90 text-white font-semibold px-6 py-3 text-base shadow-md"
         >
           <Crown className="h-5 w-5 mr-2" />
-          Get Pro
+          Buy Credits
         </Button>
       </Link>
     </header>

@@ -162,7 +162,7 @@ export default function V4Page() {
             />
 
             {isAnalyzing && (
-              <Card className="border-purple-500/30">
+              <Card className="border-[#842ce0]/30">
                 <CardContent className="pt-6">
                   <div className="flex flex-col items-center gap-4 py-8">
                     <div className="h-12 w-12 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
@@ -180,10 +180,10 @@ export default function V4Page() {
             )}
 
             {!result && !isAnalyzing && (
-              <Card className="border-2 border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-transparent">
+              <Card className="border-2 border-[#842ce0]/20 bg-gradient-to-br from-[#842ce0]/5 to-transparent">
                 <CardHeader className="text-center space-y-4 pb-8">
-                  <div className="mx-auto w-16 h-16 rounded-full bg-purple-500/10 flex items-center justify-center">
-                    <Sparkles className="h-8 w-8 text-purple-600" />
+                  <div className="mx-auto w-16 h-16 rounded-full bg-[#842ce0]/10 flex items-center justify-center">
+                    <Sparkles className="h-8 w-8 text-[#842ce0]" />
                   </div>
                   <div>
                     <CardTitle className="text-3xl mb-2">V4 Free Audit</CardTitle>
@@ -200,7 +200,7 @@ export default function V4Page() {
                     variant="large"
                   />
                   <div className="mt-4 text-center">
-                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-600 border border-purple-500/20">
+                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-[#842ce0]/10 text-[#842ce0] border border-[#842ce0]/20">
                       <Sparkles className="h-3 w-3" />
                       BETA AI - Lite Analysis
                     </span>

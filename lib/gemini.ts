@@ -12,6 +12,7 @@ export async function analyzeWithGemini(context: {
   summarizedContent?: string; // NEW: Optimized content
   schemas: any[];
   structuralData?: any;
+  platform?: string;
 }) {
 
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
@@ -57,7 +58,10 @@ export async function analyzeWithGemini(context: {
     ---
     ${contentToAnalyze}
     ---
-
+${context.platform ? `
+    DETECTED PLATFORM: ${context.platform}
+    All fix instructions and recommendations MUST be tailored to ${context.platform}. Reference specific ${context.platform} admin paths, plugins/apps/extensions, template files, and platform-specific approaches. Do NOT give generic HTML fixes when a ${context.platform}-specific solution exists.
+` : ''}
     Return a JSON object exactly matching this structure:
     {
       "semanticFlags": {
@@ -104,6 +108,9 @@ export async function analyzeWithGemini(context: {
         "rank": number (1-15),
         "title": string (RUTHLESS ACTION - e.g. "Fix H1 Tag Hierarchy"),
         "description": string (THE WHY/IMPACT REASONING),
+        "howToFix": string (STEP-BY-STEP fix instructions, platform-specific if platform detected. Be thorough — include exact menu paths, file locations, plugin names, or code changes needed.),
+        "codeSnippet": string (Before/after code example if applicable, or empty string if not code-related),
+        "affectedElement": string (What specific element on the page is the problem, e.g. "Second <h1> tag: About Us"),
         "priority": "high" | "medium" | "low",
         "category": "Schema" | "Content" | "AEO" | "Trust",
         "impact": "High" | "Medium"

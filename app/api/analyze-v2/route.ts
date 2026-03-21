@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       // Step 5: Enhanced penalties
       let enhancedPenalties: any[] = []
       try {
-        enhancedPenalties = convertBreakdownToEnhancedPenalties(graderResult.breakdown.seo, graderResult.breakdown.aeo, graderResult.breakdown.geo)
+        enhancedPenalties = convertBreakdownToEnhancedPenalties(graderResult.breakdown.seo, graderResult.breakdown.aeo, graderResult.breakdown.geo, pageData.platformDetection?.platform)
       } catch (e: any) { console.error('[V2 API] Penalty error:', e.message) }
 
       send({ type: 'progress', phase: 'Finalizing report...', progress: 92 })

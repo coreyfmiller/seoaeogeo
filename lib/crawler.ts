@@ -3,6 +3,7 @@ import chromium from '@sparticuz/chromium';
 import { thinHtml, extractSchema } from './utils/cleaner';
 import { summarizeContent, formatSummaryForAI } from './utils/content-summarizer';
 import { getCrawlerErrorMessage } from './utils/crawler-errors';
+import { detectPlatform, type PlatformResult } from './platform-detector';
 
 export interface ScanResult {
     url: string;
@@ -33,13 +34,14 @@ export interface ScanResult {
         hasOgImage: boolean;
         hasTwitterCard: boolean;
     };
+    platformDetection?: PlatformResult;
 }
 
 /**
  * Core extraction logic — extracts all page data from an already-navigated Playwright Page.
  * Used by both performScan (single page) and deep scan (multi-page).
  */
-export async function extractPageDataFromPage(page: Page, targetUrl: string, startTime: number, statusCode: number): Promise<ScanResult> {
+export async function extractPageDataFromPage(page: Page, targetUrl: string, startTime: number, statusCode: number, options?: { lightweight?: boolean }): Promise<ScanResult> {
     const html = await page.content();
     const title = await page.title();
 
@@ -121,8 +123,11 @@ export async function extractPageDataFromPage(page: Page, targetUrl: string, sta
         };
     });
 
-    const contentSummary = summarizeContent(html);
-    const summarizedContent = formatSummaryForAI(contentSummary);
+    const contentSummary = options?.lightweight ? null : summarizeContent(html);
+    const summarizedContent = contentSummary ? formatSummaryForAI(contentSummary) : '';
+
+    // Detect platform/CMS from HTML
+    const platformDetection = detectPlatform(html);
 
     return {
         url: targetUrl,
@@ -141,7 +146,8 @@ export async function extractPageDataFromPage(page: Page, targetUrl: string, sta
             titleLength: title.length,
             descriptionLength: description.length,
             ...metaChecks
-        }
+        },
+        platformDetection
     };
 }
 
@@ -149,7 +155,7 @@ export async function extractPageDataFromPage(page: Page, targetUrl: string, sta
  * Scan a website using a headless browser to render 
  * JS and extract relevant search/AI intelligence.
  */
-export async function performScan(targetUrl: string): Promise<ScanResult> {
+export async function performScan(targetUrl: string, options?: { lightweight?: boolean }): Promise<ScanResult> {
     // 0. Sanitize URL (ensure protocol)
     if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
         targetUrl = `https://${targetUrl}`;
@@ -184,7 +190,7 @@ export async function performScan(targetUrl: string): Promise<ScanResult> {
 
         console.log(`[Crawler] Successfully loaded ${targetUrl} (Status: ${response.status()})`);
 
-        return await extractPageDataFromPage(page, targetUrl, startTime, response.status());
+        return await extractPageDataFromPage(page, targetUrl, startTime, response.status(), options);
     } catch (error: any) {
         console.error(`Crawler failed for ${targetUrl}:`, error);
         

@@ -766,7 +766,7 @@ export default function SiteAnalysis() {
                                                         <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Metadata</p>
                                                     </div>
                                                     <div className="text-center">
-                                                        <p className="text-2xl font-black text-purple-500">{ai?.domainHealthBreakdown?.technicalHealth ?? 0}</p>
+                                                        <p className="text-2xl font-black text-[#842ce0]">{ai?.domainHealthBreakdown?.technicalHealth ?? 0}</p>
                                                         <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Technical</p>
                                                     </div>
                                                     <div className="text-center">

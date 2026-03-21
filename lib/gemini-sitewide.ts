@@ -29,6 +29,7 @@ export async function analyzeSitewideIntelligence(context: {
     outboundLinks?: string[];
   }>;
   siteType?: SiteType; // NEW: Site type for context-aware analysis
+  platform?: string; // Detected CMS/framework
 }) {
   // DETERMINISTIC CALCULATIONS (run before AI to ensure consistency)
   
@@ -132,6 +133,10 @@ export async function analyzeSitewideIntelligence(context: {
     that are most relevant for ${formatSiteType(context.siteType)} businesses. Do not recommend schema types 
     that are irrelevant to this industry.
     ` : ''}
+${context.platform ? `
+    DETECTED PLATFORM: ${context.platform}
+    All fix instructions and recommendations MUST be tailored to ${context.platform}. Reference specific ${context.platform} admin paths, plugins/apps/extensions, template files, and platform-specific approaches. Do NOT give generic HTML fixes when a ${context.platform}-specific solution exists.
+` : ''}
     
     IMPORTANT: Schema quality and brand consistency are calculated deterministically. 
     Focus on qualitative analysis (insights, gaps, recommendations).
@@ -289,6 +294,9 @@ export async function analyzeSitewideIntelligence(context: {
         "rank": number (1 through 15),
         "title": string (RUTHLESS ACTION - e.g. "Deploy Product Schema Sitewide"),
         "description": string (THE WHY/IMPACT REASONING),
+        "howToFix": string (STEP-BY-STEP fix instructions, platform-specific if platform detected. Be thorough — include exact menu paths, file locations, plugin names, or code changes needed.),
+        "codeSnippet": string (Before/after code example if applicable, or empty string if not code-related),
+        "affectedElement": string (What specific element or pages are affected),
         "impact": "High" | "Medium",
         "priority": "CRITICAL" | "HIGH" | "STEADY" (CRITICAL = urgent fix needed now, HIGH = important to address soon, STEADY = quick win with consistent results),
         "effort": 1 | 2 | 3,

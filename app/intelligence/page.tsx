@@ -20,12 +20,17 @@ import {
     Sparkles,
     Zap,
     Bot,
-    RefreshCw
+    RefreshCw,
+    ChevronDown,
+    Copy,
+    Check,
+    Code2
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
 import { InfoTooltip } from '@/components/ui/info-tooltip'
+import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
 
 export default function SiteVsSite() {
     const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -34,6 +39,13 @@ export default function SiteVsSite() {
     const [comparisonData, setComparisonData] = useState<any>(null)
     const [error, setError] = useState<string | null>(null)
     const [apiStatus, setApiStatus] = useState<"healthy" | "error" | "idle">("idle")
+    const [creditDialogOpen, setCreditDialogOpen] = useState(false)
+    const [pendingUrls, setPendingUrls] = useState<{ a: string; b: string }>({ a: "", b: "" })
+    const [loadingProgress, setLoadingProgress] = useState(0)
+    const [loadingPhase, setLoadingPhase] = useState("")
+    const [elapsedSeconds, setElapsedSeconds] = useState(0)
+    const [expandedStrategy, setExpandedStrategy] = useState<number | null>(null)
+    const [copiedFix, setCopiedFix] = useState<number | null>(null)
 
     // Restore state from sessionStorage on mount
     useEffect(() => {
@@ -56,6 +68,44 @@ export default function SiteVsSite() {
             if (comparisonData) sessionStorage.setItem("competitor_data", JSON.stringify(comparisonData))
         }
     }, [siteA, siteB, comparisonData])
+
+    // Progress ticker while analyzing
+    useEffect(() => {
+        if (!isAnalyzing) {
+            setLoadingProgress(0)
+            setElapsedSeconds(0)
+            setLoadingPhase("")
+            return
+        }
+        const startTime = Date.now()
+        const phases = [
+            { at: 0, label: "Initiating dual-site crawl..." },
+            { at: 8, label: "Crawling Site A — extracting content & metadata..." },
+            { at: 18, label: "Crawling Site B — extracting content & metadata..." },
+            { at: 30, label: "Both sites crawled. Starting AI analysis..." },
+            { at: 45, label: "Gemini analyzing content quality & structure..." },
+            { at: 60, label: "Comparing SEO, AEO, and GEO signals..." },
+            { at: 75, label: "Generating competitive strategies..." },
+            { at: 88, label: "Finalizing intelligence report..." },
+        ]
+        setLoadingPhase(phases[0].label)
+
+        const interval = setInterval(() => {
+            const elapsed = (Date.now() - startTime) / 1000
+            setElapsedSeconds(Math.floor(elapsed))
+
+            // Asymptotic curve: fast start, slows toward 95%
+            // Reaches ~50% at 15s, ~75% at 30s, ~90% at 50s, caps at 95%
+            const pct = Math.min(95, Math.round(95 * (1 - Math.exp(-elapsed / 25))))
+            setLoadingProgress(pct)
+
+            // Update phase label
+            const currentPhase = [...phases].reverse().find(p => pct >= p.at)
+            if (currentPhase) setLoadingPhase(currentPhase.label)
+        }, 300)
+
+        return () => clearInterval(interval)
+    }, [isAnalyzing])
 
     // Save to scan history for dashboard
     useEffect(() => {
@@ -97,6 +147,14 @@ export default function SiteVsSite() {
     }, [])
 
     const handleBattle = async (urlA: string, urlB: string) => {
+        setPendingUrls({ a: urlA, b: urlB })
+        setCreditDialogOpen(true)
+    }
+
+    const handleConfirmBattle = async () => {
+        setCreditDialogOpen(false)
+        const urlA = pendingUrls.a
+        const urlB = pendingUrls.b
         setIsAnalyzing(true)
         setError(null)
         setApiStatus("idle")
@@ -135,6 +193,7 @@ export default function SiteVsSite() {
                 <Header
                     onAnalyze={(url) => window.location.href = `/?url=${encodeURIComponent(url)}`}
                     apiStatus={apiStatus}
+                    hideSearch
                 />
 
                 <main className="flex-1 overflow-y-auto px-6 pt-6">
@@ -175,6 +234,16 @@ export default function SiteVsSite() {
 
                         <ScanErrorDialog error={error} onClose={() => setError(null)} onRetry={() => handleBattle(siteA, siteB)} />
 
+                        {/* Credit Confirmation Dialog */}
+                        <CreditConfirmDialog
+                            open={creditDialogOpen}
+                            onConfirm={handleConfirmBattle}
+                            onCancel={() => setCreditDialogOpen(false)}
+                            creditCost={20}
+                            scanType="Competitive Intel"
+                            costBreakdown="20 credits per competitive intelligence scan (2 sites analyzed)"
+                        />
+
                         {/* Battle Form */}
                         {!comparisonData && !isAnalyzing ? (
                             <div className="bg-card/50 border-2 border-border rounded-3xl p-10 flex flex-col items-center animate-in fade-in zoom-in-95 animate-duration-500 shadow-lg relative overflow-hidden">
@@ -207,7 +276,7 @@ export default function SiteVsSite() {
                                         <p className="text-xs text-muted-foreground px-4">See where they are stealing your Snippets.</p>
                                     </div>
                                     <div className="space-y-2">
-                                        <div className="mx-auto h-10 w-10 flex items-center justify-center rounded-full bg-geo/10 text-geo">
+                                        <div className="mx-auto h-10 w-10 flex items-center justify-center rounded-full bg-[#fe3f8c]/10 text-[#fe3f8c]">
                                             <Bot className="h-5 w-5" />
                                         </div>
                                         <h3 className="font-bold text-sm">LLM Citation Share</h3>
@@ -216,17 +285,97 @@ export default function SiteVsSite() {
                                 </div>
                             </div>
                         ) : isAnalyzing ? (
-                            <div className="flex flex-col items-center justify-center py-20 animate-in fade-in zoom-in-95">
-                                <div className="relative h-24 w-24 mb-6">
-                                    <div className="absolute inset-0 rounded-full border-4 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin"></div>
-                                    <Swords className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-10 w-10 text-aeo animate-pulse" />
-                                </div>
-                                <h2 className="text-2xl font-bold text-foreground">Analyzing Intelligence Battle...</h2>
-                                <p className="text-muted-foreground mt-2 italic animate-pulse">Running dual-crawls on both domains...</p>
-                                <div className="mt-8 flex gap-4">
-                                    <Badge variant="outline" className="border-seo/30 text-seo bg-seo/5 px-4 py-1">{siteA || "Target"}</Badge>
-                                    <span className="text-muted-foreground font-black italic">VS</span>
-                                    <Badge variant="outline" className="border-aeo/30 text-aeo bg-aeo/5 px-4 py-1">{siteB || "Competitor"}</Badge>
+                            <div className="space-y-8 animate-in fade-in zoom-in-95">
+                                {/* Loading Card */}
+                                <Card className="border-2 border-aeo/20 bg-gradient-to-br from-seo/5 via-aeo/5 to-[#fe3f8c]/5 overflow-hidden relative">
+                                    {/* Animated gradient bar at top */}
+                                    <div className="h-1 w-full bg-muted/30 overflow-hidden">
+                                        <div
+                                            className="h-full bg-gradient-to-r from-seo via-aeo to-[#fe3f8c] transition-all duration-700 ease-out"
+                                            style={{ width: `${loadingProgress}%` }}
+                                        />
+                                    </div>
+                                    
+                                    <CardContent className="pt-10 pb-10">
+                                        <div className="flex flex-col items-center gap-6">
+                                            {/* Spinner */}
+                                            <div className="relative h-24 w-24">
+                                                <div className="absolute inset-0 rounded-full border-4 border-t-seo border-r-aeo border-b-[#fe3f8c] border-l-transparent animate-spin" />
+                                                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+                                                    <span className="text-xl font-black text-foreground tabular-nums">{loadingProgress}%</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="text-center space-y-2">
+                                                <h2 className="text-2xl font-bold text-foreground">Intelligence Battle in Progress</h2>
+                                                <p className="text-sm text-muted-foreground max-w-md min-h-[20px] transition-opacity duration-500">
+                                                    {loadingPhase}
+                                                </p>
+                                            </div>
+
+                                            {/* Progress bar */}
+                                            <div className="w-full max-w-md">
+                                                <div className="h-2 w-full bg-muted/30 rounded-full overflow-hidden">
+                                                    <div
+                                                        className="h-full bg-gradient-to-r from-seo via-aeo to-[#fe3f8c] rounded-full transition-all duration-700 ease-out"
+                                                        style={{ width: `${loadingProgress}%` }}
+                                                    />
+                                                </div>
+                                                <div className="flex justify-between mt-1.5">
+                                                    <span className="text-[10px] text-muted-foreground tabular-nums">{loadingProgress}% complete</span>
+                                                    <span className="text-[10px] text-muted-foreground tabular-nums flex items-center gap-1">
+                                                        <Clock className="h-3 w-3" />
+                                                        {elapsedSeconds}s elapsed
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {/* Site badges */}
+                                            <div className="flex items-center gap-4">
+                                                <Badge variant="outline" className="border-seo/30 text-seo bg-seo/5 px-4 py-1.5 text-sm font-bold">
+                                                    {siteA ? siteA.replace(/^https?:\/\//, '').replace(/\/$/, '') : "Your Site"}
+                                                </Badge>
+                                                <span className="text-muted-foreground font-black italic text-lg">VS</span>
+                                                <Badge variant="outline" className="border-aeo/30 text-aeo bg-aeo/5 px-4 py-1.5 text-sm font-bold">
+                                                    {siteB ? siteB.replace(/^https?:\/\//, '').replace(/\/$/, '') : "Competitor"}
+                                                </Badge>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Phase indicators */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    {[
+                                        { icon: <Search className="h-5 w-5" />, label: "Crawling Both Sites", desc: "Extracting content, metadata, and technical signals", threshold: 5 },
+                                        { icon: <Sparkles className="h-5 w-5" />, label: "AI Deep Analysis", desc: "Gemini analyzing content quality, schema, and structure", threshold: 35 },
+                                        { icon: <Bot className="h-5 w-5" />, label: "Competitive Scoring", desc: "Calculating head-to-head SEO, AEO, and GEO scores", threshold: 65 },
+                                    ].map((phase, i) => {
+                                        const isActive = loadingProgress >= phase.threshold
+                                        const isDone = i < 2 && loadingProgress >= [35, 65, 100][i]
+                                        return (
+                                            <Card key={i} className={cn(
+                                                "border-border/30 transition-all duration-500",
+                                                isActive ? "bg-card/80" : "bg-card/30 opacity-50"
+                                            )}>
+                                                <CardContent className="pt-5 pb-5">
+                                                    <div className="flex items-start gap-3">
+                                                        <div className={cn(
+                                                            "h-10 w-10 rounded-lg flex items-center justify-center shrink-0 transition-all duration-500",
+                                                            i === 0 ? "bg-seo/10 text-seo" : i === 1 ? "bg-aeo/10 text-aeo" : "bg-[#fe3f8c]/10 text-[#fe3f8c]",
+                                                            isActive && !isDone && "animate-pulse"
+                                                        )}>
+                                                            {isDone ? <CheckCircle2 className="h-5 w-5" /> : phase.icon}
+                                                        </div>
+                                                        <div>
+                                                            <h3 className="font-bold text-sm text-foreground">{phase.label}</h3>
+                                                            <p className="text-xs text-muted-foreground mt-0.5">{phase.desc}</p>
+                                                        </div>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        )
+                                    })}
                                 </div>
                             </div>
                         ) : (
@@ -239,24 +388,24 @@ export default function SiteVsSite() {
                                             label: "SEO AUTHORITY BATTLE",
                                             tooltip: "Compares traditional SEO strength between both sites — technical health, backlink authority, content optimization, metadata quality, and crawlability. The higher score indicates stronger search engine visibility.",
                                             data: comparisonData.comparison.seo,
-                                            color: "seo",
                                             titleColor: "text-seo",
+                                            accentHex: "#118fff",
                                             icon: <Search className="h-3.5 w-3.5" />,
                                         },
                                         {
                                             label: "AEO SNIPPET SHARE",
                                             tooltip: "Compares Answer Engine Optimization — which site is more likely to be cited by AI assistants like ChatGPT, Perplexity, and Gemini. Measures structured data, FAQ coverage, direct answer formatting, and schema quality.",
                                             data: comparisonData.comparison.aeo,
-                                            color: "aeo",
                                             titleColor: "text-aeo",
+                                            accentHex: "#842ce0",
                                             icon: <Sparkles className="h-3.5 w-3.5" />,
                                         },
                                         {
                                             label: "GEO CITATION LIKELIHOOD",
                                             tooltip: "Compares Generative Engine Optimization — which site is more likely to appear in AI-generated search results and summaries. Measures brand authority, topical depth, content uniqueness, and citation-worthiness.",
                                             data: comparisonData.comparison.geo,
-                                            color: "geo",
-                                            titleColor: "text-geo",
+                                            titleColor: "text-[#fe3f8c]",
+                                            accentHex: "#fe3f8c",
                                             icon: <Globe className="h-3.5 w-3.5" />,
                                         },
                                     ].map((battle) => {
@@ -271,7 +420,7 @@ export default function SiteVsSite() {
                                         return (
                                             <Card key={battle.label} className={cn("border-border/30 bg-card/80 relative overflow-hidden group hover:border-border/60 transition-all")}>
                                                 {/* Subtle top accent line */}
-                                                <div className={cn("absolute top-0 left-0 right-0 h-0.5", `bg-${battle.color}`)} />
+                                                <div className="absolute top-0 left-0 right-0 h-0.5" style={{ backgroundColor: battle.accentHex }} />
 
                                                 <CardHeader className="pb-1">
                                                     <CardTitle className={cn("text-[10px] font-black uppercase tracking-widest flex justify-between items-center", battle.titleColor)}>
@@ -352,7 +501,7 @@ export default function SiteVsSite() {
                                                 </Badge>
                                                 <button
                                                     onClick={() => {
-                                                        const text = comparisonData.recommendations.map((f: any) => `[RANK ${f.rank}] ${f.title}\nACTION: ${f.description}\nIMPACT: ${f.impact}`).join('\n\n');
+                                                        const text = comparisonData.recommendations.slice(0, 6).map((f: any) => `[RANK ${f.rank}] ${f.title}\nACTION: ${f.description}\nHOW TO FIX: ${f.howToFix || 'N/A'}${f.codeSnippet ? '\nCODE: ' + f.codeSnippet : ''}\nIMPACT: ${f.impact}`).join('\n\n');
                                                         navigator.clipboard.writeText(text);
                                                         alert("Battle Plan copied!");
                                                     }}
@@ -364,8 +513,17 @@ export default function SiteVsSite() {
                                         </CardHeader>
                                         <CardContent>
                                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                                {comparisonData.recommendations.map((fix: any, i: number) => (
-                                                    <div key={i} className="flex flex-col p-5 rounded-2xl border border-border/40 bg-background/70 hover:border-geo/30 transition-all relative group overflow-hidden">
+                                                {comparisonData.recommendations.slice(0, 6).map((fix: any, i: number) => {
+                                                    const isExpanded = expandedStrategy === i
+                                                    return (
+                                                    <div 
+                                                        key={i} 
+                                                        className={cn(
+                                                            "flex flex-col p-5 rounded-2xl border border-border/40 bg-background/70 transition-all relative group overflow-hidden cursor-pointer",
+                                                            isExpanded ? "col-span-full border-aeo/40 ring-2 ring-aeo/20 ring-offset-2" : "hover:border-geo/30"
+                                                        )}
+                                                        onClick={() => setExpandedStrategy(isExpanded ? null : i)}
+                                                    >
                                                         <div className="flex items-center justify-between mb-4">
                                                             <div className="flex gap-2 flex-wrap">
                                                                 <Badge className="bg-muted text-muted-foreground text-[8px] font-black uppercase tracking-tighter px-1.5 py-0">
@@ -378,25 +536,68 @@ export default function SiteVsSite() {
                                                                         (fix.priority || fix.roi) === 'HIGH' ? "bg-yellow-500/20 text-yellow-600 border-yellow-500/20" :
                                                                         "bg-geo/20 text-geo border-geo/20"
                                                                     )}
-                                                                    title={
-                                                                        (fix.priority || fix.roi) === 'CRITICAL' ? "Urgent - Fix immediately for maximum impact" :
-                                                                        (fix.priority || fix.roi) === 'HIGH' ? "High priority - Address soon for significant gains" :
-                                                                        "Quick win - Easy implementation with steady results"
-                                                                    }
                                                                 >
                                                                     {(fix.priority || fix.roi) === 'CRITICAL' ? '🔥 URGENT' : 
                                                                      (fix.priority || fix.roi) === 'HIGH' ? '⚡ HIGH PRIORITY' : 
                                                                      '✓ QUICK WIN'}
                                                                 </Badge>
                                                             </div>
-                                                            <div className="h-6 w-6 rounded-full bg-muted/50 flex items-center justify-center text-[10px] font-black text-muted-foreground ring-1 ring-border/50">
-                                                                {fix.rank}
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="h-6 w-6 rounded-full bg-muted/50 flex items-center justify-center text-[10px] font-black text-muted-foreground ring-1 ring-border/50">
+                                                                    {fix.rank}
+                                                                </div>
+                                                                <ChevronDown className={cn(
+                                                                    "h-4 w-4 text-muted-foreground transition-transform",
+                                                                    isExpanded && "rotate-180"
+                                                                )} />
                                                             </div>
                                                         </div>
                                                         <h5 className="font-bold text-sm mb-3 group-hover:text-geo transition-colors leading-tight">{fix.title}</h5>
                                                         <p className="text-xs text-muted-foreground leading-relaxed italic mb-6">
                                                             &ldquo;{fix.description}&rdquo;
                                                         </p>
+
+                                                        {/* Expanded fix details */}
+                                                        {isExpanded && (
+                                                            <div className="space-y-4 mb-4 animate-in fade-in slide-in-from-top-2" onClick={(e) => e.stopPropagation()}>
+                                                                {fix.howToFix && (
+                                                                    <div className="p-4 rounded-xl bg-aeo/5 border border-aeo/20">
+                                                                        <div className="flex items-center justify-between mb-2">
+                                                                            <div className="flex items-center gap-2">
+                                                                                <Zap className="h-4 w-4 text-aeo" />
+                                                                                <span className="text-xs font-black uppercase text-aeo tracking-wider">How To Fix</span>
+                                                                            </div>
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    navigator.clipboard.writeText(fix.howToFix + (fix.codeSnippet ? '\n\nCode:\n' + fix.codeSnippet : ''))
+                                                                                    setCopiedFix(i)
+                                                                                    setTimeout(() => setCopiedFix(null), 2000)
+                                                                                }}
+                                                                                className="p-1.5 rounded-md hover:bg-aeo/10 transition-colors"
+                                                                            >
+                                                                                {copiedFix === i ? <Check className="h-3.5 w-3.5 text-aeo" /> : <Copy className="h-3.5 w-3.5 text-muted-foreground" />}
+                                                                            </button>
+                                                                        </div>
+                                                                        <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-line">{fix.howToFix}</p>
+                                                                    </div>
+                                                                )}
+                                                                {fix.codeSnippet && fix.codeSnippet.trim() && (
+                                                                    <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
+                                                                        <div className="flex items-center gap-2 mb-2">
+                                                                            <Code2 className="h-4 w-4 text-muted-foreground" />
+                                                                            <span className="text-xs font-black uppercase text-muted-foreground tracking-wider">Code Example</span>
+                                                                        </div>
+                                                                        <pre className="text-xs font-mono text-foreground/70 overflow-x-auto whitespace-pre-wrap leading-relaxed">{fix.codeSnippet}</pre>
+                                                                    </div>
+                                                                )}
+                                                                {fix.affectedElement && (
+                                                                    <p className="text-[10px] text-muted-foreground">
+                                                                        <span className="font-bold uppercase">Affected: </span>{fix.affectedElement}
+                                                                    </p>
+                                                                )}
+                                                            </div>
+                                                        )}
+
                                                         <div className="mt-auto pt-4 border-t border-border/20 flex items-end justify-between">
                                                             <div className="space-y-1">
                                                                 <p className="text-[9px] font-black uppercase tracking-tighter text-muted-foreground/50">Impacts</p>
@@ -418,7 +619,8 @@ export default function SiteVsSite() {
                                                         </div>
                                                         <div className="absolute inset-0 bg-gradient-to-br from-geo/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                                                     </div>
-                                                ))}
+                                                    )
+                                                })}
                                             </div>
                                         </CardContent>
                                     </Card>

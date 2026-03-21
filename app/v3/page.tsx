@@ -16,6 +16,7 @@ import { AEOTab } from '@/components/dashboard/aeo-tab'
 import { GEOTab } from '@/components/dashboard/geo-tab'
 import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
+import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
 import { cn } from '@/lib/utils'
 
 interface AnalysisResult {
@@ -116,11 +117,19 @@ export default function V3Page() {
   const [url, setUrl] = useState('')
   const [currentUrl, setCurrentUrl] = useState('')
   const [activeTab, setActiveTab] = useState('seo')
+  const [creditDialogOpen, setCreditDialogOpen] = useState(false)
+  const [pendingUrl, setPendingUrl] = useState('')
   const sse = useSSEAnalysis<AnalysisResult>('/api/analyze-v3')
 
   const handleAnalyze = async (submittedUrl: string) => {
-    setCurrentUrl(submittedUrl)
-    await sse.startAnalysis(submittedUrl)
+    setPendingUrl(submittedUrl)
+    setCreditDialogOpen(true)
+  }
+
+  const handleConfirmAnalyze = async () => {
+    setCreditDialogOpen(false)
+    setCurrentUrl(pendingUrl)
+    await sse.startAnalysis(pendingUrl)
   }
 
   const result = sse.data
@@ -156,6 +165,41 @@ export default function V3Page() {
       })
     } catch (e) {
       console.error('[V3] Recalculate failed:', e)
+    }
+  }
+
+  // Recalculate penalties when user overrides the detected platform
+  const handlePlatformChange = async (newPlatform: string) => {
+    if (!result?.pageData) return
+    try {
+      const res = await fetch('/api/recalculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scanData: {
+            ...result.pageData,
+            schemas: result.pageData.structuralData?.schemas || result.aiAnalysis?.schemaQuality ? result.pageData.schemas : [],
+            semanticFlags: result.aiAnalysis?.semanticFlags || {},
+            schemaQuality: result.aiAnalysis?.schemaQuality,
+            siteType: result.siteTypeResult?.primaryType,
+          },
+          siteType: result.siteTypeResult?.primaryType,
+          platformOverride: newPlatform,
+        }),
+      })
+      if (!res.ok) return
+      const recalc = await res.json()
+      sse.setData({
+        ...result,
+        enhancedPenalties: recalc.enhancedPenalties,
+        platformDetection: {
+          ...result.platformDetection,
+          platform: newPlatform,
+          label: newPlatform.charAt(0).toUpperCase() + newPlatform.slice(1),
+        },
+      })
+    } catch (e) {
+      console.error('[V3] Platform recalculate failed:', e)
     }
   }
 
@@ -266,8 +310,10 @@ export default function V3Page() {
           primaryType: result.siteTypeResult.primaryType,
           confidence: result.siteTypeResult.confidence
         } : undefined}
+        platformDetection={result?.platformDetection}
         onSiteTypeConfirm={handleSiteTypeChange}
         onSiteTypeChange={handleSiteTypeChange}
+        onPlatformChange={handlePlatformChange}
       />
 
       {/* Loading Overlay */}
@@ -316,7 +362,7 @@ export default function V3Page() {
           
           {/* Beta Badge */}
           <div className="mt-4 text-center">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-600 border border-purple-500/20">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-[#842ce0]/10 text-[#842ce0] border border-[#842ce0]/20">
               <Zap className="h-3 w-3" />
               BETA - AI-Powered
             </span>
@@ -341,11 +387,11 @@ export default function V3Page() {
           
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Context-Aware Scoring</CardTitle>
+              <CardTitle className="text-lg">Site Intelligence</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Site-type detection applies restaurant, blog, or e-commerce specific scoring weights.
+                Auto-detects your site type and platform (WordPress, Shopify, etc.) to deliver tailored scoring and platform-specific fix instructions.
               </p>
             </CardContent>
           </Card>
@@ -362,6 +408,16 @@ export default function V3Page() {
           </Card>
         </div>
       )}
+
+      {/* Credit Confirmation Dialog */}
+      <CreditConfirmDialog
+        open={creditDialogOpen}
+        onConfirm={handleConfirmAnalyze}
+        onCancel={() => setCreditDialogOpen(false)}
+        creditCost={10}
+        scanType="Pro Audit"
+        costBreakdown="10 credits per Pro Audit scan"
+      />
 
       {/* Error Popup */}
       <ScanErrorDialog error={error} onClose={() => sse.reset()} onRetry={() => handleAnalyze(currentUrl)} />
@@ -475,13 +531,13 @@ export default function V3Page() {
 
           {/* Core Web Vitals */}
           {result.cwv && (
-            <Card className="border-purple-500/20 bg-purple-500/5">
+            <Card className="border-[#842ce0]/20 bg-[#842ce0]/5">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Zap className="h-5 w-5 text-purple-600" />
+                  <Zap className="h-5 w-5 text-[#842ce0]" />
                   Core Web Vitals
                   <InfoTooltip content="Google's Core Web Vitals measure real-world user experience — loading speed (LCP), interactivity (INP), and visual stability (CLS). These are direct ranking signals that affect your position in search results." />
-                  <span className="ml-auto text-sm font-black text-purple-600">{result.cwv.performanceScore}/100</span>
+                  <span className="ml-auto text-sm font-black text-[#842ce0]">{result.cwv.performanceScore}/100</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>

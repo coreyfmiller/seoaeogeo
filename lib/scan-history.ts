@@ -9,7 +9,7 @@ export interface ScanHistoryEntry {
 const STORAGE_KEY = 'scan_history'
 const RESULT_PREFIX = 'scan_result_'
 const MAX_ENTRIES = 50
-const MAX_FULL_RESULTS = 10
+const MAX_FULL_RESULTS = 20
 
 function resultKey(entry: { url: string; type: string; timestamp: string }) {
   // Create a stable key from url+type+timestamp
@@ -162,4 +162,17 @@ export function getLatestFullScan(type: ScanHistoryEntry['type']): { entry: Scan
   const result = getFullScanResult(latest)
   if (!result) return null
   return { entry: latest, result }
+}
+
+/** Clear all scan history and full results from localStorage */
+export function clearScanHistory() {
+  try {
+    const entries = getScanHistory()
+    for (const entry of entries) {
+      if (entry.hasFullResult) {
+        try { localStorage.removeItem(resultKey(entry)) } catch {}
+      }
+    }
+    localStorage.removeItem(STORAGE_KEY)
+  } catch {}
 }
