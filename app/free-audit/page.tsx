@@ -110,6 +110,14 @@ export default function V2Page() {
   const isAnalyzing = sse.isAnalyzing
   const error = sse.error
 
+  // Calibration offset for free tier display
+  const seoDisplay = result ? (() => {
+    const raw = result.scores.seo.score
+    if (raw >= 90) return raw - 15
+    if (raw >= 82) return raw - 10
+    return raw
+  })() : 0
+
   const handleSiteTypeChange = async (newType: string) => {
     if (!result?.pageData) return
     try {
@@ -145,7 +153,7 @@ export default function V2Page() {
       saveScanToHistory({
         url: currentUrl,
         type: 'free-v3',
-        scores: { seo: result.scores.seo.score, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
+        scores: { seo: seoDisplay, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
         timestamp: new Date().toISOString(),
       }, result)
     }
@@ -313,7 +321,7 @@ export default function V2Page() {
             <Card className="flex items-center justify-center p-6">
               <div className="flex flex-col items-center gap-1">
               <CircularProgress
-                value={result.scores.seo.score}
+                value={seoDisplay}
                 variant="seo"
                 label="SEO Score"
                 size={140}
