@@ -36,12 +36,6 @@ export default function HomePage() {
             <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Log In
             </Link>
-            <Link
-              href="/signup"
-              className="px-4 py-2 rounded-lg bg-[#118fff] hover:bg-[#118fff]/90 text-white text-sm font-semibold transition-colors"
-            >
-              Get Started Free
-            </Link>
           </div>
         </div>
         </nav>
