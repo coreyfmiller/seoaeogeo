@@ -305,7 +305,7 @@ export default function V3Page() {
       
       {/* Page Header with Actions */}
       <AuditPageHeader
-        title="V3 Pro Audit"
+        title="Pro Audit"
         description="AI-powered scoring with site-type-specific analysis for 95% accuracy."
         currentUrl={currentUrl}
         hasResults={!!result}
@@ -431,7 +431,7 @@ export default function V3Page() {
               Best-in-Class SEO/AEO/GEO Scoring
             </CardTitle>
             <CardDescription className="text-base max-w-2xl mx-auto">
-              V3 Pro combines AI content analysis with site-type-specific scoring for the most accurate audits.
+              AI-powered scoring with site-type-specific analysis for the most accurate audits.
               Built for the 2026 search landscape.
             </CardDescription>
           </div>

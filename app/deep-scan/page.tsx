@@ -239,7 +239,7 @@ export default function DeepV3Page() {
       
             {/* Page Header with Actions */}
             <AuditPageHeader
-              title="V3 Deep Scan"
+              title="Deep Scan"
               description="AI-powered multi-page analysis with site intelligence and comprehensive site audit."
               currentUrl={currentUrl}
               hasResults={!!result}
@@ -274,7 +274,7 @@ export default function DeepV3Page() {
                       The Ultimate SEO Audit
                     </CardTitle>
                     <CardDescription className="text-base max-w-2xl mx-auto">
-                      Combines V3's AI-powered intelligence with multi-page deep crawling. 
+                      Combines AI-powered intelligence with multi-page deep crawling. 
                       Get site intelligence, actionable fixes, and comprehensive site analysis.
                     </CardDescription>
                   </div>

@@ -130,10 +130,11 @@ export function AppSidebar() {
   return (
     <aside className="hidden lg:flex flex-col w-64 border-r border-border/50 bg-sidebar">
       {/* Logo */}
-      <div className="flex items-center justify-center px-6 py-5 border-b border-border/50">
+      <div className="flex flex-col items-center justify-center px-6 py-5 border-b border-border/50">
         <a href="/pro-audit">
           <img src="/logo.png" alt="Duelly" className="h-[66px] w-auto" />
         </a>
+        <span className="text-xs text-muted-foreground/60 italic mt-1">See your site like AI does.</span>
       </div>
 
       {/* Main Navigation */}
