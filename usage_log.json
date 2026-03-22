@@ -7673,5 +7673,77 @@
     "url": "Citatom - Search Intelligence Platform",
     "timestamp": "2026-03-22T10:56:59.536Z",
     "cost": 0.11383189999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 798,
+    "outputTokens": 483,
+    "url": "https://pizzatwice.com",
+    "timestamp": "2026-03-22T11:23:53.706Z",
+    "cost": 0.006210749999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5012,
+    "outputTokens": 8331,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-22T11:24:31.613Z",
+    "cost": 0.0872144
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3574,
+    "outputTokens": 8553,
+    "url": "Pizza Twice | About Us",
+    "timestamp": "2026-03-22T11:25:48.511Z",
+    "cost": 0.08596314999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5012,
+    "outputTokens": 8250,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-22T11:25:53.698Z",
+    "cost": 0.08647730000000001
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5012,
+    "outputTokens": 8331,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-22T11:25:54.553Z",
+    "cost": 0.0872144
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 6944,
+    "outputTokens": 8434,
+    "url": "Pizza Twice | Locations",
+    "timestamp": "2026-03-22T11:26:32.014Z",
+    "cost": 0.09254699999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3794,
+    "outputTokens": 8602,
+    "url": "Pizza Twice | Pizza Twice Franchise",
+    "timestamp": "2026-03-22T11:26:37.235Z",
+    "cost": 0.08690955
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 3349,
+    "outputTokens": 8787,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-22T11:28:09.567Z",
+    "cost": 0.087580675
   }
 ]

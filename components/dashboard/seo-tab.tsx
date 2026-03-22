@@ -173,7 +173,7 @@ export function SEOTab({ data }: SEOTabProps) {
 
       {/* On-Page AI Analysis */}
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-seo/20 bg-seo-muted/10">
+        <Card className="border-seo/20 bg-seo/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Sparkles className="h-5 w-5 text-seo" />
@@ -194,7 +194,7 @@ export function SEOTab({ data }: SEOTabProps) {
               )}
             </div>
             {aiSeo?.metaAnalysis && (
-              <div className="mt-4 p-3 rounded bg-seo-muted/30 border border-seo/10">
+              <div className="mt-4 p-3 rounded bg-seo/10 border border-seo/10">
                 <p className="text-xs font-semibold text-seo uppercase mb-1">AI Context Analysis</p>
                 <p className="text-sm text-foreground/70 leading-relaxed">{aiSeo.metaAnalysis}</p>
               </div>
@@ -202,7 +202,7 @@ export function SEOTab({ data }: SEOTabProps) {
           </CardContent>
         </Card>
 
-        <Card className="border-seo/20 bg-seo-muted/10">
+        <Card className="border-seo/20 bg-seo/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <TrendingUp className="h-5 w-5 text-seo" />
@@ -227,7 +227,7 @@ export function SEOTab({ data }: SEOTabProps) {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Keyword Rankings */}
-        <Card className="border-seo/20 bg-seo-muted/10">
+        <Card className="border-seo/20 bg-seo/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <FileText className="h-5 w-5 text-seo" />
@@ -246,7 +246,7 @@ export function SEOTab({ data }: SEOTabProps) {
               </TableHeader>
               <TableBody>
                 {keywordData.map((kw) => (
-                  <TableRow key={kw.keyword} className="border-border/30 hover:bg-seo-muted/20">
+                  <TableRow key={kw.keyword} className="border-border/30 hover:bg-seo/10">
                     <TableCell className="font-medium text-foreground text-sm">
                       {kw.keyword}
                     </TableCell>
@@ -286,7 +286,7 @@ export function SEOTab({ data }: SEOTabProps) {
         </Card>
 
         {/* Backlinks */}
-        <Card className="border-seo/20 bg-seo-muted/10">
+        <Card className="border-seo/20 bg-seo/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Link2 className="h-5 w-5 text-seo" />
@@ -305,7 +305,7 @@ export function SEOTab({ data }: SEOTabProps) {
               </TableHeader>
               <TableBody>
                 {backlinkData.map((bl) => (
-                  <TableRow key={bl.domain} className="border-border/30 hover:bg-seo-muted/20">
+                  <TableRow key={bl.domain} className="border-border/30 hover:bg-seo/10">
                     <TableCell className="font-medium text-foreground text-sm">
                       {bl.domain}
                     </TableCell>
@@ -343,7 +343,7 @@ export function SEOTab({ data }: SEOTabProps) {
         Extracted DOM Intelligence
       </h2>
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="border-seo/20 bg-seo-muted/10 h-full">
+        <Card className="border-seo/20 bg-seo/5 h-full">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Shield className="h-5 w-5 text-seo" />
@@ -359,7 +359,7 @@ export function SEOTab({ data }: SEOTabProps) {
                   className={cn(
                     "flex items-center gap-3 rounded-lg border p-3 transition-colors",
                     item.status
-                      ? "border-geo/30 bg-geo-muted/20"
+                      ? "border-geo/30 bg-geo/10"
                       : "border-destructive/30 bg-destructive/10"
                   )}
                 >
@@ -386,7 +386,7 @@ export function SEOTab({ data }: SEOTabProps) {
           </CardContent>
         </Card>
 
-        <Card className="border-seo/20 bg-seo-muted/10 h-full">
+        <Card className="border-seo/20 bg-seo/5 h-full">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <FileText className="h-5 w-5 text-seo" />

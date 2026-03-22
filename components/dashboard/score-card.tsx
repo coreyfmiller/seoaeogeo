@@ -26,9 +26,9 @@ export function ScoreCard({
   }
 
   const bgColorMap = {
-    seo: "bg-seo-muted/30",
-    aeo: "bg-aeo-muted/30",
-    geo: "bg-geo-muted/30",
+    seo: "bg-seo/5",
+    aeo: "bg-aeo/5",
+    geo: "bg-geo/5",
   }
 
   return (

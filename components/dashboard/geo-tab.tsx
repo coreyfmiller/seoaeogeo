@@ -333,7 +333,7 @@ export function GEOTab({ data }: GEOTabProps) {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Media Context & Brand Visibility */}
-        <Card className="border-geo/20 bg-geo-muted/10">
+        <Card className="border-geo/20 bg-geo/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <ImageIcon className="h-5 w-5 text-geo" />
@@ -343,15 +343,15 @@ export function GEOTab({ data }: GEOTabProps) {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-lg border border-geo/20 bg-geo-muted/20 p-4">
+              <div className="rounded-lg border border-geo/20 bg-geo/10 p-4">
                 <span className="text-sm font-medium text-muted-foreground">Total Brand Images</span>
                 <p className="mt-1 text-3xl font-bold font-mono">{struct?.media?.totalImages || 0}</p>
               </div>
-              <div className="rounded-lg border border-geo/20 bg-geo-muted/20 p-4">
+              <div className="rounded-lg border border-geo/20 bg-geo/10 p-4">
                 <span className="text-sm font-medium text-muted-foreground">Images with AI Context</span>
                 <p className="mt-1 text-3xl font-bold font-mono text-geo">{struct?.media?.imagesWithAlt || 0}</p>
               </div>
-              <div className="rounded-lg border border-geo/20 bg-geo-muted/20 p-4">
+              <div className="rounded-lg border border-geo/20 bg-geo/10 p-4">
                 <span className="text-sm font-medium text-muted-foreground">AI Blindspot Ratio</span>
                 <p className="mt-1 text-3xl font-bold font-mono text-destructive">
                   {struct?.media?.totalImages ? Math.round(((struct.media.totalImages - struct.media.imagesWithAlt) / struct.media.totalImages) * 100) : 0}%
@@ -362,7 +362,7 @@ export function GEOTab({ data }: GEOTabProps) {
         </Card>
 
         {/* LLM Context Clarity */}
-        <Card className="border-geo/20 bg-geo-muted/10">
+        <Card className="border-geo/20 bg-geo/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Sparkles className="h-5 w-5 text-geo" />
@@ -386,7 +386,7 @@ export function GEOTab({ data }: GEOTabProps) {
                   <span className="text-geo">{geoData?.citationLikelihood ?? 70}%</span>
                 </div>
               </div>
-              <div className="mt-6 w-full p-4 rounded bg-geo-muted/30 border border-geo/10">
+              <div className="mt-6 w-full p-4 rounded bg-geo/10 border border-geo/10">
                 <p className="text-sm text-foreground/70 text-center italic">
                   Your site's context clarity is rated at {geoData?.citationLikelihood ?? 70}%. High clarity leads to more frequent and accurate AI citations.
                 </p>
@@ -397,7 +397,7 @@ export function GEOTab({ data }: GEOTabProps) {
       </div>
 
       {/* AI Visibility Gaps */}
-      <Card className="border-geo/20 bg-geo-muted/10">
+      <Card className="border-geo/20 bg-geo/5">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg flex items-center gap-2 text-foreground">
             <Bot className="h-5 w-5 text-geo" />
@@ -428,7 +428,7 @@ export function GEOTab({ data }: GEOTabProps) {
 // TEMP: Sentiment section to be inserted after line 333
 /*
       {geoData?.sentimentScore !== undefined && (
-        <Card className="border-geo/20 bg-geo-muted/10">
+        <Card className="border-geo/20 bg-geo/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Sparkles className="h-5 w-5 text-geo" />
@@ -469,7 +469,7 @@ export function GEOTab({ data }: GEOTabProps) {
                 ));
               })()}
             </div>
-            <div className="mt-6 p-4 rounded-lg border border-geo/30 bg-geo-muted/20">
+            <div className="mt-6 p-4 rounded-lg border border-geo/30 bg-geo/10">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-geo" />
                 <span className="font-medium text-foreground">Overall Sentiment Score</span>

@@ -333,7 +333,7 @@ export function AEOTab({ data }: AEOTabProps) {
 
       {/* Question-Based Content Analysis */}
       {aeoData?.questionsAnswered && (
-        <Card className="border-aeo/20 bg-aeo-muted/10">
+        <Card className="border-aeo/20 bg-aeo/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Code2 className="h-5 w-5 text-aeo" />
@@ -349,7 +349,7 @@ export function AEOTab({ data }: AEOTabProps) {
                 return (
                   <div
                     key={type}
-                    className="rounded-lg border border-aeo/20 bg-aeo-muted/20 p-4"
+                    className="rounded-lg border border-aeo/20 bg-aeo/10 p-4"
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold text-aeo capitalize">{type}</span>
@@ -444,7 +444,7 @@ export function AEOTab({ data }: AEOTabProps) {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Content QA Depth */}
-        <Card className="border-aeo/20 bg-aeo-muted/10">
+        <Card className="border-aeo/20 bg-aeo/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Code2 className="h-5 w-5 text-aeo" />
@@ -468,7 +468,7 @@ export function AEOTab({ data }: AEOTabProps) {
         </Card>
 
         {/* Missing Schemas */}
-        <Card className="border-aeo/20 bg-aeo-muted/10">
+        <Card className="border-aeo/20 bg-aeo/5">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Code2 className="h-5 w-5 text-aeo" />
