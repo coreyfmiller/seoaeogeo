@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Search, Layers, Globe, Zap, ArrowRight, Clock, Activity } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
+import { Header } from '@/components/dashboard/header'
 import { getScanHistory, ScanHistoryEntry, setLoadFromHistory, getRouteForType, exportScanHistory, importScanHistory, clearScanHistory } from '@/lib/scan-history'
 import { Button } from '@/components/ui/button'
 import { Download, Upload, Trash2 } from 'lucide-react'
@@ -89,6 +90,7 @@ export default function DashboardPage() {
     <div className="flex h-screen bg-background">
       <AppSidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
+        <Header hideSearch apiStatus="idle" />
         <main className="flex-1 overflow-y-auto px-6 pt-6">
           <div className="max-w-7xl mx-auto space-y-6 pb-6">
 
