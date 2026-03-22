@@ -7,8 +7,7 @@ import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatest
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { SearchInput } from '@/components/dashboard/search-input'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
-import { AppSidebar } from '@/components/dashboard/app-sidebar'
-import { Header } from '@/components/dashboard/header'
+import { PageShell } from '@/components/dashboard/page-shell'
 import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
 import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
@@ -123,19 +122,14 @@ export default function V4Page() {
   }, [])
 
   return (
-    <div className="flex h-screen bg-background">
-      <AppSidebar />
-
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header
-          onAnalyze={handleAnalyze}
-          isAnalyzing={isAnalyzing}
-          currentUrl={currentUrl}
-          apiStatus="idle"
-        />
-
-        <main className="flex-1 overflow-y-auto px-6 pt-6">
-          <div className="max-w-7xl mx-auto space-y-6 pb-6">
+    <PageShell
+      onAnalyze={handleAnalyze}
+      isAnalyzing={isAnalyzing}
+      currentUrl={currentUrl}
+      apiStatus="idle"
+    >
+        <main className="flex-1 overflow-y-auto px-3 sm:px-6 pt-4 sm:pt-6">
+          <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 pb-6">
       
             <AuditPageHeader
               title="V4 Free Audit"
@@ -400,7 +394,6 @@ export default function V4Page() {
             )}
           </div>
         </main>
-      </div>
-    </div>
+    </PageShell>
   )
 }

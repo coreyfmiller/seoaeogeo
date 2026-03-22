@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { AppSidebar } from "@/components/dashboard/app-sidebar"
+import { PageShell } from "@/components/dashboard/page-shell"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   HelpCircle,
@@ -169,7 +169,7 @@ export default function HelpPage() {
   const filteredFaqs = activeCategory === "all" ? faqs : faqs.filter(f => f.category === activeCategory)
 
   return (
-    <div className="flex h-screen bg-background">
+    <PageShell hideSearch apiStatus="idle">
       {/* FAQPage JSON-LD */}
       <script
         type="application/ld+json"
@@ -188,10 +188,8 @@ export default function HelpPage() {
           }),
         }}
       />
-      <AppSidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-y-auto">
-          <div className="max-w-5xl mx-auto p-8 space-y-10">
+          <div className="max-w-5xl mx-auto p-4 sm:p-8 space-y-10">
 
             {/* Hero */}
             <div className="text-center space-y-3 pb-4">
@@ -563,7 +561,6 @@ export default function HelpPage() {
             <div className="h-8" />
           </div>
         </main>
-      </div>
-    </div>
+    </PageShell>
   )
 }

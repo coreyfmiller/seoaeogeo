@@ -1,7 +1,6 @@
 "use client"
 
-import { AppSidebar } from "@/components/dashboard/app-sidebar"
-import { Header } from "@/components/dashboard/header"
+import { PageShell } from "@/components/dashboard/page-shell"
 import { FileText } from "lucide-react"
 import { useRouter } from "next/navigation"
 
@@ -9,17 +8,9 @@ export default function StandardsPage() {
   const router = useRouter()
 
   return (
-    <div className="flex h-screen bg-background">
-      <AppSidebar />
-
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Header
-          onAnalyze={(url) => router.push(`/?url=${encodeURIComponent(url)}`)}
-          apiStatus="idle"
-        />
-
+    <PageShell hideSearch apiStatus="idle">
         <main className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto p-8">
+          <div className="max-w-4xl mx-auto p-4 sm:p-8">
             {/* Header */}
             <div className="mb-8">
               <div className="flex items-center gap-3 mb-4">
@@ -175,7 +166,6 @@ export default function StandardsPage() {
             </div>
           </div>
         </main>
-      </div>
-    </div>
+    </PageShell>
   )
 }

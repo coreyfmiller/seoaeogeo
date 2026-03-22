@@ -1,8 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { AppSidebar } from "@/components/dashboard/app-sidebar"
-import { Header } from "@/components/dashboard/header"
+import { PageShell } from "@/components/dashboard/page-shell"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -47,13 +46,8 @@ export default function UsagePage() {
     const todayStats = stats?.dailyUsage?.[todayDate] || { cost: 0, queries: 0, tokens: 0 }
 
     return (
-        <div className="flex h-screen bg-background">
-            <AppSidebar />
-
-            <div className="flex-1 flex flex-col overflow-hidden">
-                <Header />
-
-                <main className="flex-1 overflow-y-auto p-6">
+        <PageShell hideSearch apiStatus="idle">
+                <main className="flex-1 overflow-y-auto p-3 sm:p-6">
                     <div className="max-w-5xl mx-auto">
                         <div className="flex items-center justify-between mb-8">
                             <div>
@@ -172,7 +166,6 @@ export default function UsagePage() {
                         </Card>
                     </div>
                 </main>
-            </div>
-        </div>
+        </PageShell>
     )
 }

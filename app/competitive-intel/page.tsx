@@ -1,8 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { AppSidebar } from "@/components/dashboard/app-sidebar"
-import { Header } from "@/components/dashboard/header"
+import { PageShell } from "@/components/dashboard/page-shell"
 import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan } from '@/lib/scan-history'
 import { DualSearchInput } from "@/components/dashboard/search-input"
 import { Badge } from "@/components/ui/badge"
@@ -193,17 +192,11 @@ export default function SiteVsSite() {
     }
 
     return (
-        <div className="flex h-screen bg-background">
-            <AppSidebar />
-
-            <div className="flex-1 flex flex-col overflow-hidden">
-                <Header
-                    onAnalyze={(url) => window.location.href = `/?url=${encodeURIComponent(url)}`}
-                    apiStatus={apiStatus}
-                    hideSearch
-                />
-
-                <main className="flex-1 overflow-y-auto px-6 pt-6">
+        <PageShell
+            apiStatus={apiStatus}
+            hideSearch
+        >
+                <main className="flex-1 overflow-y-auto px-3 sm:px-6 pt-4 sm:pt-6">
                     <div className="max-w-7xl mx-auto pb-6">
                         <div className="mb-10 flex items-start justify-between gap-4">
                             <div className="text-center sm:text-left">
@@ -719,7 +712,6 @@ export default function SiteVsSite() {
                         )}
                     </div>
                 </main>
-            </div>
-        </div>
+        </PageShell>
     )
 }

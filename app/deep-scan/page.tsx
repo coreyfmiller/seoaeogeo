@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react'
 import { Layers, Sparkles, Zap, ShieldCheck, AlertTriangle, FileText, Search, CheckCircle2, Clock } from 'lucide-react'
 import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { AppSidebar } from '@/components/dashboard/app-sidebar'
-import { Header } from '@/components/dashboard/header'
+import { PageShell } from '@/components/dashboard/page-shell'
 import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
 import { CrawlConfig } from '@/components/dashboard/crawl-config'
 import { PageComparisonTable } from '@/components/dashboard/page-comparison-table'
@@ -217,25 +216,16 @@ export default function DeepV3Page() {
   }, [])
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-      <AppSidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header with Search */}
-        <Header
-          onAnalyze={handleAnalyze}
-          isAnalyzing={isAnalyzing}
-          currentUrl={currentUrl}
-          apiStatus="idle"
-          placeholder="Enter URL for Deep Scan..."
-          buttonLabel="Deep Scan"
-        />
-
-        {/* Dashboard Content */}
-        <main className="flex-1 overflow-y-auto px-6 pt-6">
-          <div className="max-w-7xl mx-auto space-y-6 pb-6">
+    <PageShell
+      onAnalyze={handleAnalyze}
+      isAnalyzing={isAnalyzing}
+      currentUrl={currentUrl}
+      apiStatus="idle"
+      placeholder="Enter URL for Deep Scan..."
+      buttonLabel="Deep Scan"
+    >
+        <main className="flex-1 overflow-y-auto px-3 sm:px-6 pt-4 sm:pt-6">
+          <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 pb-6">
       
             {/* Page Header with Actions */}
             <AuditPageHeader
@@ -766,7 +756,6 @@ export default function DeepV3Page() {
             )}
           </div>
         </main>
-      </div>
-    </div>
+    </PageShell>
   )
 }

@@ -50,7 +50,11 @@ const bottomNav: NavItem[] = [
   { name: "Usage & Costs", icon: BarChart3, href: "/usage", badge: "ADMIN" },
 ]
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  mobile?: boolean
+}
+
+export function AppSidebar({ mobile }: AppSidebarProps = {}) {
   const pathname = usePathname()
   const router = useRouter()
   const [referralOpen, setReferralOpen] = useState(false)
@@ -128,7 +132,7 @@ export function AppSidebar() {
   }
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 border-r border-border/50 bg-sidebar">
+    <aside className={cn(mobile ? "flex flex-col w-full bg-sidebar" : "hidden lg:flex flex-col w-64 border-r border-border/50 bg-sidebar")}>
       {/* Logo */}
       <div className="flex flex-col items-center justify-center px-6 py-5 border-b border-border/50">
         <a href="/pro-audit">

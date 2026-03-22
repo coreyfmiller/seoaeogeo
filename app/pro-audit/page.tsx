@@ -7,8 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { SearchInput } from '@/components/dashboard/search-input'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
-import { AppSidebar } from '@/components/dashboard/app-sidebar'
-import { Header } from '@/components/dashboard/header'
+import { PageShell } from '@/components/dashboard/page-shell'
 import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
 import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
 import { SEOTabEnhanced } from '@/components/dashboard/seo-tab-enhanced'
@@ -283,25 +282,16 @@ export default function V3Page() {
   } : undefined
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-      <AppSidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header with Search */}
-        <Header
-          onAnalyze={handleAnalyze}
-          isAnalyzing={isAnalyzing}
-          currentUrl={currentUrl}
-          apiStatus="idle"
-          placeholder="Enter URL for Pro Audit..."
-          buttonLabel="Pro Audit"
-        />
-
-        {/* Dashboard Content */}
-        <main className="flex-1 overflow-y-auto px-6 pt-6">
-          <div className="max-w-7xl mx-auto space-y-6 pb-6 overflow-hidden">
+    <PageShell
+      onAnalyze={handleAnalyze}
+      isAnalyzing={isAnalyzing}
+      currentUrl={currentUrl}
+      apiStatus="idle"
+      placeholder="Enter URL for Pro Audit..."
+      buttonLabel="Pro Audit"
+    >
+        <main className="flex-1 overflow-y-auto px-3 sm:px-6 pt-4 sm:pt-6">
+          <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 pb-6 overflow-hidden">
       
       {/* Page Header with Actions */}
       <AuditPageHeader
@@ -686,7 +676,6 @@ export default function V3Page() {
       )}
           </div>
         </main>
-      </div>
-    </div>
+    </PageShell>
   )
 }

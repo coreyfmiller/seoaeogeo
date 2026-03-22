@@ -237,7 +237,7 @@ export function AuditPageHeader({
                 </div>
               )}
               
-              <div className="flex items-center gap-2 justify-end">
+              <div className="flex items-center gap-2 justify-end flex-wrap">
                 <button
                   onClick={() => {
                     if (!analysisData) return

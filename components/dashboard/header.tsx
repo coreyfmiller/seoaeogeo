@@ -25,9 +25,10 @@ interface HeaderProps {
   hideSearch?: boolean
   placeholder?: string
   buttonLabel?: string
+  onMenuToggle?: () => void
 }
 
-export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle", hideSearch = false, placeholder, buttonLabel }: HeaderProps) {
+export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle", hideSearch = false, placeholder, buttonLabel, onMenuToggle }: HeaderProps) {
   const [url, setUrl] = useState(currentUrl || "")
   const [credits, setCredits] = useState<number | null>(null)
 
@@ -61,24 +62,24 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
   }
 
   return (
-    <header className="flex items-center gap-4 px-6 py-4 border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
+    <header className="flex items-center gap-2 sm:gap-4 px-3 sm:px-6 py-3 sm:py-4 border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
       {/* Mobile menu button */}
-      <Button variant="ghost" size="icon" className="lg:hidden">
+      <Button variant="ghost" size="icon" className="lg:hidden shrink-0" onClick={onMenuToggle} aria-label="Open navigation menu">
         <Menu className="h-5 w-5" />
       </Button>
 
       {/* Search Bar */}
       {!hideSearch && (
-      <form onSubmit={handleSubmit} className="flex-1 max-w-2xl">
+      <form onSubmit={handleSubmit} className="flex-1 max-w-2xl min-w-0">
         <div className="relative">
           <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
-            placeholder={placeholder || "Enter URL to analyze (e.g., example.com)"}
+            placeholder={placeholder || "Enter URL to analyze..."}
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             className={cn(
-              "pl-10 pr-24 h-11 bg-input border-border/50",
+              "pl-10 pr-20 sm:pr-24 h-10 sm:h-11 bg-input border-border/50 text-sm",
               "focus:border-seo/50 focus:ring-seo/20",
               "placeholder:text-muted-foreground/70"
             )}
@@ -93,14 +94,11 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
             )}
           >
             {isAnalyzing ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Analyzing
-              </>
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <>
-                <Search className="h-4 w-4 mr-2" />
-                {buttonLabel || "Analyze"}
+                <Search className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">{buttonLabel || "Analyze"}</span>
               </>
             )}
           </Button>
@@ -109,10 +107,10 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
       )}
 
       {/* Right side — always pinned far right */}
-      <div className="ml-auto flex items-center gap-3 shrink-0">
-        {/* API Status Indicator */}
+      <div className="ml-auto flex items-center gap-2 sm:gap-3 shrink-0">
+        {/* API Status — hide on mobile */}
         <div className={cn(
-          "flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-wider",
+          "hidden sm:flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-wider",
           apiStatus === "healthy" && "border-geo/30 bg-geo/10 text-geo",
           apiStatus === "error" && "border-destructive/30 bg-destructive/10 text-destructive animate-pulse",
           apiStatus === "idle" && "border-border/50 bg-muted/50 text-muted-foreground"
@@ -132,10 +130,10 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
         {/* Buy Credits Button */}
         <Link href="/pro">
           <Button
-            className="bg-[#118fff] hover:bg-[#118fff]/90 text-white font-semibold px-6 py-3 text-base shadow-md"
+            className="bg-[#118fff] hover:bg-[#118fff]/90 text-white font-semibold px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base shadow-md"
           >
-            <Crown className="h-5 w-5 mr-2" />
-            Buy Credits
+            <Crown className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-2" />
+            <span className="hidden sm:inline">Buy Credits</span>
           </Button>
         </Link>
       </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { AppSidebar } from '@/components/dashboard/app-sidebar'
+import { PageShell } from '@/components/dashboard/page-shell'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Settings, User, Lock, Trash2, CreditCard, BarChart3, CheckCircle2, AlertTriangle, Crown, Gift, Copy, Check, Ticket, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -226,21 +226,18 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen bg-background">
-        <AppSidebar />
+      <PageShell hideSearch apiStatus="idle">
         <div className="flex-1 flex items-center justify-center">
           <div className="h-8 w-8 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
         </div>
-      </div>
+      </PageShell>
     )
   }
 
   return (
-    <div className="flex h-screen bg-background">
-      <AppSidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+    <PageShell hideSearch apiStatus="idle">
         <main className="flex-1 overflow-y-auto">
-          <div className="max-w-3xl mx-auto p-8 space-y-6">
+          <div className="max-w-3xl mx-auto p-4 sm:p-8 space-y-6">
 
             {/* Header */}
             <div className="flex items-center gap-3">
@@ -641,7 +638,6 @@ export default function SettingsPage() {
             <div className="h-8" />
           </div>
         </main>
-      </div>
-    </div>
+    </PageShell>
   )
 }

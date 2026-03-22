@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { AppSidebar } from "@/components/dashboard/app-sidebar"
-import { Header } from "@/components/dashboard/header"
+import { PageShell } from "@/components/dashboard/page-shell"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -403,18 +402,13 @@ export default function SiteAnalysis() {
     }
 
     return (
-        <div className="flex h-screen bg-background">
-            <AppSidebar />
-
-            <div className="flex-1 flex flex-col overflow-hidden">
-                <Header
-                    onAnalyze={handleDeepAudit}
-                    isAnalyzing={isAnalyzing}
-                    currentUrl={url}
-                    apiStatus={apiStatus}
-                />
-
-                <main className="flex-1 overflow-y-auto p-6">
+        <PageShell
+            onAnalyze={handleDeepAudit}
+            isAnalyzing={isAnalyzing}
+            currentUrl={url}
+            apiStatus={apiStatus}
+        >
+                <main className="flex-1 overflow-y-auto p-3 sm:p-6">
                     {!isAuthorized ? (
                         <div className="min-h-[70vh] flex flex-col items-center justify-center p-8 bg-card/50 border border-border/50 rounded-3xl animate-in zoom-in-95 mt-4 max-w-2xl mx-auto shadow-lg">
                             <div className="h-16 w-16 bg-green-500/10 rounded-2xl flex items-center justify-center mb-6">
@@ -1839,7 +1833,6 @@ export default function SiteAnalysis() {
                         </div>
                     )}
                 </main>
-            </div>
-        </div>
+        </PageShell>
     )
 }
