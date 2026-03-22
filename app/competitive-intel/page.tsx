@@ -38,6 +38,7 @@ export default function SiteVsSite() {
     const [siteB, setSiteB] = useState("")
     const [comparisonData, setComparisonData] = useState<any>(null)
     const [error, setError] = useState<string | null>(null)
+    const [creditsRefunded, setCreditsRefunded] = useState(0)
     const [apiStatus, setApiStatus] = useState<"healthy" | "error" | "idle">("idle")
     const [creditDialogOpen, setCreditDialogOpen] = useState(false)
     const [pendingUrls, setPendingUrls] = useState<{ a: string; b: string }>({ a: "", b: "" })
@@ -157,6 +158,7 @@ export default function SiteVsSite() {
         const urlB = pendingUrls.b
         setIsAnalyzing(true)
         setError(null)
+        setCreditsRefunded(0)
         setApiStatus("idle")
         setSiteA(urlA)
         setSiteB(urlB)
@@ -175,10 +177,12 @@ export default function SiteVsSite() {
                 setApiStatus("healthy")
             } else {
                 setError(result.error || 'Battle failed. Check your URLs.')
+                setCreditsRefunded(result.creditsRefunded || 0)
                 setApiStatus("error")
             }
         } catch (err: any) {
             setError('Connection failed. Server might be offline.')
+            setCreditsRefunded(0)
             setApiStatus("error")
         } finally {
             setIsAnalyzing(false)
@@ -232,7 +236,7 @@ export default function SiteVsSite() {
                             )}
                         </div>
 
-                        <ScanErrorDialog error={error} onClose={() => setError(null)} onRetry={() => handleBattle(siteA, siteB)} />
+                        <ScanErrorDialog error={error} onClose={() => setError(null)} onRetry={() => handleBattle(siteA, siteB)} creditsRefunded={creditsRefunded} />
 
                         {/* Credit Confirmation Dialog */}
                         <CreditConfirmDialog

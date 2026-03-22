@@ -1,16 +1,17 @@
 import { NextResponse } from 'next/server';
 import { performScan } from '@/lib/crawler';
 import { analyzeCompetitive } from '@/lib/gemini-competitive';
-import { getAuthUser, useCredits } from '@/lib/supabase/auth-helpers';
+import { getAuthUser, useCredits, refundCredits } from '@/lib/supabase/auth-helpers';
 
 /**
  * Competitive Analysis API: Receives two URLs and runs
  * two Crawler instances then a comparative Gemini analysis.
  */
 export async function POST(req: Request) {
+    let user: Awaited<ReturnType<typeof getAuthUser>> = null;
     try {
         // Auth + credit check (Competitive Intel = 20 credits)
-        const user = await getAuthUser();
+        user = await getAuthUser();
         if (!user) {
             return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
         }
@@ -69,9 +70,14 @@ export async function POST(req: Request) {
 
     } catch (error: any) {
         console.error('Competitive API Error:', error);
+        // Refund credits on failure
+        if (user && !user.is_admin) {
+            try { await refundCredits(user.id, 20); } catch (e) { console.error('[Competitive] Refund failed:', e); }
+        }
         return NextResponse.json({
             success: false,
-            error: error.message || 'Internal analysis error'
+            error: error.message || 'Internal analysis error',
+            creditsRefunded: (user && !user.is_admin) ? 20 : 0,
         }, { status: 500 });
     }
 }

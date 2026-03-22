@@ -1,12 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { AlertTriangle, X, RefreshCw } from "lucide-react"
+import { AlertTriangle, X, RefreshCw, Coins } from "lucide-react"
 
 interface ScanErrorDialogProps {
   error: string | null
   onClose: () => void
   onRetry?: () => void
+  creditsRefunded?: number
 }
 
 function getTitle(error: string) {
@@ -19,13 +20,13 @@ function getTitle(error: string) {
   return "Scan Failed"
 }
 
-export function ScanErrorDialog({ error, onClose, onRetry }: ScanErrorDialogProps) {
+export function ScanErrorDialog({ error, onClose, onRetry, creditsRefunded }: ScanErrorDialogProps) {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
     if (error) {
       setVisible(true)
-      const timer = setTimeout(() => { setVisible(false); onClose() }, 8000)
+      const timer = setTimeout(() => { setVisible(false); onClose() }, creditsRefunded ? 12000 : 8000)
       return () => clearTimeout(timer)
     } else {
       setVisible(false)
@@ -44,6 +45,12 @@ export function ScanErrorDialog({ error, onClose, onRetry }: ScanErrorDialogProp
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold">{getTitle(error)}</p>
             <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{error}</p>
+            {creditsRefunded && creditsRefunded > 0 ? (
+              <div className="flex items-center gap-1.5 mt-2 px-2 py-1.5 rounded-md bg-green-500/10 border border-green-500/20">
+                <Coins className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                <p className="text-xs font-semibold text-green-500">{creditsRefunded} credits refunded to your account</p>
+              </div>
+            ) : null}
             {onRetry && (
               <button
                 onClick={() => { setVisible(false); onClose(); onRetry() }}

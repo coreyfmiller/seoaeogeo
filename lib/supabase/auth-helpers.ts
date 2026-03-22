@@ -97,6 +97,22 @@ export async function addCredits(
     .eq('id', userId)
 }
 
+// Refund credits back to a user (called when a scan fails after deduction)
+export async function refundCredits(userId: string, amount: number): Promise<void> {
+  const { data: profile } = await supabaseAdmin
+    .from('profiles')
+    .select('credits')
+    .eq('id', userId)
+    .single()
+
+  if (!profile) return
+
+  await supabaseAdmin
+    .from('profiles')
+    .update({ credits: (profile.credits || 0) + amount })
+    .eq('id', userId)
+}
+
 // Get user's remaining credits
 export async function getCredits(userId: string): Promise<number> {
   const { data: profile } = await supabaseAdmin

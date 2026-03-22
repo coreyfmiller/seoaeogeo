@@ -6,7 +6,7 @@ import { performLiveInterrogation } from '@/lib/gemini-interrogation'
 import { detectSiteType } from '@/lib/site-type-detector'
 import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers'
 import { fetchPageSpeedInsights } from '@/lib/pagespeed'
-import { getAuthUser, useCredits } from '@/lib/supabase/auth-helpers'
+import { getAuthUser, useCredits, refundCredits } from '@/lib/supabase/auth-helpers'
 
 export const maxDuration = 300
 
@@ -100,7 +100,11 @@ export async function POST(request: NextRequest) {
       }})
     } catch (error: any) {
       console.error('[V3 API] Error:', error)
-      send({ type: 'error', success: false, error: error.message || 'Analysis failed' })
+      // Refund credits on failure
+      if (!user.is_admin) {
+        try { await refundCredits(user.id, 10) } catch (e) { console.error('[V3 API] Refund failed:', e) }
+      }
+      send({ type: 'error', success: false, error: error.message || 'Analysis failed', creditsRefunded: user.is_admin ? 0 : 10 })
     }
   })
 

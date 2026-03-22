@@ -496,7 +496,7 @@ export default function V3Page() {
       />
 
       {/* Error Popup */}
-      <ScanErrorDialog error={error} onClose={() => sse.reset()} onRetry={() => handleAnalyze(currentUrl)} />
+      <ScanErrorDialog error={error} onClose={() => sse.reset()} onRetry={() => handleAnalyze(currentUrl)} creditsRefunded={sse.creditsRefunded} />
 
       {/* Results Display */}
       {result && (

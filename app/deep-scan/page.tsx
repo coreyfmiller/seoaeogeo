@@ -439,7 +439,7 @@ export default function DeepV3Page() {
               defaultPageCount={pendingMaxPages}
             />
 
-            <ScanErrorDialog error={error} onClose={() => sse.reset()} onRetry={() => handleAnalyze(currentUrl)} />
+            <ScanErrorDialog error={error} onClose={() => sse.reset()} onRetry={() => handleAnalyze(currentUrl)} creditsRefunded={sse.creditsRefunded} />
 
             {/* Results Display */}
             {result && (

@@ -6,6 +6,7 @@ interface SSEAnalysisState<T = any> {
   progress: number
   data: T | null
   error: string | null
+  creditsRefunded: number
 }
 
 interface UseSSEAnalysisReturn<T = any> extends SSEAnalysisState<T> {
@@ -25,6 +26,7 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
     progress: 0,
     data: null,
     error: null,
+    creditsRefunded: 0,
   })
   const [displayProgress, setDisplayProgress] = useState(0)
   const abortRef = useRef<AbortController | null>(null)
@@ -65,6 +67,7 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
       progress: 0,
       data: null,
       error: null,
+      creditsRefunded: 0,
     })
 
     try {
@@ -129,6 +132,7 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
               setState((prev) => ({
                 ...prev,
                 error: event.error || 'Analysis failed',
+                creditsRefunded: event.creditsRefunded || 0,
               }))
             }
           } catch {
@@ -157,6 +161,7 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
       progress: 0,
       data: null,
       error: null,
+      creditsRefunded: 0,
     })
   }, [])
 
@@ -167,6 +172,7 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
       progress: 100,
       data,
       error: null,
+      creditsRefunded: 0,
     })
   }, [])
 

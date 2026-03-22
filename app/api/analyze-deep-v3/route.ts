@@ -8,7 +8,7 @@ import { saveScanSnapshot } from '@/lib/scan-snapshots'
 import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers'
 import { chromium as playwright, type Browser } from 'playwright-core'
 import chromium from '@sparticuz/chromium'
-import { getAuthUser, useCredits } from '@/lib/supabase/auth-helpers'
+import { getAuthUser, useCredits, refundCredits } from '@/lib/supabase/auth-helpers'
 
 export const maxDuration = 300
 
@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  const creditCost = 10 + maxPages
   const url = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`
 
   const stream = createSSEStream(async (send) => {
@@ -339,7 +340,11 @@ export async function POST(request: NextRequest) {
       }})
     } catch (error: any) {
       console.error('[Deep Scan] Error:', error)
-      send({ type: 'error', success: false, error: error.message || 'Analysis failed' })
+      // Refund credits on failure
+      if (!user.is_admin) {
+        try { await refundCredits(user.id, creditCost) } catch (e) { console.error('[Deep Scan] Refund failed:', e) }
+      }
+      send({ type: 'error', success: false, error: error.message || 'Analysis failed', creditsRefunded: user.is_admin ? 0 : creditCost })
     } finally {
       if (browser) await browser.close()
     }
