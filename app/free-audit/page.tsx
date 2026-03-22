@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Activity, Search, Zap, CheckCircle2, XCircle, ArrowRight } from 'lucide-react'
+import { Activity, Search, Zap, ArrowRight } from 'lucide-react'
 import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { SearchInput } from '@/components/dashboard/search-input'
@@ -411,80 +411,68 @@ export default function V2Page() {
             )
           })()}
 
-          <Card id="upgrade-cta-v3" className="border-geo/30 bg-gradient-to-br from-geo/10 to-aeo/10 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-geo/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            <CardContent className="p-6 relative">
-              <div className="text-center mb-4">
-                <p className="text-lg font-semibold text-foreground">
-                  Ready to fix these issues and boost your scores?
+          {/* Funnel CTA */}
+          <Card id="upgrade-cta-v3" className="border-[#118fff]/30 bg-gradient-to-br from-[#118fff]/5 via-[#842ce0]/5 to-[#fe3f8c]/5 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-[#842ce0]/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#118fff]/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+            <CardContent className="p-6 sm:p-8 relative">
+              {/* Step 1: Hook */}
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#118fff]/10 text-[#118fff] text-xs font-bold mb-4 border border-[#118fff]/20">
+                  <Zap className="h-3.5 w-3.5" />
+                  YOU FOUND THE PROBLEMS. NOW FIX THEM.
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-black text-foreground mb-2">
+                  Your Free Audit Found Issues. Pro Tells You Exactly How to Fix Them.
+                </h3>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                  Every penalty above has a step-by-step fix instruction waiting for you — tailored to your platform, prioritized by impact, with code snippets you can copy and paste.
                 </p>
               </div>
-              <div className="flex flex-col md:flex-row items-center gap-6">
-                <div className="flex-1">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-geo/20 text-geo text-xs font-bold mb-3">
-                    <Zap className="h-3 w-3" />
-                    UPGRADE TO PRO
+
+              {/* Step 2: What you get */}
+              <div className="grid sm:grid-cols-2 gap-4 mb-8">
+                {[
+                  { icon: '🔧', title: 'Platform-Specific Fixes', desc: 'WordPress, Shopify, Wix, Next.js — instructions reference your actual admin paths and plugins.' },
+                  { icon: '📊', title: 'Priority Scoring', desc: 'Issues ranked by impact so you fix what moves the needle first. No wasted effort.' },
+                  { icon: '🧠', title: 'AI Content Analysis', desc: 'Gemini AI evaluates your tone, expertise signals, and content quality — not just technical checks.' },
+                  { icon: '🏗️', title: 'Auto-Generated Schema', desc: 'Get ready-to-paste JSON-LD structured data tailored to your site type. Copy, paste, rank.' },
+                ].map((item, i) => (
+                  <div key={i} className="flex gap-3 p-3 rounded-xl border border-border/30 bg-card/30">
+                    <span className="text-xl shrink-0">{item.icon}</span>
+                    <div>
+                      <p className="text-sm font-bold text-foreground">{item.title}</p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
+                    </div>
                   </div>
-                  <h3 className="text-2xl font-bold mb-1">Get Step-by-Step Fix Instructions</h3>
-                  <p className="text-lg text-geo font-bold mb-2">Plans starting at $20</p>
-                  <p className="text-muted-foreground mb-4">
-                    Stop guessing. Get exact implementation guides for every issue.
-                  </p>
-                  <ul className="space-y-2 mb-6">
-                    <li className="flex items-center gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
-                      <span>Detailed explanations of why each fix matters</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
-                      <span>Auto-generated schema markup for your site type</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
-                      <span>Platform-specific guides (WordPress, Shopify, custom)</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
-                      <span>ROI estimates and priority scoring</span>
-                    </li>
-                    <li className="flex items-center gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
-                      <span>Deep crawl up to 50 pages for comprehensive site analysis</span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="shrink-0 text-center">
-                  <button
-                    onClick={() => router.push('/pro-audit')}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-geo hover:bg-geo/90 text-white font-medium shadow-lg hover:shadow-xl transition-all"
-                  >
-                    View Pro Audit
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
-                  <p className="text-xs text-muted-foreground mt-3">
-                    See detailed fixes for this URL
-                  </p>
-                </div>
+                ))}
               </div>
-            </CardContent>
-          </Card>
-          {/* Free Pro Scan CTA */}
-          <Card className="border-aeo/30 bg-gradient-to-r from-aeo/10 to-seo/10">
-            <CardContent className="p-5 flex flex-col sm:flex-row items-center gap-4">
-              <div className="h-12 w-12 rounded-full bg-aeo/10 flex items-center justify-center shrink-0">
-                <Zap className="h-6 w-6 text-aeo" />
+
+              {/* Step 3: The offer */}
+              <div className="rounded-2xl border-2 border-[#842ce0]/30 bg-[#842ce0]/5 p-6 text-center mb-6">
+                <p className="text-xs font-bold text-[#842ce0] uppercase tracking-widest mb-2">Start for free</p>
+                <p className="text-3xl font-black text-foreground mb-1">20 Free Credits on Signup</p>
+                <p className="text-muted-foreground text-sm mb-4">No credit card required. Enough for 2 Pro Audits or 1 Deep Scan.</p>
+                <button
+                  onClick={() => router.push('/signup')}
+                  className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#842ce0] hover:bg-[#842ce0]/90 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all"
+                >
+                  Create Free Account
+                  <ArrowRight className="h-5 w-5" />
+                </button>
               </div>
-              <div className="flex-1 text-center sm:text-left">
-                <p className="font-bold text-foreground">Get 20 free credits when you sign up</p>
-                <p className="text-sm text-muted-foreground">Create an account and get instant access to AI-powered Pro Audits, Deep Scans, and Competitive Intel — no credit card required.</p>
+
+              {/* Step 4: Already have an account */}
+              <div className="text-center">
+                <p className="text-xs text-muted-foreground mb-2">Already have an account?</p>
+                <button
+                  onClick={() => router.push('/pro-audit')}
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-[#118fff] hover:underline"
+                >
+                  Run Pro Audit on this URL
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
               </div>
-              <button
-                onClick={() => router.push('/signup')}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-aeo hover:bg-aeo/90 text-white font-medium shadow-lg hover:shadow-xl transition-all whitespace-nowrap"
-              >
-                Sign Up Free
-                <ArrowRight className="h-4 w-4" />
-              </button>
             </CardContent>
           </Card>
         </div>
