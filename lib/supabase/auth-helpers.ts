@@ -9,20 +9,14 @@ export interface UserProfile {
   full_name: string | null
   plan: UserPlan
   is_admin: boolean
-  credits_pro_audits: number
-  credits_deep_scans: number
-  credits_competitive_intel: number
+  credits: number
 }
 
-// Credits granted per purchase
-export const PLAN_CREDITS: Record<Exclude<UserPlan, 'free'>, {
-  proAudits: number
-  deepScans: number
-  competitiveIntel: number
-}> = {
-  pro:         { proAudits: 20,  deepScans: 10,  competitiveIntel: 10 },
-  pro_plus:    { proAudits: 60,  deepScans: 60,  competitiveIntel: 25 },
-  agency:      { proAudits: 150, deepScans: 150, competitiveIntel: 50 },
+// Credits granted per purchase (unified pool)
+export const PLAN_CREDITS: Record<Exclude<UserPlan, 'free'>, number> = {
+  pro:      200,   // $20
+  pro_plus: 600,   // $50
+  agency:   1500,  // $100
 }
 
 // Max crawl pages (same for all paid plans)
@@ -49,19 +43,15 @@ export async function getAuthUser(): Promise<UserProfile | null> {
     full_name: profile.full_name,
     plan: profile.plan as UserPlan,
     is_admin: profile.is_admin ?? false,
-    credits_pro_audits: profile.credits_pro_audits ?? 0,
-    credits_deep_scans: profile.credits_deep_scans ?? 0,
-    credits_competitive_intel: profile.credits_competitive_intel ?? 0,
+    credits: profile.credits ?? 0,
   }
 }
 
-// Use a credit (decrement balance). Returns true if successful.
-// `amount` defaults to 1 for single-credit scans (Pro Audit).
-export async function useCredit(
+// Use credits from unified pool. Returns whether allowed and remaining balance.
+export async function useCredits(
   userId: string,
-  type: 'credits_pro_audits' | 'credits_deep_scans' | 'credits_competitive_intel',
-  isAdmin: boolean = false,
-  amount: number = 1
+  amount: number,
+  isAdmin: boolean = false
 ): Promise<{ allowed: boolean; remaining: number }> {
   if (isAdmin) {
     return { allowed: true, remaining: 999 }
@@ -69,43 +59,21 @@ export async function useCredit(
 
   const { data: profile } = await supabaseAdmin
     .from('profiles')
-    .select(type)
+    .select('credits')
     .eq('id', userId)
     .single()
 
   if (!profile) return { allowed: false, remaining: 0 }
 
-  const current = (profile as any)[type] || 0
+  const current = profile.credits || 0
   if (current < amount) return { allowed: false, remaining: current }
 
-  // Decrement
   await supabaseAdmin
     .from('profiles')
-    .update({ [type]: current - amount })
+    .update({ credits: current - amount })
     .eq('id', userId)
 
   return { allowed: true, remaining: current - amount }
-}
-
-// Check if user can use their one-time free Pro scan.
-// Returns true and marks it used if available.
-export async function tryFreeProScan(userId: string): Promise<boolean> {
-  const { data: profile } = await supabaseAdmin
-    .from('profiles')
-    .select('free_scan_used, is_admin')
-    .eq('id', userId)
-    .single()
-
-  if (!profile) return false
-  if (profile.is_admin) return false // admins don't need this
-  if (profile.free_scan_used) return false
-
-  await supabaseAdmin
-    .from('profiles')
-    .update({ free_scan_used: true })
-    .eq('id', userId)
-
-  return true
 }
 
 // Add credits to a user (called from Stripe webhook after purchase)
@@ -113,11 +81,11 @@ export async function addCredits(
   userId: string,
   plan: Exclude<UserPlan, 'free'>
 ) {
-  const credits = PLAN_CREDITS[plan]
+  const amount = PLAN_CREDITS[plan]
 
   const { data: profile } = await supabaseAdmin
     .from('profiles')
-    .select('credits_pro_audits, credits_deep_scans, credits_competitive_intel')
+    .select('credits')
     .eq('id', userId)
     .single()
 
@@ -125,27 +93,17 @@ export async function addCredits(
 
   await supabaseAdmin
     .from('profiles')
-    .update({
-      credits_pro_audits: (profile.credits_pro_audits || 0) + credits.proAudits,
-      credits_deep_scans: (profile.credits_deep_scans || 0) + credits.deepScans,
-      credits_competitive_intel: (profile.credits_competitive_intel || 0) + credits.competitiveIntel,
-    })
+    .update({ credits: (profile.credits || 0) + amount })
     .eq('id', userId)
 }
 
 // Get user's remaining credits
-export async function getCredits(userId: string) {
+export async function getCredits(userId: string): Promise<number> {
   const { data: profile } = await supabaseAdmin
     .from('profiles')
-    .select('credits_pro_audits, credits_deep_scans, credits_competitive_intel')
+    .select('credits')
     .eq('id', userId)
     .single()
 
-  if (!profile) return { pro_audits: 0, deep_scans: 0, competitive_intel: 0 }
-
-  return {
-    pro_audits: profile.credits_pro_audits || 0,
-    deep_scans: profile.credits_deep_scans || 0,
-    competitive_intel: profile.credits_competitive_intel || 0,
-  }
+  return profile?.credits || 0
 }

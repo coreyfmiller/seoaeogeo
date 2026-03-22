@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     // Get user's current credits
     const { data: profile } = await supabaseAdmin
       .from('profiles')
-      .select('credits_pro_audits, credits_deep_scans, credits_competitive_intel')
+      .select('credits')
       .eq('id', user.id)
       .single()
 
@@ -57,11 +57,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
     }
 
-    // Add credits
+    // Add credits (sum all promo credit fields into unified pool)
+    const promoTotal = (promo.credits_pro_audits || 0) + (promo.credits_deep_scans || 0) + (promo.credits_competitive_intel || 0)
     await supabaseAdmin.from('profiles').update({
-      credits_pro_audits: (profile.credits_pro_audits || 0) + promo.credits_pro_audits,
-      credits_deep_scans: (profile.credits_deep_scans || 0) + promo.credits_deep_scans,
-      credits_competitive_intel: (profile.credits_competitive_intel || 0) + promo.credits_competitive_intel,
+      credits: (profile.credits || 0) + promoTotal,
     }).eq('id', user.id)
 
     // Record redemption
@@ -75,15 +74,11 @@ export async function POST(req: NextRequest) {
       times_used: promo.times_used + 1,
     }).eq('id', promo.id)
 
-    console.log(`[Promo] User ${user.id} redeemed code ${normalizedCode} (+${promo.credits_pro_audits}/${promo.credits_deep_scans}/${promo.credits_competitive_intel})`)
+    console.log(`[Promo] User ${user.id} redeemed code ${normalizedCode} (+${promoTotal} credits)`)
 
     return NextResponse.json({
       success: true,
-      credits: {
-        pro_audits: promo.credits_pro_audits,
-        deep_scans: promo.credits_deep_scans,
-        competitive_intel: promo.credits_competitive_intel,
-      },
+      credits: promoTotal,
     })
   } catch (err: any) {
     console.error('[Promo Redeem]', err)

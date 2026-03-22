@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { performScan } from '@/lib/crawler';
 import { analyzeCompetitive } from '@/lib/gemini-competitive';
-import { getAuthUser, useCredit } from '@/lib/supabase/auth-helpers';
+import { getAuthUser, useCredits } from '@/lib/supabase/auth-helpers';
 
 /**
  * Competitive Analysis API: Receives two URLs and runs
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
         }
 
         if (!user.is_admin) {
-            const { allowed } = await useCredit(user.id, 'credits_competitive_intel', false, 20);
+            const { allowed } = await useCredits(user.id, 20);
             if (!allowed) {
                 return NextResponse.json({ error: 'Insufficient credits. Competitive Intel costs 20 credits.' }, { status: 402 });
             }

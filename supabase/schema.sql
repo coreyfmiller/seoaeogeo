@@ -7,6 +7,7 @@ CREATE TABLE public.profiles (
   email TEXT NOT NULL,
   full_name TEXT,
   plan TEXT NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro', 'pro_plus', 'agency')),
+  credits INTEGER NOT NULL DEFAULT 20,
   credits_pro_audits INTEGER NOT NULL DEFAULT 0,
   credits_deep_scans INTEGER NOT NULL DEFAULT 0,
   credits_competitive_intel INTEGER NOT NULL DEFAULT 0,
@@ -86,13 +87,14 @@ BEGIN
     LIMIT 1;
   END IF;
 
-  INSERT INTO public.profiles (id, email, full_name, referral_code, referred_by)
+  INSERT INTO public.profiles (id, email, full_name, referral_code, referred_by, credits)
   VALUES (
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
     ref_code,
-    ref_by
+    ref_by,
+    20
   );
 
   -- Create pending referral record if referred

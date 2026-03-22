@@ -485,8 +485,8 @@ export default function V2Page() {
                 <Zap className="h-6 w-6 text-aeo" />
               </div>
               <div className="flex-1 text-center sm:text-left">
-                <p className="font-bold text-foreground">Get one free AI-powered Pro scan</p>
-                <p className="text-sm text-muted-foreground">Sign up and unlock detailed fix instructions, schema generation, and platform-specific guides — no credit card required.</p>
+                <p className="font-bold text-foreground">Get 20 free credits when you sign up</p>
+                <p className="text-sm text-muted-foreground">Create an account and get instant access to AI-powered Pro Audits, Deep Scans, and Competitive Intel — no credit card required.</p>
               </div>
               <button
                 onClick={() => router.push('/signup')}

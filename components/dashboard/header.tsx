@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
@@ -11,9 +11,11 @@ import {
   Activity,
   ShieldAlert,
   Crown,
+  Coins,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
+import { createClient } from "@/lib/supabase/client"
 
 interface HeaderProps {
   onAnalyze?: (url: string) => void
@@ -27,6 +29,23 @@ interface HeaderProps {
 
 export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle", hideSearch = false, placeholder, buttonLabel }: HeaderProps) {
   const [url, setUrl] = useState(currentUrl || "")
+  const [credits, setCredits] = useState<number | null>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    ;(async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data: prof } = await supabase
+        .from("profiles")
+        .select("credits, is_admin")
+        .eq("id", user.id)
+        .single()
+      if (prof) {
+        setCredits(prof.is_admin ? null : (prof.credits || 0))
+      }
+    })()
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -97,8 +116,16 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
         </div>
       </div>
 
+      {/* Credit Balance */}
+      {credits !== null && (
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#842ce0]/30 bg-[#842ce0]/5">
+          <Coins className="h-3.5 w-3.5 text-[#842ce0]" />
+          <span className="text-sm font-bold text-[#842ce0] tabular-nums">{credits}</span>
+        </div>
+      )}
+
       {/* Buy Credits Button - pushed to far right */}
-      <Link href="/pro" className="ml-auto">
+      <Link href="/pro">
         <Button
           className="bg-[#118fff] hover:bg-[#118fff]/90 text-white font-semibold px-6 py-3 text-base shadow-md"
         >

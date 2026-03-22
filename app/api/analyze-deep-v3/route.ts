@@ -8,7 +8,7 @@ import { saveScanSnapshot } from '@/lib/scan-snapshots'
 import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers'
 import { chromium as playwright, type Browser } from 'playwright-core'
 import chromium from '@sparticuz/chromium'
-import { getAuthUser, useCredit } from '@/lib/supabase/auth-helpers'
+import { getAuthUser, useCredits } from '@/lib/supabase/auth-helpers'
 
 export const maxDuration = 300
 
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 
   if (!user.is_admin) {
     const cost = 10 + maxPages
-    const { allowed } = await useCredit(user.id, 'credits_deep_scans', false, cost)
+    const { allowed } = await useCredits(user.id, cost)
     if (!allowed) {
       return new Response(JSON.stringify({ error: `Insufficient credits. Deep Scan costs ${cost} credits (10 base + ${maxPages} pages).` }), {
         status: 402, headers: { 'Content-Type': 'application/json' },

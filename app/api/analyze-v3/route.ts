@@ -6,7 +6,7 @@ import { performLiveInterrogation } from '@/lib/gemini-interrogation'
 import { detectSiteType } from '@/lib/site-type-detector'
 import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers'
 import { fetchPageSpeedInsights } from '@/lib/pagespeed'
-import { getAuthUser, useCredit, tryFreeProScan } from '@/lib/supabase/auth-helpers'
+import { getAuthUser, useCredits } from '@/lib/supabase/auth-helpers'
 
 export const maxDuration = 300
 
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     })
   }
 
-  // Auth + credit check
+  // Auth + credit check (Pro Audit = 10 credits)
   const user = await getAuthUser()
   if (!user) {
     return new Response(JSON.stringify({ error: 'Authentication required' }), {
@@ -27,10 +27,8 @@ export async function POST(request: NextRequest) {
     })
   }
 
-  // Try free first scan, then deduct credits
-  const isFreeScan = await tryFreeProScan(user.id)
-  if (!isFreeScan && !user.is_admin) {
-    const { allowed } = await useCredit(user.id, 'credits_pro_audits', false, 10)
+  if (!user.is_admin) {
+    const { allowed } = await useCredits(user.id, 10)
     if (!allowed) {
       return new Response(JSON.stringify({ error: 'Insufficient credits. Pro Audit costs 10 credits.' }), {
         status: 402, headers: { 'Content-Type': 'application/json' },

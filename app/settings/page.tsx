@@ -67,7 +67,7 @@ export default function SettingsPage() {
       if (!user) { router.push('/login'); return }
       setUser(user)
 
-      const { data: prof } = await supabase.from('profiles').select('id, email, full_name, plan, is_admin, credits_pro_audits, credits_deep_scans, credits_competitive_intel, referral_code').eq('id', user.id).single()
+      const { data: prof } = await supabase.from('profiles').select('id, email, full_name, plan, is_admin, credits, referral_code').eq('id', user.id).single()
       if (prof) {
         setProfile(prof)
         setFullName(prof.full_name || '')
@@ -97,9 +97,9 @@ export default function SettingsPage() {
       } else {
         // Regular users show remaining credits
         setUsage({
-          pro_audits: prof?.credits_pro_audits || 0,
-          deep_scans: prof?.credits_deep_scans || 0,
-          competitive_intel: prof?.credits_competitive_intel || 0,
+          pro_audits: prof?.credits || 0,
+          deep_scans: 0,
+          competitive_intel: 0,
         })
       }
       setLoading(false)
@@ -168,8 +168,8 @@ export default function SettingsPage() {
         setPromoCode('')
         // Refresh credits display
         if (user) {
-          const { data: prof } = await supabase.from('profiles').select('credits_pro_audits, credits_deep_scans, credits_competitive_intel').eq('id', user.id).single()
-          if (prof) setUsage({ pro_audits: prof.credits_pro_audits || 0, deep_scans: prof.credits_deep_scans || 0, competitive_intel: prof.credits_competitive_intel || 0 })
+          const { data: prof } = await supabase.from('profiles').select('credits').eq('id', user.id).single()
+          if (prof) setUsage({ pro_audits: prof.credits || 0, deep_scans: 0, competitive_intel: 0 })
         }
       } else {
         setPromoResult({ error: data.error || 'Failed to redeem code' })

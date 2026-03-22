@@ -32,7 +32,6 @@ export function CreditConfirmDialog({
   const [balance, setBalance] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedPages, setSelectedPages] = useState(defaultPageCount)
-  const [isFreeScan, setIsFreeScan] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
@@ -52,31 +51,19 @@ export function CreditConfirmDialog({
       }
       const { data: prof } = await supabase
         .from("profiles")
-        .select("credits_pro_audits, credits_deep_scans, credits_competitive_intel, is_admin, free_scan_used")
+        .select("credits, is_admin")
         .eq("id", user.id)
         .single()
       if (prof) {
-        // Sum all credit pools as current balance (will be unified later)
         if (prof.is_admin) {
           setBalance(999)
           setIsAdmin(true)
         } else {
-          setBalance(
-            (prof.credits_pro_audits || 0) +
-            (prof.credits_deep_scans || 0) +
-            (prof.credits_competitive_intel || 0)
-          )
+          setBalance(prof.credits || 0)
           setIsAdmin(false)
-        }
-        // Check if this is a Pro Audit and user hasn't used their free scan yet
-        if (scanType === 'Pro Audit' && !prof.free_scan_used && !prof.is_admin) {
-          setIsFreeScan(true)
-        } else {
-          setIsFreeScan(false)
         }
       } else {
         setBalance(null)
-        setIsFreeScan(false)
       }
       setLoading(false)
     })()
@@ -84,13 +71,11 @@ export function CreditConfirmDialog({
 
   if (!open) return null
 
-  const effectiveCost = isFreeScan ? 0 : showPageSelector ? 10 + selectedPages : creditCost
-  const effectiveBreakdown = isFreeScan
-    ? 'Your first Pro Audit is free — no credits charged'
-    : showPageSelector
+  const effectiveCost = showPageSelector ? 10 + selectedPages : creditCost
+  const effectiveBreakdown = showPageSelector
     ? `10 base + ${selectedPages} pages × 1 credit = ${effectiveCost} credits`
     : costBreakdown
-  const hasEnough = isFreeScan || isAdmin || (balance !== null && balance >= effectiveCost)
+  const hasEnough = isAdmin || (balance !== null && balance >= effectiveCost)
   const remaining = balance !== null ? balance - effectiveCost : 0
 
   return (
@@ -102,16 +87,12 @@ export function CreditConfirmDialog({
       <div className="relative bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center gap-3 mb-5">
-          <div className={cn("h-10 w-10 rounded-full flex items-center justify-center", isFreeScan ? "bg-green-500/10" : "bg-[#842ce0]/10")}>
-            <Coins className={cn("h-5 w-5", isFreeScan ? "text-green-500" : "text-[#842ce0]")} />
+          <div className="h-10 w-10 rounded-full bg-[#842ce0]/10 flex items-center justify-center">
+            <Coins className="h-5 w-5 text-[#842ce0]" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-foreground">
-              {isFreeScan ? 'Free Pro Audit' : `Confirm ${scanType}`}
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              {isFreeScan ? 'Your first Pro Audit is on us — enjoy the full experience' : 'This action will use credits from your balance'}
-            </p>
+            <h3 className="text-lg font-bold text-foreground">Confirm {scanType}</h3>
+            <p className="text-xs text-muted-foreground">This action will use credits from your balance</p>
           </div>
         </div>
 
@@ -146,9 +127,7 @@ export function CreditConfirmDialog({
         <div className="rounded-xl border border-border/50 bg-muted/30 p-4 space-y-3 mb-5">
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Credit Cost</span>
-            <span className={cn("text-lg font-black", isFreeScan ? "text-green-500" : "text-[#842ce0]")}>
-              {isFreeScan ? 'FREE' : `${effectiveCost} credits`}
-            </span>
+            <span className="text-lg font-black text-[#842ce0]">{effectiveCost} credits</span>
           </div>
           {effectiveBreakdown && (
             <p className="text-xs text-muted-foreground/80 italic">{effectiveBreakdown}</p>
@@ -206,8 +185,6 @@ export function CreditConfirmDialog({
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin mx-auto" />
-            ) : isFreeScan ? (
-              'Start Free Scan'
             ) : (
               `Use ${effectiveCost} Credits`
             )}
