@@ -88,12 +88,12 @@ function evictOldResults(entries: ScanHistoryEntry[]) {
 /** Route path for a given scan type */
 export function getRouteForType(type: ScanHistoryEntry['type']): string {
   switch (type) {
-    case 'free-v3': return '/v2'
+    case 'free-v3': return '/free-audit'
     case 'free-v4': return '/v4'
     case 'pro': return '/pro-audit'
     case 'deep': return '/deep-scan'
     case 'competitive': return '/competitive-intel'
-    default: return '/v2'
+    default: return '/free-audit'
   }
 }
 

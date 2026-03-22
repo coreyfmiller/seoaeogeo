@@ -182,7 +182,7 @@ function SignupForm() {
       </Card>
 
       <p className="text-center text-xs text-muted-foreground">
-        Free audits don't require an account. <Link href="/v2" className="text-seo hover:underline">Try one now</Link>
+        Free audits don't require an account. <Link href="/free-audit" className="text-seo hover:underline">Try one now</Link>
       </p>
     </div>
   )

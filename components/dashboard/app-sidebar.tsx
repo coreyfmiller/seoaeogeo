@@ -32,7 +32,7 @@ interface NavItem {
 }
 
 const mainNav: NavItem[] = [
-  { name: "Free Audit", icon: Sparkles, href: "/v2" },
+  { name: "Free Audit", icon: Sparkles, href: "/free-audit" },
   { name: "Pro Audit", icon: Bot, href: "/pro-audit", badge: "PRO AI" },
   { name: "Deep Scan", icon: Layers, href: "/deep-scan", badge: "PRO AI" },
   { name: "Competitive Intel", icon: Globe, href: "/competitive-intel", badge: "PRO AI" },

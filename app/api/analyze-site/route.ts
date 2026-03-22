@@ -1,17 +1,16 @@
 import { NextRequest } from 'next/server';
 import { performDeepScan } from '@/lib/crawler-deep';
-import { analyzeSitewideIntelligence } from '@/lib/gemini-sitewide';
 import { debugLog, clearDebugLog } from '@/lib/debug-logger';
 import { scoreAndAggregatePages } from '@/lib/grader-aggregator';
 import { validateAnalysisData } from '@/lib/data-validator';
 import { detectSiteType } from '@/lib/site-type-detector';
-import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers';
+import { createSSEStream, SSE_HEADERS } from '@/lib/sse-helpers';
 
 export const maxDuration = 300
 
 /**
  * Free Audit API — SSE streaming version
- * Crawls up to 5 pages, scores with Grader V2, runs AI synthesis
+ * Crawls up to 5 pages, scores with Grader V2 (deterministic, no AI)
  */
 export async function POST(request: NextRequest) {
   const { url, maxPages = 5 } = await request.json();
@@ -67,23 +66,9 @@ export async function POST(request: NextRequest) {
         console.warn('[Free Audit] robots.txt/sitemap check failed:', e);
       }
 
-      // Step 4: AI Synthesis
-      send({ type: 'progress', phase: 'Running AI domain analysis...', progress: 50 });
-      const ticker = createProgressTicker(send, 'Analyzing domain intelligence with AI...', 50, 85);
-      const aiAnalysis = await analyzeSitewideIntelligence({
-        domain: scanResults.domain,
-        pages: pagesWithScores.map(p => ({
-          url: p.url, title: p.title, description: p.description,
-          schemas: p.schemas, schemaTypes: p.schemaTypes, wordCount: p.wordCount,
-          internalLinks: p.internalLinks, hasH1: p.hasH1, isHttps: p.isHttps,
-          responseTimeMs: p.responseTimeMs, h2Count: p.h2Count, h3Count: p.h3Count,
-          imgTotal: p.imgTotal, imgWithAlt: p.imgWithAlt, outboundLinks: p.outboundLinks,
-        }))
-      });
-      ticker.stop();
-      send({ type: 'progress', phase: 'Assembling results...', progress: 90 });
+      send({ type: 'progress', phase: 'Assembling results...', progress: 70 });
 
-      // Step 5: Aggregate metrics
+      // Step 4: Aggregate metrics (all deterministic — no AI)
       const totalWords = pagesWithScores.reduce((acc, p) => acc + (p.wordCount || 0), 0);
       const schemaCount = pagesWithScores.reduce((acc, p) => acc + (p.schemas?.length || 0), 0);
       const avgResponseTime = pagesWithScores.reduce((acc, p) => acc + (p.responseTimeMs || 0), 0) / (scanResults.pagesCrawled || 1);
@@ -92,15 +77,38 @@ export async function POST(request: NextRequest) {
       const perfPct = pagesWithScores.filter(p => p.responseTimeMs < 1500).length / (scanResults.pagesCrawled || 1);
       const globalTechScore = Math.round((httpsPct * 30) + (h1Pct * 30) + (perfPct * 40));
 
-      // Step 6: Standardize
+      // Deterministic domain-level metrics (replaces AI synthesis)
+      const pagesWithDesc = pagesWithScores.filter(p => p.description && p.description.length > 0).length;
+      const pagesWithTitle = pagesWithScores.filter(p => p.title && p.title.length > 0).length;
+      const metadataHealth = scanResults.pagesCrawled > 0
+        ? Math.round(((pagesWithDesc + pagesWithTitle) / (scanResults.pagesCrawled * 2)) * 100)
+        : 0;
+      const schemaCoverage = scanResults.pagesCrawled > 0
+        ? Math.round((pagesWithScores.filter(p => (p.schemas?.length || 0) > 0).length / scanResults.pagesCrawled) * 100)
+        : 0;
+      const schemaHealthScore = schemaCount > 0 ? Math.min(100, Math.round((schemaCount / scanResults.pagesCrawled) * 50) + 50) : 0;
+      const domainHealthScore = Math.round((httpsPct * 25) + (h1Pct * 25) + (perfPct * 25) + (metadataHealth / 100 * 25));
+      // Brand consistency: check title similarity across pages
+      const titles = pagesWithScores.map(p => p.title || '').filter(t => t.length > 0);
+      const brandConsistency = titles.length > 1
+        ? (() => {
+            const words = titles.map(t => new Set(t.toLowerCase().split(/\s+/)));
+            const commonWords = words.reduce((acc, set) => {
+              const intersection = new Set([...acc].filter(w => set.has(w)));
+              return intersection;
+            });
+            const avgLen = words.reduce((s, w) => s + w.size, 0) / words.length;
+            return avgLen > 0 ? Math.round((commonWords.size / avgLen) * 100) : 0;
+          })()
+        : 50;
+
+      // Step 5: Build standardized AI-shaped object (deterministic values)
       const standardizedAI = {
-        ...aiAnalysis,
         scores: { seo: aggregated.seo, aeo: aggregated.aeo, geo: aggregated.geo },
-        _originalScores: {
-          domainHealthScore: aiAnalysis.domainHealthScore,
-          consistencyScore: aiAnalysis.consistencyScore,
-          aeoReadinessScore: aiAnalysis.aeoReadiness?.overallScore || 0,
-        },
+        domainHealthScore,
+        consistencyScore: brandConsistency,
+        authorityMetrics: { schemaCoverage, metadataOptimization: metadataHealth },
+        schemaHealthAudit: { overallScore: schemaHealthScore },
         _graderMetadata: {
           version: 'v2', aggregationMethod: 'weighted',
           pagesScored: pagesWithScores.length,
@@ -115,8 +123,8 @@ export async function POST(request: NextRequest) {
         platformDetection: scanResults.pages?.[0]?.platformDetection,
       };
 
-      // Step 7: Validate
-      send({ type: 'progress', phase: 'Validating data...', progress: 95 });
+      // Step 6: Validate
+      send({ type: 'progress', phase: 'Validating data...', progress: 90 });
       const validatedData = validateAnalysisData(finalData);
       if (!validatedData) throw new Error('Data validation failed');
 

@@ -65,7 +65,7 @@ export default function HomePage() {
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/free"
+            href="/free-audit"
             className="px-8 py-3 rounded-xl bg-[#118fff] hover:bg-[#118fff]/90 text-white font-bold text-lg transition-colors flex items-center gap-2"
           >
             Try Free Audit <ArrowRight className="h-5 w-5" />
@@ -297,7 +297,7 @@ export default function HomePage() {
           Start with a free audit to see your SEO, AEO, and GEO scores. No account required.
         </p>
         <Link
-          href="/free"
+          href="/free-audit"
           className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#118fff] hover:bg-[#118fff]/90 text-white font-bold text-lg transition-colors"
         >
           Start Free Audit <ArrowRight className="h-5 w-5" />

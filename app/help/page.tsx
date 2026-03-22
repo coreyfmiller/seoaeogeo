@@ -128,7 +128,7 @@ const quickStartGuides = [
     icon: Sparkles,
     color: "text-seo",
     bg: "bg-seo/10",
-    href: "/v2",
+    href: "/free-audit",
     steps: ["Enter any URL", "Get instant SEO/AEO/GEO scores", "Review detailed metric breakdowns", "No account or credits needed"],
   },
   {
