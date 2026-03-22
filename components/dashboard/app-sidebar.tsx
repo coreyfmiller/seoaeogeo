@@ -57,7 +57,7 @@ export function AppSidebar() {
   const [referralCode, setReferralCode] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [user, setUser] = useState<User | null>(null)
-  const [profile, setProfile] = useState<{ full_name: string | null; plan: string; is_admin?: boolean } | null>(null)
+  const [profile, setProfile] = useState<{ full_name: string | null; plan: string; is_admin?: boolean; credits?: number } | null>(null)
 
   useEffect(() => {
     const supabase = createClient()
@@ -66,7 +66,7 @@ export function AppSidebar() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user)
       if (user) {
-        supabase.from('profiles').select('full_name, plan, is_admin, referral_code').eq('id', user.id).single()
+        supabase.from('profiles').select('full_name, plan, is_admin, referral_code, credits').eq('id', user.id).single()
           .then(({ data }) => {
             if (data) {
               setProfile(data)
@@ -80,7 +80,7 @@ export function AppSidebar() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
       if (session?.user) {
-        supabase.from('profiles').select('full_name, plan, is_admin, referral_code').eq('id', session.user.id).single()
+        supabase.from('profiles').select('full_name, plan, is_admin, referral_code, credits').eq('id', session.user.id).single()
           .then(({ data }) => {
             if (data) {
               setProfile(data)
@@ -114,7 +114,7 @@ export function AppSidebar() {
       : 'Free'
 
   const isAdmin = profile?.is_admin === true
-  const isFreeUser = !isAdmin && (!profile || profile.plan === 'free')
+  const isFreeUser = !isAdmin && (!profile || (profile.plan === 'free' && (profile.credits || 0) === 0))
 
   const referralUrl = referralCode
     ? `https://duelly.ai/signup?ref=${referralCode}`
