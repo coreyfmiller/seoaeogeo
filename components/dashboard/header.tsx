@@ -102,8 +102,8 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
       </form>
       )}
 
-      {/* Right side actions */}
-      <div className="flex items-center gap-3">
+      {/* Right side — always pinned far right */}
+      <div className="ml-auto flex items-center gap-3 shrink-0">
         {/* API Status Indicator */}
         <div className={cn(
           "flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-wider",
@@ -114,25 +114,25 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
           {apiStatus === "healthy" ? <Activity className="h-3 w-3" /> : <ShieldAlert className="h-3 w-3" />}
           API {apiStatus}
         </div>
+
+        {/* Credit Balance */}
+        {credits !== null && (
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#842ce0]/30 bg-[#842ce0]/5">
+            <Coins className="h-3.5 w-3.5 text-[#842ce0]" />
+            <span className="text-sm font-bold text-[#842ce0] tabular-nums">{credits}</span>
+          </div>
+        )}
+
+        {/* Buy Credits Button */}
+        <Link href="/pro">
+          <Button
+            className="bg-[#118fff] hover:bg-[#118fff]/90 text-white font-semibold px-6 py-3 text-base shadow-md"
+          >
+            <Crown className="h-5 w-5 mr-2" />
+            Buy Credits
+          </Button>
+        </Link>
       </div>
-
-      {/* Credit Balance */}
-      {credits !== null && (
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#842ce0]/30 bg-[#842ce0]/5">
-          <Coins className="h-3.5 w-3.5 text-[#842ce0]" />
-          <span className="text-sm font-bold text-[#842ce0] tabular-nums">{credits}</span>
-        </div>
-      )}
-
-      {/* Buy Credits Button - pushed to far right */}
-      <Link href="/pro">
-        <Button
-          className="bg-[#118fff] hover:bg-[#118fff]/90 text-white font-semibold px-6 py-3 text-base shadow-md"
-        >
-          <Crown className="h-5 w-5 mr-2" />
-          Buy Credits
-        </Button>
-      </Link>
     </header>
   )
 }
