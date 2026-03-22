@@ -114,7 +114,7 @@ export function AppSidebar() {
       : 'Free'
 
   const isAdmin = profile?.is_admin === true
-  const isFreeUser = !isAdmin && (!profile || (profile.plan === 'free' && (profile.credits || 0) === 0))
+  const isFreeUser = !user
 
   const referralUrl = referralCode
     ? `https://duelly.ai/signup?ref=${referralCode}`
