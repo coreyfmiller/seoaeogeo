@@ -33,9 +33,6 @@ export default function HomePage() {
             <img src="/logo.png" alt="Duelly" className="h-14 w-auto" />
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Help
-            </Link>
             <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Log In
             </Link>

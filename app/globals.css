@@ -247,10 +247,6 @@
     font-size: clamp(16px, 1.1vw, 22px);
   }
 
-  html, body {
-    @apply overflow-hidden h-screen;
-  }
-
   body {
     @apply bg-background text-foreground;
   }

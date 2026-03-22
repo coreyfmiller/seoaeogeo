@@ -7,7 +7,6 @@ import {
   BarChart3,
   FileText,
   Settings,
-  HelpCircle,
   Sparkles,
   Globe,
   Bot,
@@ -45,7 +44,6 @@ const comingSoonNav: NavItem[] = []
 
 const bottomNav: NavItem[] = [
   { name: "Our Standards", icon: FileText, href: "/standards" },
-  { name: "Help & Support", icon: HelpCircle, href: "/help", badge: "" },
   { name: "Settings", icon: Settings, href: "/settings" },
   { name: "Usage & Costs", icon: BarChart3, href: "/usage", badge: "ADMIN" },
 ]
