@@ -144,7 +144,9 @@ export function AppSidebar() {
             Main
           </p>
           <ul className="space-y-1">
-            {mainNav.map((item) => {
+            {mainNav
+              .filter((item) => !(item.href === '/free-audit' && user))
+              .map((item) => {
               const isProOnly = proOnlyPaths.includes(item.href)
               const isLocked = isProOnly && isFreeUser
               const href = isLocked ? '/pro' : item.href
