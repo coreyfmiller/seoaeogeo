@@ -128,12 +128,16 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
                 phase: 'Complete!',
                 progress: 100,
               }))
+              // Refresh header credit balance
+              if (typeof window !== 'undefined') window.dispatchEvent(new Event('credits-changed'))
             } else if (event.type === 'error') {
               setState((prev) => ({
                 ...prev,
                 error: event.error || 'Analysis failed',
                 creditsRefunded: event.creditsRefunded || 0,
               }))
+              // Refresh header credit balance (refund case)
+              if (typeof window !== 'undefined') window.dispatchEvent(new Event('credits-changed'))
             }
           } catch {
             // skip malformed chunks

@@ -33,7 +33,7 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
 
   useEffect(() => {
     const supabase = createClient()
-    ;(async () => {
+    const fetchCredits = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
       const { data: prof } = await supabase
@@ -44,7 +44,13 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
       if (prof) {
         setCredits(prof.is_admin ? null : (prof.credits || 0))
       }
-    })()
+    }
+    fetchCredits()
+
+    // Re-fetch when credits change (scan confirmed, refund, etc.)
+    const handler = () => fetchCredits()
+    window.addEventListener('credits-changed', handler)
+    return () => window.removeEventListener('credits-changed', handler)
   }, [])
 
   const handleSubmit = (e: React.FormEvent) => {

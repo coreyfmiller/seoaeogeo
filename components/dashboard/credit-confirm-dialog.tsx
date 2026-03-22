@@ -175,7 +175,11 @@ export function CreditConfirmDialog({
             Cancel
           </button>
           <button
-            onClick={() => onConfirm(showPageSelector ? selectedPages : undefined)}
+            onClick={() => {
+              onConfirm(showPageSelector ? selectedPages : undefined)
+              // Notify header to refresh credit balance
+              window.dispatchEvent(new Event('credits-changed'))
+            }}
             disabled={loading || !hasEnough}
             className={cn(
               "flex-1 py-2.5 rounded-xl text-sm font-bold transition-all",
