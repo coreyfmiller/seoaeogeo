@@ -21,9 +21,11 @@ interface HeaderProps {
   currentUrl?: string
   apiStatus?: "healthy" | "error" | "idle"
   hideSearch?: boolean
+  placeholder?: string
+  buttonLabel?: string
 }
 
-export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle", hideSearch = false }: HeaderProps) {
+export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle", hideSearch = false, placeholder, buttonLabel }: HeaderProps) {
   const [url, setUrl] = useState(currentUrl || "")
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -47,7 +49,7 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
           <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Enter URL to analyze (e.g., example.com)"
+            placeholder={placeholder || "Enter URL to analyze (e.g., example.com)"}
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             className={cn(
@@ -73,7 +75,7 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
             ) : (
               <>
                 <Search className="h-4 w-4 mr-2" />
-                Analyze
+                {buttonLabel || "Analyze"}
               </>
             )}
           </Button>

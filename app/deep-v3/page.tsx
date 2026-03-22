@@ -229,6 +229,8 @@ export default function DeepV3Page() {
           isAnalyzing={isAnalyzing}
           currentUrl={currentUrl}
           apiStatus="idle"
+          placeholder="Enter URL for Deep Scan..."
+          buttonLabel="Deep Scan"
         />
 
         {/* Dashboard Content */}

@@ -295,6 +295,8 @@ export default function V3Page() {
           isAnalyzing={isAnalyzing}
           currentUrl={currentUrl}
           apiStatus="idle"
+          placeholder="Enter URL for Pro Audit..."
+          buttonLabel="Pro Audit"
         />
 
         {/* Dashboard Content */}

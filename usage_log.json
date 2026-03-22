@@ -7709,5 +7709,23 @@
     "url": "fundylogic.com",
     "timestamp": "2026-03-22T12:25:28.696Z",
     "cost": 0.09899435
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 459,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-22T12:31:09.547Z",
+    "cost": 0.005835375
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 11058,
+    "outputTokens": 12160,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-22T12:31:54.167Z",
+    "cost": 0.13581295000000002
   }
 ]
