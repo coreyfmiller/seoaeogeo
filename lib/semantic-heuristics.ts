@@ -136,59 +136,111 @@ function measurePoorReadability(words: string[], sentences: string[]): number {
 
 /**
  * No Direct Q&A Matching: Does content answer questions?
+ * Improved: detects question-answer pairs, FAQ sections, heading questions,
+ * and structured Q&A patterns — not just keyword presence.
  */
 function measureQnAMatching(lowerText: string, wordCount: number): number {
-  if (wordCount < 100) return 70; // Too thin to have Q&A
-  
-  const qnaPatterns = [
-    /what is/g, /what are/g, /how to/g, /how do/g, /how does/g,
-    /why is/g, /why do/g, /why does/g, /when to/g, /when should/g,
-    /where to/g, /where can/g, /who is/g, /who are/g,
-    /\?/g, // Question marks
-    /the answer/g, /in short/g, /simply put/g, /this means/g,
-    /here's how/g, /here is how/g, /the reason/g, /because/g,
-    /faq/g, /frequently asked/g,
+  if (wordCount < 100) return 70;
+
+  let score = 0;
+
+  // 1. Question-answer PAIRS: question mark followed by substantive text (>20 chars)
+  const qaPairMatches = lowerText.match(/\?[^?]{20,}/g) || [];
+  score += Math.min(qaPairMatches.length * 3, 15);
+
+  // 2. Explicit question words at start of sentences / headings
+  const headingQuestions = (lowerText.match(/(?:^|\n)\s*(?:what|how|why|when|where|who|which|can|do|does|is|are|should|will)\b[^.?]*\?/gm) || []).length;
+  score += Math.min(headingQuestions * 4, 16);
+
+  // 3. FAQ section indicators (strong signal)
+  const faqIndicators = [/\bfaq\b/g, /\bfrequently asked/g, /\bcommon questions/g, /\bq\s*&\s*a\b/g, /\bq:/g, /\ba:/g];
+  let faqCount = 0;
+  for (const p of faqIndicators) { faqCount += (lowerText.match(p) || []).length; }
+  score += Math.min(faqCount * 5, 15);
+
+  // 4. Direct answer patterns (signals content actually answers, not just asks)
+  const answerPatterns = [
+    /\bthe answer is\b/g, /\bin short\b/g, /\bsimply put\b/g,
+    /\bthis means\b/g, /\bhere's how\b/g, /\bhere is how\b/g,
+    /\bthe reason\b/g, /\bto summarize\b/g, /\bin summary\b/g,
+    /\bthe solution\b/g, /\byou can\b/g, /\byou should\b/g,
+    /\bstep \d/g, /\bfirst,?\s/g, /\bnext,?\s/g, /\bfinally,?\s/g,
   ];
-  
-  let matchCount = 0;
-  for (const pattern of qnaPatterns) {
-    const matches = lowerText.match(pattern);
-    if (matches) matchCount += matches.length;
-  }
-  
-  // Normalize by content length (per 500 words)
-  const normalizedCount = (matchCount / wordCount) * 500;
-  
-  // 8+ matches per 500 words = excellent, 0 = poor
-  if (normalizedCount >= 8) return 0;
-  if (normalizedCount >= 5) return 20;
-  if (normalizedCount >= 3) return 40;
-  if (normalizedCount >= 1) return 60;
+  let answerCount = 0;
+  for (const p of answerPatterns) { answerCount += (lowerText.match(p) || []).length; }
+  score += Math.min(answerCount * 2, 14);
+
+  // 5. HTML structural Q&A signals (details/summary, dl/dt/dd patterns in raw text)
+  const structuralQA = (lowerText.match(/<(?:details|summary|dt|dd)\b/g) || []).length;
+  score += Math.min(structuralQA * 3, 10);
+
+  // Normalize by content length — longer content needs more Q&A signals
+  const lengthFactor = Math.max(0.5, Math.min(2.0, wordCount / 500));
+  const normalizedScore = score / lengthFactor;
+
+  // Map to severity: higher score = lower severity (better Q&A)
+  if (normalizedScore >= 25) return 0;
+  if (normalizedScore >= 18) return 15;
+  if (normalizedScore >= 12) return 30;
+  if (normalizedScore >= 6) return 50;
+  if (normalizedScore >= 2) return 65;
   return 80;
 }
 
 /**
  * Low Entity Density: Are there specific names, places, things?
+ * Improved: filters sentence-start capitals, detects proper noun sequences,
+ * dates, currencies, emails, URLs, and multi-word entity names.
  */
 function measureEntityDensity(originalText: string, words: string[], wordCount: number): number {
   if (wordCount < 100) return 60;
-  
-  // Count capitalized words (likely proper nouns/entities) in original text
+
+  // Split into sentences to filter sentence-start capitals
+  const sentences = originalText.split(/[.!?]\s+/);
+  const sentenceStarts = new Set<string>();
+  for (const s of sentences) {
+    const firstWord = s.trim().split(/\s+/)[0];
+    if (firstWord) sentenceStarts.add(firstWord);
+  }
+
   const originalWords = originalText.split(/\s+/).filter(w => w.length > 1);
-  const capitalizedWords = originalWords.filter(w => /^[A-Z][a-z]/.test(w));
-  
-  // Count numbers and specific data points
-  const numbers = originalText.match(/\d+/g) || [];
-  
-  // Entity density = (capitalized words + numbers) / total words
-  const entityCount = capitalizedWords.length + numbers.length;
-  const density = entityCount / Math.max(wordCount, 1);
-  
-  // >10% = rich, <2% = poor
+
+  // Count mid-sentence capitalized words (real proper nouns, not sentence starters)
+  let properNounCount = 0;
+  for (let i = 0; i < originalWords.length; i++) {
+    const w = originalWords[i];
+    if (!/^[A-Z][a-z]/.test(w)) continue;
+    if (sentenceStarts.has(w) && (i === 0 || /[.!?]\s*$/.test(originalWords[i - 1] || ''))) continue;
+    properNounCount++;
+  }
+
+  // Bonus: multi-word proper noun sequences (e.g., "New York", "John Smith")
+  const multiWordEntities = (originalText.match(/[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+/g) || []).length;
+
+  // Specific data types that indicate entity richness
+  const dates = (originalText.match(/\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2}(?:,?\s+\d{4})?|\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/gi) || []).length;
+  const currencies = (originalText.match(/\$[\d,]+(?:\.\d+)?|€[\d,]+|£[\d,]+|\b\d+(?:,\d{3})*\s*(?:dollars?|euros?|pounds?)\b/gi) || []).length;
+  const percentages = (originalText.match(/\d+(?:\.\d+)?%/g) || []).length;
+  const specificNumbers = (originalText.match(/\b\d{2,}\b/g) || []).length;
+  const urls = (originalText.match(/https?:\/\/\S+/g) || []).length;
+
+  // Weighted entity score
+  const entityScore = properNounCount * 1.0
+    + multiWordEntities * 2.0  // Multi-word entities are strong signals
+    + dates * 1.5
+    + currencies * 1.5
+    + percentages * 1.0
+    + specificNumbers * 0.5
+    + urls * 0.5;
+
+  const density = entityScore / Math.max(wordCount, 1);
+
+  // Calibrated thresholds (more granular than before)
   if (density >= 0.10) return 0;
-  if (density >= 0.07) return 15;
-  if (density >= 0.05) return 30;
-  if (density >= 0.03) return 50;
+  if (density >= 0.07) return 10;
+  if (density >= 0.05) return 20;
+  if (density >= 0.035) return 35;
+  if (density >= 0.02) return 50;
   return 70;
 }
 
@@ -226,32 +278,45 @@ function measureFormattingConciseness(text: string, sentences: string[], wordCou
 
 /**
  * Lack of Definition Statements: Does content define terms?
+ * Improved: uses context-aware patterns to reduce false positives.
+ * "X is a Y" only counts when X is capitalized or follows a heading/colon.
+ * Strong definition patterns (refers to, defined as, known as) always count.
  */
 function measureDefinitionStatements(lowerText: string, wordCount: number): number {
   if (wordCount < 100) return 50;
-  
-  const definitionPatterns = [
-    /\bis a\b/g, /\bare a\b/g, /\bis an\b/g,
-    /\brefers to\b/g, /\bmeans\b/g, /\bdefined as\b/g,
-    /\bknown as\b/g, /\bcalled\b/g,
+
+  let score = 0;
+
+  // Strong definition patterns (always reliable, weighted higher)
+  const strongPatterns = [
+    /\brefers to\b/g, /\bdefined as\b/g, /\bknown as\b/g,
     /\bin other words\b/g, /\bsimply put\b/g,
-    /\bthis is\b/g, /\bthese are\b/g,
-    /\bwhich is\b/g, /\bwhich are\b/g,
-    /\bthe term\b/g, /\bthe concept\b/g,
+    /\bthe term\b/g, /\bthe concept of\b/g,
+    /\bthe definition of\b/g, /\bcan be described as\b/g,
+    /\bis the process of\b/g, /\bis the practice of\b/g,
   ];
-  
-  let matchCount = 0;
-  for (const pattern of definitionPatterns) {
-    const matches = lowerText.match(pattern);
-    if (matches) matchCount += matches.length;
-  }
-  
-  const normalizedCount = (matchCount / wordCount) * 500;
-  
-  if (normalizedCount >= 6) return 0;
-  if (normalizedCount >= 4) return 15;
-  if (normalizedCount >= 2) return 35;
-  if (normalizedCount >= 1) return 55;
+  for (const p of strongPatterns) { score += (lowerText.match(p) || []).length * 3; }
+
+  // Medium patterns — "which is/are" (usually definitional in context)
+  const mediumPatterns = [
+    /\bwhich is\b/g, /\bwhich are\b/g, /\bwhich means\b/g,
+    /\bcalled\b/g, /\balso known as\b/g,
+  ];
+  for (const p of mediumPatterns) { score += (lowerText.match(p) || []).length * 2; }
+
+  // Weak patterns — "is a/are a/is an" only count in definitional contexts
+  // Match: "Word is a ..." or "... : X is a ..." (after colon or at sentence start)
+  const weakContextual = (lowerText.match(/(?:^|[.!?:]\s+)\w+\s+(?:is|are)\s+(?:a|an|the)\s+\w/gm) || []).length;
+  score += weakContextual * 1;
+
+  // Normalize by content length
+  const normalizedScore = (score / wordCount) * 500;
+
+  if (normalizedScore >= 12) return 0;
+  if (normalizedScore >= 8) return 15;
+  if (normalizedScore >= 5) return 30;
+  if (normalizedScore >= 2) return 50;
+  if (normalizedScore >= 1) return 60;
   return 75;
 }
 

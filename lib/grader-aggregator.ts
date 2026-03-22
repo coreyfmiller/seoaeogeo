@@ -4,6 +4,7 @@
  */
 
 import { calculateScoresV2, type GraderV2Result } from './grader-v2';
+import { computeSemanticFlags } from './semantic-heuristics';
 import type { PageScan } from './crawler-deep';
 
 export interface PageWithScores extends PageScan {
@@ -55,11 +56,16 @@ export function scorePageWithGraderV2(page: PageScan): PageWithScores {
         isHttps: page.isHttps,
     };
 
+    // Compute semantic flags from crawled text (deterministic, no AI cost)
+    const semanticFlags = page.thinnedText
+        ? computeSemanticFlags(page.thinnedText, page.title, page.description, page.wordCount)
+        : {};
+
     // Run Grader V2
     const graderResult = calculateScoresV2(
         structuralData,
         page.schemas,
-        {}, // semanticFlags - not available in deep scan
+        semanticFlags,
         page.title.length,
         page.description.length,
         page.url,

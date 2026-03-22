@@ -1385,3 +1385,26 @@
   "consistencyScore": 100,
   "schemaScore": 100
 }
+[2026-03-22T18:18:37.366Z] [GEMINI-SITEWIDE] Starting AI analysis
+{
+  "domain": "pizzatwice.com",
+  "pageCount": 5
+}
+[2026-03-22T18:18:37.376Z] [GEMINI-SITEWIDE] Schema health score
+{
+  "score": 40
+}
+[2026-03-22T18:18:37.376Z] [GEMINI-SITEWIDE] Brand consistency score
+{
+  "score": 100
+}
+[2026-03-22T18:18:37.377Z] [GEMINI-SITEWIDE] Calling Gemini API
+[2026-03-22T18:20:27.453Z] [GEMINI-SITEWIDE] Received response
+{
+  "length": 65869,
+  "preview": "```json\n{\n  \"domainHealthScore\": 64,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 40,\n    \"schemaQuality\": 10,\n    \"metadataQuality\": 90,\n    \"technicalHealth\": 90,\n    \"architectureHealth\": 90\n"
+}
+[2026-03-22T18:20:27.456Z] [GEMINI-SITEWIDE] ERROR
+{
+  "error": "Unexpected non-whitespace character after JSON at position 32478 (line 383 column 1)"
+}
