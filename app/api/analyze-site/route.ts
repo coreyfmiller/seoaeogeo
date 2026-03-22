@@ -4,6 +4,7 @@ import { analyzeSitewideIntelligence } from '@/lib/gemini-sitewide';
 import { debugLog, clearDebugLog } from '@/lib/debug-logger';
 import { scoreAndAggregatePages } from '@/lib/grader-aggregator';
 import { validateAnalysisData } from '@/lib/data-validator';
+import { detectSiteType } from '@/lib/site-type-detector';
 import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers';
 
 export const maxDuration = 300
@@ -32,7 +33,19 @@ export async function POST(request: NextRequest) {
 
       // Step 2: Score with Grader V2
       const { pagesWithScores, aggregated } = scoreAndAggregatePages(scanResults.pages);
-      send({ type: 'progress', phase: 'Scores calculated. Checking robots.txt & sitemap...', progress: 45 });
+      send({ type: 'progress', phase: 'Scores calculated. Detecting site type...', progress: 40 });
+
+      // Step 2b: Site type detection (deterministic, zero cost)
+      const homePage = scanResults.pages[0];
+      const siteTypeResult = detectSiteType({
+        schemas: homePage?.schemas || [],
+        structuralData: { wordCount: homePage?.wordCount || 0 },
+        title: homePage?.title || '',
+        description: homePage?.description || '',
+        url: scanResults.domain,
+      } as any, scanResults.pages.map(p => p.schemas || []).flat());
+
+      send({ type: 'progress', phase: 'Checking robots.txt & sitemap...', progress: 45 });
 
       // Step 3: Robots.txt & Sitemap check
       let robotsTxt = { exists: false, raw: '' };
@@ -98,6 +111,7 @@ export async function POST(request: NextRequest) {
       const finalData = {
         ...scanResults, pages: pagesWithScores, robotsTxt, sitemap,
         totalWords, schemaCount, avgResponseTime, globalTechScore, ai: standardizedAI,
+        siteTypeResult,
       };
 
       // Step 7: Validate

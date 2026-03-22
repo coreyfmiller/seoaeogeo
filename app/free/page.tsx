@@ -289,10 +289,12 @@ export default function FreeDashboard() {
                   const metadataHealth = ai?.authorityMetrics?.metadataOptimization ?? 0
                   const h1Coverage = pages.length > 0 ? Math.round((pages.filter((p: any) => p.hasH1).length / pages.length) * 100) : 0
                   const httpsCoverage = pages.length > 0 ? Math.round((pages.filter((p: any) => p.isHttps).length / pages.length) * 100) : 0
-                  const avgResponse = Math.round(result.avgResponseTime ?? 0)
+                  const siteType = result.siteTypeResult?.primaryType || 'Unknown'
+                  const siteTypeFormatted = siteType.charAt(0).toUpperCase() + siteType.slice(1).replace(/-/g, ' ')
 
                   const statCards = [
                     { label: "Pages Scanned", value: `${pagesScanned}`, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", tip: "Number of pages crawled and analyzed." },
+                    { label: "Site Type", value: siteTypeFormatted, color: "text-[#842ce0]", border: "border-[#842ce0]/30", bg: "bg-[#842ce0]/5", tip: "Detected site category used to adjust scoring weights. E-commerce sites are graded differently than blogs or SaaS products." },
                     { label: "Domain Health", value: `${domainHealth}%`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", tip: "Aggregate domain authority score." },
                     { label: "Brand Consistency", value: `${brandConsistency}%`, color: "text-aeo", border: "border-aeo/30", bg: "bg-aeo/5", tip: "Brand cohesion across all crawled pages." },
                     { label: "Schema Coverage", value: `${schemaCoverage}%`, color: "text-seo", border: "border-seo/30", bg: "bg-seo/5", tip: "Percentage of pages with structured data present." },
@@ -300,7 +302,6 @@ export default function FreeDashboard() {
                     { label: "Metadata Health", value: `${metadataHealth}%`, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", tip: "Description and Title tag completeness." },
                     { label: "H1 Coverage", value: `${h1Coverage}%`, color: h1Coverage >= 90 ? "text-geo" : "text-destructive", border: h1Coverage >= 90 ? "border-geo/20" : "border-destructive/20", bg: h1Coverage >= 90 ? "bg-geo/5" : "bg-destructive/5", tip: "Percentage of pages with a valid H1 tag." },
                     { label: "HTTPS", value: `${httpsCoverage}%`, color: httpsCoverage === 100 ? "text-geo" : "text-destructive", border: httpsCoverage === 100 ? "border-geo/20" : "border-destructive/20", bg: httpsCoverage === 100 ? "bg-geo/5" : "bg-destructive/5", tip: "Security coverage across domain." },
-                    { label: "Avg Response", value: `${avgResponse}ms`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", tip: "Avg response time across all pages." },
                   ]
 
                   return (
@@ -319,6 +320,45 @@ export default function FreeDashboard() {
                     </div>
                   )
                 })()}
+
+                {/* Core Web Vitals — teaser for free tier */}
+                <Card className="border-[#842ce0]/20 bg-[#842ce0]/5">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <Zap className="h-5 w-5 text-[#842ce0]" />
+                      Core Web Vitals
+                    </CardTitle>
+                    <CardDescription>
+                      Real LCP, INP, and CLS data from Google PageSpeed Insights — available with Pro Audit
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-3 gap-4">
+                      {[
+                        { label: "LCP", desc: "Largest Contentful Paint", tip: "Loading speed" },
+                        { label: "INP", desc: "Interaction to Next Paint", tip: "Responsiveness" },
+                        { label: "CLS", desc: "Cumulative Layout Shift", tip: "Visual stability" },
+                      ].map(metric => (
+                        <div key={metric.label} className="rounded-lg border border-border/30 bg-background/50 p-4 text-center">
+                          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{metric.label}</p>
+                          <p className="text-2xl font-black text-muted-foreground/40">—</p>
+                          <p className="text-[10px] text-muted-foreground mt-1">{metric.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-4 text-center">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push('/pro-audit')}
+                        className="text-[#842ce0] border-[#842ce0]/30 hover:bg-[#842ce0]/10"
+                      >
+                        Unlock with Pro Audit
+                        <ArrowRight className="h-3 w-3 ml-1.5" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
 
                 {/* Upgrade CTA */}
                 <Card className="border-geo/30 bg-gradient-to-br from-geo/10 to-aeo/10 relative overflow-hidden">
