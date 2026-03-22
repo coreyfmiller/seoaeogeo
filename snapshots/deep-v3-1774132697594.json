@@ -1,0 +1,780 @@
+{
+  "id": "deep-v3-1774132697594",
+  "url": "https://valleymarketing.ca",
+  "timestamp": "2026-03-21T22:38:17.594Z",
+  "apiRoute": "/api/analyze-deep-v3",
+  "scores": {
+    "seo": 81,
+    "aeo": 63,
+    "geo": 59
+  },
+  "siteType": "local-business",
+  "rawAiScores": {
+    "seoScore": 90,
+    "aeoScore": 57,
+    "geoScore": 45,
+    "breakdown": {
+      "seo": [
+        {
+          "name": "Foundation",
+          "score": 33,
+          "maxScore": 40,
+          "percentage": 83,
+          "components": [
+            {
+              "score": 10,
+              "maxScore": 10,
+              "status": "excellent",
+              "feedback": "Title tag is well-optimized"
+            },
+            {
+              "score": 8,
+              "maxScore": 8,
+              "status": "excellent",
+              "feedback": "Meta description is well-optimized"
+            },
+            {
+              "score": 8,
+              "maxScore": 8,
+              "status": "excellent",
+              "feedback": "H1 heading is properly implemented"
+            },
+            {
+              "score": 7,
+              "maxScore": 7,
+              "status": "excellent",
+              "feedback": "HTTPS properly configured"
+            },
+            {
+              "score": 0,
+              "maxScore": 7,
+              "status": "critical",
+              "feedback": "Missing viewport meta tag - not mobile optimized",
+              "issues": [
+                "No viewport meta tag found"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Content Quality",
+          "score": 31,
+          "maxScore": 42,
+          "percentage": 74,
+          "components": [
+            {
+              "score": 9,
+              "maxScore": 15,
+              "status": "warning",
+              "feedback": "Content is minimal - consider expanding",
+              "issues": [
+                "367 words (recommended: 800+)"
+              ]
+            },
+            {
+              "score": 6,
+              "maxScore": 7,
+              "status": "good",
+              "feedback": "Content readability needs improvement",
+              "issues": [
+                "Readability concerns detected (severity: 13/100)"
+              ]
+            },
+            {
+              "score": 8,
+              "maxScore": 10,
+              "status": "excellent",
+              "feedback": "Good internal linking (13 links)"
+            },
+            {
+              "score": 8,
+              "maxScore": 10,
+              "status": "good",
+              "feedback": "Most images have alt text",
+              "issues": [
+                "1 image still need alt text"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Technical Excellence",
+          "score": 19,
+          "maxScore": 22,
+          "percentage": 86,
+          "components": [
+            {
+              "score": 10,
+              "maxScore": 10,
+              "status": "excellent",
+              "feedback": "Fast page load (1218ms)"
+            },
+            {
+              "score": 3,
+              "maxScore": 6,
+              "status": "warning",
+              "feedback": "Limited semantic structure",
+              "issues": [
+                "Add more HTML5 semantic tags for better structure"
+              ]
+            },
+            {
+              "score": 6,
+              "maxScore": 6,
+              "status": "excellent",
+              "feedback": "Clean URL structure"
+            }
+          ]
+        },
+        {
+          "name": "Advanced Optimization",
+          "score": 7,
+          "maxScore": 8,
+          "percentage": 88,
+          "components": [
+            {
+              "score": 4,
+              "maxScore": 5,
+              "status": "excellent",
+              "feedback": "Schema present but needs improvement",
+              "issues": [
+                "Missing recommended 'telephone' and 'email' properties in Organization and Place schemas.",
+                "Missing recommended 'sameAs' (social media profiles) property in Organization schema.",
+                "Missing 'articleBody' property in Article schema, limiting content understanding for rich snippets.",
+                "Generic 'name' and lack of additional details (e.g., 'jobTitle', 'url', 'sameAs') for the 'Person' schema.",
+                "Lack of a more specific 'LocalBusiness' schema for a service-based company.",
+                "Absence of 'Service' schema to detail individual offerings."
+              ]
+            },
+            {
+              "score": 3,
+              "maxScore": 3,
+              "status": "excellent",
+              "feedback": "External links not critical for short pages"
+            },
+            {
+              "score": 0,
+              "maxScore": 0,
+              "status": "excellent",
+              "feedback": "Content freshness not evaluated"
+            }
+          ]
+        }
+      ],
+      "aeo": [
+        {
+          "name": "AEO Readiness",
+          "score": 57,
+          "maxScore": 100,
+          "percentage": 57,
+          "components": [
+            {
+              "score": 9,
+              "maxScore": 20,
+              "status": "warning",
+              "feedback": "Content Depth",
+              "issues": [
+                "367 words - aim for 800+ for comprehensive coverage"
+              ]
+            },
+            {
+              "score": 23,
+              "maxScore": 30,
+              "status": "good",
+              "feedback": "Schema Quality",
+              "issues": [
+                "Missing recommended 'telephone' and 'email' properties in Organization and Place schemas.",
+                "Missing recommended 'sameAs' (social media profiles) property in Organization schema.",
+                "Missing 'articleBody' property in Article schema, limiting content understanding for rich snippets.",
+                "Generic 'name' and lack of additional details (e.g., 'jobTitle', 'url', 'sameAs') for the 'Person' schema.",
+                "Lack of a more specific 'LocalBusiness' schema for a service-based company.",
+                "Absence of 'Service' schema to detail individual offerings."
+              ]
+            },
+            {
+              "score": 7,
+              "maxScore": 20,
+              "status": "warning",
+              "feedback": "Question Answering",
+              "issues": [
+                "Q&A coverage needs improvement (severity: 63/100)"
+              ]
+            },
+            {
+              "score": 10,
+              "maxScore": 15,
+              "status": "warning",
+              "feedback": "Entity Density",
+              "issues": [
+                "Low density of named entities and specific facts (severity: 30/100)"
+              ]
+            },
+            {
+              "score": 13,
+              "maxScore": 15,
+              "status": "good",
+              "feedback": "Formatting",
+              "issues": [
+                "Formatting needs improvement (severity: 10/100)"
+              ]
+            },
+            {
+              "score": 5,
+              "maxScore": 10,
+              "status": "warning",
+              "feedback": "Definitions",
+              "issues": [
+                "Missing clear definition statements (severity: 53/100)"
+              ]
+            }
+          ]
+        }
+      ],
+      "geo": [
+        {
+          "name": "GEO Visibility",
+          "score": 45,
+          "maxScore": 100,
+          "percentage": 45,
+          "components": [
+            {
+              "score": 25,
+              "maxScore": 25,
+              "status": "good",
+              "feedback": "Image Accessibility"
+            },
+            {
+              "score": 3,
+              "maxScore": 20,
+              "status": "warning",
+              "feedback": "Tone",
+              "issues": [
+                "Promotional tone detected (severity: 83/100)"
+              ]
+            },
+            {
+              "score": 12,
+              "maxScore": 20,
+              "status": "warning",
+              "feedback": "Expertise",
+              "issues": [
+                "Missing expertise signals (severity: 38/100)"
+              ]
+            },
+            {
+              "score": 1,
+              "maxScore": 15,
+              "status": "warning",
+              "feedback": "Data & Facts",
+              "issues": [
+                "Lacks specific data and statistics (severity: 90/100)"
+              ]
+            },
+            {
+              "score": 3,
+              "maxScore": 10,
+              "status": "warning",
+              "feedback": "Objectivity",
+              "issues": [
+                "First-person usage detected (severity: 70/100)"
+              ]
+            },
+            {
+              "score": 1,
+              "maxScore": 10,
+              "status": "warning",
+              "feedback": "Claims",
+              "issues": [
+                "Unsubstantiated claims detected (severity: 85/100)"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "overallFeedback": "Exceptional SEO for a local business - Your site follows modern best practices and is well-optimized for search engines.",
+    "criticalIssues": [
+      "No viewport meta tag found"
+    ],
+    "version": "v2",
+    "siteType": "local-business"
+  },
+  "graderBreakdown": {
+    "seo": [
+      {
+        "name": "Foundation",
+        "score": 33,
+        "maxScore": 40,
+        "percentage": 83,
+        "components": [
+          {
+            "score": 10,
+            "maxScore": 10,
+            "status": "excellent",
+            "feedback": "Title tag is well-optimized"
+          },
+          {
+            "score": 8,
+            "maxScore": 8,
+            "status": "excellent",
+            "feedback": "Meta description is well-optimized"
+          },
+          {
+            "score": 8,
+            "maxScore": 8,
+            "status": "excellent",
+            "feedback": "H1 heading is properly implemented"
+          },
+          {
+            "score": 7,
+            "maxScore": 7,
+            "status": "excellent",
+            "feedback": "HTTPS properly configured"
+          },
+          {
+            "score": 0,
+            "maxScore": 7,
+            "status": "critical",
+            "feedback": "Missing viewport meta tag - not mobile optimized",
+            "issues": [
+              "No viewport meta tag found"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Content Quality",
+        "score": 31,
+        "maxScore": 42,
+        "percentage": 74,
+        "components": [
+          {
+            "score": 9,
+            "maxScore": 15,
+            "status": "warning",
+            "feedback": "Content is minimal - consider expanding",
+            "issues": [
+              "367 words (recommended: 800+)"
+            ]
+          },
+          {
+            "score": 6,
+            "maxScore": 7,
+            "status": "good",
+            "feedback": "Content readability needs improvement",
+            "issues": [
+              "Readability concerns detected (severity: 13/100)"
+            ]
+          },
+          {
+            "score": 8,
+            "maxScore": 10,
+            "status": "excellent",
+            "feedback": "Good internal linking (13 links)"
+          },
+          {
+            "score": 8,
+            "maxScore": 10,
+            "status": "good",
+            "feedback": "Most images have alt text",
+            "issues": [
+              "1 image still need alt text"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Technical Excellence",
+        "score": 19,
+        "maxScore": 22,
+        "percentage": 86,
+        "components": [
+          {
+            "score": 10,
+            "maxScore": 10,
+            "status": "excellent",
+            "feedback": "Fast page load (1218ms)"
+          },
+          {
+            "score": 3,
+            "maxScore": 6,
+            "status": "warning",
+            "feedback": "Limited semantic structure",
+            "issues": [
+              "Add more HTML5 semantic tags for better structure"
+            ]
+          },
+          {
+            "score": 6,
+            "maxScore": 6,
+            "status": "excellent",
+            "feedback": "Clean URL structure"
+          }
+        ]
+      },
+      {
+        "name": "Advanced Optimization",
+        "score": 7,
+        "maxScore": 8,
+        "percentage": 88,
+        "components": [
+          {
+            "score": 4,
+            "maxScore": 5,
+            "status": "excellent",
+            "feedback": "Schema present but needs improvement",
+            "issues": [
+              "Missing recommended 'telephone' and 'email' properties in Organization and Place schemas.",
+              "Missing recommended 'sameAs' (social media profiles) property in Organization schema.",
+              "Missing 'articleBody' property in Article schema, limiting content understanding for rich snippets.",
+              "Generic 'name' and lack of additional details (e.g., 'jobTitle', 'url', 'sameAs') for the 'Person' schema.",
+              "Lack of a more specific 'LocalBusiness' schema for a service-based company.",
+              "Absence of 'Service' schema to detail individual offerings."
+            ]
+          },
+          {
+            "score": 3,
+            "maxScore": 3,
+            "status": "excellent",
+            "feedback": "External links not critical for short pages"
+          },
+          {
+            "score": 0,
+            "maxScore": 0,
+            "status": "excellent",
+            "feedback": "Content freshness not evaluated"
+          }
+        ]
+      }
+    ],
+    "aeo": [
+      {
+        "name": "AEO Readiness",
+        "score": 57,
+        "maxScore": 100,
+        "percentage": 57,
+        "components": [
+          {
+            "score": 9,
+            "maxScore": 20,
+            "status": "warning",
+            "feedback": "Content Depth",
+            "issues": [
+              "367 words - aim for 800+ for comprehensive coverage"
+            ]
+          },
+          {
+            "score": 23,
+            "maxScore": 30,
+            "status": "good",
+            "feedback": "Schema Quality",
+            "issues": [
+              "Missing recommended 'telephone' and 'email' properties in Organization and Place schemas.",
+              "Missing recommended 'sameAs' (social media profiles) property in Organization schema.",
+              "Missing 'articleBody' property in Article schema, limiting content understanding for rich snippets.",
+              "Generic 'name' and lack of additional details (e.g., 'jobTitle', 'url', 'sameAs') for the 'Person' schema.",
+              "Lack of a more specific 'LocalBusiness' schema for a service-based company.",
+              "Absence of 'Service' schema to detail individual offerings."
+            ]
+          },
+          {
+            "score": 7,
+            "maxScore": 20,
+            "status": "warning",
+            "feedback": "Question Answering",
+            "issues": [
+              "Q&A coverage needs improvement (severity: 63/100)"
+            ]
+          },
+          {
+            "score": 10,
+            "maxScore": 15,
+            "status": "warning",
+            "feedback": "Entity Density",
+            "issues": [
+              "Low density of named entities and specific facts (severity: 30/100)"
+            ]
+          },
+          {
+            "score": 13,
+            "maxScore": 15,
+            "status": "good",
+            "feedback": "Formatting",
+            "issues": [
+              "Formatting needs improvement (severity: 10/100)"
+            ]
+          },
+          {
+            "score": 5,
+            "maxScore": 10,
+            "status": "warning",
+            "feedback": "Definitions",
+            "issues": [
+              "Missing clear definition statements (severity: 53/100)"
+            ]
+          }
+        ]
+      }
+    ],
+    "geo": [
+      {
+        "name": "GEO Visibility",
+        "score": 45,
+        "maxScore": 100,
+        "percentage": 45,
+        "components": [
+          {
+            "score": 25,
+            "maxScore": 25,
+            "status": "good",
+            "feedback": "Image Accessibility"
+          },
+          {
+            "score": 3,
+            "maxScore": 20,
+            "status": "warning",
+            "feedback": "Tone",
+            "issues": [
+              "Promotional tone detected (severity: 83/100)"
+            ]
+          },
+          {
+            "score": 12,
+            "maxScore": 20,
+            "status": "warning",
+            "feedback": "Expertise",
+            "issues": [
+              "Missing expertise signals (severity: 38/100)"
+            ]
+          },
+          {
+            "score": 1,
+            "maxScore": 15,
+            "status": "warning",
+            "feedback": "Data & Facts",
+            "issues": [
+              "Lacks specific data and statistics (severity: 90/100)"
+            ]
+          },
+          {
+            "score": 3,
+            "maxScore": 10,
+            "status": "warning",
+            "feedback": "Objectivity",
+            "issues": [
+              "First-person usage detected (severity: 70/100)"
+            ]
+          },
+          {
+            "score": 1,
+            "maxScore": 10,
+            "status": "warning",
+            "feedback": "Claims",
+            "issues": [
+              "Unsubstantiated claims detected (severity: 85/100)"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "enhancedPenalties": [
+    {
+      "category": "SEO",
+      "component": "SEO Foundation - Missing viewport meta tag - not mobile optimized",
+      "penalty": "No viewport meta tag found",
+      "explanation": "Google uses mobile-first indexing, meaning it primarily uses the mobile version of your site for ranking. Without a viewport meta tag, your site renders at desktop width on mobile devices, making text unreadable and buttons untappable. This results in a poor mobile experience, higher bounce rates, and significantly lower rankings in mobile search results, which account for over 60% of all searches.",
+      "fix": "In WordPress: Most modern themes include viewport meta. If missing, add to your theme's header.php inside <head>: <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">. Better: switch to a responsive theme (Astra, GeneratePress, Kadence). Check with Theme > Customize > verify mobile preview.\n\nGeneral best practice: Add this tag inside your <head> section: <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">. This tells mobile browsers to render the page at the device width instead of a desktop viewport. Then ensure your CSS uses responsive design: use relative units (%, rem, vw), media queries, and flexible layouts. Test on real mobile devices.",
+      "pointsDeducted": -7,
+      "severity": "critical"
+    },
+    {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Tone",
+      "penalty": "Promotional tone detected (severity: 83/100)",
+      "explanation": "AI systems are trained to identify and deprioritize promotional or biased content. Overly sales-oriented language (\"best in class\", \"amazing results\", \"revolutionary\") triggers bias detection, causing AI to prefer more neutral, informative sources. Factual, balanced tone increases trust scores and citation likelihood across all major AI platforms.",
+      "fix": "Reduce promotional tone for AI trust: 1) Remove superlatives: \"best\", \"amazing\", \"revolutionary\", \"world-class\". 2) Replace \"we offer the best\" with \"this service includes\". 3) Use factual statements instead of claims: \"serves 10,000 customers\" not \"loved by everyone\". 4) Write in third person where possible. 5) Let data and facts speak instead of adjectives. 6) Focus on informing, not selling.",
+      "pointsDeducted": -17,
+      "severity": "warning"
+    },
+    {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Data & Facts",
+      "penalty": "Lacks specific data and statistics (severity: 90/100)",
+      "explanation": "AI systems prioritize content with specific, verifiable data — statistics, percentages, dates, measurements, and cited research. Vague claims without supporting evidence are deprioritized. Content rich in specific data points becomes a preferred citation source because AI can confidently reference concrete facts.",
+      "fix": "Add specific data for AI citation: 1) Include exact statistics: \"increased by 47%\" not \"increased significantly\". 2) Cite sources: \"According to [Source Name] (2025)...\" 3) Add dates to time-sensitive data. 4) Use specific numbers: \"$2.4 million\" not \"millions of dollars\". 5) Include research findings with study names. 6) Add a \"Sources\" or \"References\" section at the bottom.",
+      "pointsDeducted": -14,
+      "severity": "warning"
+    },
+    {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Question Answering",
+      "penalty": "Q&A coverage needs improvement (severity: 63/100)",
+      "explanation": "AI systems are fundamentally designed to answer questions. They actively seek content that directly addresses common queries in a clear Q&A format. Pages without explicit question-answer patterns get bypassed in favor of pages that do. Adding FAQ sections and direct-answer paragraphs dramatically increases your chances of being cited in AI responses.",
+      "fix": "Add Q&A content that AI can cite: 1) Create an FAQ section with 5-10 common questions. 2) Use <h3> or <h2> for each question. 3) Start each answer with a direct response (yes/no, a number, a definition). 4) Keep answers concise (2-4 sentences for the direct answer, then expand). 5) Add FAQPage schema markup. 6) Use question formats like \"What is...\", \"How do I...\", \"Why does...\".",
+      "pointsDeducted": -13,
+      "severity": "warning"
+    },
+    {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Content Depth",
+      "penalty": "367 words - aim for 800+ for comprehensive coverage",
+      "explanation": "AI systems like ChatGPT, Gemini, and Perplexity need substantial, well-structured content to cite and reference. Pages with fewer than 300 words provide insufficient material for AI to extract meaningful answers. When users ask AI assistants questions, the AI looks for comprehensive pages that thoroughly cover the topic. Thin content is essentially invisible to AI search.",
+      "fix": "Expand content for AI visibility: 1) Write at least 800 words of substantive content. 2) Structure with clear H2/H3 subheadings. 3) Add a \"What is [topic]?\" definition section. 4) Include a \"How does [topic] work?\" explanation. 5) Add a \"Benefits of [topic]\" section. 6) Create an FAQ with 5-10 questions and direct answers. 7) Include specific examples, data, and case studies. AI systems need comprehensive content to cite.",
+      "pointsDeducted": -11,
+      "severity": "warning"
+    },
+    {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Claims",
+      "penalty": "Unsubstantiated claims detected (severity: 85/100)",
+      "explanation": "Unsubstantiated claims are a red flag for AI credibility assessment. Every claim without a citation, source, or supporting evidence reduces your content trustworthiness score. AI systems cross-reference claims against known facts — unsupported statements cause your entire page to be rated as less reliable.",
+      "fix": "Substantiate all claims for AI credibility: 1) Add inline citations: \"According to [Source], [claim].\" 2) Link to studies, reports, or authoritative sources for every factual claim. 3) Use footnotes or a references section. 4) Replace unsupported claims with data-backed statements. 5) Remove claims you cannot verify. 6) Use hedging language for uncertain claims: \"research suggests\" rather than \"this proves\".",
+      "pointsDeducted": -9,
+      "severity": "warning"
+    },
+    {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Expertise",
+      "penalty": "Missing expertise signals (severity: 38/100)",
+      "explanation": "AI systems evaluate E-E-A-T signals (Experience, Expertise, Authoritativeness, Trust) to determine source credibility. Content without author credentials, professional experience, or expertise indicators is considered less authoritative. Adding author bios, credentials, and experience signals significantly increases the likelihood of AI citation.",
+      "fix": "Add expertise signals for AI credibility: 1) Add an \"About the Author\" section with credentials, experience, and qualifications. 2) Link to the author's LinkedIn or professional profile. 3) Mention relevant certifications, degrees, or years of experience. 4) Include \"Reviewed by [Expert Name], [Credentials]\" for medical/legal/financial content. 5) Add author schema markup with sameAs links.",
+      "pointsDeducted": -8,
+      "severity": "warning"
+    },
+    {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Objectivity",
+      "penalty": "First-person usage detected (severity: 70/100)",
+      "explanation": "Heavy first-person usage (\"I think\", \"we believe\", \"in my opinion\") signals subjective opinion rather than objective fact. AI systems prefer third-person, evidence-based content for citations because it appears more authoritative and unbiased. Reducing first-person language and replacing opinions with data-backed statements improves AI citation rates.",
+      "fix": "Improve objectivity for AI trust: 1) Replace \"I think\" with \"research indicates\" or \"data shows\". 2) Replace \"we believe\" with \"evidence suggests\". 3) Use third-person perspective: \"users report\" instead of \"we found\". 4) Support opinions with data: \"this approach is effective, as shown by a 34% improvement in [study]\". 5) Present multiple viewpoints on debatable topics.",
+      "pointsDeducted": -7,
+      "severity": "warning"
+    },
+    {
+      "category": "SEO",
+      "component": "SEO Content Quality - Content is minimal - consider expanding",
+      "penalty": "367 words (recommended: 800+)",
+      "explanation": "This issue impacts how search engines and AI systems understand and rank your content. The SEO scoring system detected a problem that reduces your visibility.",
+      "fix": "Review and address this SEO issue. Check your page source code and update the relevant element following current best practices. If you are unsure how to fix this on your platform, search for \"[your platform name] + unknown\" for specific tutorials.",
+      "pointsDeducted": -6,
+      "severity": "warning"
+    },
+    {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Entity Density",
+      "penalty": "Low density of named entities and specific facts (severity: 30/100)",
+      "explanation": "AI systems identify and index specific entities — people, places, organizations, products, dates, and statistics. Content with low entity density (vague language like \"many years\" or \"some people\") gives AI nothing concrete to reference. High entity density makes your content a reliable source of specific, citable facts.",
+      "fix": "Increase entity density for AI: 1) Replace vague terms with specifics — \"many years\" becomes \"since 2008\", \"some people\" becomes \"42% of users\". 2) Name specific products, people, places, and organizations. 3) Include exact dates, prices, measurements, and statistics. 4) Link to Wikipedia for key entities. 5) Use proper nouns instead of pronouns where possible.",
+      "pointsDeducted": -5,
+      "severity": "warning"
+    },
+    {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Definitions",
+      "penalty": "Missing clear definition statements (severity: 53/100)",
+      "explanation": "AI systems frequently need to define concepts for users. Content that starts with clear, concise definitions (e.g., \"SEO is a marketing strategy that...\") is highly likely to be pulled directly into AI responses. Missing definitions force AI to look elsewhere for explanations, reducing your citation likelihood.",
+      "fix": "Add clear definitions AI can extract: 1) Start your content with a clear definition: \"[Topic] is [category] that [key characteristic].\" 2) Example: \"SEO is a digital marketing strategy that improves website visibility in search engine results.\" 3) Define technical terms when first used. 4) Use \"is defined as\", \"refers to\", or \"means\" for clarity. 5) Add a glossary section for pages with many technical terms.",
+      "pointsDeducted": -5,
+      "severity": "warning"
+    },
+    {
+      "category": "SEO",
+      "component": "SEO Technical Excellence - Limited semantic structure",
+      "penalty": "Add more HTML5 semantic tags for better structure",
+      "explanation": "Semantic HTML5 tags (<main>, <nav>, <article>, <header>, <footer>) help search engines understand your page structure and content hierarchy. Without them, crawlers see a flat document with no structural meaning. Semantic markup also improves accessibility for screen readers and can influence how Google generates featured snippets.",
+      "fix": "Add HTML5 semantic tags to your page structure: 1) Wrap your main content in <main>. 2) Use <nav> for navigation menus. 3) Wrap blog posts/articles in <article>. 4) Use <header> for page/section headers. 5) Use <footer> for page/section footers. 6) Use <aside> for sidebars and related content. 7) Use <section> to group related content with headings.",
+      "pointsDeducted": -3,
+      "severity": "warning"
+    },
+    {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Schema Quality",
+      "penalty": "Missing recommended 'telephone' and 'email' properties in Organization and Place schemas.",
+      "explanation": "Structured data (schema.org markup) is how AI systems like ChatGPT, Gemini, and Perplexity understand your content programmatically. Without schema, AI cannot reliably parse your page type, author, dates, or key facts. Sites with proper schema are 2-3x more likely to be cited in AI-generated answers. Schema also enables rich results in Google (stars, FAQs, breadcrumbs).",
+      "fix": "In WordPress: Install \"Schema Pro\" or \"Yoast SEO\" (both add JSON-LD automatically). For manual control: use \"WP Schema Plugin\" or add JSON-LD to header.php. Minimum: Organization + WebPage schema. For blog posts: Article schema with author, datePublished, headline.\n\nGeneral best practice: Add JSON-LD structured data to help AI systems understand your content: 1) Add Organization schema with name, logo, url, sameAs (social profiles). 2) For articles: add Article schema with headline, author, datePublished, dateModified, image. 3) For products: add Product schema with name, price, availability, reviews. 4) For FAQs: add FAQPage schema with question/answer pairs. 5) Validate at search.google.com/test/rich-results. Place the <script type=\"application/ld+json\"> tag in your <head> section.",
+      "pointsDeducted": -7,
+      "severity": "info"
+    },
+    {
+      "category": "SEO",
+      "component": "SEO Content Quality - Good internal linking (13 links)",
+      "penalty": "Lost 2 points in Good internal linking (13 links)",
+      "explanation": "Internal links are how search engines discover and understand your site architecture. They distribute \"link equity\" (ranking power) across your pages. Pages with no internal links are orphaned — search engines may never find them. Good internal linking also keeps users on your site longer, reducing bounce rate and increasing the chance of conversion.",
+      "fix": "In WordPress: Use \"Link Whisper\" plugin for AI-suggested internal links. Manually: when editing a post, highlight text > click link icon > search for related posts. Add \"Related Posts\" section using Yoast or a related posts plugin. Aim for 3-5 contextual links per page.\n\nGeneral best practice: Add 3-5 contextual internal links per page: 1) Link to related content pages using descriptive anchor text (not \"click here\"). 2) Link to category/pillar pages from detail pages. 3) Add a \"Related Articles\" or \"You May Also Like\" section. 4) Use breadcrumb navigation. 5) Ensure every important page is reachable within 3 clicks from the homepage.",
+      "pointsDeducted": -2,
+      "severity": "info"
+    },
+    {
+      "category": "SEO",
+      "component": "SEO Content Quality - Most images have alt text",
+      "penalty": "1 image still need alt text",
+      "explanation": "Images without alt text are completely invisible to search engines and screen readers. Google Image Search drives 22% of all web searches. Missing alt text means you lose this traffic entirely. Alt text also provides context to search engines about your page content, and is legally required for accessibility compliance (WCAG 2.1 AA).",
+      "fix": "In WordPress: Go to Media Library > click each image > fill in \"Alt Text\" field. For bulk editing: use \"Auto Image Alt Text\" plugin. When uploading new images, always fill the alt text field. Format: descriptive text of what the image shows.\n\nGeneral best practice: Add descriptive alt text to every image: 1) Describe what the image shows specifically. 2) Include relevant keywords naturally. 3) Keep alt text under 125 characters. 4) Format: \"[subject] [action/context] [location/setting]\". Example: alt=\"woman running in blue Nike shoes on a forest trail\". 5) For decorative images, use alt=\"\" (empty). 6) Never start with \"image of\" or \"picture of\".",
+      "pointsDeducted": -2,
+      "severity": "info"
+    },
+    {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Formatting",
+      "penalty": "Formatting needs improvement (severity: 10/100)",
+      "explanation": "AI systems parse content structure to extract relevant information. Walls of text, inconsistent formatting, and poor hierarchy make it harder for AI to identify key points. Well-formatted content with clear headings, bullet points, and concise paragraphs is significantly easier for AI to process, understand, and cite.",
+      "fix": "Improve content formatting for AI parsing: 1) Break paragraphs to 3-4 sentences max. 2) Use bullet points for lists of items or features. 3) Use numbered lists for sequential steps. 4) Add H2/H3 subheadings every 200-300 words. 5) Bold key terms and definitions (sparingly). 6) Use tables for comparative data. 7) Keep sentences under 20 words.",
+      "pointsDeducted": -2,
+      "severity": "info"
+    },
+    {
+      "category": "SEO",
+      "component": "SEO Content Quality - Content readability needs improvement",
+      "penalty": "Readability concerns detected (severity: 13/100)",
+      "explanation": "Content readability directly impacts user engagement metrics that Google tracks — time on page, bounce rate, and scroll depth. Hard-to-read content causes users to leave quickly, sending negative signals to search engines. The average web reader reads at an 8th-grade level. Content written above this level loses a significant portion of your potential audience.",
+      "fix": "Improve readability: 1) Keep paragraphs to 3-4 sentences max. 2) Use bullet points and numbered lists for steps or features. 3) Add subheadings (H2, H3) every 200-300 words. 4) Use short sentences (under 20 words). 5) Write at an 8th-grade reading level — use simple words. 6) Bold key terms sparingly for scanning. 7) Use transition words between paragraphs.",
+      "pointsDeducted": -1,
+      "severity": "info"
+    },
+    {
+      "category": "SEO",
+      "component": "SEO Advanced Optimization - Schema present but needs improvement",
+      "penalty": "Missing recommended 'telephone' and 'email' properties in Organization and Place schemas.",
+      "explanation": "Structured data (schema.org markup) helps search engines understand your content beyond plain text. It enables rich results in Google — star ratings, FAQ dropdowns, breadcrumbs, product prices — which dramatically increase click-through rates. Pages with rich results get 58% more clicks than standard results.",
+      "fix": "In WordPress: Install \"Schema Pro\" or \"Yoast SEO\" (both add JSON-LD automatically). For manual control: use \"WP Schema Plugin\" or add JSON-LD to header.php. Minimum: Organization + WebPage schema. For blog posts: Article schema with author, datePublished, headline.\n\nGeneral best practice: Add JSON-LD structured data inside <head>: 1) Start with Organization schema: {\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"name\":\"...\",\"url\":\"...\",\"logo\":\"...\"}. 2) Add WebPage schema for each page. 3) For blog posts: Article schema with headline, author, datePublished. 4) For products: Product schema with price, availability. 5) For FAQs: FAQPage schema. 6) Validate at search.google.com/test/rich-results.",
+      "pointsDeducted": -1,
+      "severity": "info"
+    }
+  ],
+  "fullResult": {
+    "pagesCrawled": 5,
+    "perPageScores": [
+      {
+        "url": "https://valleymarketing.ca",
+        "seo": 90,
+        "aeo": 57,
+        "geo": 45
+      },
+      {
+        "url": "https://valleymarketing.ca/culture",
+        "seo": 87,
+        "aeo": 67,
+        "geo": 58
+      },
+      {
+        "url": "https://valleymarketing.ca/the-blog",
+        "seo": 63,
+        "aeo": 47,
+        "geo": 66
+      },
+      {
+        "url": "https://valleymarketing.ca/commercial-photography",
+        "seo": 79,
+        "aeo": 72,
+        "geo": 62
+      },
+      {
+        "url": "https://valleymarketing.ca/services",
+        "seo": 87,
+        "aeo": 73,
+        "geo": 66
+      }
+    ]
+  }
+}

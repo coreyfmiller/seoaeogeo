@@ -7403,5 +7403,239 @@
     "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice vs FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
     "timestamp": "2026-03-21T22:09:55.964Z",
     "cost": 0.049615475000000006
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 481,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-21T22:28:02.157Z",
+    "cost": 0.006035575
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 11058,
+    "outputTokens": 13501,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-21T22:28:51.144Z",
+    "cost": 0.14801605
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 8346,
+    "outputTokens": 10994,
+    "url": "Client Testimonials & Performance Reviews | FundyLogic | FundyLogic",
+    "timestamp": "2026-03-21T22:28:58.634Z",
+    "cost": 0.11903254999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 10930,
+    "outputTokens": 9776,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-21T22:29:00.927Z",
+    "cost": 0.11382735
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 7600,
+    "outputTokens": 10497,
+    "url": "AI & Web Services | FundyLogic New Brunswick | FundyLogic",
+    "timestamp": "2026-03-21T22:29:02.994Z",
+    "cost": 0.11281269999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 7192,
+    "outputTokens": 10136,
+    "url": "Cybersecure NB Grant: Free AI Chatbot + Website | FundyLogic",
+    "timestamp": "2026-03-21T22:29:45.897Z",
+    "cost": 0.10859939999999998
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Competitive Battle",
+    "inputTokens": 2146,
+    "outputTokens": 4563,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice vs Home - Gisele's Pizzeria",
+    "timestamp": "2026-03-21T22:29:55.629Z",
+    "cost": 0.04640545
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 12046,
+    "outputTokens": 10501,
+    "url": "FAQs — AI-Ready Web Design & Local Digital Services | FundyLogic",
+    "timestamp": "2026-03-21T22:30:00.953Z",
+    "cost": 0.12296375
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 3863,
+    "outputTokens": 8688,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-21T22:30:52.375Z",
+    "cost": 0.08784912499999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Competitive Battle",
+    "inputTokens": 4787,
+    "outputTokens": 4420,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB vs Valley Marketing - Branding And Marketing | Video | Photo",
+    "timestamp": "2026-03-21T22:32:23.230Z",
+    "cost": 0.051112425
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3574,
+    "outputTokens": 8126,
+    "url": "Pizza Twice | About Us",
+    "timestamp": "2026-03-21T22:32:40.087Z",
+    "cost": 0.08207744999999998
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5012,
+    "outputTokens": 8331,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-21T22:32:43.371Z",
+    "cost": 0.0872144
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 5012,
+    "outputTokens": 8412,
+    "url": "Pizza Restaurant In Oromocto | Home | Pizza Twice",
+    "timestamp": "2026-03-21T22:32:47.270Z",
+    "cost": 0.0879515
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 6944,
+    "outputTokens": 8343,
+    "url": "Pizza Twice | Locations",
+    "timestamp": "2026-03-21T22:33:24.518Z",
+    "cost": 0.09171889999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3794,
+    "outputTokens": 8361,
+    "url": "Pizza Twice | Pizza Twice Franchise",
+    "timestamp": "2026-03-21T22:33:27.480Z",
+    "cost": 0.08471645
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 3349,
+    "outputTokens": 6820,
+    "url": "pizzatwice.com",
+    "timestamp": "2026-03-21T22:34:40.336Z",
+    "cost": 0.06968097499999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 459,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-21T22:35:52.522Z",
+    "cost": 0.005835375
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 6994,
+    "outputTokens": 8060,
+    "url": "The Growth Blog | Marketing Tips For NB Companies | Valley Marketing ",
+    "timestamp": "2026-03-21T22:36:10.282Z",
+    "cost": 0.08925735
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 7410,
+    "outputTokens": 10454,
+    "url": "Valley Marketing - Branding And Marketing | Video | Photo",
+    "timestamp": "2026-03-21T22:36:21.630Z",
+    "cost": 0.11198914999999998
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 6202,
+    "outputTokens": 10806,
+    "url": "About Us | Culture | Valley Marketing ",
+    "timestamp": "2026-03-21T22:36:22.115Z",
+    "cost": 0.11244414999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 11058,
+    "outputTokens": 13501,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-21T22:36:41.587Z",
+    "cost": 0.14801605
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 459,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-21T22:37:12.107Z",
+    "cost": 0.005835375
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 7984,
+    "outputTokens": 10162,
+    "url": "Commercial Photography | Saint John Photographer",
+    "timestamp": "2026-03-21T22:37:15.923Z",
+    "cost": 0.1106378
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 7452,
+    "outputTokens": 10009,
+    "url": "Video | Branding | Photo | Design | Valley Marketing ",
+    "timestamp": "2026-03-21T22:37:16.964Z",
+    "cost": 0.10803520000000001
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 11058,
+    "outputTokens": 14842,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-21T22:38:03.302Z",
+    "cost": 0.16021915
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 4198,
+    "outputTokens": 7150,
+    "url": "valleymarketing.ca",
+    "timestamp": "2026-03-21T22:38:17.592Z",
+    "cost": 0.07461545
   }
 ]

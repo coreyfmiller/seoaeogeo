@@ -1145,3 +1145,147 @@
   "consistencyScore": 100,
   "schemaScore": 25
 }
+[2026-03-21T22:30:01.255Z] [GEMINI-SITEWIDE] Starting AI analysis
+{
+  "domain": "fundylogic.com",
+  "pageCount": 5
+}
+[2026-03-21T22:30:01.256Z] [GEMINI-SITEWIDE] Schema health score
+{
+  "score": 100
+}
+[2026-03-21T22:30:01.256Z] [GEMINI-SITEWIDE] Brand consistency score
+{
+  "score": 100
+}
+[2026-03-21T22:30:01.257Z] [GEMINI-SITEWIDE] Calling Gemini API
+[2026-03-21T22:30:52.374Z] [GEMINI-SITEWIDE] Received response
+{
+  "length": 34351,
+  "preview": "```json\n{\n  \"domainHealthScore\": 83,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 95,\n    \"schemaQuality\": 30,\n    \"metadataQuality\": 100,\n    \"technicalHealth\": 95,\n    \"architectureHealth\": 95"
+}
+[2026-03-21T22:30:52.377Z] [GEMINI-SITEWIDE] Parsed AI result
+{
+  "domainHealthScore": 83,
+  "recommendationsCount": 12,
+  "keys": [
+    "domainHealthScore",
+    "domainHealthBreakdown",
+    "domainHealthExplanations",
+    "authorityMetrics",
+    "sitewideInsights",
+    "contentGapAnalysis",
+    "cannibalizationRisks",
+    "internalLinkLeaders",
+    "orphanPageRisks",
+    "navigationAnalysis",
+    "brandClarityVerdict",
+    "aeoReadiness",
+    "socialProofSignals",
+    "topicalClusters",
+    "inventoryEvidence",
+    "recommendations"
+  ]
+}
+[2026-03-21T22:30:52.378Z] [GEMINI-SITEWIDE] Final result assembled
+{
+  "domainHealthScore": 83,
+  "consistencyScore": 100,
+  "schemaScore": 100
+}
+[2026-03-21T22:33:28.348Z] [GEMINI-SITEWIDE] Starting AI analysis
+{
+  "domain": "pizzatwice.com",
+  "pageCount": 5
+}
+[2026-03-21T22:33:28.348Z] [GEMINI-SITEWIDE] Schema health score
+{
+  "score": 40
+}
+[2026-03-21T22:33:28.348Z] [GEMINI-SITEWIDE] Brand consistency score
+{
+  "score": 100
+}
+[2026-03-21T22:33:28.350Z] [GEMINI-SITEWIDE] Calling Gemini API
+[2026-03-21T22:34:40.335Z] [GEMINI-SITEWIDE] Received response
+{
+  "length": 29413,
+  "preview": "```json\n{\n  \"domainHealthScore\": 67,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 80,\n    \"schemaQuality\": 5,\n    \"metadataQuality\": 90,\n    \"technicalHealth\": 60,\n    \"architectureHealth\": 100\n"
+}
+[2026-03-21T22:34:40.338Z] [GEMINI-SITEWIDE] Parsed AI result
+{
+  "domainHealthScore": 67,
+  "recommendationsCount": 15,
+  "keys": [
+    "domainHealthScore",
+    "domainHealthBreakdown",
+    "domainHealthExplanations",
+    "authorityMetrics",
+    "sitewideInsights",
+    "contentGapAnalysis",
+    "cannibalizationRisks",
+    "internalLinkLeaders",
+    "orphanPageRisks",
+    "navigationAnalysis",
+    "brandClarityVerdict",
+    "aeoReadiness",
+    "socialProofSignals",
+    "topicalClusters",
+    "inventoryEvidence",
+    "recommendations"
+  ]
+}
+[2026-03-21T22:34:40.339Z] [GEMINI-SITEWIDE] Final result assembled
+{
+  "domainHealthScore": 67,
+  "consistencyScore": 100,
+  "schemaScore": 40
+}
+[2026-03-21T22:37:19.695Z] [GEMINI-SITEWIDE] Starting AI analysis
+{
+  "domain": "valleymarketing.ca",
+  "pageCount": 5
+}
+[2026-03-21T22:37:19.696Z] [GEMINI-SITEWIDE] Schema health score
+{
+  "score": 100
+}
+[2026-03-21T22:37:19.696Z] [GEMINI-SITEWIDE] Brand consistency score
+{
+  "score": 100
+}
+[2026-03-21T22:37:19.698Z] [GEMINI-SITEWIDE] Calling Gemini API
+[2026-03-21T22:38:17.591Z] [GEMINI-SITEWIDE] Received response
+{
+  "length": 31128,
+  "preview": "```json\n{\n  \"domainHealthScore\": 76,\n  \"domainHealthBreakdown\": {\n    \"contentQuality\": 88,\n    \"schemaQuality\": 47,\n    \"metadataQuality\": 95,\n    \"technicalHealth\": 85,\n    \"architectureHealth\": 90\n"
+}
+[2026-03-21T22:38:17.593Z] [GEMINI-SITEWIDE] Parsed AI result
+{
+  "domainHealthScore": 76,
+  "recommendationsCount": 15,
+  "keys": [
+    "domainHealthScore",
+    "domainHealthBreakdown",
+    "domainHealthExplanations",
+    "authorityMetrics",
+    "sitewideInsights",
+    "contentGapAnalysis",
+    "cannibalizationRisks",
+    "internalLinkLeaders",
+    "orphanPageRisks",
+    "navigationAnalysis",
+    "brandClarityVerdict",
+    "aeoReadiness",
+    "socialProofSignals",
+    "topicalClusters",
+    "inventoryEvidence",
+    "recommendations"
+  ]
+}
+[2026-03-21T22:38:17.594Z] [GEMINI-SITEWIDE] Final result assembled
+{
+  "domainHealthScore": 76,
+  "consistencyScore": 100,
+  "schemaScore": 100
+}

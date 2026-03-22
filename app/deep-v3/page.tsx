@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Layers, Sparkles, Zap, ShieldCheck, AlertTriangle, FileText } from 'lucide-react'
+import { Layers, Sparkles, Zap, ShieldCheck, AlertTriangle, FileText, Search, CheckCircle2, Clock } from 'lucide-react'
 import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AppSidebar } from '@/components/dashboard/app-sidebar'
@@ -16,6 +16,7 @@ import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
 import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
+import { cn } from '@/lib/utils'
 
 interface DeepScanResult {
   url: string
@@ -80,6 +81,7 @@ export default function DeepV3Page() {
   const [creditDialogOpen, setCreditDialogOpen] = useState(false)
   const [pendingUrl, setPendingUrl] = useState('')
   const [pendingMaxPages, setPendingMaxPages] = useState(5)
+  const [elapsedSeconds, setElapsedSeconds] = useState(0)
 
   const handleAnalyze = async (submittedUrl: string, maxPages?: number) => {
     setPendingUrl(submittedUrl)
@@ -98,6 +100,13 @@ export default function DeepV3Page() {
   const result = sse.data
   const isAnalyzing = sse.isAnalyzing
   const error = sse.error
+
+  // Elapsed time counter while analyzing
+  useEffect(() => {
+    if (!isAnalyzing) { setElapsedSeconds(0); return }
+    const interval = setInterval(() => setElapsedSeconds(s => s + 1), 1000)
+    return () => clearInterval(interval)
+  }, [isAnalyzing])
 
   const handleSiteTypeChange = async (newType: string) => {
     if (!result) return
@@ -273,14 +282,6 @@ export default function DeepV3Page() {
                     onStartCrawl={(config) => handleAnalyze(config.url, config.pageCount)}
                     isAnalyzing={isAnalyzing}
                   />
-                  
-                  {/* Beta Badge */}
-                  <div className="text-center">
-                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-[#842ce0]/10 text-[#842ce0] border border-[#842ce0]/20">
-                      <Sparkles className="h-3 w-3" />
-                      BETA - AI-Powered Multi-Page Analysis
-                    </span>
-                  </div>
                 </CardContent>
               </Card>
             )}
@@ -334,21 +335,94 @@ export default function DeepV3Page() {
 
             {/* Crawl Progress */}
             {isAnalyzing && (
-              <Card className="border-[#842ce0]/30">
-                <CardContent className="pt-6">
-                  <div className="flex flex-col items-center gap-4 py-8">
-                    <div className="h-12 w-12 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
-                    <div className="text-center min-h-[48px]">
-                      <h3 className="text-lg font-bold text-foreground">V3 Deep Scan in Progress</h3>
-                      <p className="text-sm text-muted-foreground mt-1 transition-opacity duration-500">{sse.phase || 'Initializing...'}</p>
-                    </div>
-                    <div className="w-64 h-1.5 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-seo via-aeo to-geo transition-all duration-[1500ms] ease-in-out" style={{ width: `${sse.progress}%` }} />
-                    </div>
-                    <p className="text-xs text-muted-foreground">{sse.progress}%</p>
+              <div className="space-y-8 animate-in fade-in zoom-in-95">
+                <Card className="border-2 border-[#842ce0]/20 bg-gradient-to-br from-seo/5 via-[#842ce0]/5 to-geo/5 overflow-hidden relative">
+                  {/* Animated gradient bar at top */}
+                  <div className="h-1 w-full bg-muted/30 overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-seo via-[#842ce0] to-geo transition-all duration-700 ease-out"
+                      style={{ width: `${sse.progress}%` }}
+                    />
                   </div>
-                </CardContent>
-              </Card>
+
+                  <CardContent className="pt-10 pb-10">
+                    <div className="flex flex-col items-center gap-6">
+                      {/* Spinner with percentage */}
+                      <div className="relative h-24 w-24">
+                        <div className="absolute inset-0 rounded-full border-4 border-t-seo border-r-[#842ce0] border-b-geo border-l-transparent animate-spin" />
+                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+                          <span className="text-xl font-black text-foreground tabular-nums">{sse.progress}%</span>
+                        </div>
+                      </div>
+
+                      <div className="text-center space-y-2">
+                        <h2 className="text-2xl font-bold text-foreground">Deep Scan in Progress</h2>
+                        <p className="text-sm text-muted-foreground max-w-md min-h-[20px] transition-opacity duration-500">
+                          {sse.phase || 'Initializing...'}
+                        </p>
+                      </div>
+
+                      {/* Progress bar */}
+                      <div className="w-full max-w-md">
+                        <div className="h-2 w-full bg-muted/30 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-seo via-[#842ce0] to-geo rounded-full transition-all duration-700 ease-out"
+                            style={{ width: `${sse.progress}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between mt-1.5">
+                          <span className="text-[10px] text-muted-foreground tabular-nums">{sse.progress}% complete</span>
+                          <span className="text-[10px] text-muted-foreground tabular-nums flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {elapsedSeconds}s elapsed
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* URL badge */}
+                      {currentUrl && (
+                        <Badge variant="outline" className="border-seo/30 text-seo bg-seo/5 px-4 py-1.5 text-sm font-bold">
+                          {currentUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                        </Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Phase indicators */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {[
+                    { icon: <Search className="h-5 w-5" />, label: "Crawling Pages", desc: "Discovering and extracting content from multiple pages", threshold: 10 },
+                    { icon: <Sparkles className="h-5 w-5" />, label: "AI Deep Analysis", desc: "Gemini analyzing each page for quality, schema, and structure", threshold: 40 },
+                    { icon: <Layers className="h-5 w-5" />, label: "Scoring & Report", desc: "Aggregating scores across all pages with site intelligence", threshold: 70 },
+                  ].map((phase, i) => {
+                    const isActive = sse.progress >= phase.threshold
+                    const isDone = i < 2 && sse.progress >= [40, 70, 100][i]
+                    return (
+                      <Card key={i} className={cn(
+                        "border-border/30 transition-all duration-500",
+                        isActive ? "bg-card/80" : "bg-card/30 opacity-50"
+                      )}>
+                        <CardContent className="pt-5 pb-5">
+                          <div className="flex items-start gap-3">
+                            <div className={cn(
+                              "h-10 w-10 rounded-lg flex items-center justify-center shrink-0 transition-all duration-500",
+                              i === 0 ? "bg-seo/10 text-seo" : i === 1 ? "bg-[#842ce0]/10 text-[#842ce0]" : "bg-[#fe3f8c]/10 text-[#fe3f8c]",
+                              isActive && !isDone && "animate-pulse"
+                            )}>
+                              {isDone ? <CheckCircle2 className="h-5 w-5" /> : phase.icon}
+                            </div>
+                            <div>
+                              <h3 className="font-bold text-sm text-foreground">{phase.label}</h3>
+                              <p className="text-xs text-muted-foreground mt-0.5">{phase.desc}</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )
+                  })}
+                </div>
+              </div>
             )}
 
             {/* Credit Confirmation Dialog */}

@@ -4,8 +4,6 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import {
-  LayoutDashboard,
-  Search,
   BarChart3,
   FileText,
   Settings,
@@ -13,12 +11,8 @@ import {
   Sparkles,
   Globe,
   Bot,
-  TrendingUp,
   Layers,
   Home,
-  ChevronDown,
-  ChevronRight,
-  Archive,
   LogOut,
   LogIn,
   Gift,
@@ -47,13 +41,6 @@ const mainNav: NavItem[] = [
 
 const proOnlyPaths = ['/v3', '/deep-v3', '/intelligence', '/dashboard']
 
-const eolNav: NavItem[] = [
-  { name: "V4 Free Audit", icon: Sparkles, href: "/v4", badge: "BETA AI" },
-  { name: "Free Audit EOL", icon: Search, href: "/free", badge: "EOL" },
-  { name: "Pro Audit EOL", icon: LayoutDashboard, href: "/", badge: "EOL" },
-  { name: "Deep Crawler EOL", icon: TrendingUp, href: "/site-analysis", badge: "EOL" },
-]
-
 const comingSoonNav: NavItem[] = []
 
 const bottomNav: NavItem[] = [
@@ -66,7 +53,6 @@ const bottomNav: NavItem[] = [
 export function AppSidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const [eolOpen, setEolOpen] = useState(false)
   const [referralOpen, setReferralOpen] = useState(false)
   const [referralCode, setReferralCode] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
@@ -236,13 +222,13 @@ export function AppSidebar() {
             {referralOpen && (
               <div className="absolute bottom-full left-0 right-0 mb-2 p-4 rounded-xl border border-[#fe3f8c]/30 bg-card shadow-xl z-50 space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-bold text-foreground">Get a Free Pro Pack</p>
+                  <p className="text-sm font-bold text-foreground">Earn 200 Credits</p>
                   <button onClick={() => setReferralOpen(false)} className="text-muted-foreground hover:text-foreground">
                     <X className="h-4 w-4" />
                   </button>
                 </div>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Share your link. When someone signs up and makes their first purchase, you get a free Pro credit pack — 20 Pro Audits, 10 Deep Scans, and 10 Competitive Intel scans added to your account. No limits on how many times you can earn.
+                  Share your link. When someone signs up and makes their first purchase, you get 200 credits added to your account. No limits on how many times you can earn.
                 </p>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 rounded-lg border border-border/50 bg-muted/30 px-3 py-2 text-xs text-muted-foreground truncate font-mono">
@@ -294,52 +280,6 @@ export function AppSidebar() {
           ))}
         </ul>
 
-        {/* EOL Section — Admin only */}
-        {isAdmin && (
-        <div>
-          <button
-            onClick={() => setEolOpen(!eolOpen)}
-            className="flex items-center gap-2 px-3 mb-2 w-full text-xs font-medium text-muted-foreground uppercase tracking-wider hover:text-foreground transition-colors"
-          >
-            {eolOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-            <Archive className="h-3 w-3" />
-            <span>EOL</span>
-            <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-[#842ce0]/10 text-[#842ce0] border border-[#842ce0]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm ml-auto">
-              ADMIN
-            </span>
-          </button>
-          {eolOpen && (
-            <ul className="space-y-1">
-              {eolNav.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className={cn(
-                      "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
-                      pathname === item.href
-                        ? "bg-seo/10 text-seo font-medium"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                    )}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span className="flex-1">{item.name}</span>
-                    {item.badge === "EOL" && (
-                      <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-red-500/10 text-red-500 border border-red-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
-                        EOL
-                      </span>
-                    )}
-                    {item.badge === "BETA AI" && (
-                      <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-orange-500/10 to-[#842ce0]/10 text-[#842ce0] border border-[#842ce0]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
-                        BETA AI
-                      </span>
-                    )}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        )}
       </div>
 
       {/* User */}

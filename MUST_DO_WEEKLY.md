@@ -1,5 +1,10 @@
 # Weekly Must-Do Checklist
 
+## 🎨 Create OG Image for Social Sharing
+**Status:** TODO
+**What:** Design a 1200×630px Open Graph image for Citatom
+**Details:** Dark background, Citatom logo, tagline "Search Intelligence Platform — SEO · AEO · GEO", brand color gradient. Save as `/public/og-image.png`. Once created, wire up Open Graph + Twitter Card meta tags in `app/layout.tsx`.
+
 ## 🔄 Platform Fix Instructions Review
 **File:** `lib/grader-v2.ts` — `getFix()` function (platformTips object)
 **Frequency:** Weekly
