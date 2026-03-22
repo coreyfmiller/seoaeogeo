@@ -7637,5 +7637,77 @@
     "url": "valleymarketing.ca",
     "timestamp": "2026-03-21T22:38:17.592Z",
     "cost": 0.07461545
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 459,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-22T12:08:25.228Z",
+    "cost": 0.005835375
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 11058,
+    "outputTokens": 13501,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-22T12:09:16.778Z",
+    "cost": 0.14801605
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 8346,
+    "outputTokens": 9500,
+    "url": "Client Testimonials & Performance Reviews | FundyLogic | FundyLogic",
+    "timestamp": "2026-03-22T12:22:29.219Z",
+    "cost": 0.10543715
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 7600,
+    "outputTokens": 10366,
+    "url": "AI & Web Services | FundyLogic New Brunswick | FundyLogic",
+    "timestamp": "2026-03-22T12:22:37.094Z",
+    "cost": 0.1116206
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 10930,
+    "outputTokens": 9952,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-22T12:22:44.993Z",
+    "cost": 0.11542895
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 7192,
+    "outputTokens": 10366,
+    "url": "Cybersecure NB Grant: Free AI Chatbot + Website | FundyLogic",
+    "timestamp": "2026-03-22T12:23:37.318Z",
+    "cost": 0.1106924
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 12046,
+    "outputTokens": 10501,
+    "url": "FAQs — AI-Ready Web Design & Local Digital Services | FundyLogic",
+    "timestamp": "2026-03-22T12:23:42.390Z",
+    "cost": 0.12296375
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Sitewide Pro Audit",
+    "inputTokens": 3862,
+    "outputTokens": 9913,
+    "url": "fundylogic.com",
+    "timestamp": "2026-03-22T12:25:28.696Z",
+    "cost": 0.09899435
   }
 ]

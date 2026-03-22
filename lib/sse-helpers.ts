@@ -15,15 +15,22 @@ export function createSSEStream(
 ): ReadableStream {
   return new ReadableStream({
     async start(controller) {
+      let closed = false
       const send: SSESender = (data) => {
-        controller.enqueue(
-          new TextEncoder().encode(`data: ${JSON.stringify(data)}\n\n`)
-        )
+        if (closed) return
+        try {
+          controller.enqueue(
+            new TextEncoder().encode(`data: ${JSON.stringify(data)}\n\n`)
+          )
+        } catch {
+          // Controller already closed, ignore
+        }
       }
       try {
         await handler(send)
       } finally {
-        controller.close()
+        closed = true
+        try { controller.close() } catch { /* already closed */ }
       }
     },
   })

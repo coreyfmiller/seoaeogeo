@@ -5,6 +5,7 @@ import { analyzeWithGemini } from '@/lib/gemini'
 import { performLiveInterrogation } from '@/lib/gemini-interrogation'
 import { detectSiteType } from '@/lib/site-type-detector'
 import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers'
+import { fetchPageSpeedInsights } from '@/lib/pagespeed'
 
 export const maxDuration = 300
 
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
       pageData.siteType = siteTypeResult.primaryType
       send({ type: 'progress', phase: `Detected: ${siteTypeResult.primaryType}. Starting AI analysis...`, progress: 30 })
 
-      // Step 3: AI Analysis (parallel with ticker)
+      // Step 3: AI Analysis + PageSpeed (all parallel)
       const geminiPromise = analyzeWithGemini({
         title: pageData.title, description: pageData.description,
         thinnedText: pageData.thinnedText, summarizedContent: pageData.summarizedContent,
@@ -40,6 +41,7 @@ export async function POST(request: NextRequest) {
         domain: pageData.url, title: pageData.title,
         description: pageData.description, contentSummary: pageData.thinnedText,
       })
+      const pageSpeedPromise = fetchPageSpeedInsights(url)
 
       const ticker1 = createProgressTicker(send, 'Analyzing content with Gemini AI...', 30, 70)
       const liveInterrogation = await interrogationPromise
@@ -70,13 +72,7 @@ export async function POST(request: NextRequest) {
       send({ type: 'progress', phase: 'Finalizing report...', progress: 95 })
 
       const scores = { seo: { score: graderResult.seoScore }, aeo: { score: graderResult.aeoScore }, geo: { score: graderResult.geoScore } }
-      const cwv = {
-        lcp: { value: 2400, category: 'FAST' as const, score: 95, displayValue: '2.4 s' },
-        inp: { value: 150, category: 'FAST' as const, score: 90, displayValue: '150 ms' },
-        cls: { value: 0.05, category: 'FAST' as const, score: 100, displayValue: '0.05' },
-        overallCategory: 'FAST' as const, performanceScore: 95,
-        fetchedAt: new Date().toISOString(), strategy: 'mobile' as const, hasRealUserData: false,
-      }
+      const cwv = await pageSpeedPromise
 
       send({ type: 'progress', phase: 'Audit complete!', progress: 100 })
       send({ type: 'result', success: true, data: {

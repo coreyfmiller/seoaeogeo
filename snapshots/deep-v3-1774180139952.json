@@ -1,18 +1,18 @@
 {
-  "id": "deep-v3-1774118263834",
+  "id": "deep-v3-1774180139952",
   "url": "https://pizzatwice.com",
-  "timestamp": "2026-03-21T18:37:43.834Z",
+  "timestamp": "2026-03-22T11:48:59.952Z",
   "apiRoute": "/api/analyze-deep-v3",
   "scores": {
-    "seo": 79,
-    "aeo": 41,
-    "geo": 47
+    "seo": 78,
+    "aeo": 45,
+    "geo": 50
   },
   "siteType": "restaurant",
   "rawAiScores": {
     "seoScore": 73,
-    "aeoScore": 60,
-    "geoScore": 58,
+    "aeoScore": 52,
+    "geoScore": 59,
     "breakdown": {
       "seo": [
         {
@@ -112,7 +112,7 @@
               "status": "good",
               "feedback": "Acceptable page load time",
               "issues": [
-                "1614ms response time (optimal: <1500ms)"
+                "1650ms response time (optimal: <1500ms)"
               ]
             },
             {
@@ -139,7 +139,7 @@
               "score": 4,
               "maxScore": 5,
               "status": "excellent",
-              "feedback": "High-quality schema implementation",
+              "feedback": "Schema present but needs improvement",
               "issues": [
                 "'acceptsReservations' property has a string value ('True') instead of a boolean (true).",
                 "Missing recommended 'servesCuisine' property in Restaurant schema.",
@@ -164,9 +164,9 @@
       "aeo": [
         {
           "name": "AEO Readiness",
-          "score": 60,
+          "score": 52,
           "maxScore": 100,
-          "percentage": 60,
+          "percentage": 52,
           "components": [
             {
               "score": 0,
@@ -178,7 +178,7 @@
               ]
             },
             {
-              "score": 26,
+              "score": 23,
               "maxScore": 30,
               "status": "good",
               "feedback": "Schema Quality",
@@ -189,12 +189,12 @@
               ]
             },
             {
-              "score": 12,
+              "score": 10,
               "maxScore": 20,
               "status": "warning",
               "feedback": "Question Answering",
               "issues": [
-                "Q&A coverage needs improvement (severity: 40/100)"
+                "Q&A coverage needs improvement (severity: 50/100)"
               ]
             },
             {
@@ -203,25 +203,25 @@
               "status": "good",
               "feedback": "Entity Density",
               "issues": [
-                "Low density of named entities and specific facts (severity: 15/100)"
+                "Low density of named entities and specific facts (severity: 13/100)"
               ]
             },
             {
-              "score": 13,
+              "score": 9,
               "maxScore": 15,
-              "status": "good",
+              "status": "warning",
               "feedback": "Formatting",
               "issues": [
-                "Formatting needs improvement (severity: 10/100)"
+                "Formatting needs improvement (severity: 40/100)"
               ]
             },
             {
-              "score": 6,
+              "score": 7,
               "maxScore": 10,
               "status": "warning",
               "feedback": "Definitions",
               "issues": [
-                "Missing clear definition statements (severity: 40/100)"
+                "Missing clear definition statements (severity: 25/100)"
               ]
             }
           ]
@@ -230,9 +230,9 @@
       "geo": [
         {
           "name": "GEO Visibility",
-          "score": 58,
+          "score": 59,
           "maxScore": 100,
-          "percentage": 58,
+          "percentage": 59,
           "components": [
             {
               "score": 15,
@@ -244,12 +244,12 @@
               ]
             },
             {
-              "score": 6,
+              "score": 5,
               "maxScore": 20,
               "status": "warning",
               "feedback": "Tone",
               "issues": [
-                "Promotional tone detected (severity: 70/100)"
+                "Promotional tone detected (severity: 75/100)"
               ]
             },
             {
@@ -262,12 +262,12 @@
               ]
             },
             {
-              "score": 10,
+              "score": 12,
               "maxScore": 15,
-              "status": "warning",
+              "status": "good",
               "feedback": "Data & Facts",
               "issues": [
-                "Lacks specific data and statistics (severity: 30/100)"
+                "Lacks specific data and statistics (severity: 20/100)"
               ]
             },
             {
@@ -399,7 +399,7 @@
             "status": "good",
             "feedback": "Acceptable page load time",
             "issues": [
-              "1614ms response time (optimal: <1500ms)"
+              "1650ms response time (optimal: <1500ms)"
             ]
           },
           {
@@ -426,7 +426,7 @@
             "score": 4,
             "maxScore": 5,
             "status": "excellent",
-            "feedback": "High-quality schema implementation",
+            "feedback": "Schema present but needs improvement",
             "issues": [
               "'acceptsReservations' property has a string value ('True') instead of a boolean (true).",
               "Missing recommended 'servesCuisine' property in Restaurant schema.",
@@ -451,9 +451,9 @@
     "aeo": [
       {
         "name": "AEO Readiness",
-        "score": 60,
+        "score": 52,
         "maxScore": 100,
-        "percentage": 60,
+        "percentage": 52,
         "components": [
           {
             "score": 0,
@@ -465,7 +465,7 @@
             ]
           },
           {
-            "score": 26,
+            "score": 23,
             "maxScore": 30,
             "status": "good",
             "feedback": "Schema Quality",
@@ -476,12 +476,12 @@
             ]
           },
           {
-            "score": 12,
+            "score": 10,
             "maxScore": 20,
             "status": "warning",
             "feedback": "Question Answering",
             "issues": [
-              "Q&A coverage needs improvement (severity: 40/100)"
+              "Q&A coverage needs improvement (severity: 50/100)"
             ]
           },
           {
@@ -490,25 +490,25 @@
             "status": "good",
             "feedback": "Entity Density",
             "issues": [
-              "Low density of named entities and specific facts (severity: 15/100)"
+              "Low density of named entities and specific facts (severity: 13/100)"
             ]
           },
           {
-            "score": 13,
+            "score": 9,
             "maxScore": 15,
-            "status": "good",
+            "status": "warning",
             "feedback": "Formatting",
             "issues": [
-              "Formatting needs improvement (severity: 10/100)"
+              "Formatting needs improvement (severity: 40/100)"
             ]
           },
           {
-            "score": 6,
+            "score": 7,
             "maxScore": 10,
             "status": "warning",
             "feedback": "Definitions",
             "issues": [
-              "Missing clear definition statements (severity: 40/100)"
+              "Missing clear definition statements (severity: 25/100)"
             ]
           }
         ]
@@ -517,9 +517,9 @@
     "geo": [
       {
         "name": "GEO Visibility",
-        "score": 58,
+        "score": 59,
         "maxScore": 100,
-        "percentage": 58,
+        "percentage": 59,
         "components": [
           {
             "score": 15,
@@ -531,12 +531,12 @@
             ]
           },
           {
-            "score": 6,
+            "score": 5,
             "maxScore": 20,
             "status": "warning",
             "feedback": "Tone",
             "issues": [
-              "Promotional tone detected (severity: 70/100)"
+              "Promotional tone detected (severity: 75/100)"
             ]
           },
           {
@@ -549,12 +549,12 @@
             ]
           },
           {
-            "score": 10,
+            "score": 12,
             "maxScore": 15,
-            "status": "warning",
+            "status": "good",
             "feedback": "Data & Facts",
             "issues": [
-              "Lacks specific data and statistics (severity: 30/100)"
+              "Lacks specific data and statistics (severity: 20/100)"
             ]
           },
           {
@@ -610,10 +610,19 @@
     {
       "category": "GEO",
       "component": "GEO GEO Visibility - Tone",
-      "penalty": "Promotional tone detected (severity: 70/100)",
+      "penalty": "Promotional tone detected (severity: 75/100)",
       "explanation": "AI systems are trained to identify and deprioritize promotional or biased content. Overly sales-oriented language (\"best in class\", \"amazing results\", \"revolutionary\") triggers bias detection, causing AI to prefer more neutral, informative sources. Factual, balanced tone increases trust scores and citation likelihood across all major AI platforms.",
       "fix": "Reduce promotional tone for AI trust: 1) Remove superlatives: \"best\", \"amazing\", \"revolutionary\", \"world-class\". 2) Replace \"we offer the best\" with \"this service includes\". 3) Use factual statements instead of claims: \"serves 10,000 customers\" not \"loved by everyone\". 4) Write in third person where possible. 5) Let data and facts speak instead of adjectives. 6) Focus on informing, not selling.",
-      "pointsDeducted": -14,
+      "pointsDeducted": -15,
+      "severity": "warning"
+    },
+    {
+      "category": "AEO",
+      "component": "AEO AEO Readiness - Question Answering",
+      "penalty": "Q&A coverage needs improvement (severity: 50/100)",
+      "explanation": "AI systems are fundamentally designed to answer questions. They actively seek content that directly addresses common queries in a clear Q&A format. Pages without explicit question-answer patterns get bypassed in favor of pages that do. Adding FAQ sections and direct-answer paragraphs dramatically increases your chances of being cited in AI responses.",
+      "fix": "Add Q&A content that AI can cite: 1) Create an FAQ section with 5-10 common questions. 2) Use <h3> or <h2> for each question. 3) Start each answer with a direct response (yes/no, a number, a definition). 4) Keep answers concise (2-4 sentences for the direct answer, then expand). 5) Add FAQPage schema markup. 6) Use question formats like \"What is...\", \"How do I...\", \"Why does...\".",
+      "pointsDeducted": -10,
       "severity": "warning"
     },
     {
@@ -645,11 +654,11 @@
     },
     {
       "category": "AEO",
-      "component": "AEO AEO Readiness - Question Answering",
-      "penalty": "Q&A coverage needs improvement (severity: 40/100)",
-      "explanation": "AI systems are fundamentally designed to answer questions. They actively seek content that directly addresses common queries in a clear Q&A format. Pages without explicit question-answer patterns get bypassed in favor of pages that do. Adding FAQ sections and direct-answer paragraphs dramatically increases your chances of being cited in AI responses.",
-      "fix": "Add Q&A content that AI can cite: 1) Create an FAQ section with 5-10 common questions. 2) Use <h3> or <h2> for each question. 3) Start each answer with a direct response (yes/no, a number, a definition). 4) Keep answers concise (2-4 sentences for the direct answer, then expand). 5) Add FAQPage schema markup. 6) Use question formats like \"What is...\", \"How do I...\", \"Why does...\".",
-      "pointsDeducted": -8,
+      "component": "AEO AEO Readiness - Formatting",
+      "penalty": "Formatting needs improvement (severity: 40/100)",
+      "explanation": "AI systems parse content structure to extract relevant information. Walls of text, inconsistent formatting, and poor hierarchy make it harder for AI to identify key points. Well-formatted content with clear headings, bullet points, and concise paragraphs is significantly easier for AI to process, understand, and cite.",
+      "fix": "Improve content formatting for AI parsing: 1) Break paragraphs to 3-4 sentences max. 2) Use bullet points for lists of items or features. 3) Use numbered lists for sequential steps. 4) Add H2/H3 subheadings every 200-300 words. 5) Bold key terms and definitions (sparingly). 6) Use tables for comparative data. 7) Keep sentences under 20 words.",
+      "pointsDeducted": -6,
       "severity": "warning"
     },
     {
@@ -663,29 +672,11 @@
     },
     {
       "category": "GEO",
-      "component": "GEO GEO Visibility - Data & Facts",
-      "penalty": "Lacks specific data and statistics (severity: 30/100)",
-      "explanation": "AI systems prioritize content with specific, verifiable data — statistics, percentages, dates, measurements, and cited research. Vague claims without supporting evidence are deprioritized. Content rich in specific data points becomes a preferred citation source because AI can confidently reference concrete facts.",
-      "fix": "Add specific data for AI citation: 1) Include exact statistics: \"increased by 47%\" not \"increased significantly\". 2) Cite sources: \"According to [Source Name] (2025)...\" 3) Add dates to time-sensitive data. 4) Use specific numbers: \"$2.4 million\" not \"millions of dollars\". 5) Include research findings with study names. 6) Add a \"Sources\" or \"References\" section at the bottom.",
-      "pointsDeducted": -5,
-      "severity": "warning"
-    },
-    {
-      "category": "GEO",
       "component": "GEO GEO Visibility - Claims",
       "penalty": "Unsubstantiated claims detected (severity: 50/100)",
       "explanation": "Unsubstantiated claims are a red flag for AI credibility assessment. Every claim without a citation, source, or supporting evidence reduces your content trustworthiness score. AI systems cross-reference claims against known facts — unsupported statements cause your entire page to be rated as less reliable.",
       "fix": "Substantiate all claims for AI credibility: 1) Add inline citations: \"According to [Source], [claim].\" 2) Link to studies, reports, or authoritative sources for every factual claim. 3) Use footnotes or a references section. 4) Replace unsupported claims with data-backed statements. 5) Remove claims you cannot verify. 6) Use hedging language for uncertain claims: \"research suggests\" rather than \"this proves\".",
       "pointsDeducted": -5,
-      "severity": "warning"
-    },
-    {
-      "category": "AEO",
-      "component": "AEO AEO Readiness - Definitions",
-      "penalty": "Missing clear definition statements (severity: 40/100)",
-      "explanation": "AI systems frequently need to define concepts for users. Content that starts with clear, concise definitions (e.g., \"SEO is a marketing strategy that...\") is highly likely to be pulled directly into AI responses. Missing definitions force AI to look elsewhere for explanations, reducing your citation likelihood.",
-      "fix": "Add clear definitions AI can extract: 1) Start your content with a clear definition: \"[Topic] is [category] that [key characteristic].\" 2) Example: \"SEO is a digital marketing strategy that improves website visibility in search engine results.\" 3) Define technical terms when first used. 4) Use \"is defined as\", \"refers to\", or \"means\" for clarity. 5) Add a glossary section for pages with many technical terms.",
-      "pointsDeducted": -4,
       "severity": "warning"
     },
     {
@@ -699,11 +690,20 @@
     },
     {
       "category": "AEO",
+      "component": "AEO AEO Readiness - Definitions",
+      "penalty": "Missing clear definition statements (severity: 25/100)",
+      "explanation": "AI systems frequently need to define concepts for users. Content that starts with clear, concise definitions (e.g., \"SEO is a marketing strategy that...\") is highly likely to be pulled directly into AI responses. Missing definitions force AI to look elsewhere for explanations, reducing your citation likelihood.",
+      "fix": "Add clear definitions AI can extract: 1) Start your content with a clear definition: \"[Topic] is [category] that [key characteristic].\" 2) Example: \"SEO is a digital marketing strategy that improves website visibility in search engine results.\" 3) Define technical terms when first used. 4) Use \"is defined as\", \"refers to\", or \"means\" for clarity. 5) Add a glossary section for pages with many technical terms.",
+      "pointsDeducted": -3,
+      "severity": "warning"
+    },
+    {
+      "category": "AEO",
       "component": "AEO AEO Readiness - Schema Quality",
       "penalty": "'acceptsReservations' property has a string value ('True') instead of a boolean (true).",
       "explanation": "Structured data (schema.org markup) is how AI systems like ChatGPT, Gemini, and Perplexity understand your content programmatically. Without schema, AI cannot reliably parse your page type, author, dates, or key facts. Sites with proper schema are 2-3x more likely to be cited in AI-generated answers. Schema also enables rich results in Google (stars, FAQs, breadcrumbs).",
       "fix": "In Wix: Go to Marketing & SEO > SEO Tools > select page > \"Advanced SEO\" tab > \"Structured Data Markup\". Add JSON-LD code here. Wix also auto-generates some schema. For more control, use Wix's \"Structured Data\" feature or add custom code via \"Custom Code\" in site settings.\n\nGeneral best practice: Add JSON-LD structured data to help AI systems understand your content: 1) Add Organization schema with name, logo, url, sameAs (social profiles). 2) For articles: add Article schema with headline, author, datePublished, dateModified, image. 3) For products: add Product schema with name, price, availability, reviews. 4) For FAQs: add FAQPage schema with question/answer pairs. 5) Validate at search.google.com/test/rich-results. Place the <script type=\"application/ld+json\"> tag in your <head> section.",
-      "pointsDeducted": -4,
+      "pointsDeducted": -7,
       "severity": "info"
     },
     {
@@ -718,33 +718,33 @@
     {
       "category": "SEO",
       "component": "SEO Technical Excellence - Acceptable page load time",
-      "penalty": "1614ms response time (optimal: <1500ms)",
+      "penalty": "1650ms response time (optimal: <1500ms)",
       "explanation": "Page speed is a confirmed Google ranking factor (Core Web Vitals). Pages that take longer than 3 seconds to load lose 53% of mobile visitors. Slow sites have higher bounce rates, lower conversion rates, and worse rankings. Google specifically measures Largest Contentful Paint (LCP), First Input Delay (FID), and Cumulative Layout Shift (CLS).",
       "fix": "In Wix: 1) Compress images before uploading. 2) Reduce the number of elements on each page. 3) Remove unused apps. 4) Use Wix's built-in image optimization. 5) Minimize animations and videos. 6) Wix handles CDN and caching automatically.\n\nGeneral best practice: Improve page speed: 1) Compress images to WebP format, keep under 100KB each. 2) Minify CSS and JavaScript files. 3) Enable browser caching with proper Cache-Control headers. 4) Use a CDN (Cloudflare free tier works well). 5) Defer non-critical JavaScript with async/defer attributes. 6) Reduce server response time to under 200ms. 7) Remove unused CSS/JS. Target: under 2 second total load time.",
       "pointsDeducted": -3,
       "severity": "info"
     },
     {
+      "category": "GEO",
+      "component": "GEO GEO Visibility - Data & Facts",
+      "penalty": "Lacks specific data and statistics (severity: 20/100)",
+      "explanation": "AI systems prioritize content with specific, verifiable data — statistics, percentages, dates, measurements, and cited research. Vague claims without supporting evidence are deprioritized. Content rich in specific data points becomes a preferred citation source because AI can confidently reference concrete facts.",
+      "fix": "Add specific data for AI citation: 1) Include exact statistics: \"increased by 47%\" not \"increased significantly\". 2) Cite sources: \"According to [Source Name] (2025)...\" 3) Add dates to time-sensitive data. 4) Use specific numbers: \"$2.4 million\" not \"millions of dollars\". 5) Include research findings with study names. 6) Add a \"Sources\" or \"References\" section at the bottom.",
+      "pointsDeducted": -3,
+      "severity": "info"
+    },
+    {
       "category": "AEO",
       "component": "AEO AEO Readiness - Entity Density",
-      "penalty": "Low density of named entities and specific facts (severity: 15/100)",
+      "penalty": "Low density of named entities and specific facts (severity: 13/100)",
       "explanation": "AI systems identify and index specific entities — people, places, organizations, products, dates, and statistics. Content with low entity density (vague language like \"many years\" or \"some people\") gives AI nothing concrete to reference. High entity density makes your content a reliable source of specific, citable facts.",
       "fix": "Increase entity density for AI: 1) Replace vague terms with specifics — \"many years\" becomes \"since 2008\", \"some people\" becomes \"42% of users\". 2) Name specific products, people, places, and organizations. 3) Include exact dates, prices, measurements, and statistics. 4) Link to Wikipedia for key entities. 5) Use proper nouns instead of pronouns where possible.",
       "pointsDeducted": -2,
       "severity": "info"
     },
     {
-      "category": "AEO",
-      "component": "AEO AEO Readiness - Formatting",
-      "penalty": "Formatting needs improvement (severity: 10/100)",
-      "explanation": "AI systems parse content structure to extract relevant information. Walls of text, inconsistent formatting, and poor hierarchy make it harder for AI to identify key points. Well-formatted content with clear headings, bullet points, and concise paragraphs is significantly easier for AI to process, understand, and cite.",
-      "fix": "Improve content formatting for AI parsing: 1) Break paragraphs to 3-4 sentences max. 2) Use bullet points for lists of items or features. 3) Use numbered lists for sequential steps. 4) Add H2/H3 subheadings every 200-300 words. 5) Bold key terms and definitions (sparingly). 6) Use tables for comparative data. 7) Keep sentences under 20 words.",
-      "pointsDeducted": -2,
-      "severity": "info"
-    },
-    {
       "category": "SEO",
-      "component": "SEO Advanced Optimization - High-quality schema implementation",
+      "component": "SEO Advanced Optimization - Schema present but needs improvement",
       "penalty": "'acceptsReservations' property has a string value ('True') instead of a boolean (true).",
       "explanation": "Structured data (schema.org markup) helps search engines understand your content beyond plain text. It enables rich results in Google — star ratings, FAQ dropdowns, breadcrumbs, product prices — which dramatically increase click-through rates. Pages with rich results get 58% more clicks than standard results.",
       "fix": "In Wix: Go to Marketing & SEO > SEO Tools > select page > \"Advanced SEO\" tab > \"Structured Data Markup\". Add JSON-LD code here. Wix also auto-generates some schema. For more control, use Wix's \"Structured Data\" feature or add custom code via \"Custom Code\" in site settings.\n\nGeneral best practice: Add JSON-LD structured data inside <head>: 1) Start with Organization schema: {\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"name\":\"...\",\"url\":\"...\",\"logo\":\"...\"}. 2) Add WebPage schema for each page. 3) For blog posts: Article schema with headline, author, datePublished. 4) For products: Product schema with price, availability. 5) For FAQs: FAQPage schema. 6) Validate at search.google.com/test/rich-results.",
@@ -753,19 +753,19 @@
     }
   ],
   "fullResult": {
-    "pagesCrawled": 8,
+    "pagesCrawled": 5,
     "perPageScores": [
       {
         "url": "https://pizzatwice.com",
         "seo": 73,
-        "aeo": 60,
-        "geo": 58
+        "aeo": 52,
+        "geo": 59
       },
       {
         "url": "https://www.pizzatwice.com",
         "seo": 76,
-        "aeo": 60,
-        "geo": 58
+        "aeo": 52,
+        "geo": 59
       },
       {
         "url": "https://www.pizzatwice.com/about-us",
@@ -782,25 +782,7 @@
       {
         "url": "https://www.pizzatwice.com/pizza-twice-franchise",
         "seo": 87,
-        "aeo": 45,
-        "geo": 43
-      },
-      {
-        "url": "https://www.pizzatwice.com/reviews",
-        "seo": 83,
-        "aeo": 34,
-        "geo": 32
-      },
-      {
-        "url": "https://www.pizzatwice.com/contact-us",
-        "seo": 75,
-        "aeo": 25,
-        "geo": 50
-      },
-      {
-        "url": "https://www.pizzatwice.com/menu",
-        "seo": 84,
-        "aeo": 27,
+        "aeo": 44,
         "geo": 30
       }
     ]
