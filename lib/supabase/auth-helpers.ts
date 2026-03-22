@@ -59,7 +59,6 @@ export async function getAuthUser(): Promise<UserProfile | null> {
 export async function useCredit(
   userId: string,
   type: 'credits_pro_audits' | 'credits_deep_scans' | 'credits_competitive_intel',
-  amount: number = 1,
   isAdmin: boolean = false
 ): Promise<{ allowed: boolean; remaining: number }> {
   // Admin safety cap: check total usage across all time
@@ -83,38 +82,15 @@ export async function useCredit(
   if (!profile) return { allowed: false, remaining: 0 }
 
   const current = (profile as any)[type] || 0
-  if (current < amount) return { allowed: false, remaining: current }
+  if (current <= 0) return { allowed: false, remaining: 0 }
 
   // Decrement
   await supabaseAdmin
     .from('profiles')
-    .update({ [type]: current - amount })
+    .update({ [type]: current - 1 })
     .eq('id', userId)
 
-  return { allowed: true, remaining: current - amount }
-}
-
-// Refund credits on scan failure
-export async function refundCredit(
-  userId: string,
-  type: 'credits_pro_audits' | 'credits_deep_scans' | 'credits_competitive_intel',
-  amount: number = 1
-): Promise<void> {
-  const { data: profile } = await supabaseAdmin
-    .from('profiles')
-    .select(type)
-    .eq('id', userId)
-    .single()
-
-  if (!profile) return
-
-  const current = (profile as any)[type] || 0
-  await supabaseAdmin
-    .from('profiles')
-    .update({ [type]: current + amount })
-    .eq('id', userId)
-
-  console.log(`[Credits] Refunded ${amount} ${type} to user ${userId}`)
+  return { allowed: true, remaining: current - 1 }
 }
 
 // Add credits to a user (called from Stripe webhook after purchase)

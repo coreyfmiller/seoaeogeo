@@ -5,11 +5,8 @@ import { analyzeWithGemini } from '@/lib/gemini'
 import { performLiveInterrogation } from '@/lib/gemini-interrogation'
 import { detectSiteType } from '@/lib/site-type-detector'
 import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers'
-import { getAuthUser, useCredit, refundCredit } from '@/lib/supabase/auth-helpers'
 
 export const maxDuration = 300
-
-const CREDIT_COST = 10
 
 export async function POST(request: NextRequest) {
   const { url } = await request.json()
@@ -17,21 +14,6 @@ export async function POST(request: NextRequest) {
   if (!url) {
     return new Response(JSON.stringify({ error: 'URL is required' }), {
       status: 400, headers: { 'Content-Type': 'application/json' },
-    })
-  }
-
-  // Auth + credit check
-  const user = await getAuthUser()
-  if (!user) {
-    return new Response(JSON.stringify({ error: 'Authentication required' }), {
-      status: 401, headers: { 'Content-Type': 'application/json' },
-    })
-  }
-
-  const { allowed } = await useCredit(user.id, 'credits_pro_audits', CREDIT_COST, user.is_admin)
-  if (!allowed) {
-    return new Response(JSON.stringify({ error: 'Insufficient credits. Purchase more credits to continue.' }), {
-      status: 402, headers: { 'Content-Type': 'application/json' },
     })
   }
 
@@ -104,10 +86,6 @@ export async function POST(request: NextRequest) {
       }})
     } catch (error: any) {
       console.error('[V3 API] Error:', error)
-      // Refund credits on failure
-      if (!user.is_admin) {
-        await refundCredit(user.id, 'credits_pro_audits', CREDIT_COST)
-      }
       send({ type: 'error', success: false, error: error.message || 'Analysis failed' })
     }
   })
