@@ -333,24 +333,32 @@ export default function FreeDashboard() {
                       <div className="flex-1">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-geo/20 text-geo text-xs font-bold mb-3">
                           <Zap className="h-3 w-3" />
-                          UPGRADE TO PRO
+                          BUY CREDITS
                         </div>
                         <h3 className="text-2xl font-bold mb-1">Get Step-by-Step Fix Instructions</h3>
-                        <p className="text-lg text-geo font-bold mb-2">Plans starting at $20</p>
-                        <p className="text-muted-foreground mb-4">Stop guessing. Get exact implementation guides for every issue.</p>
+                        <p className="text-lg text-geo font-bold mb-2">200 credits for $20 — never expire</p>
+                        <p className="text-muted-foreground mb-4">Buy credits once, use them on any scan. No subscriptions.</p>
                         <ul className="space-y-2 mb-6">
-                          {[
-                            "Detailed explanations of why each fix matters",
-                            "Auto-generated schema markup for your site type",
-                            "Platform-specific guides (WordPress, Shopify, custom)",
-                            "ROI estimates and priority scoring",
-                            "Deep crawl up to 50 pages for comprehensive site analysis",
-                          ].map((item, i) => (
-                            <li key={i} className="flex items-center gap-2 text-sm">
-                              <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
-                              <span><strong>{item.split(' ').slice(0, 2).join(' ')}</strong> {item.split(' ').slice(2).join(' ')}</span>
-                            </li>
-                          ))}
+                          <li className="flex items-center gap-2 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
+                            <span><strong>Pro Audit</strong> — 10 credits per scan with AI-powered fix instructions</span>
+                          </li>
+                          <li className="flex items-center gap-2 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
+                            <span><strong>Deep Scan</strong> — 10 + 1/page, crawl up to 50 pages with site intelligence</span>
+                          </li>
+                          <li className="flex items-center gap-2 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
+                            <span><strong>Competitive Intel</strong> — 20 credits for head-to-head site comparison</span>
+                          </li>
+                          <li className="flex items-center gap-2 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
+                            <span><strong>Platform-specific</strong> fix guides for WordPress, Shopify, and more</span>
+                          </li>
+                          <li className="flex items-center gap-2 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-geo shrink-0" />
+                            <span><strong>Schema markup</strong> auto-generated for your site type</span>
+                          </li>
                         </ul>
                       </div>
                       <div className="shrink-0 text-center">
@@ -359,10 +367,10 @@ export default function FreeDashboard() {
                           onClick={() => router.push('/pro')}
                           className="bg-geo hover:bg-geo/90 text-geo-foreground shadow-lg hover:shadow-xl transition-all"
                         >
-                          View Pro Audit
+                          Buy Credits
                           <ArrowRight className="h-4 w-4 ml-2" />
                         </Button>
-                        <p className="text-xs text-muted-foreground mt-3">See detailed fixes for this URL</p>
+                        <p className="text-xs text-muted-foreground mt-3">No subscriptions — credits never expire</p>
                       </div>
                     </div>
                   </CardContent>
