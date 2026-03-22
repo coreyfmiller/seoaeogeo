@@ -99,7 +99,7 @@ export default function ProPage() {
               </div>
               <h1 className="text-4xl font-bold">Stop Guessing. Start Fixing.</h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                ChatGPT, Perplexity, and Gemini don't crawl your site — they read it and decide whether to cite you. Citatom uses the same AI to audit your pages, so you see exactly what they see.
+                ChatGPT, Perplexity, and Gemini don't crawl your site — they read it and decide whether to cite you. Duelly uses the same AI to audit your pages, so you see exactly what they see.
               </p>
               <p className="text-base text-muted-foreground max-w-xl mx-auto">
                 Buy credits once, use them however you want. No subscriptions, no plans — just credits that never expire.

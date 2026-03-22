@@ -7925,5 +7925,23 @@
     "url": "Citatom - SEO, AEO & GEO Intelligence Platform",
     "timestamp": "2026-03-22T13:28:01.148Z",
     "cost": 0.11658009999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 772,
+    "outputTokens": 480,
+    "url": "https://seoaeogeo.vercel.app/",
+    "timestamp": "2026-03-22T13:31:28.474Z",
+    "cost": 0.0061243
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 6862,
+    "outputTokens": 12018,
+    "url": "Citatom - SEO, AEO & GEO Intelligence Platform",
+    "timestamp": "2026-03-22T13:32:11.659Z",
+    "cost": 0.12497484999999998
   }
 ]

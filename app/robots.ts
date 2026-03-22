@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/', '/dashboard', '/settings', '/usage'],
       },
     ],
-    sitemap: 'https://citatom.com/sitemap.xml',
+    sitemap: 'https://duelly.ai/sitemap.xml',
   }
 }

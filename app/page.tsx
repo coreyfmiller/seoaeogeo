@@ -16,7 +16,7 @@ import {
 } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'Citatom - SEO, AEO & GEO Intelligence Platform',
+  title: 'Duelly - SEO, AEO & GEO Intelligence Platform',
   description:
     'Audit your website for SEO, AEO, and GEO with AI-powered scoring. Get actionable fixes for the 2026 search landscape.',
   alternates: { canonical: '/' },
@@ -30,7 +30,7 @@ export default function HomePage() {
         <nav className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50" aria-label="Main navigation">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center">
-            <img src="/logo.png" alt="Citatom" className="h-10 w-auto" />
+            <img src="/logo.png" alt="Duelly" className="h-14 w-auto" />
           </Link>
           <div className="flex items-center gap-4">
             <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -52,13 +52,13 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <article>
-      <section className="max-w-6xl mx-auto px-6 pt-20 pb-16 text-center">
+      <section className="max-w-6xl mx-auto px-6 pt-20 pb-4 text-center">
         <h1 className="text-5xl md:text-6xl font-black tracking-tight leading-tight mb-6">
           Search Intelligence for the
           <span className="bg-gradient-to-r from-[#118fff] via-[#842ce0] to-[#fe3f8c] bg-clip-text text-transparent"> AI Era</span>
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
-          Citatom is a search intelligence platform that audits your website across three dimensions:
+          Duelly is a search intelligence platform that audits your website across three dimensions:
           traditional SEO, Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO).
           Built for the 2026 search landscape where AI-powered search engines like ChatGPT, Perplexity,
           and Google AI Overviews determine who gets cited and who gets ignored.
@@ -77,13 +77,16 @@ export default function HomePage() {
             View Pricing
           </Link>
         </div>
+        <Link href="/competitive-intel" className="mt-8 inline-block text-4xl md:text-5xl font-black text-[#fe3f8c] hover:text-[#fe3f8c]/80 transition-colors">
+          Beat Your Competition
+        </Link>
       </section>
 
-      {/* What is Citatom */}
-      <section className="max-w-6xl mx-auto px-6 py-16">
-        <h2 className="text-3xl font-black text-center mb-4">What is Citatom?</h2>
+      {/* What is Duelly */}
+      <section className="max-w-6xl mx-auto px-6 py-6">
+        <h2 className="text-3xl font-black text-center mb-4">What is Duelly?</h2>
         <p className="text-muted-foreground text-center max-w-3xl mx-auto mb-12 leading-relaxed">
-          Citatom is a comprehensive website auditing tool that scores your pages on SEO, AEO, and GEO
+          Duelly is a comprehensive website auditing tool that scores your pages on SEO, AEO, and GEO
           using AI-powered analysis. It crawls your site, analyzes content quality with Google Gemini,
           detects your platform (WordPress, Shopify, Next.js, and more), and delivers actionable,
           platform-specific fix instructions ranked by impact.
@@ -167,7 +170,7 @@ export default function HomePage() {
               from PageSpeed Insights, site type detection, and up to 15 prioritized fix instructions.
               10 credits per scan.
             </p>
-            <Link href="/v3" className="text-sm font-semibold text-[#118fff] hover:underline flex items-center gap-1">
+            <Link href="/pro-audit" className="text-sm font-semibold text-[#118fff] hover:underline flex items-center gap-1">
               Run Pro Audit <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
@@ -182,7 +185,7 @@ export default function HomePage() {
               detects duplicate titles and meta descriptions, checks robots.txt and sitemap,
               and provides sitewide intelligence. 10 credits + 1 per page.
             </p>
-            <Link href="/deep-v3" className="text-sm font-semibold text-[#842ce0] hover:underline flex items-center gap-1">
+            <Link href="/deep-scan" className="text-sm font-semibold text-[#842ce0] hover:underline flex items-center gap-1">
               Run Deep Scan <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
@@ -197,7 +200,7 @@ export default function HomePage() {
               outperforms you across SEO, AEO, and GEO with gap analysis and strategic
               recommendations. 20 credits per comparison.
             </p>
-            <Link href="/intelligence" className="text-sm font-semibold text-[#fe3f8c] hover:underline flex items-center gap-1">
+            <Link href="/competitive-intel" className="text-sm font-semibold text-[#fe3f8c] hover:underline flex items-center gap-1">
               Run Comparison <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
@@ -206,7 +209,7 @@ export default function HomePage() {
 
       {/* Key Features */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-border/30">
-        <h2 className="text-3xl font-black text-center mb-12">What Sets Citatom Apart</h2>
+        <h2 className="text-3xl font-black text-center mb-12">What Sets Duelly Apart</h2>
         <div className="grid md:grid-cols-2 gap-6">
           {[
             { icon: <Brain className="h-5 w-5 text-[#842ce0]" />, title: 'Dual AI Scoring', desc: 'Every Pro Audit runs two parallel Gemini AI calls and averages the results for consistent, stable scores across repeated scans.' },
@@ -243,8 +246,8 @@ export default function HomePage() {
               a: 'GEO measures how well your content performs in AI-generated search results. It evaluates expertise signals (E-E-A-T), factual density, tone objectivity, and citation likelihood. Content that scores high on GEO is more likely to appear in AI summaries and be recommended by large language models.',
             },
             {
-              q: 'How does Citatom calculate scores?',
-              a: 'Citatom uses a multi-layer approach: a headless browser crawls your page to extract technical data, then Google Gemini AI analyzes content quality and semantic signals. Two parallel AI calls are averaged for stability. Scores are calculated using site-type-specific weights — an e-commerce site is graded differently than a blog or SaaS product.',
+              q: 'How does Duelly calculate scores?',
+              a: 'Duelly uses a multi-layer approach: a headless browser crawls your page to extract technical data, then Google Gemini AI analyzes content quality and semantic signals. Two parallel AI calls are averaged for stability. Scores are calculated using site-type-specific weights — an e-commerce site is graded differently than a blog or SaaS product.',
             },
             {
               q: 'Is there a free tier?',
@@ -255,8 +258,8 @@ export default function HomePage() {
               a: 'Pro Audit costs 10 credits per scan. Deep Scan costs 10 credits plus 1 credit per page crawled. Competitive Intel costs 20 credits per comparison.',
             },
             {
-              q: 'What platforms does Citatom detect?',
-              a: 'Citatom automatically detects WordPress, Shopify, Wix, Squarespace, Webflow, Next.js, Gatsby, Hugo, and many other platforms. When a platform is detected, all fix instructions are tailored to that specific platform — referencing actual admin paths, plugins, and configuration files.',
+              q: 'What platforms does Duelly detect?',
+              a: 'Duelly automatically detects WordPress, Shopify, Wix, Squarespace, Webflow, Next.js, Gatsby, Hugo, and many other platforms. When a platform is detected, all fix instructions are tailored to that specific platform — referencing actual admin paths, plugins, and configuration files.',
             },
           ].map((faq, i) => (
             <div key={i} className="p-5 rounded-xl border border-border/30 bg-card/30">
@@ -277,10 +280,10 @@ export default function HomePage() {
             mainEntity: [
               { '@type': 'Question', name: 'What is AEO (Answer Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'AEO is the practice of optimizing your content so that AI-powered answer engines like ChatGPT, Perplexity, and Google AI Overviews cite your website as a source.' } },
               { '@type': 'Question', name: 'What is GEO (Generative Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'GEO measures how well your content performs in AI-generated search results, evaluating expertise signals, factual density, tone objectivity, and citation likelihood.' } },
-              { '@type': 'Question', name: 'How does Citatom calculate scores?', acceptedAnswer: { '@type': 'Answer', text: 'Citatom uses a headless browser crawl plus dual Gemini AI analysis with site-type-specific scoring weights for consistent, accurate results.' } },
+              { '@type': 'Question', name: 'How does Duelly calculate scores?', acceptedAnswer: { '@type': 'Answer', text: 'Duelly uses a headless browser crawl plus dual Gemini AI analysis with site-type-specific scoring weights for consistent, accurate results.' } },
               { '@type': 'Question', name: 'Is there a free tier?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. The Free Audit provides basic SEO, AEO, and GEO scores. Pro features require credits starting at $20 for 200 credits.' } },
               { '@type': 'Question', name: 'How many credits does each scan cost?', acceptedAnswer: { '@type': 'Answer', text: 'Pro Audit: 10 credits. Deep Scan: 10 + 1 per page. Competitive Intel: 20 credits.' } },
-              { '@type': 'Question', name: 'What platforms does Citatom detect?', acceptedAnswer: { '@type': 'Answer', text: 'WordPress, Shopify, Wix, Squarespace, Webflow, Next.js, Gatsby, Hugo, and more. Fix instructions are tailored to the detected platform.' } },
+              { '@type': 'Question', name: 'What platforms does Duelly detect?', acceptedAnswer: { '@type': 'Answer', text: 'WordPress, Shopify, Wix, Squarespace, Webflow, Next.js, Gatsby, Hugo, and more. Fix instructions are tailored to the detected platform.' } },
             ],
           }),
         }}
@@ -304,7 +307,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t border-border/30 py-8">
         <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">© 2026 Citatom. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">© 2026 Duelly. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help</Link>
             <Link href="/standards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Standards</Link>

@@ -57,9 +57,9 @@ function SignupForm() {
       <div className="w-full max-w-md space-y-6 text-center">
         <div className="inline-flex items-center gap-2">
           <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-seo via-aeo to-geo flex items-center justify-center">
-            <span className="text-white font-black text-lg">C</span>
+            <span className="text-white font-black text-lg">D</span>
           </div>
-          <span className="text-2xl font-black tracking-tight">Citatom</span>
+          <span className="text-2xl font-black tracking-tight">Duelly</span>
         </div>
         <Card>
           <CardContent className="p-8 space-y-4">
@@ -86,9 +86,9 @@ function SignupForm() {
       <div className="text-center space-y-2">
         <div className="inline-flex items-center gap-2">
           <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-seo via-aeo to-geo flex items-center justify-center">
-            <span className="text-white font-black text-lg">C</span>
+            <span className="text-white font-black text-lg">D</span>
           </div>
-          <span className="text-2xl font-black tracking-tight">Citatom</span>
+          <span className="text-2xl font-black tracking-tight">Duelly</span>
         </div>
         <p className="text-sm text-muted-foreground">Create your account</p>
       </div>

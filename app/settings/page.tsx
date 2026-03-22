@@ -330,11 +330,11 @@ export default function SettingsPage() {
                 {referralCode ? (
                   <div className="flex items-center gap-2">
                     <div className="flex-1 rounded-lg border border-border/50 bg-muted/30 px-3 py-2.5 text-sm text-muted-foreground truncate font-mono">
-                      https://citatom.com/signup?ref={referralCode}
+                      https://duelly.ai/signup?ref={referralCode}
                     </div>
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText(`https://citatom.com/signup?ref=${referralCode}`)
+                        navigator.clipboard.writeText(`https://duelly.ai/signup?ref=${referralCode}`)
                         setReferralCopied(true)
                         setTimeout(() => setReferralCopied(false), 2000)
                       }}

@@ -78,7 +78,7 @@ export async function performDeepScan(baseUrl: string, maxPages: number = 10): P
         });
 
         const context = await browser.newContext({
-            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Citatom-Bot/1.0'
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Duelly-Bot/1.0'
         });
 
         // 1. DISCOVERY PHASE

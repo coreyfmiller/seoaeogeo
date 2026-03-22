@@ -33,13 +33,13 @@ interface NavItem {
 
 const mainNav: NavItem[] = [
   { name: "Free Audit", icon: Sparkles, href: "/v2" },
-  { name: "Pro Audit", icon: Bot, href: "/v3", badge: "PRO AI" },
-  { name: "Deep Scan", icon: Layers, href: "/deep-v3", badge: "PRO AI" },
-  { name: "Competitive Intel", icon: Globe, href: "/intelligence", badge: "PRO AI" },
+  { name: "Pro Audit", icon: Bot, href: "/pro-audit", badge: "PRO AI" },
+  { name: "Deep Scan", icon: Layers, href: "/deep-scan", badge: "PRO AI" },
+  { name: "Competitive Intel", icon: Globe, href: "/competitive-intel", badge: "PRO AI" },
   { name: "Dashboard", icon: Home, href: "/dashboard", badge: "PRO AI" },
 ]
 
-const proOnlyPaths = ['/v3', '/deep-v3', '/intelligence', '/dashboard']
+const proOnlyPaths = ['/pro-audit', '/deep-scan', '/competitive-intel', '/dashboard']
 
 const comingSoonNav: NavItem[] = []
 
@@ -117,7 +117,7 @@ export function AppSidebar() {
   const isFreeUser = !isAdmin && (!profile || profile.plan === 'free')
 
   const referralUrl = referralCode
-    ? `https://citatom.com/signup?ref=${referralCode}`
+    ? `https://duelly.ai/signup?ref=${referralCode}`
     : ''
 
   const handleCopyReferral = async () => {
@@ -131,8 +131,8 @@ export function AppSidebar() {
     <aside className="hidden lg:flex flex-col w-64 border-r border-border/50 bg-sidebar">
       {/* Logo */}
       <div className="flex items-center justify-center px-6 py-5 border-b border-border/50">
-        <a href="/v3">
-          <img src="/logo.png" alt="Citatom" className="h-[66px] w-auto" />
+        <a href="/pro-audit">
+          <img src="/logo.png" alt="Duelly" className="h-[66px] w-auto" />
         </a>
       </div>
 

@@ -14,10 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://citatom.com'),
+  metadataBase: new URL('https://duelly.ai'),
   title: {
-    default: 'Citatom - Search Intelligence Platform',
-    template: '%s | Citatom',
+    default: 'Duelly - Search Intelligence Platform',
+    template: '%s | Duelly',
   },
   description: 'Comprehensive SEO, AEO, and GEO analytics platform for optimizing your search visibility across traditional and AI-powered search engines.',
   generator: 'v0.app',
@@ -65,15 +65,15 @@ export default function RootLayout({
               '@graph': [
                 {
                   '@type': 'Organization',
-                  name: 'Citatom',
-                  url: 'https://citatom.com',
-                  logo: 'https://citatom.com/logo.png',
+                  name: 'Duelly',
+                  url: 'https://duelly.ai',
+                  logo: 'https://duelly.ai/logo.png',
                   description: 'Search intelligence platform providing SEO, AEO, and GEO analytics.',
                 },
                 {
                   '@type': 'WebApplication',
-                  name: 'Citatom',
-                  url: 'https://citatom.com',
+                  name: 'Duelly',
+                  url: 'https://duelly.ai',
                   applicationCategory: 'SEO Tool',
                   operatingSystem: 'Web',
                   offers: {

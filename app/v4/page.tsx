@@ -385,7 +385,7 @@ export default function V4Page() {
                       </div>
                       <div className="shrink-0 text-center">
                         <button
-                          onClick={() => router.push('/v3')}
+                          onClick={() => router.push('/pro-audit')}
                           className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-geo hover:bg-geo/90 text-white font-medium shadow-lg hover:shadow-xl transition-all"
                         >
                           View Pro Audit

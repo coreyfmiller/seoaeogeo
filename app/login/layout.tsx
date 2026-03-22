@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Sign In',
-  description: 'Sign in to your Citatom account to access Pro Audit, Deep Scan, and Competitive Intelligence tools.',
+  description: 'Sign in to your Duelly account to access Pro Audit, Deep Scan, and Competitive Intelligence tools.',
   alternates: { canonical: '/login' },
 }
 

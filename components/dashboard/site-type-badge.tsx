@@ -373,7 +373,7 @@ export function SiteTypeBadge({ siteType, onConfirm, onManualSelect }: SiteTypeB
         </button>
         {showWhy && (
           <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
-            Citatom scores each site differently based on its type — an e-commerce store is evaluated differently than a blog or a SaaS product. Our AI couldn't confidently determine what kind of site this is, which usually means the page is missing clear signals like structured data, descriptive headings, or focused content. Please select your site type so we can score it accurately.
+            Duelly scores each site differently based on its type — an e-commerce store is evaluated differently than a blog or a SaaS product. Our AI couldn't confidently determine what kind of site this is, which usually means the page is missing clear signals like structured data, descriptive headings, or focused content. Please select your site type so we can score it accurately.
           </p>
         )}
       </div>

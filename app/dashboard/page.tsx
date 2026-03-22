@@ -12,9 +12,9 @@ import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { cn } from '@/lib/utils'
 
 const quickActions = [
-  { label: "Pro Audit", desc: "AI-powered fix instructions", icon: Zap, href: "/v3", color: "text-seo", bg: "bg-seo/10", tip: "Run a full AI-powered audit with Gemini analysis, site intelligence, and detailed fix instructions for every issue found." },
-  { label: "Deep Crawl", desc: "Multi-page site analysis", icon: Layers, href: "/deep-v3", color: "text-[#842ce0]", bg: "bg-[#842ce0]/10", tip: "Crawl up to 20 pages of your site to find sitewide issues like duplicate titles, missing schemas, orphan pages, and content gaps." },
-  { label: "Competitive Intel", desc: "Compare against competitors", icon: Globe, href: "/intelligence", color: "text-[#fe3f8c]", bg: "bg-[#fe3f8c]/10", tip: "Benchmark your site against a competitor across SEO, AEO, and GEO. Get AI-generated counter-strategies to outperform them." },
+  { label: "Pro Audit", desc: "AI-powered fix instructions", icon: Zap, href: "/pro-audit", color: "text-seo", bg: "bg-seo/10", tip: "Run a full AI-powered audit with Gemini analysis, site intelligence, and detailed fix instructions for every issue found." },
+  { label: "Deep Crawl", desc: "Multi-page site analysis", icon: Layers, href: "/deep-scan", color: "text-[#842ce0]", bg: "bg-[#842ce0]/10", tip: "Crawl up to 20 pages of your site to find sitewide issues like duplicate titles, missing schemas, orphan pages, and content gaps." },
+  { label: "Competitive Intel", desc: "Compare against competitors", icon: Globe, href: "/competitive-intel", color: "text-[#fe3f8c]", bg: "bg-[#fe3f8c]/10", tip: "Benchmark your site against a competitor across SEO, AEO, and GEO. Get AI-generated counter-strategies to outperform them." },
 ]
 
 export default function DashboardPage() {
@@ -40,7 +40,7 @@ export default function DashboardPage() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `citatom-scans-${new Date().toISOString().slice(0, 10)}.json`
+    a.download = `duelly-scans-${new Date().toISOString().slice(0, 10)}.json`
     a.click()
     URL.revokeObjectURL(url)
   }
