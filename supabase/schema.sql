@@ -8,9 +8,9 @@ CREATE TABLE public.profiles (
   full_name TEXT,
   plan TEXT NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro', 'pro_plus', 'agency')),
   credits INTEGER NOT NULL DEFAULT 20,
-  credits_pro_audits INTEGER NOT NULL DEFAULT 0,
-  credits_deep_scans INTEGER NOT NULL DEFAULT 0,
-  credits_competitive_intel INTEGER NOT NULL DEFAULT 0,
+  credits_pro_audits INTEGER NOT NULL DEFAULT 0,  -- deprecated, use credits
+  credits_deep_scans INTEGER NOT NULL DEFAULT 0,  -- deprecated, use credits
+  credits_competitive_intel INTEGER NOT NULL DEFAULT 0,  -- deprecated, use credits
   is_admin BOOLEAN NOT NULL DEFAULT false,
   free_scan_used BOOLEAN NOT NULL DEFAULT false,
   referral_code TEXT UNIQUE,

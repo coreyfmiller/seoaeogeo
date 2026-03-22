@@ -5,15 +5,19 @@
 CREATE TABLE public.promo_codes (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   code TEXT NOT NULL UNIQUE,
-  credits_pro_audits INTEGER NOT NULL DEFAULT 0,
-  credits_deep_scans INTEGER NOT NULL DEFAULT 0,
-  credits_competitive_intel INTEGER NOT NULL DEFAULT 0,
+  credits INTEGER NOT NULL DEFAULT 0,
+  credits_pro_audits INTEGER NOT NULL DEFAULT 0,  -- deprecated, use credits
+  credits_deep_scans INTEGER NOT NULL DEFAULT 0,  -- deprecated, use credits
+  credits_competitive_intel INTEGER NOT NULL DEFAULT 0,  -- deprecated, use credits
   max_uses INTEGER NOT NULL DEFAULT 1,
   times_used INTEGER NOT NULL DEFAULT 0,
   expires_at TIMESTAMPTZ,
   created_by UUID REFERENCES public.profiles(id),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Migration: add credits column to existing table
+-- ALTER TABLE public.promo_codes ADD COLUMN IF NOT EXISTS credits INTEGER NOT NULL DEFAULT 0;
 
 -- Track who redeemed what (one redemption per user per code)
 CREATE TABLE public.promo_redemptions (

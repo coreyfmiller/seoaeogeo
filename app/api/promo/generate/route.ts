@@ -20,22 +20,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Admin only' }, { status: 403 })
     }
 
-    const { count, proAudits, deepScans, competitiveIntel, maxUses, expiresInDays } = await req.json()
+    const { count, credits, maxUses, expiresInDays } = await req.json()
 
-    const numCodes = Math.min(count || 1, 100) // cap at 100 per batch
+    const numCodes = Math.min(count || 1, 100)
+    const creditAmount = credits || 100
     const codes: string[] = []
 
     for (let i = 0; i < numCodes; i++) {
-      const code = crypto.randomBytes(4).toString('hex').toUpperCase() // 8-char hex
+      const code = crypto.randomBytes(4).toString('hex').toUpperCase()
       const expiresAt = expiresInDays
         ? new Date(Date.now() + expiresInDays * 86400000).toISOString()
         : null
 
       const { error } = await supabaseAdmin.from('promo_codes').insert({
         code,
-        credits_pro_audits: proAudits || 0,
-        credits_deep_scans: deepScans || 0,
-        credits_competitive_intel: competitiveIntel || 0,
+        credits: creditAmount,
+        credits_pro_audits: 0,
+        credits_deep_scans: 0,
+        credits_competitive_intel: 0,
         max_uses: maxUses || 1,
         expires_at: expiresAt,
         created_by: user.id,

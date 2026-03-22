@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
     const { data: codes } = await supabaseAdmin
       .from('promo_codes')
-      .select('code, credits_pro_audits, credits_deep_scans, credits_competitive_intel, max_uses, times_used, expires_at, created_at')
+      .select('code, credits, credits_pro_audits, credits_deep_scans, credits_competitive_intel, max_uses, times_used, expires_at, created_at')
       .eq('copied_by_admin', false)
       .order('created_at', { ascending: false })
       .limit(200)

@@ -5,24 +5,23 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { PageShell } from '@/components/dashboard/page-shell'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Settings, User, Lock, Trash2, CreditCard, BarChart3, CheckCircle2, AlertTriangle, Crown, Gift, Copy, Check, Ticket, Loader2 } from 'lucide-react'
+import { Settings, User, Lock, Trash2, CreditCard, CheckCircle2, AlertTriangle, Crown, Gift, Copy, Check, Ticket, Loader2, Coins } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
-const PLAN_CREDITS: Record<string, { proAudits: number; deepScans: number; competitiveIntel: number }> = {
-  pro:         { proAudits: 20,  deepScans: 10,  competitiveIntel: 10 },
-  pro_plus:    { proAudits: 60,  deepScans: 60,  competitiveIntel: 25 },
-  agency:      { proAudits: 150, deepScans: 150, competitiveIntel: 50 },
-}
+const CREDIT_TIERS = [100, 200, 500] as const
 
 export default function SettingsPage() {
   const router = useRouter()
   const supabase = createClient()
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [profile, setProfile] = useState<any>(null)
-  const [usage, setUsage] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+
+  // Credits
+  const [creditsAvailable, setCreditsAvailable] = useState(0)
+  const [creditsUsed, setCreditsUsed] = useState(0)
 
   // Form states
   const [fullName, setFullName] = useState('')
@@ -47,18 +46,11 @@ export default function SettingsPage() {
   // Promo code states (user)
   const [promoCode, setPromoCode] = useState('')
   const [promoRedeeming, setPromoRedeeming] = useState(false)
-  const [promoResult, setPromoResult] = useState<{ success?: boolean; error?: string; credits?: any } | null>(null)
+  const [promoResult, setPromoResult] = useState<{ success?: boolean; error?: string; credits?: number } | null>(null)
 
   // Promo code states (admin)
-  const [promoCount, setPromoCount] = useState(10)
-  const [promoProAudits, setPromoProAudits] = useState(2)
-  const [promoDeepScans, setPromoDeepScans] = useState(1)
-  const [promoCompIntel, setPromoCompIntel] = useState(1)
-  const [promoMaxUses, setPromoMaxUses] = useState(1)
-  const [promoExpDays, setPromoExpDays] = useState(90)
-  const [promoGenerating, setPromoGenerating] = useState(false)
-  const [generatedCodes, setGeneratedCodes] = useState<{ code: string; copied: boolean; timesUsed: number; maxUses: number; expiresAt: string | null; createdAt: string }[]>([])
-  const [codesCopied, setCodesCopied] = useState(false)
+  const [promoGenerating, setPromoGenerating] = useState<number | null>(null)
+  const [generatedCodes, setGeneratedCodes] = useState<{ code: string; credits: number; copied: boolean; timesUsed: number; maxUses: number; expiresAt: string | null; createdAt: string }[]>([])
   const [codesLoading, setCodesLoading] = useState(false)
 
   useEffect(() => {
@@ -72,20 +64,26 @@ export default function SettingsPage() {
         setProfile(prof)
         setFullName(prof.full_name || '')
         setReferralCode(prof.referral_code || null)
+        setCreditsAvailable(prof.credits || 0)
       }
 
+      // Calculate credits used from scan history (approximate from usage table)
       const period = new Date().toISOString().slice(0, 7)
+      const { data: usg } = await supabase.from('usage').select('pro_audits, deep_scans, competitive_intel').eq('user_id', user.id).eq('period', period).single()
+      if (usg) {
+        // Rough estimate: pro_audits * 10 + deep_scans * 10 + competitive_intel * 20
+        setCreditsUsed((usg.pro_audits || 0) * 10 + (usg.deep_scans || 0) * 10 + (usg.competitive_intel || 0) * 20)
+      }
+
+      // Load existing promo codes for admin
       if (prof?.is_admin) {
-        // Admin uses monthly usage tracking (500/month cap)
-        const { data: usg } = await supabase.from('usage').select('*').eq('user_id', user.id).eq('period', period).single()
-        setUsage(usg || { pro_audits: 0, deep_scans: 0, competitive_intel: 0 })
-        // Load existing promo codes for admin
         try {
           const res = await fetch('/api/promo/list')
           const data = await res.json()
           if (data.codes) {
             setGeneratedCodes(data.codes.map((c: any) => ({
               code: c.code,
+              credits: c.credits || ((c.credits_pro_audits || 0) + (c.credits_deep_scans || 0) + (c.credits_competitive_intel || 0)),
               copied: false,
               timesUsed: c.times_used || 0,
               maxUses: c.max_uses || 1,
@@ -94,13 +92,6 @@ export default function SettingsPage() {
             })))
           }
         } catch {}
-      } else {
-        // Regular users show remaining credits
-        setUsage({
-          pro_audits: prof?.credits || 0,
-          deep_scans: 0,
-          competitive_intel: 0,
-        })
       }
       setLoading(false)
     }
@@ -143,7 +134,6 @@ export default function SettingsPage() {
         setDeleting(false)
         return
       }
-      // Account deleted server-side, now sign out locally
       await supabase.auth.signOut()
       router.push('/')
     } catch {
@@ -169,8 +159,9 @@ export default function SettingsPage() {
         // Refresh credits display
         if (user) {
           const { data: prof } = await supabase.from('profiles').select('credits').eq('id', user.id).single()
-          if (prof) setUsage({ pro_audits: prof.credits || 0, deep_scans: 0, competitive_intel: 0 })
+          if (prof) setCreditsAvailable(prof.credits || 0)
         }
+        window.dispatchEvent(new Event('credits-changed'))
       } else {
         setPromoResult({ error: data.error || 'Failed to redeem code' })
       }
@@ -180,28 +171,27 @@ export default function SettingsPage() {
     setPromoRedeeming(false)
   }
 
-  const handleGenerateCodes = async (count?: number) => {
-    setPromoGenerating(true)
+  const handleGenerateCodes = async (creditAmount: number) => {
+    setPromoGenerating(creditAmount)
     try {
       const res = await fetch('/api/promo/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          count: count ?? promoCount,
-          proAudits: promoProAudits,
-          deepScans: promoDeepScans,
-          competitiveIntel: promoCompIntel,
-          maxUses: promoMaxUses,
-          expiresInDays: promoExpDays,
+          count: 1,
+          credits: creditAmount,
+          maxUses: 1,
+          expiresInDays: 90,
         }),
       })
       const data = await res.json()
       if (data.codes) {
         const newCodes = data.codes.map((c: string) => ({
           code: c,
+          credits: creditAmount,
           copied: false,
           timesUsed: 0,
-          maxUses: count ?? promoCount,
+          maxUses: 1,
           expiresAt: null,
           createdAt: new Date().toISOString(),
         }))
@@ -210,7 +200,7 @@ export default function SettingsPage() {
     } catch {
       alert('Failed to generate codes')
     }
-    setPromoGenerating(false)
+    setPromoGenerating(null)
   }
 
   const planLabel = profile?.is_admin ? 'Admin'
@@ -220,9 +210,6 @@ export default function SettingsPage() {
     : 'Free'
 
   const isAdmin = profile?.is_admin
-  const credits = isAdmin
-    ? null // admin uses usage/limit display instead
-    : (usage || { pro_audits: 0, deep_scans: 0, competitive_intel: 0 })
 
   if (loading) {
     return (
@@ -250,12 +237,12 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* Plan & Usage */}
+            {/* Plan & Credits */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <CreditCard className="h-5 w-5 text-geo" />
-                  Plan & Usage
+                  Plan & Credits
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -264,48 +251,40 @@ export default function SettingsPage() {
                     <p className="font-bold text-lg">{planLabel} Plan</p>
                     <p className="text-sm text-muted-foreground">{user?.email}</p>
                   </div>
-                  {!profile?.is_admin && profile?.plan === 'free' && (
+                  {!isAdmin && (
                     <Link
                       href="/pro"
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-geo hover:bg-geo/90 text-white font-medium text-sm transition-colors"
                     >
                       <Crown className="h-4 w-4" />
-                      Upgrade
+                      Buy Credits
                     </Link>
                   )}
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
-                  {[
-                    { label: 'Pro Audits', value: usage?.pro_audits || 0, color: 'text-seo' },
-                    { label: 'Deep Scans', value: usage?.deep_scans || 0, color: 'text-aeo' },
-                    { label: 'Competitive Intel', value: usage?.competitive_intel || 0, color: 'text-geo' },
-                  ].map(item => {
-                    if (isAdmin) {
-                      const pct = Math.min((item.value / 500) * 100, 100)
-                      return (
-                        <div key={item.label} className="p-3 rounded-lg border border-border/50">
-                          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{item.label}</p>
-                          <p className={cn("text-xl font-black", item.color)}>{item.value} <span className="text-sm font-normal text-muted-foreground">/ 500</span></p>
-                          <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
-                            <div className={cn("h-full rounded-full transition-all", pct > 80 ? 'bg-destructive' : 'bg-geo')} style={{ width: `${pct}%` }} />
-                          </div>
-                        </div>
-                      )
-                    }
-                    return (
-                      <div key={item.label} className="p-3 rounded-lg border border-border/50">
-                        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{item.label}</p>
-                        <p className={cn("text-xl font-black", item.color)}>
-                          {item.value} <span className="text-sm font-normal text-muted-foreground">remaining</span>
-                        </p>
-                      </div>
-                    )
-                  })}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-lg border border-border/50">
+                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Credits Available</p>
+                    <div className="flex items-center gap-2">
+                      <Coins className="h-5 w-5 text-[#842ce0]" />
+                      <p className="text-2xl font-black text-[#842ce0]">
+                        {isAdmin ? '∞' : creditsAvailable}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-lg border border-border/50">
+                    <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Credits Used</p>
+                    <div className="flex items-center gap-2">
+                      <Coins className="h-5 w-5 text-seo" />
+                      <p className="text-2xl font-black text-seo">
+                        {creditsUsed}
+                      </p>
+                    </div>
+                  </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {isAdmin
-                    ? `Admin safety cap: 500/month per type. Resets monthly. Current period: ${new Date().toISOString().slice(0, 7)}`
+                    ? 'Admin accounts have unlimited credits.'
                     : <>Credits never expire. <a href="/pro" className="text-seo hover:underline">Buy more credits</a></>
                   }
                 </p>
@@ -316,13 +295,13 @@ export default function SettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Gift className="h-5 w-5 text-geo" />
+                  <Gift className="h-5 w-5 text-[#fe3f8c]" />
                   Refer &amp; Earn
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-sm text-muted-foreground">
-                  Share your referral link. When someone signs up and makes their first purchase, you get a free Pro credit pack — 20 Pro Audits, 10 Deep Scans, and 10 Competitive Intel scans. No limits on how many times you can earn.
+                  Share your referral link. When someone signs up and makes their first purchase, you both get 20 bonus credits. No limits on how many times you can earn.
                 </p>
                 {referralCode ? (
                   <div className="flex items-center gap-2">
@@ -335,7 +314,7 @@ export default function SettingsPage() {
                         setReferralCopied(true)
                         setTimeout(() => setReferralCopied(false), 2000)
                       }}
-                      className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-lg bg-geo hover:bg-geo/90 text-white text-sm font-medium transition-colors"
+                      className="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-lg bg-[#fe3f8c] hover:bg-[#fe3f8c]/90 text-white text-sm font-medium transition-colors"
                     >
                       {referralCopied ? <><Check className="h-4 w-4" /> Copied</> : <><Copy className="h-4 w-4" /> Copy Link</>}
                     </button>
@@ -375,7 +354,7 @@ export default function SettingsPage() {
                 {promoResult?.success && (
                   <div className="p-3 rounded-lg bg-geo/10 border border-geo/20 text-sm text-geo flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4" />
-                    Credits added — {promoResult.credits?.pro_audits || 0} Pro Audits, {promoResult.credits?.deep_scans || 0} Deep Scans, {promoResult.credits?.competitive_intel || 0} Competitive Intel
+                    {promoResult.credits} credits added to your account
                   </div>
                 )}
                 {promoResult?.error && (
@@ -397,75 +376,30 @@ export default function SettingsPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground"># of Codes</label>
-                      <input type="number" min={1} max={100} value={promoCount} onChange={(e) => setPromoCount(Number(e.target.value))}
-                        className="w-full rounded-lg border border-border/50 bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/50 transition-colors" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Pro Audits</label>
-                      <input type="number" min={0} max={999} value={promoProAudits} onChange={(e) => setPromoProAudits(Number(e.target.value))}
-                        className="w-full rounded-lg border border-border/50 bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/50 transition-colors" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Deep Scans</label>
-                      <input type="number" min={0} max={999} value={promoDeepScans} onChange={(e) => setPromoDeepScans(Number(e.target.value))}
-                        className="w-full rounded-lg border border-border/50 bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/50 transition-colors" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Competitive Intel</label>
-                      <input type="number" min={0} max={999} value={promoCompIntel} onChange={(e) => setPromoCompIntel(Number(e.target.value))}
-                        className="w-full rounded-lg border border-border/50 bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/50 transition-colors" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Max Uses Each</label>
-                      <input type="number" min={1} max={9999} value={promoMaxUses} onChange={(e) => setPromoMaxUses(Number(e.target.value))}
-                        className="w-full rounded-lg border border-border/50 bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/50 transition-colors" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Expires (days)</label>
-                      <input type="number" min={1} max={365} value={promoExpDays} onChange={(e) => setPromoExpDays(Number(e.target.value))}
-                        className="w-full rounded-lg border border-border/50 bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/50 transition-colors" />
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleGenerateCodes(1)}
-                      disabled={promoGenerating}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-500/80 hover:bg-amber-500 text-white font-medium text-sm transition-colors disabled:opacity-50"
-                    >
-                      {promoGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Generate 1 Code'}
-                    </button>
-                    <button
-                      onClick={() => handleGenerateCodes()}
-                      disabled={promoGenerating}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm transition-colors disabled:opacity-50"
-                    >
-                      {promoGenerating ? <><Loader2 className="h-4 w-4 animate-spin" /> Generating...</> : `Generate ${promoCount} Codes`}
-                    </button>
+                  <p className="text-sm text-muted-foreground">Generate single-use credit codes. Each code expires in 90 days.</p>
+                  <div className="space-y-2">
+                    {CREDIT_TIERS.map((tier) => (
+                      <div key={tier} className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-muted/10">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#842ce0]/10 border border-[#842ce0]/20">
+                            <Coins className="h-3.5 w-3.5 text-[#842ce0]" />
+                            <span className="text-sm font-bold text-[#842ce0]">{tier}</span>
+                          </div>
+                          <span className="text-sm text-muted-foreground">credits</span>
+                        </div>
+                        <button
+                          onClick={() => handleGenerateCodes(tier)}
+                          disabled={promoGenerating !== null}
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm transition-colors disabled:opacity-50"
+                        >
+                          {promoGenerating === tier ? <><Loader2 className="h-4 w-4 animate-spin" /> Generating...</> : 'Generate Code'}
+                        </button>
+                      </div>
+                    ))}
                   </div>
                   {generatedCodes.length > 0 && (
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium text-geo">{generatedCodes.length} codes total</p>
-                        <button
-                          onClick={async () => {
-                            const uncopied = generatedCodes.filter(c => !c.copied)
-                            if (uncopied.length === 0) return
-                            navigator.clipboard.writeText(uncopied.map(c => c.code).join('\n'))
-                            setCodesCopied(true)
-                            // Mark as copied in DB and remove from list
-                            fetch('/api/promo/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ codes: uncopied.map(c => c.code) }) })
-                            setGeneratedCodes(prev => prev.filter(c => c.copied))
-                            setTimeout(() => setCodesCopied(false), 2000)
-                          }}
-                          disabled={generatedCodes.every(c => c.copied) || generatedCodes.length === 0}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted hover:bg-muted/80 text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                        >
-                          {codesCopied ? <><Check className="h-3.5 w-3.5" /> Copied</> : <><Copy className="h-3.5 w-3.5" /> Copy All Remaining</>}
-                        </button>
-                      </div>
+                      <p className="text-sm font-medium text-geo">{generatedCodes.length} codes total</p>
                       <div className="max-h-72 overflow-y-auto space-y-1.5 rounded-lg border border-border/50 bg-muted/20 p-2">
                         {generatedCodes.map((item, i) => {
                           const fullyUsed = item.timesUsed >= item.maxUses
@@ -473,6 +407,7 @@ export default function SettingsPage() {
                             <div key={i} className={cn("flex items-center justify-between px-3 py-2 rounded-md text-sm font-mono", item.copied ? "bg-muted/30 text-muted-foreground line-through" : fullyUsed ? "bg-muted/30 text-muted-foreground" : "bg-background border border-border/40")}>
                               <div className="flex items-center gap-3 min-w-0">
                                 <span className="truncate">{item.code}</span>
+                                <span className="text-[10px] font-sans font-medium text-[#842ce0] bg-[#842ce0]/10 px-1.5 py-0.5 rounded shrink-0">{item.credits}cr</span>
                                 {fullyUsed && <span className="text-[10px] font-sans font-medium text-destructive/70 bg-destructive/10 px-1.5 py-0.5 rounded shrink-0">used</span>}
                                 {item.timesUsed > 0 && !fullyUsed && <span className="text-[10px] font-sans text-muted-foreground shrink-0">{item.timesUsed}/{item.maxUses}</span>}
                               </div>
@@ -480,9 +415,8 @@ export default function SettingsPage() {
                                 onClick={() => {
                                   if (item.copied) return
                                   navigator.clipboard.writeText(item.code)
-                                  // Mark as copied in DB and remove from list
                                   fetch('/api/promo/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ codes: [item.code] }) })
-                                  setGeneratedCodes(prev => prev.filter((_, j) => j !== i))
+                                  setGeneratedCodes(prev => prev.map((c, j) => j === i ? { ...c, copied: true } : c))
                                 }}
                                 disabled={item.copied}
                                 className={cn("flex items-center gap-1 px-2 py-1 rounded text-xs font-sans font-medium transition-colors shrink-0", item.copied ? "text-muted-foreground cursor-not-allowed" : "bg-geo/10 text-geo hover:bg-geo/20")}

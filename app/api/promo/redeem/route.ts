@@ -57,10 +57,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
     }
 
-    // Add credits (sum all promo credit fields into unified pool)
-    const promoTotal = (promo.credits_pro_audits || 0) + (promo.credits_deep_scans || 0) + (promo.credits_competitive_intel || 0)
+    // Add credits — use new `credits` column, fallback to sum of legacy columns
+    const promoCredits = promo.credits
+      || ((promo.credits_pro_audits || 0) + (promo.credits_deep_scans || 0) + (promo.credits_competitive_intel || 0))
+
     await supabaseAdmin.from('profiles').update({
-      credits: (profile.credits || 0) + promoTotal,
+      credits: (profile.credits || 0) + promoCredits,
     }).eq('id', user.id)
 
     // Record redemption
@@ -74,11 +76,11 @@ export async function POST(req: NextRequest) {
       times_used: promo.times_used + 1,
     }).eq('id', promo.id)
 
-    console.log(`[Promo] User ${user.id} redeemed code ${normalizedCode} (+${promoTotal} credits)`)
+    console.log(`[Promo] User ${user.id} redeemed code ${normalizedCode} (+${promoCredits} credits)`)
 
     return NextResponse.json({
       success: true,
-      credits: promoTotal,
+      credits: promoCredits,
     })
   } catch (err: any) {
     console.error('[Promo Redeem]', err)
