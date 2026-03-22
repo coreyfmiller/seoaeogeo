@@ -7637,5 +7637,41 @@
     "url": "valleymarketing.ca",
     "timestamp": "2026-03-21T22:38:17.592Z",
     "cost": 0.07461545
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 522,
+    "outputTokens": 456,
+    "url": "https://seoaeogeo.vercel.app/",
+    "timestamp": "2026-03-22T10:54:34.782Z",
+    "cost": 0.00533715
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3664,
+    "outputTokens": 11593,
+    "url": "Citatom - Search Intelligence Platform",
+    "timestamp": "2026-03-22T10:55:26.806Z",
+    "cost": 0.11383189999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 522,
+    "outputTokens": 456,
+    "url": "https://seoaeogeo.vercel.app/",
+    "timestamp": "2026-03-22T10:56:04.868Z",
+    "cost": 0.00533715
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3664,
+    "outputTokens": 11593,
+    "url": "Citatom - Search Intelligence Platform",
+    "timestamp": "2026-03-22T10:56:59.536Z",
+    "cost": 0.11383189999999999
   }
 ]
