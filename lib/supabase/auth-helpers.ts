@@ -59,7 +59,7 @@ export async function useCredits(
 
   const { data: profile } = await supabaseAdmin
     .from('profiles')
-    .select('credits')
+    .select('credits, credits_used')
     .eq('id', userId)
     .single()
 
@@ -68,12 +68,18 @@ export async function useCredits(
   const current = profile.credits || 0
   if (current < amount) return { allowed: false, remaining: current }
 
-  await supabaseAdmin
+  // Deduct credits and track usage
+  const { data: updated } = await supabaseAdmin
     .from('profiles')
-    .update({ credits: current - amount })
+    .update({
+      credits: current - amount,
+      credits_used: (profile as any).credits_used ? (profile as any).credits_used + amount : amount,
+    })
     .eq('id', userId)
+    .select('credits')
+    .single()
 
-  return { allowed: true, remaining: current - amount }
+  return { allowed: true, remaining: updated?.credits ?? (current - amount) }
 }
 
 // Add credits to a user (called from Stripe webhook after purchase)
@@ -101,7 +107,7 @@ export async function addCredits(
 export async function refundCredits(userId: string, amount: number): Promise<void> {
   const { data: profile } = await supabaseAdmin
     .from('profiles')
-    .select('credits')
+    .select('credits, credits_used')
     .eq('id', userId)
     .single()
 
@@ -109,7 +115,10 @@ export async function refundCredits(userId: string, amount: number): Promise<voi
 
   await supabaseAdmin
     .from('profiles')
-    .update({ credits: (profile.credits || 0) + amount })
+    .update({
+      credits: (profile.credits || 0) + amount,
+      credits_used: Math.max(0, ((profile as any).credits_used || 0) - amount),
+    })
     .eq('id', userId)
 }
 

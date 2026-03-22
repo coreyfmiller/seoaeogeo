@@ -8,6 +8,7 @@ CREATE TABLE public.profiles (
   full_name TEXT,
   plan TEXT NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro', 'pro_plus', 'agency')),
   credits INTEGER NOT NULL DEFAULT 20,
+  credits_used INTEGER NOT NULL DEFAULT 0,
   credits_pro_audits INTEGER NOT NULL DEFAULT 0,  -- deprecated, use credits
   credits_deep_scans INTEGER NOT NULL DEFAULT 0,  -- deprecated, use credits
   credits_competitive_intel INTEGER NOT NULL DEFAULT 0,  -- deprecated, use credits

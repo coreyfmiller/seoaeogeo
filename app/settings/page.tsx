@@ -59,20 +59,13 @@ export default function SettingsPage() {
       if (!user) { router.push('/login'); return }
       setUser(user)
 
-      const { data: prof } = await supabase.from('profiles').select('id, email, full_name, plan, is_admin, credits, referral_code').eq('id', user.id).single()
+      const { data: prof } = await supabase.from('profiles').select('id, email, full_name, plan, is_admin, credits, credits_used, referral_code').eq('id', user.id).single()
       if (prof) {
         setProfile(prof)
         setFullName(prof.full_name || '')
         setReferralCode(prof.referral_code || null)
         setCreditsAvailable(prof.credits || 0)
-      }
-
-      // Calculate credits used from scan history (approximate from usage table)
-      const period = new Date().toISOString().slice(0, 7)
-      const { data: usg } = await supabase.from('usage').select('pro_audits, deep_scans, competitive_intel').eq('user_id', user.id).eq('period', period).single()
-      if (usg) {
-        // Rough estimate: pro_audits * 10 + deep_scans * 10 + competitive_intel * 20
-        setCreditsUsed((usg.pro_audits || 0) * 10 + (usg.deep_scans || 0) * 10 + (usg.competitive_intel || 0) * 20)
+        setCreditsUsed(prof.credits_used || 0)
       }
 
       // Load existing promo codes for admin
