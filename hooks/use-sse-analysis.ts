@@ -75,6 +75,17 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
         signal: controller.signal,
       })
 
+      if (!response.ok) {
+        // Handle non-SSE error responses (401, 402, etc.)
+        try {
+          const errBody = await response.json()
+          throw new Error(errBody.error || `Request failed (${response.status})`)
+        } catch (e: any) {
+          if (e.message && e.message !== 'Unexpected end of JSON input') throw e
+          throw new Error(`Request failed (${response.status})`)
+        }
+      }
+
       if (!response.body) {
         throw new Error('No response stream')
       }

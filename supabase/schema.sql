@@ -10,6 +10,8 @@ CREATE TABLE public.profiles (
   credits_pro_audits INTEGER NOT NULL DEFAULT 0,
   credits_deep_scans INTEGER NOT NULL DEFAULT 0,
   credits_competitive_intel INTEGER NOT NULL DEFAULT 0,
+  is_admin BOOLEAN NOT NULL DEFAULT false,
+  free_scan_used BOOLEAN NOT NULL DEFAULT false,
   referral_code TEXT UNIQUE,
   referred_by UUID REFERENCES public.profiles(id),
   stripe_customer_id TEXT,

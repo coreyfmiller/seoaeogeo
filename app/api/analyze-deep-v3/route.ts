@@ -8,6 +8,7 @@ import { saveScanSnapshot } from '@/lib/scan-snapshots'
 import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers'
 import { chromium as playwright, type Browser } from 'playwright-core'
 import chromium from '@sparticuz/chromium'
+import { getAuthUser, useCredit } from '@/lib/supabase/auth-helpers'
 
 export const maxDuration = 300
 
@@ -18,6 +19,24 @@ export async function POST(request: NextRequest) {
     return new Response(JSON.stringify({ error: 'URL is required' }), {
       status: 400, headers: { 'Content-Type': 'application/json' },
     })
+  }
+
+  // Auth + credit check (Deep Scan = 10 base + 1 per page)
+  const user = await getAuthUser()
+  if (!user) {
+    return new Response(JSON.stringify({ error: 'Authentication required' }), {
+      status: 401, headers: { 'Content-Type': 'application/json' },
+    })
+  }
+
+  if (!user.is_admin) {
+    const cost = 10 + maxPages
+    const { allowed } = await useCredit(user.id, 'credits_deep_scans', false, cost)
+    if (!allowed) {
+      return new Response(JSON.stringify({ error: `Insufficient credits. Deep Scan costs ${cost} credits (10 base + ${maxPages} pages).` }), {
+        status: 402, headers: { 'Content-Type': 'application/json' },
+      })
+    }
   }
 
   const url = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`

@@ -110,14 +110,6 @@ export default function V2Page() {
   const isAnalyzing = sse.isAnalyzing
   const error = sse.error
 
-  // Calibration offset for free tier display
-  const seoDisplay = result ? (() => {
-    const raw = result.scores.seo.score
-    if (raw >= 90) return raw - 15
-    if (raw >= 82) return raw - 10
-    return raw
-  })() : 0
-
   const handleSiteTypeChange = async (newType: string) => {
     if (!result?.pageData) return
     try {
@@ -153,7 +145,7 @@ export default function V2Page() {
       saveScanToHistory({
         url: currentUrl,
         type: 'free-v3',
-        scores: { seo: seoDisplay, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
+        scores: { seo: result.scores.seo.score, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
         timestamp: new Date().toISOString(),
       }, result)
     }
@@ -321,7 +313,7 @@ export default function V2Page() {
             <Card className="flex items-center justify-center p-6">
               <div className="flex flex-col items-center gap-1">
               <CircularProgress
-                value={seoDisplay}
+                value={result.scores.seo.score}
                 variant="seo"
                 label="SEO Score"
                 size={140}
@@ -484,6 +476,25 @@ export default function V2Page() {
                   </p>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+          {/* Free Pro Scan CTA */}
+          <Card className="border-aeo/30 bg-gradient-to-r from-aeo/10 to-seo/10">
+            <CardContent className="p-5 flex flex-col sm:flex-row items-center gap-4">
+              <div className="h-12 w-12 rounded-full bg-aeo/10 flex items-center justify-center shrink-0">
+                <Zap className="h-6 w-6 text-aeo" />
+              </div>
+              <div className="flex-1 text-center sm:text-left">
+                <p className="font-bold text-foreground">Get one free AI-powered Pro scan</p>
+                <p className="text-sm text-muted-foreground">Sign up and unlock detailed fix instructions, schema generation, and platform-specific guides — no credit card required.</p>
+              </div>
+              <button
+                onClick={() => router.push('/signup')}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-aeo hover:bg-aeo/90 text-white font-medium shadow-lg hover:shadow-xl transition-all whitespace-nowrap"
+              >
+                Sign Up Free
+                <ArrowRight className="h-4 w-4" />
+              </button>
             </CardContent>
           </Card>
         </div>

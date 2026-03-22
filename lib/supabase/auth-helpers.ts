@@ -56,20 +56,14 @@ export async function getAuthUser(): Promise<UserProfile | null> {
 }
 
 // Use a credit (decrement balance). Returns true if successful.
+// `amount` defaults to 1 for single-credit scans (Pro Audit).
 export async function useCredit(
   userId: string,
   type: 'credits_pro_audits' | 'credits_deep_scans' | 'credits_competitive_intel',
-  isAdmin: boolean = false
+  isAdmin: boolean = false,
+  amount: number = 1
 ): Promise<{ allowed: boolean; remaining: number }> {
-  // Admin safety cap: check total usage across all time
   if (isAdmin) {
-    // Admins don't consume credits, but we cap at 500 uses per type
-    const { data: profile } = await supabaseAdmin
-      .from('profiles')
-      .select('admin_usage_' + type.replace('credits_', ''))
-      .eq('id', userId)
-      .single()
-    // For admin, just allow — the 500 cap is a future enhancement
     return { allowed: true, remaining: 999 }
   }
 
@@ -82,15 +76,36 @@ export async function useCredit(
   if (!profile) return { allowed: false, remaining: 0 }
 
   const current = (profile as any)[type] || 0
-  if (current <= 0) return { allowed: false, remaining: 0 }
+  if (current < amount) return { allowed: false, remaining: current }
 
   // Decrement
   await supabaseAdmin
     .from('profiles')
-    .update({ [type]: current - 1 })
+    .update({ [type]: current - amount })
     .eq('id', userId)
 
-  return { allowed: true, remaining: current - 1 }
+  return { allowed: true, remaining: current - amount }
+}
+
+// Check if user can use their one-time free Pro scan.
+// Returns true and marks it used if available.
+export async function tryFreeProScan(userId: string): Promise<boolean> {
+  const { data: profile } = await supabaseAdmin
+    .from('profiles')
+    .select('free_scan_used, is_admin')
+    .eq('id', userId)
+    .single()
+
+  if (!profile) return false
+  if (profile.is_admin) return false // admins don't need this
+  if (profile.free_scan_used) return false
+
+  await supabaseAdmin
+    .from('profiles')
+    .update({ free_scan_used: true })
+    .eq('id', userId)
+
+  return true
 }
 
 // Add credits to a user (called from Stripe webhook after purchase)
