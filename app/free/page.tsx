@@ -367,7 +367,7 @@ export default function FreeDashboard() {
                           onClick={() => router.push('/pro')}
                           className="bg-geo hover:bg-geo/90 text-geo-foreground shadow-lg hover:shadow-xl transition-all"
                         >
-                          Buy Credits
+                          Explore Options
                           <ArrowRight className="h-4 w-4 ml-2" />
                         </Button>
                         <p className="text-xs text-muted-foreground mt-3">No subscriptions — credits never expire</p>
