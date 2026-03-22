@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { Header } from "@/components/dashboard/header"
+import { AuditPageHeader } from "@/components/dashboard/audit-page-header"
 import { ScoreCard } from "@/components/dashboard/score-card"
 import { SearchInput } from "@/components/dashboard/search-input"
 import { Badge } from "@/components/ui/badge"
@@ -13,12 +14,10 @@ import { ScanErrorDialog } from "@/components/dashboard/scan-error-dialog"
 import { useSSEAnalysis } from "@/hooks/use-sse-analysis"
 import {
   Search,
-  Activity,
   Zap,
   ArrowRight,
   CheckCircle2,
   Info,
-  RefreshCw,
   Sparkles,
   Layers,
   Clock,
@@ -93,48 +92,31 @@ export default function FreeDashboard() {
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold flex items-center gap-3">
-                  <Activity className="h-6 w-6 text-seo" />
-                  Free Audit
-                </h1>
-                {currentUrl && result ? (
-                  <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
-                      <Search className="h-4 w-4" />
-                      {currentUrl}
-                    </span>
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Free 5-page site scan with domain-level insights
-                  </p>
-                )}
-              </div>
-              <div className="flex items-center gap-3">
-                {result && !isAnalyzing && (
-                  <Button
-                    onClick={() => {
-                      sse.reset()
-                      setCurrentUrl("")
-                      if (typeof window !== "undefined") {
-                        sessionStorage.removeItem("free_dashboard_url")
-                        sessionStorage.removeItem("free_dashboard_data")
-                      }
-                    }}
-                    variant="outline"
-                    className="flex items-center gap-2"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                    New Scan
-                  </Button>
-                )}
-                <Badge variant="secondary" className="bg-muted text-foreground border-border">
-                  FREE TIER
-                </Badge>
-              </div>
-            </div>
+            <AuditPageHeader
+              title="Free Audit"
+              description="Free 5-page site scan with domain-level insights"
+              badge="FREE TIER"
+              badgeVariant="beta"
+              currentUrl={currentUrl}
+              hasResults={!!result && !isAnalyzing}
+              isAnalyzing={isAnalyzing}
+              onNewAudit={() => {
+                sse.reset()
+                setCurrentUrl("")
+                if (typeof window !== "undefined") {
+                  sessionStorage.removeItem("free_dashboard_url")
+                  sessionStorage.removeItem("free_dashboard_data")
+                }
+              }}
+              onRefreshAnalysis={() => handleAnalyze(currentUrl)}
+              siteType={result?.siteTypeResult ? {
+                primaryType: result.siteTypeResult.primaryType,
+                confidence: result.siteTypeResult.confidence
+              } : undefined}
+              platformDetection={result?.platformDetection}
+              onSiteTypeChange={() => {}}
+              onPlatformChange={() => {}}
+            />
 
             {/* Error Dialog */}
             <ScanErrorDialog error={error} onClose={() => sse.reset()} onRetry={() => handleAnalyze(currentUrl)} />

@@ -2,6 +2,7 @@ import { chromium as playwright, type Browser, type Page } from 'playwright-core
 import chromium from '@sparticuz/chromium';
 import { thinHtml, extractSchema } from './utils/cleaner';
 import { summarizeContent, formatSummaryForAI } from './utils/content-summarizer';
+import { detectPlatform, type PlatformResult } from './platform-detector';
 
 export interface PageScan {
     url: string;
@@ -37,6 +38,7 @@ export interface PageScan {
         hasOgImage: boolean;
         hasTwitterCard: boolean;
     };
+    platformDetection?: PlatformResult;
 }
 
 interface DeepSiteScanResult {
@@ -232,6 +234,9 @@ async function extractPageData(page: Page, domain: string, responseTimeMs: numbe
     const contentSummary = summarizeContent(html);
     const summarizedContent = formatSummaryForAI(contentSummary);
 
+    // Detect platform/CMS from HTML (same as Pro Audit's single-page crawler)
+    const platformDetection = detectPlatform(html);
+
     return {
         url,
         title,
@@ -259,5 +264,6 @@ async function extractPageData(page: Page, domain: string, responseTimeMs: numbe
             descriptionLength: description.length,
             ...pageSignals.metaChecks,
         },
+        platformDetection,
     };
 }

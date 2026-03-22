@@ -317,16 +317,22 @@ function calculateAEOScore(data: any): { score: number; breakdown: CategoryScore
         issues: defPenalty > 0 ? [`Missing clear definition statements (severity: ${defSeverity}/100)`] : undefined
     });
 
+    // Floor boost: if raw score < 50, ensure minimum of 10
+    let finalAeoScore = Math.min(Math.max(0, score), 100);
+    if (finalAeoScore < 50) {
+        finalAeoScore = Math.max(finalAeoScore, 10);
+    }
+
     const breakdown: CategoryScore[] = [{
         name: 'AEO Readiness',
-        score: Math.min(Math.max(0, score), 100),
+        score: finalAeoScore,
         maxScore: 100,
-        percentage: Math.min(Math.max(0, score), 100),
+        percentage: finalAeoScore,
         components
     }];
 
     return {
-        score: Math.min(Math.max(0, score), 100),
+        score: finalAeoScore,
         breakdown
     };
 }

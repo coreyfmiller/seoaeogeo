@@ -1,12 +1,11 @@
 "use client"
 
-import { RefreshCw, Download, Copy, Check, Search, Clock, Activity, Sparkles, HelpCircle, Zap, Lock } from "lucide-react"
+import { RefreshCw, Search, Clock, Activity, Sparkles, HelpCircle, Zap } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { SiteTypeBadge } from "@/components/dashboard/site-type-badge"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { downloadReport, copyReportToClipboard } from "@/lib/report-exporter"
+
 
 interface CWVMetric {
   value: number
@@ -70,9 +69,7 @@ export function AuditPageHeader({
   platformDetection,
   onPlatformChange,
 }: AuditPageHeaderProps) {
-  const [reportCopied, setReportCopied] = useState(false)
   const [platformOverride, setPlatformOverride] = useState<string | null>(null)
-  const router = useRouter()
 
   const platformOptions = [
     { value: 'wordpress', label: 'WordPress' },
@@ -89,44 +86,6 @@ export function AuditPageHeader({
     { value: 'hubspot', label: 'HubSpot' },
     { value: 'custom', label: 'Custom / Other' },
   ]
-
-  const buildExportData = () => {
-    if (!analysisData) return null
-    // Deep scan: has pages array and sitewideIntelligence
-    const isDeepScan = !!(analysisData.pages && analysisData.sitewideIntelligence)
-    if (isDeepScan) {
-      return { url: currentUrl, timestamp: new Date().toLocaleString(), deepScan: analysisData } as any
-    }
-    return {
-      url: currentUrl,
-      timestamp: new Date().toLocaleString(),
-      scores: analysisData.scores || analysisData.ai?.scores || { seo: 0, aeo: 0, geo: 0 },
-      penalties: analysisData.enhancedPenalties || analysisData.ai?.enhancedPenalties || [],
-      technical: analysisData.technical,
-      structuralData: analysisData.structuralData
-    }
-  }
-
-  const handleExportReport = () => {
-    const exportData = buildExportData()
-    if (!exportData) return
-    try {
-      downloadReport(exportData)
-    } catch (error) {
-      console.error('Export failed:', error)
-      alert('Failed to export report. Please try again.')
-    }
-  }
-
-  const handleCopyReport = async () => {
-    const exportData = buildExportData()
-    if (!exportData) return
-    const success = await copyReportToClipboard(exportData)
-    if (success) {
-      setReportCopied(true)
-      setTimeout(() => setReportCopied(false), 2000)
-    }
-  }
 
   const getBadgeStyles = () => {
     if (badgeVariant === "beta") {
@@ -284,37 +243,6 @@ export function AuditPageHeader({
                 >
                   <RefreshCw className="h-4 w-4" />
                   New Audit
-                </button>
-                <button
-                  onClick={proLocked ? () => router.push('/pro') : handleCopyReport}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 text-sm transition-colors ${proLocked ? 'text-muted-foreground hover:text-foreground hover:border-geo/50 cursor-pointer' : 'text-muted-foreground hover:text-foreground hover:border-geo/50'}`}
-                  title={proLocked ? "Upgrade to Pro to copy reports" : "Copy report to clipboard"}
-                >
-                  {proLocked ? (
-                    <>
-                      <Lock className="h-4 w-4" />
-                      Copy Report
-                    </>
-                  ) : reportCopied ? (
-                    <>
-                      <Check className="h-4 w-4 text-geo" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4" />
-                      Copy Report
-                    </>
-                  )}
-                </button>
-                <button
-                  onClick={proLocked ? () => router.push('/pro') : handleExportReport}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${proLocked ? 'bg-primary/50 text-primary-foreground hover:bg-primary/70 cursor-pointer' : 'bg-primary text-primary-foreground hover:bg-primary/90'}`}
-                  title={proLocked ? "Upgrade to Pro to export reports" : "Download report as text file"}
-                >
-                  {proLocked && <Lock className="h-4 w-4" />}
-                  {!proLocked && <Download className="h-4 w-4" />}
-                  Export Report
                 </button>
               </div>
             </>

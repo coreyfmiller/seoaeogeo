@@ -112,6 +112,7 @@ export async function POST(request: NextRequest) {
         ...scanResults, pages: pagesWithScores, robotsTxt, sitemap,
         totalWords, schemaCount, avgResponseTime, globalTechScore, ai: standardizedAI,
         siteTypeResult,
+        platformDetection: scanResults.pages?.[0]?.platformDetection,
       };
 
       // Step 7: Validate
