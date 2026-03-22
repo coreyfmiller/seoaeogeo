@@ -177,8 +177,6 @@ export function CreditConfirmDialog({
           <button
             onClick={() => {
               onConfirm(showPageSelector ? selectedPages : undefined)
-              // Notify header to refresh credit balance
-              window.dispatchEvent(new Event('credits-changed'))
             }}
             disabled={loading || !hasEnough}
             className={cn(

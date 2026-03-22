@@ -172,6 +172,9 @@ export default function SiteVsSite() {
 
             const result = await response.json()
 
+            // Credits were deducted server-side — refresh header
+            if (typeof window !== 'undefined') window.dispatchEvent(new Event('credits-changed'))
+
             if (result.success) {
                 setComparisonData(result.data.comparison)
                 setApiStatus("healthy")

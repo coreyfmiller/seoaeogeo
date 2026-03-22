@@ -93,6 +93,9 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
         throw new Error('No response stream')
       }
 
+      // Credits were deducted server-side before the stream started — refresh header
+      if (typeof window !== 'undefined') window.dispatchEvent(new Event('credits-changed'))
+
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
       let buffer = ''
