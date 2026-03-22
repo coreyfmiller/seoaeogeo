@@ -67,12 +67,7 @@ function SignupForm() {
   if (success) {
     return (
       <div className="w-full max-w-md space-y-6 text-center">
-        <div className="inline-flex items-center gap-2">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-seo via-aeo to-geo flex items-center justify-center">
-            <span className="text-white font-black text-lg">D</span>
-          </div>
-          <span className="text-2xl font-black tracking-tight">Duelly</span>
-        </div>
+        <img src="/logo.png" alt="Duelly" className="h-12 mx-auto" />
         <Card>
           <CardContent className="p-8 space-y-4">
             <div className="h-14 w-14 rounded-full bg-geo/10 flex items-center justify-center mx-auto">
@@ -96,12 +91,7 @@ function SignupForm() {
     <div className="w-full max-w-md space-y-6">
       {/* Logo */}
       <div className="text-center space-y-2">
-        <div className="inline-flex items-center gap-2">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-seo via-aeo to-geo flex items-center justify-center">
-            <span className="text-white font-black text-lg">D</span>
-          </div>
-          <span className="text-2xl font-black tracking-tight">Duelly</span>
-        </div>
+        <img src="/logo.png" alt="Duelly" className="h-12 mx-auto" />
         <p className="text-sm text-muted-foreground">Create your account</p>
       </div>
 

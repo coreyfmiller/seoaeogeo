@@ -146,12 +146,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md space-y-6">
         {/* Logo */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-seo via-aeo to-geo flex items-center justify-center">
-              <span className="text-white font-black text-lg">D</span>
-            </div>
-            <span className="text-2xl font-black tracking-tight">Duelly</span>
-          </div>
+          <img src="/logo.png" alt="Duelly" className="h-12 mx-auto" />
           <p className="text-sm text-muted-foreground">Sign in to your account</p>
         </div>
 
