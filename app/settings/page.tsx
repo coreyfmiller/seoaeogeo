@@ -247,7 +247,7 @@ export default function SettingsPage() {
                   {!isAdmin && (
                     <Link
                       href="/pro"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-geo hover:bg-geo/90 text-white font-medium text-sm transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#118fff] hover:bg-[#118fff]/90 text-white font-medium text-sm transition-colors"
                     >
                       <Crown className="h-4 w-4" />
                       Buy Credits
