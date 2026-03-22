@@ -436,7 +436,7 @@ export default function V3Page() {
             </CardDescription>
           </div>
         </CardHeader>
-        <CardContent className="max-w-2xl mx-auto">
+        <CardContent className="max-w-4xl mx-auto">
           <SearchInput
             onSubmit={handleAnalyze}
             isAnalyzing={isAnalyzing}

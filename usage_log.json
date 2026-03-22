@@ -7727,5 +7727,167 @@
     "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
     "timestamp": "2026-03-22T12:31:54.167Z",
     "cost": 0.13581295000000002
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 522,
+    "outputTokens": 464,
+    "url": "https://seoaeogeo.vercel.app/",
+    "timestamp": "2026-03-22T12:52:06.992Z",
+    "cost": 0.00540995
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3664,
+    "outputTokens": 13150,
+    "url": "Citatom - Search Intelligence Platform",
+    "timestamp": "2026-03-22T12:53:00.349Z",
+    "cost": 0.1280006
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 729,
+    "outputTokens": 459,
+    "url": "https://fundylogic.com",
+    "timestamp": "2026-03-22T12:53:41.251Z",
+    "cost": 0.005835375
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 11058,
+    "outputTokens": 13501,
+    "url": "FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-22T12:54:31.477Z",
+    "cost": 0.14801605
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 522,
+    "outputTokens": 456,
+    "url": "https://seoaeogeo.vercel.app/",
+    "timestamp": "2026-03-22T12:55:25.111Z",
+    "cost": 0.00533715
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3664,
+    "outputTokens": 11593,
+    "url": "Citatom - Search Intelligence Platform",
+    "timestamp": "2026-03-22T12:56:19.221Z",
+    "cost": 0.11383189999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 522,
+    "outputTokens": 456,
+    "url": "https://seoaeogeo.vercel.app/",
+    "timestamp": "2026-03-22T12:56:34.945Z",
+    "cost": 0.00533715
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3664,
+    "outputTokens": 11593,
+    "url": "Citatom - Search Intelligence Platform",
+    "timestamp": "2026-03-22T12:57:26.008Z",
+    "cost": 0.11383189999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 522,
+    "outputTokens": 464,
+    "url": "https://seoaeogeo.vercel.app/",
+    "timestamp": "2026-03-22T12:57:43.623Z",
+    "cost": 0.00540995
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3664,
+    "outputTokens": 11593,
+    "url": "Citatom - Search Intelligence Platform",
+    "timestamp": "2026-03-22T12:58:36.783Z",
+    "cost": 0.11383189999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 522,
+    "outputTokens": 464,
+    "url": "https://seoaeogeo.vercel.app/",
+    "timestamp": "2026-03-22T12:59:39.898Z",
+    "cost": 0.00540995
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3664,
+    "outputTokens": 10036,
+    "url": "Citatom - Search Intelligence Platform",
+    "timestamp": "2026-03-22T13:00:20.684Z",
+    "cost": 0.0996632
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 522,
+    "outputTokens": 456,
+    "url": "https://seoaeogeo.vercel.app/",
+    "timestamp": "2026-03-22T13:04:23.896Z",
+    "cost": 0.00533715
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3664,
+    "outputTokens": 10036,
+    "url": "Citatom - Search Intelligence Platform",
+    "timestamp": "2026-03-22T13:05:06.281Z",
+    "cost": 0.0996632
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 522,
+    "outputTokens": 464,
+    "url": "https://seoaeogeo.vercel.app/",
+    "timestamp": "2026-03-22T13:05:39.582Z",
+    "cost": 0.00540995
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3664,
+    "outputTokens": 11593,
+    "url": "Citatom - Search Intelligence Platform",
+    "timestamp": "2026-03-22T13:06:36.791Z",
+    "cost": 0.11383189999999999
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Live Interrogation",
+    "inputTokens": 522,
+    "outputTokens": 456,
+    "url": "https://seoaeogeo.vercel.app/",
+    "timestamp": "2026-03-22T13:08:13.941Z",
+    "cost": 0.00533715
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Single Page Audit (2-call avg)",
+    "inputTokens": 3664,
+    "outputTokens": 13150,
+    "url": "Citatom - Search Intelligence Platform",
+    "timestamp": "2026-03-22T13:09:06.384Z",
+    "cost": 0.1280006
   }
 ]

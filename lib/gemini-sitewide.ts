@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { logUsage } from "./usage";
+import { sanitizeJsonString } from "./utils/json-sanitizer";
 import { validateSchemas, calculateBrandConsistency } from "./schema-validator";
 import { getRecommendedSchemas, formatSiteType } from "./site-type-detector";
 import type { SiteType } from "./types/audit";
@@ -354,7 +355,7 @@ ${context.platform ? `
       throw new Error("Could not parse AI response as JSON");
     }
 
-    const aiResult = JSON.parse(jsonMatch[0]);
+    const aiResult = JSON.parse(sanitizeJsonString(jsonMatch[0]));
     debugLog('[GEMINI-SITEWIDE] Parsed AI result', { 
       domainHealthScore: aiResult.domainHealthScore,
       recommendationsCount: aiResult.recommendations?.length,

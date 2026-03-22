@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { logUsage } from "./usage";
+import { sanitizeJsonString } from "./utils/json-sanitizer";
 
 /**
  * Comparative Analysis: Compares two sites and identifies competitive gaps.
@@ -109,7 +110,7 @@ ${options?.platform ? `
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("Could not parse AI response as JSON");
 
-    return JSON.parse(jsonMatch[0]);
+    return JSON.parse(sanitizeJsonString(jsonMatch[0]));
   } catch (error) {
     console.error("Gemini Competitive Analysis Error:", error);
     throw error;

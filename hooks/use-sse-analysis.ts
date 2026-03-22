@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 
 interface SSEAnalysisState<T = any> {
   isAnalyzing: boolean
@@ -26,7 +26,31 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
     data: null,
     error: null,
   })
+  const [displayProgress, setDisplayProgress] = useState(0)
   const abortRef = useRef<AbortController | null>(null)
+
+  // Client-side progress creep: slowly walks up when server goes quiet, caps at 99
+  useEffect(() => {
+    if (!state.isAnalyzing) {
+      // Not analyzing — don't touch displayProgress (it stays where it was)
+      return
+    }
+    // If server sent 100, snap immediately
+    if (state.progress >= 100) {
+      setDisplayProgress(100)
+      return
+    }
+    // Jump to server progress if it's ahead
+    setDisplayProgress(prev => Math.max(prev, state.progress))
+    const timer = setInterval(() => {
+      setDisplayProgress(prev => {
+        const target = Math.max(prev, state.progress)
+        if (target >= 99) return 99
+        return Math.min(target + 1, 99)
+      })
+    }, 3000)
+    return () => clearInterval(timer)
+  }, [state.isAnalyzing, state.progress])
 
   const startAnalysis = useCallback(async (url: string, body?: Record<string, unknown>) => {
     // Abort any in-flight request
@@ -34,6 +58,7 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
     const controller = new AbortController()
     abortRef.current = controller
 
+    setDisplayProgress(0)
     setState({
       isAnalyzing: true,
       phase: 'Initializing analysis...',
@@ -114,6 +139,7 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
 
   const reset = useCallback(() => {
     abortRef.current?.abort()
+    setDisplayProgress(0)
     setState({
       isAnalyzing: false,
       phase: '',
@@ -133,5 +159,5 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
     })
   }, [])
 
-  return { ...state, startAnalysis, reset, setData }
+  return { ...state, progress: displayProgress, startAnalysis, reset, setData }
 }

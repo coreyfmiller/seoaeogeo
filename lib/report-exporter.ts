@@ -50,9 +50,9 @@ export function generateTextReport(data: ExportData): string {
   lines.push('───────────────────────────────────────────────────────────');
   lines.push('OVERALL SCORES');
   lines.push('───────────────────────────────────────────────────────────');
-  lines.push(`SEO Score: ${data.scores.seo}/100`);
-  lines.push(`AEO Score: ${data.scores.aeo}/100`);
-  lines.push(`GEO Score: ${data.scores.geo}/100`);
+  lines.push(`SEO Score: ${typeof data.scores.seo === 'object' ? data.scores.seo.score : data.scores.seo}/100`);
+  lines.push(`AEO Score: ${typeof data.scores.aeo === 'object' ? data.scores.aeo.score : data.scores.aeo}/100`);
+  lines.push(`GEO Score: ${typeof data.scores.geo === 'object' ? data.scores.geo.score : data.scores.geo}/100`);
   lines.push('');
   
   // Technical Overview

@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { logUsage } from "./usage";
+import { sanitizeJsonString } from "./utils/json-sanitizer";
 
 /**
  * Prompt to analyze website data for SEO, AEO, and GEO using MODERN 2026 STANDARDS.
@@ -153,7 +154,7 @@ ${context.platform ? `
     const jsonMatch2 = responseText2.match(/\{[\s\S]*\}/);
     if (!jsonMatch1) throw new Error("Could not parse AI response 1 as JSON");
 
-    const parsed1 = JSON.parse(jsonMatch1[0]);
+    const parsed1 = JSON.parse(sanitizeJsonString(jsonMatch1[0]));
 
     // If second call failed, just use first result
     if (!jsonMatch2) {
@@ -161,7 +162,7 @@ ${context.platform ? `
       return parsed1;
     }
 
-    const parsed2 = JSON.parse(jsonMatch2[0]);
+    const parsed2 = JSON.parse(sanitizeJsonString(jsonMatch2[0]));
 
     // Average the semanticFlags severity scores for stability
     const flags1 = parsed1.semanticFlags || {};

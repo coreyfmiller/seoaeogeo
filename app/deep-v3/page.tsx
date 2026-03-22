@@ -279,7 +279,7 @@ export default function DeepV3Page() {
                     </CardDescription>
                   </div>
                 </CardHeader>
-                <CardContent className="max-w-2xl mx-auto space-y-6">
+                <CardContent className="max-w-4xl mx-auto space-y-6">
                   <CrawlConfig
                     onStartCrawl={(config) => handleAnalyze(config.url, config.pageCount)}
                     isAnalyzing={isAnalyzing}

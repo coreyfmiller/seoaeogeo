@@ -1,343 +1,313 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { AppSidebar } from "@/components/dashboard/app-sidebar"
-import { Header } from "@/components/dashboard/header"
-import { ScoreCard } from "@/components/dashboard/score-card"
-import { SearchInput } from "@/components/dashboard/search-input"
-import { SEOTabEnhanced } from "@/components/dashboard/seo-tab-enhanced"
-import { AEOTab } from "@/components/dashboard/aeo-tab"
-import { GEOTab } from "@/components/dashboard/geo-tab"
-import { AuditPageHeader } from "@/components/dashboard/audit-page-header"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { downloadReport, copyReportToClipboard } from "@/lib/report-exporter"
-import { useSSEAnalysis } from "@/hooks/use-sse-analysis"
+import type { Metadata } from 'next'
+import Link from 'next/link'
 import {
   Search,
   Sparkles,
   Bot,
-  Clock,
-  RefreshCw,
-  XCircle,
-  Globe,
-  CheckCircle2,
-  Loader2,
-  Activity,
-  Download,
-  Copy,
-  Check,
-  Lock,
   Zap,
-} from "lucide-react"
-import { cn } from "@/lib/utils"
+  Shield,
+  BarChart3,
+  ArrowRight,
+  CheckCircle2,
+  Globe,
+  Brain,
+  Target,
+  TrendingUp,
+} from 'lucide-react'
 
-export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState("seo")
-  const [currentUrl, setCurrentUrl] = useState("")
-  const [analysisData, setAnalysisData] = useState<any>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [apiStatus, setApiStatus] = useState<"healthy" | "error" | "idle">("idle")
-  const [reportCopied, setReportCopied] = useState(false)
-  const isProUnlocked = true // Pro lock removed for now
-  const sse = useSSEAnalysis('/api/analyze')
+export const metadata: Metadata = {
+  title: 'Citatom - SEO, AEO & GEO Intelligence Platform',
+  description:
+    'Citatom is a search intelligence platform that audits your website for SEO, AEO (Answer Engine Optimization), and GEO (Generative Engine Optimization). Get AI-powered scoring, actionable fixes, and competitive analysis built for the 2026 search landscape.',
+  alternates: { canonical: '/' },
+}
 
-  const isAnalyzing = sse.isAnalyzing
-  const analysisPhase = sse.phase
-  const analysisProgress = sse.progress // Temporarily unlocked for everyone
-
-  // Sync SSE results to local state
-  useEffect(() => {
-    if (sse.data) {
-      setAnalysisData(sse.data)
-      setApiStatus("healthy")
-    }
-    if (sse.error) {
-      setError(sse.error)
-      setApiStatus("error")
-    }
-  }, [sse.data, sse.error])
-
-  // Restore state from sessionStorage on mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedUrl = sessionStorage.getItem("dashboard_url")
-      const savedData = sessionStorage.getItem("dashboard_data")
-      if (savedUrl) setCurrentUrl(savedUrl)
-      if (savedData) setAnalysisData(JSON.parse(savedData))
-
-      // Check for URL parameter in query string
-      const params = new URLSearchParams(window.location.search)
-      const urlParam = params.get('url')
-      if (urlParam && urlParam !== savedUrl) {
-        handleAnalyze(urlParam)
-        // Clean up the URL
-        window.history.replaceState({}, '', window.location.pathname)
-      }
-    }
-  }, [])
-
-  // Save state to sessionStorage when it changes
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (currentUrl) sessionStorage.setItem("dashboard_url", currentUrl)
-      if (analysisData) sessionStorage.setItem("dashboard_data", JSON.stringify(analysisData))
-    }
-  }, [currentUrl, analysisData])
-
-  const handleAnalyze = async (url: string) => {
-    setError(null)
-    setCurrentUrl(url)
-    await sse.startAnalysis(url)
-  }
-
-  // Use real data scores or default to 0 for a clean start
-  const scores = analysisData?.ai?.scores || {
-    seo: 0,
-    aeo: 0,
-    geo: 0
-  }
-
-  const handleExportReport = () => {
-    if (!analysisData) return;
-    
-    try {
-      const exportData = {
-        url: currentUrl,
-        timestamp: new Date().toLocaleString(),
-        scores: analysisData.ai?.scores || { seo: 0, aeo: 0, geo: 0 },
-        penalties: analysisData.ai?.enhancedPenalties || [],
-        technical: analysisData.technical,
-        structuralData: analysisData.structuralData
-      };
-      
-      downloadReport(exportData);
-    } catch (error) {
-      console.error('Export failed:', error);
-      alert('Failed to export report. Please try again.');
-    }
-  };
-
-  const handleCopyReport = async () => {
-    if (!analysisData) return;
-    
-    const exportData = {
-      url: currentUrl,
-      timestamp: new Date().toLocaleString(),
-      scores: analysisData.ai?.scores || { seo: 0, aeo: 0, geo: 0 },
-      penalties: analysisData.ai?.enhancedPenalties || [],
-      technical: analysisData.technical,
-      structuralData: analysisData.structuralData
-    };
-    
-    const success = await copyReportToClipboard(exportData);
-    if (success) {
-      setReportCopied(true);
-      setTimeout(() => setReportCopied(false), 2000);
-    }
-  };
-
+export default function HomePage() {
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-      <AppSidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header with Search */}
-        <Header
-          onAnalyze={handleAnalyze}
-          isAnalyzing={isAnalyzing}
-          currentUrl={currentUrl}
-          apiStatus={apiStatus}
-        />
-
-        {/* Dashboard Content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          {!isProUnlocked ? (
-            <div className="min-h-[70vh] flex flex-col items-center justify-center p-8 bg-card/50 border border-border/50 rounded-3xl animate-in zoom-in-95 mt-4 max-w-2xl mx-auto shadow-lg">
-              <div className="h-16 w-16 bg-green-500/10 rounded-2xl flex items-center justify-center mb-6">
-                <Lock className="h-8 w-8 text-green-500" />
-              </div>
-              <h2 className="text-3xl font-bold mb-4 text-center">Pro Feature Locked</h2>
-              <p className="text-muted-foreground text-center text-lg mb-8 max-w-lg">
-                Pro Audit provides detailed fix instructions, priority scoring, and comprehensive single-page analysis with AI-powered recommendations.
-              </p>
-              <p className="text-sm font-semibold text-green-500 animate-pulse tracking-wider uppercase border border-green-500/30 bg-green-500/10 px-6 py-3 rounded-full">
-                ↑ Click &ldquo;Go Pro&rdquo; in the top right to unlock
-              </p>
-            </div>
-          ) : (
-          <div className="max-w-7xl mx-auto">
-            {/* Page Header */}
-            <AuditPageHeader
-              title="Pro Audit"
-              description="Comprehensive single-page analysis with AI-powered recommendations and priority scoring."
-              badge="PRO"
-              badgeVariant="pro"
-              currentUrl={currentUrl}
-              hasResults={!!analysisData}
-              isAnalyzing={isAnalyzing}
-              onNewAudit={() => {
-                setAnalysisData(null)
-                setCurrentUrl("")
-                setError(null)
-                if (typeof window !== "undefined") {
-                  sessionStorage.removeItem("dashboard_url")
-                  sessionStorage.removeItem("dashboard_data")
-                }
-              }}
-              onRefreshAnalysis={() => handleAnalyze(currentUrl)}
-              analysisData={analysisData}
-              pageCount={1}
-            />
-
-            {/* Error Message */}
-            {error && (
-              <div className="mb-6 p-4 rounded-lg border border-destructive/50 bg-destructive/10 text-destructive flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
-                <XCircle className="h-5 w-5" />
-                <div className="flex-1 text-sm font-medium">{error}</div>
-                <button
-                  onClick={() => setError(null)}
-                  className="text-xs uppercase tracking-wider font-bold hover:underline"
-                >
-                  Dismiss
-                </button>
-              </div>
-            )}
-
-            {!analysisData && !isAnalyzing ? (
-              <Card className="border-seo/20 bg-gradient-to-br from-seo/5 to-aeo/5">
-                <CardContent className="p-12 text-center">
-                  <div className="mx-auto h-16 w-16 bg-seo/10 rounded-2xl flex items-center justify-center mb-6">
-                    <Search className="h-8 w-8 text-seo" />
-                  </div>
-                  <h2 className="text-3xl font-bold mb-3">
-                    Generate Intelligence Report
-                  </h2>
-                  <p className="text-muted-foreground mb-8 text-lg">
-                    Enter any website URL to perform a comprehensive SEO, AEO, and GEO audit powered by Gemini 2.5 Flash.
-                  </p>
-                  <SearchInput
-                    onSubmit={handleAnalyze}
-                    isAnalyzing={isAnalyzing}
-                    variant="large"
-                    className="mx-auto"
-                  />
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="relative">
-                {isAnalyzing && (
-                  <div className="absolute inset-0 z-50 bg-background/20 backdrop-blur-[1px] flex items-start justify-center pt-20">
-                    <div className="bg-card/90 border border-seo/30 p-6 rounded-2xl shadow-2xl flex flex-col items-center gap-4 animate-in fade-in zoom-in-95 min-w-[400px]">
-                      <div className="h-12 w-12 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
-                      <div className="text-center min-h-[48px]">
-                        <h3 className="text-lg font-bold text-foreground">Pro Audit in Progress</h3>
-                        <p className="text-sm text-muted-foreground mt-1 transition-opacity duration-500">{analysisPhase || "Initializing analysis..."}</p>
-                      </div>
-                      <div className="w-64 h-1.5 bg-muted rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-seo via-aeo to-geo transition-all duration-[1500ms] ease-in-out"
-                          style={{ width: `${analysisProgress}%` }}
-                        />
-                      </div>
-                      <p className="text-xs text-muted-foreground">{analysisProgress}%</p>
-                    </div>
-                  </div>
-                )}
-                <div className={cn("flex flex-col gap-6", isAnalyzing && "opacity-40 grayscale-[0.5] transition-all duration-700")}>
-                  {/* Score Cards */}
-                  <div className="grid gap-4 sm:grid-cols-3">
-                    <ScoreCard
-                      title="SEO Score"
-                      score={scores.seo}
-                      change={analysisData ? 0 : 0}
-                      variant="seo"
-                      description="Global Connectivity"
-                    />
-                    <ScoreCard
-                      title="AEO Score"
-                      score={scores.aeo}
-                      change={analysisData ? 0 : 0}
-                      variant="aeo"
-                      description="Snippet Coverage"
-                    />
-                    <ScoreCard
-                      title="GEO Score"
-                      score={scores.geo}
-                      change={analysisData ? 0 : 0}
-                      variant="geo"
-                      description="Citation Visibility"
-                    />
-                  </div>
-
-                  {/* Tabbed Interface */}
-                  <Tabs
-                    defaultValue="seo"
-                    value={activeTab}
-                    onValueChange={setActiveTab}
-                    className="w-full"
-                  >
-                    <TabsList className="w-full sm:w-auto bg-muted/50 p-1">
-                      <TabsTrigger
-                        value="seo"
-                        className={cn(
-                          "gap-2 border border-transparent transition-all duration-200",
-                          "hover:border-seo/30 hover:bg-seo/10 hover:text-seo cursor-pointer",
-                          "data-[state=active]:!border-seo/50 data-[state=active]:!bg-seo data-[state=active]:!text-white data-[state=active]:!shadow-lg data-[state=active]:!font-bold"
-                        )}
-                      >
-                        <Search className="h-4 w-4" />
-                        <span className="hidden sm:inline">SEO Analysis</span>
-                        <span className="sm:hidden">SEO</span>
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="aeo"
-                        className={cn(
-                          "gap-2 border border-transparent transition-all duration-200",
-                          "hover:border-aeo/30 hover:bg-aeo/10 hover:text-aeo cursor-pointer",
-                          "data-[state=active]:!border-aeo/50 data-[state=active]:!bg-aeo data-[state=active]:!text-white data-[state=active]:!shadow-lg data-[state=active]:!font-bold"
-                        )}
-                      >
-                        <Sparkles className="h-4 w-4" />
-                        <span className="hidden sm:inline">AEO Analysis</span>
-                        <span className="sm:hidden">AEO</span>
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="geo"
-                        className={cn(
-                          "gap-2 border border-transparent transition-all duration-200",
-                          "hover:border-[#fe3f8c]/30 hover:bg-[#fe3f8c]/10 hover:text-[#fe3f8c] cursor-pointer",
-                          "data-[state=active]:!border-[#fe3f8c]/50 data-[state=active]:!bg-[#fe3f8c] data-[state=active]:!text-white data-[state=active]:!shadow-lg data-[state=active]:!font-bold"
-                        )}
-                      >
-                        <Bot className="h-4 w-4" />
-                        <span className="hidden sm:inline">GEO Analysis</span>
-                        <span className="sm:hidden">GEO</span>
-                      </TabsTrigger>
-                    </TabsList>
-
-                    <div className="mt-6">
-                      <TabsContent value="seo" className="mt-0">
-                        <SEOTabEnhanced data={analysisData} />
-                      </TabsContent>
-                      <TabsContent value="aeo" className="mt-0">
-                        <AEOTab data={analysisData} />
-                      </TabsContent>
-                      <TabsContent value="geo" className="mt-0">
-                        <GEOTab data={analysisData} />
-                      </TabsContent>
-                    </div>
-                  </Tabs>
-                </div>
-              </div>
-            )}
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Navigation */}
+      <nav className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center">
+            <img src="/logo.png" alt="Citatom" className="h-10 w-auto" />
+          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Help
+            </Link>
+            <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Log In
+            </Link>
+            <Link
+              href="/signup"
+              className="px-4 py-2 rounded-lg bg-[#118fff] hover:bg-[#118fff]/90 text-white text-sm font-semibold transition-colors"
+            >
+              Get Started Free
+            </Link>
           </div>
-          )}
-        </main>
-      </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="max-w-6xl mx-auto px-6 pt-20 pb-16 text-center">
+        <h1 className="text-5xl md:text-6xl font-black tracking-tight leading-tight mb-6">
+          Search Intelligence for the
+          <span className="bg-gradient-to-r from-[#118fff] via-[#842ce0] to-[#fe3f8c] bg-clip-text text-transparent"> AI Era</span>
+        </h1>
+        <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
+          Citatom is a search intelligence platform that audits your website across three dimensions:
+          traditional SEO, Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO).
+          Built for the 2026 search landscape where AI-powered search engines like ChatGPT, Perplexity,
+          and Google AI Overviews determine who gets cited and who gets ignored.
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link
+            href="/free"
+            className="px-8 py-3 rounded-xl bg-[#118fff] hover:bg-[#118fff]/90 text-white font-bold text-lg transition-colors flex items-center gap-2"
+          >
+            Try Free Audit <ArrowRight className="h-5 w-5" />
+          </Link>
+          <Link
+            href="/pro"
+            className="px-8 py-3 rounded-xl border border-border/50 hover:border-[#842ce0]/50 hover:bg-[#842ce0]/5 font-bold text-lg transition-colors"
+          >
+            View Pricing
+          </Link>
+        </div>
+      </section>
+
+      {/* What is Citatom */}
+      <section className="max-w-6xl mx-auto px-6 py-16">
+        <h2 className="text-3xl font-black text-center mb-4">What is Citatom?</h2>
+        <p className="text-muted-foreground text-center max-w-3xl mx-auto mb-12 leading-relaxed">
+          Citatom is a comprehensive website auditing tool that scores your pages on SEO, AEO, and GEO
+          using AI-powered analysis. It crawls your site, analyzes content quality with Google Gemini,
+          detects your platform (WordPress, Shopify, Next.js, and more), and delivers actionable,
+          platform-specific fix instructions ranked by impact.
+        </p>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="p-6 rounded-2xl border border-[#118fff]/20 bg-[#118fff]/5">
+            <div className="h-12 w-12 rounded-xl bg-[#118fff]/10 flex items-center justify-center mb-4">
+              <Search className="h-6 w-6 text-[#118fff]" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">SEO Analysis</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Evaluates technical SEO, content quality, metadata, schema markup, internal linking,
+              and Core Web Vitals using real PageSpeed Insights data. Scores against 2026 Google
+              crawling standards.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl border border-[#842ce0]/20 bg-[#842ce0]/5">
+            <div className="h-12 w-12 rounded-xl bg-[#842ce0]/10 flex items-center justify-center mb-4">
+              <Sparkles className="h-6 w-6 text-[#842ce0]" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">AEO Analysis</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Measures how likely AI assistants like ChatGPT, Perplexity, and Gemini are to cite
+              your content. Evaluates Q&A coverage, definition clarity, entity density, and
+              structured data quality.
+            </p>
+          </div>
+
+          <div className="p-6 rounded-2xl border border-[#fe3f8c]/20 bg-[#fe3f8c]/5">
+            <div className="h-12 w-12 rounded-xl bg-[#fe3f8c]/10 flex items-center justify-center mb-4">
+              <Bot className="h-6 w-6 text-[#fe3f8c]" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">GEO Analysis</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Assesses how well your content performs in AI-generated search results and summaries.
+              Analyzes expertise signals, factual density, tone objectivity, and citation likelihood
+              across major AI platforms.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-border/30">
+        <h2 className="text-3xl font-black text-center mb-12">How It Works</h2>
+        <div className="grid md:grid-cols-4 gap-6">
+          {[
+            { step: '1', icon: <Globe className="h-5 w-5" />, title: 'Enter Your URL', desc: 'Paste any website URL into the audit tool. No installation or code changes required.' },
+            { step: '2', icon: <Brain className="h-5 w-5" />, title: 'AI Crawl & Analysis', desc: 'A headless browser crawls your page. Gemini AI analyzes content quality, tone, and structure.' },
+            { step: '3', icon: <BarChart3 className="h-5 w-5" />, title: 'Get Your Scores', desc: 'Receive SEO, AEO, and GEO scores out of 100 with a detailed breakdown of every penalty.' },
+            { step: '4', icon: <Target className="h-5 w-5" />, title: 'Fix & Improve', desc: 'Follow prioritized, platform-specific fix instructions to improve your scores and visibility.' },
+          ].map((item) => (
+            <div key={item.step} className="text-center">
+              <div className="h-10 w-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center mx-auto mb-3 text-sm font-black">
+                {item.step}
+              </div>
+              <h3 className="font-bold mb-1">{item.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Audit Tools */}
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-border/30">
+        <h2 className="text-3xl font-black text-center mb-4">Three Audit Tools</h2>
+        <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-12">
+          Choose the right level of analysis for your needs.
+        </p>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          <div className="p-6 rounded-2xl border border-border/50 bg-card/50">
+            <div className="flex items-center gap-2 mb-3">
+              <Zap className="h-5 w-5 text-[#118fff]" />
+              <h3 className="text-lg font-bold">Pro Audit</h3>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+              Single-page deep analysis. Dual AI calls for score stability, real Core Web Vitals
+              from PageSpeed Insights, site type detection, and up to 15 prioritized fix instructions.
+              10 credits per scan.
+            </p>
+            <Link href="/v3" className="text-sm font-semibold text-[#118fff] hover:underline flex items-center gap-1">
+              Run Pro Audit <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+
+          <div className="p-6 rounded-2xl border border-[#842ce0]/30 bg-[#842ce0]/5">
+            <div className="flex items-center gap-2 mb-3">
+              <Shield className="h-5 w-5 text-[#842ce0]" />
+              <h3 className="text-lg font-bold">Deep Scan</h3>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+              Multi-page site-wide audit. Crawls up to 50 pages, runs AI analysis on each,
+              detects duplicate titles and meta descriptions, checks robots.txt and sitemap,
+              and provides sitewide intelligence. 10 credits + 1 per page.
+            </p>
+            <Link href="/deep-v3" className="text-sm font-semibold text-[#842ce0] hover:underline flex items-center gap-1">
+              Run Deep Scan <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+
+          <div className="p-6 rounded-2xl border border-border/50 bg-card/50">
+            <div className="flex items-center gap-2 mb-3">
+              <TrendingUp className="h-5 w-5 text-[#fe3f8c]" />
+              <h3 className="text-lg font-bold">Competitive Intel</h3>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+              Head-to-head comparison of two websites. See exactly where your competitor
+              outperforms you across SEO, AEO, and GEO with gap analysis and strategic
+              recommendations. 20 credits per comparison.
+            </p>
+            <Link href="/intelligence" className="text-sm font-semibold text-[#fe3f8c] hover:underline flex items-center gap-1">
+              Run Comparison <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Key Features */}
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-border/30">
+        <h2 className="text-3xl font-black text-center mb-12">What Sets Citatom Apart</h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          {[
+            { icon: <Brain className="h-5 w-5 text-[#842ce0]" />, title: 'Dual AI Scoring', desc: 'Every Pro Audit runs two parallel Gemini AI calls and averages the results for consistent, stable scores across repeated scans.' },
+            { icon: <Globe className="h-5 w-5 text-[#118fff]" />, title: 'Real Core Web Vitals', desc: 'Integrates Google PageSpeed Insights API for real LCP, INP, and CLS data — not estimates or lab-only metrics.' },
+            { icon: <Target className="h-5 w-5 text-[#fe3f8c]" />, title: 'Site Type Detection', desc: 'Automatically detects your site type (e-commerce, blog, SaaS, portfolio, etc.) and adjusts scoring weights accordingly.' },
+            { icon: <Shield className="h-5 w-5 text-[#842ce0]" />, title: 'Platform-Specific Fixes', desc: 'Detects WordPress, Shopify, Wix, Squarespace, Next.js, and more. Fix instructions reference your actual admin paths and plugins.' },
+            { icon: <BarChart3 className="h-5 w-5 text-[#118fff]" />, title: 'Transparent Scoring', desc: 'Every point deducted is explained with severity, impact reasoning, and a step-by-step fix. No black-box scores.' },
+            { icon: <Zap className="h-5 w-5 text-[#fe3f8c]" />, title: 'Live Interrogation', desc: 'Secretly asks AI models if they would recommend your business — revealing your actual visibility in AI-generated answers.' },
+          ].map((feature, i) => (
+            <div key={i} className="flex gap-4 p-4 rounded-xl border border-border/30 bg-card/30">
+              <div className="h-10 w-10 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
+                {feature.icon}
+              </div>
+              <div>
+                <h3 className="font-bold mb-1">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="max-w-4xl mx-auto px-6 py-16 border-t border-border/30">
+        <h2 className="text-3xl font-black text-center mb-12">Frequently Asked Questions</h2>
+        <div className="space-y-6">
+          {[
+            {
+              q: 'What is AEO (Answer Engine Optimization)?',
+              a: 'AEO is the practice of optimizing your content so that AI-powered answer engines like ChatGPT, Perplexity, and Google AI Overviews cite your website as a source. It focuses on clear definitions, Q&A formatting, structured data, and entity density — the signals AI systems use to determine which sources to reference.',
+            },
+            {
+              q: 'What is GEO (Generative Engine Optimization)?',
+              a: 'GEO measures how well your content performs in AI-generated search results. It evaluates expertise signals (E-E-A-T), factual density, tone objectivity, and citation likelihood. Content that scores high on GEO is more likely to appear in AI summaries and be recommended by large language models.',
+            },
+            {
+              q: 'How does Citatom calculate scores?',
+              a: 'Citatom uses a multi-layer approach: a headless browser crawls your page to extract technical data, then Google Gemini AI analyzes content quality and semantic signals. Two parallel AI calls are averaged for stability. Scores are calculated using site-type-specific weights — an e-commerce site is graded differently than a blog or SaaS product.',
+            },
+            {
+              q: 'Is there a free tier?',
+              a: 'Yes. The Free Audit provides a basic SEO, AEO, and GEO score with domain health analysis. Pro Audit, Deep Scan, and Competitive Intel require credits, which start at $20 for 200 credits.',
+            },
+            {
+              q: 'How many credits does each scan cost?',
+              a: 'Pro Audit costs 10 credits per scan. Deep Scan costs 10 credits plus 1 credit per page crawled. Competitive Intel costs 20 credits per comparison.',
+            },
+            {
+              q: 'What platforms does Citatom detect?',
+              a: 'Citatom automatically detects WordPress, Shopify, Wix, Squarespace, Webflow, Next.js, Gatsby, Hugo, and many other platforms. When a platform is detected, all fix instructions are tailored to that specific platform — referencing actual admin paths, plugins, and configuration files.',
+            },
+          ].map((faq, i) => (
+            <div key={i} className="p-5 rounded-xl border border-border/30 bg-card/30">
+              <h3 className="font-bold mb-2">{faq.q}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: [
+              { '@type': 'Question', name: 'What is AEO (Answer Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'AEO is the practice of optimizing your content so that AI-powered answer engines like ChatGPT, Perplexity, and Google AI Overviews cite your website as a source.' } },
+              { '@type': 'Question', name: 'What is GEO (Generative Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'GEO measures how well your content performs in AI-generated search results, evaluating expertise signals, factual density, tone objectivity, and citation likelihood.' } },
+              { '@type': 'Question', name: 'How does Citatom calculate scores?', acceptedAnswer: { '@type': 'Answer', text: 'Citatom uses a headless browser crawl plus dual Gemini AI analysis with site-type-specific scoring weights for consistent, accurate results.' } },
+              { '@type': 'Question', name: 'Is there a free tier?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. The Free Audit provides basic SEO, AEO, and GEO scores. Pro features require credits starting at $20 for 200 credits.' } },
+              { '@type': 'Question', name: 'How many credits does each scan cost?', acceptedAnswer: { '@type': 'Answer', text: 'Pro Audit: 10 credits. Deep Scan: 10 + 1 per page. Competitive Intel: 20 credits.' } },
+              { '@type': 'Question', name: 'What platforms does Citatom detect?', acceptedAnswer: { '@type': 'Answer', text: 'WordPress, Shopify, Wix, Squarespace, Webflow, Next.js, Gatsby, Hugo, and more. Fix instructions are tailored to the detected platform.' } },
+            ],
+          }),
+        }}
+      />
+
+      {/* CTA */}
+      <section className="max-w-6xl mx-auto px-6 py-20 text-center border-t border-border/30">
+        <h2 className="text-3xl font-black mb-4">Ready to Audit Your Site?</h2>
+        <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
+          Start with a free audit to see your SEO, AEO, and GEO scores. No account required.
+        </p>
+        <Link
+          href="/free"
+          className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#118fff] hover:bg-[#118fff]/90 text-white font-bold text-lg transition-colors"
+        >
+          Start Free Audit <ArrowRight className="h-5 w-5" />
+        </Link>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-border/30 py-8">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-muted-foreground">© 2026 Citatom. All rights reserved.</p>
+          <div className="flex items-center gap-6">
+            <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help</Link>
+            <Link href="/standards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Standards</Link>
+            <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Log In</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
