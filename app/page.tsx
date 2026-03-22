@@ -18,15 +18,16 @@ import {
 export const metadata: Metadata = {
   title: 'Citatom - SEO, AEO & GEO Intelligence Platform',
   description:
-    'Citatom is a search intelligence platform that audits your website for SEO, AEO (Answer Engine Optimization), and GEO (Generative Engine Optimization). Get AI-powered scoring, actionable fixes, and competitive analysis built for the 2026 search landscape.',
+    'Audit your website for SEO, AEO, and GEO with AI-powered scoring. Get actionable fixes for the 2026 search landscape.',
   alternates: { canonical: '/' },
 }
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen bg-background text-foreground">
       {/* Navigation */}
-      <nav className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
+      <header>
+        <nav className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50" aria-label="Main navigation">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center">
             <img src="/logo.png" alt="Citatom" className="h-10 w-auto" />
@@ -46,9 +47,11 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
-      </nav>
+        </nav>
+      </header>
 
       {/* Hero Section */}
+      <article>
       <section className="max-w-6xl mx-auto px-6 pt-20 pb-16 text-center">
         <h1 className="text-5xl md:text-6xl font-black tracking-tight leading-tight mb-6">
           Search Intelligence for the
@@ -94,8 +97,8 @@ export default function HomePage() {
             <h3 className="text-xl font-bold mb-2">SEO Analysis</h3>
             <p className="text-muted-foreground leading-relaxed">
               Evaluates technical SEO, content quality, metadata, schema markup, internal linking,
-              and Core Web Vitals using real PageSpeed Insights data. Scores against 2026 Google
-              crawling standards.
+              and <a href="https://web.dev/articles/vitals" target="_blank" rel="noopener noreferrer" className="text-[#118fff] hover:underline">Core Web Vitals</a> using
+              real PageSpeed Insights data. Scores against 2026 Google crawling standards.
             </p>
           </div>
 
@@ -107,7 +110,7 @@ export default function HomePage() {
             <p className="text-muted-foreground leading-relaxed">
               Measures how likely AI assistants like ChatGPT, Perplexity, and Gemini are to cite
               your content. Evaluates Q&A coverage, definition clarity, entity density, and
-              structured data quality.
+              <a href="https://schema.org" target="_blank" rel="noopener noreferrer" className="text-[#842ce0] hover:underline">structured data</a> quality.
             </p>
           </div>
 
@@ -118,7 +121,7 @@ export default function HomePage() {
             <h3 className="text-xl font-bold mb-2">GEO Analysis</h3>
             <p className="text-muted-foreground leading-relaxed">
               Assesses how well your content performs in AI-generated search results and summaries.
-              Analyzes expertise signals, factual density, tone objectivity, and citation likelihood
+              Analyzes <a href="https://developers.google.com/search/docs/fundamentals/creating-helpful-content" target="_blank" rel="noopener noreferrer" className="text-[#fe3f8c] hover:underline">expertise signals</a>, factual density, tone objectivity, and citation likelihood
               across major AI platforms.
             </p>
           </div>
@@ -207,7 +210,7 @@ export default function HomePage() {
         <div className="grid md:grid-cols-2 gap-6">
           {[
             { icon: <Brain className="h-5 w-5 text-[#842ce0]" />, title: 'Dual AI Scoring', desc: 'Every Pro Audit runs two parallel Gemini AI calls and averages the results for consistent, stable scores across repeated scans.' },
-            { icon: <Globe className="h-5 w-5 text-[#118fff]" />, title: 'Real Core Web Vitals', desc: 'Integrates Google PageSpeed Insights API for real LCP, INP, and CLS data — not estimates or lab-only metrics.' },
+            { icon: <Globe className="h-5 w-5 text-[#118fff]" />, title: 'Real Core Web Vitals', desc: 'Integrates the Google PageSpeed Insights API for real LCP, INP, and CLS data — the same metrics Google uses as ranking signals.' },
             { icon: <Target className="h-5 w-5 text-[#fe3f8c]" />, title: 'Site Type Detection', desc: 'Automatically detects your site type (e-commerce, blog, SaaS, portfolio, etc.) and adjusts scoring weights accordingly.' },
             { icon: <Shield className="h-5 w-5 text-[#842ce0]" />, title: 'Platform-Specific Fixes', desc: 'Detects WordPress, Shopify, Wix, Squarespace, Next.js, and more. Fix instructions reference your actual admin paths and plugins.' },
             { icon: <BarChart3 className="h-5 w-5 text-[#118fff]" />, title: 'Transparent Scoring', desc: 'Every point deducted is explained with severity, impact reasoning, and a step-by-step fix. No black-box scores.' },
@@ -284,6 +287,7 @@ export default function HomePage() {
       />
 
       {/* CTA */}
+      </article>
       <section className="max-w-6xl mx-auto px-6 py-20 text-center border-t border-border/30">
         <h2 className="text-3xl font-black mb-4">Ready to Audit Your Site?</h2>
         <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
@@ -308,6 +312,6 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
-    </div>
+    </main>
   )
 }
