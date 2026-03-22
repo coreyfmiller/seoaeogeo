@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { logUsage } from "./usage";
-import { sanitizeJsonString } from "./utils/json-sanitizer";
+import { safeJsonParse } from "./utils/json-sanitizer";
 import { calculateBrandConsistency } from "./schema-validator";
 import { formatSiteType } from "./site-type-detector";
 import type { SiteType } from "./types/audit";
@@ -73,7 +73,7 @@ Return ONLY this JSON (no markdown):
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("Could not parse lite AI response");
 
-    const aiResult = JSON.parse(sanitizeJsonString(jsonMatch[0]));
+    const aiResult = safeJsonParse(jsonMatch[0]);
 
     // Calculate domain health score deterministically from breakdown (don't trust AI's math)
     const breakdown = aiResult.domainHealthBreakdown || {};

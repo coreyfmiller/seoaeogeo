@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { logUsage } from "./usage";
-import { sanitizeJsonString } from "./utils/json-sanitizer";
+import { safeJsonParse } from "./utils/json-sanitizer";
 
 /**
  * Live Interrogation Engine: 
@@ -72,7 +72,7 @@ export async function performLiveInterrogation(context: {
         const jsonMatch = responseText.match(/\{[\s\S]*\}/);
         if (!jsonMatch) throw new Error("Could not parse AI response as JSON");
 
-        return JSON.parse(sanitizeJsonString(jsonMatch[0]));
+        return safeJsonParse(jsonMatch[0]);
     } catch (error) {
         console.error("Gemini Live Interrogation Error:", error);
         return null;
