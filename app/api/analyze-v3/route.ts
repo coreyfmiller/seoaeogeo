@@ -6,7 +6,7 @@ import { performLiveInterrogation } from '@/lib/gemini-interrogation'
 import { detectSiteType } from '@/lib/site-type-detector'
 import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers'
 import { fetchPageSpeedInsights } from '@/lib/pagespeed'
-import { getAuthUser, useCredits, refundCredits } from '@/lib/supabase/auth-helpers'
+import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
 
 export const maxDuration = 300
 
@@ -27,13 +27,11 @@ export async function POST(request: NextRequest) {
     })
   }
 
-  if (!user.is_admin) {
-    const { allowed } = await useCredits(user.id, 10)
-    if (!allowed) {
-      return new Response(JSON.stringify({ error: 'Insufficient credits. Pro Audit costs 10 credits.' }), {
-        status: 402, headers: { 'Content-Type': 'application/json' },
-      })
-    }
+  const { allowed } = await useCredits(user.id, 10)
+  if (!allowed) {
+    return new Response(JSON.stringify({ error: 'Insufficient credits. Pro Audit costs 10 credits.' }), {
+      status: 402, headers: { 'Content-Type': 'application/json' },
+    })
   }
 
   const stream = createSSEStream(async (send) => {
@@ -93,6 +91,7 @@ export async function POST(request: NextRequest) {
       const cwv = await pageSpeedPromise
 
       send({ type: 'progress', phase: 'Audit complete!', progress: 100 })
+      await incrementScanCount(user.id, 'pro')
       send({ type: 'result', success: true, data: {
         url, pageData, scores, graderResult, enhancedPenalties, siteTypeResult,
         platformDetection: pageData.platformDetection,
@@ -101,10 +100,8 @@ export async function POST(request: NextRequest) {
     } catch (error: any) {
       console.error('[V3 API] Error:', error)
       // Refund credits on failure
-      if (!user.is_admin) {
-        try { await refundCredits(user.id, 10) } catch (e) { console.error('[V3 API] Refund failed:', e) }
-      }
-      send({ type: 'error', success: false, error: error.message || 'Analysis failed', creditsRefunded: user.is_admin ? 0 : 10 })
+      try { await refundCredits(user.id, 10) } catch (e) { console.error('[V3 API] Refund failed:', e) }
+      send({ type: 'error', success: false, error: error.message || 'Analysis failed', creditsRefunded: 10 })
     }
   })
 

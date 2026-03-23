@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Download, Upload, Trash2 } from 'lucide-react'
 import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { cn } from '@/lib/utils'
+import { createClient } from '@/lib/supabase/client'
 
 const quickActions = [
   { label: "Pro Audit", desc: "AI-powered fix instructions", icon: Zap, href: "/pro-audit", color: "text-seo", bg: "bg-seo/10", tip: "Run a full AI-powered audit with Gemini analysis, site intelligence, and detailed fix instructions for every issue found." },
@@ -25,13 +26,28 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
+    // Load local scan history for the recent scans list
     const scans = getScanHistory()
     setRecentScans(scans.slice(0, 20))
-    setStats({
-      proAudits: scans.filter(s => s.type === 'pro').length,
-      deepCrawls: scans.filter(s => s.type === 'deep').length,
-      compIntel: scans.filter(s => s.type === 'competitive').length,
-    })
+
+    // Load lifetime stats from DB
+    const supabase = createClient()
+    ;(async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data: prof } = await supabase
+        .from('profiles')
+        .select('total_pro_audits, total_deep_scans, total_competitive_intel')
+        .eq('id', user.id)
+        .single()
+      if (prof) {
+        setStats({
+          proAudits: prof.total_pro_audits || 0,
+          deepCrawls: prof.total_deep_scans || 0,
+          compIntel: prof.total_competitive_intel || 0,
+        })
+      }
+    })()
   }, [])
 
   const handleExport = () => {

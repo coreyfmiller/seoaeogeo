@@ -8,7 +8,7 @@ import { saveScanSnapshot } from '@/lib/scan-snapshots'
 import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers'
 import { chromium as playwright, type Browser } from 'playwright-core'
 import chromium from '@sparticuz/chromium'
-import { getAuthUser, useCredits, refundCredits } from '@/lib/supabase/auth-helpers'
+import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
 
 export const maxDuration = 300
 
@@ -29,17 +29,15 @@ export async function POST(request: NextRequest) {
     })
   }
 
-  if (!user.is_admin) {
-    const cost = 10 + maxPages
-    const { allowed } = await useCredits(user.id, cost)
-    if (!allowed) {
-      return new Response(JSON.stringify({ error: `Insufficient credits. Deep Scan costs ${cost} credits (10 base + ${maxPages} pages).` }), {
-        status: 402, headers: { 'Content-Type': 'application/json' },
-      })
-    }
+  const cost = 10 + maxPages
+  const { allowed } = await useCredits(user.id, cost)
+  if (!allowed) {
+    return new Response(JSON.stringify({ error: `Insufficient credits. Deep Scan costs ${cost} credits (10 base + ${maxPages} pages).` }), {
+      status: 402, headers: { 'Content-Type': 'application/json' },
+    })
   }
 
-  const creditCost = 10 + maxPages
+  const creditCost = cost
   const url = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`
 
   const stream = createSSEStream(async (send) => {
@@ -324,6 +322,7 @@ export async function POST(request: NextRequest) {
       })
 
       send({ type: 'progress', phase: 'Deep scan complete!', progress: 100 })
+      await incrementScanCount(user.id, 'deep')
       send({ type: 'result', success: true, data: {
         url, analyzedAt: new Date().toISOString(), siteTypeResult,
         platformDetection: scanResults[0]?.scanResult?.platformDetection,
@@ -341,10 +340,8 @@ export async function POST(request: NextRequest) {
     } catch (error: any) {
       console.error('[Deep Scan] Error:', error)
       // Refund credits on failure
-      if (!user.is_admin) {
-        try { await refundCredits(user.id, creditCost) } catch (e) { console.error('[Deep Scan] Refund failed:', e) }
-      }
-      send({ type: 'error', success: false, error: error.message || 'Analysis failed', creditsRefunded: user.is_admin ? 0 : creditCost })
+      try { await refundCredits(user.id, creditCost) } catch (e) { console.error('[Deep Scan] Refund failed:', e) }
+      send({ type: 'error', success: false, error: error.message || 'Analysis failed', creditsRefunded: creditCost })
     } finally {
       if (browser) await browser.close()
     }

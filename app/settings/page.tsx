@@ -261,7 +261,7 @@ export default function SettingsPage() {
                     <div className="flex items-center gap-2">
                       <Coins className="h-5 w-5 text-[#842ce0]" />
                       <p className="text-2xl font-black text-[#842ce0]">
-                        {isAdmin ? '∞' : creditsAvailable}
+                        {creditsAvailable}
                       </p>
                     </div>
                   </div>
@@ -276,10 +276,7 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {isAdmin
-                    ? 'Admin accounts have unlimited credits.'
-                    : <>Credits never expire. <a href="/pro" className="text-seo hover:underline">Buy more credits</a></>
-                  }
+                  Credits never expire. <a href="/pro" className="text-seo hover:underline">Buy more credits</a>
                 </p>
               </CardContent>
             </Card>

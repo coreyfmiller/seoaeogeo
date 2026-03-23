@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { performScan } from '@/lib/crawler';
 import { analyzeCompetitive } from '@/lib/gemini-competitive';
-import { getAuthUser, useCredits, refundCredits } from '@/lib/supabase/auth-helpers';
+import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers';
 
 /**
  * Competitive Analysis API: Receives two URLs and runs
@@ -16,11 +16,9 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
         }
 
-        if (!user.is_admin) {
-            const { allowed } = await useCredits(user.id, 20);
-            if (!allowed) {
-                return NextResponse.json({ error: 'Insufficient credits. Competitive Intel costs 20 credits.' }, { status: 402 });
-            }
+        const { allowed } = await useCredits(user.id, 20);
+        if (!allowed) {
+            return NextResponse.json({ error: 'Insufficient credits. Competitive Intel costs 20 credits.' }, { status: 402 });
         }
 
         const { siteAUrl, siteBUrl } = await req.json();
@@ -58,6 +56,8 @@ export async function POST(req: Request) {
 
         console.log(`[API] Comparison Analysis complete.`);
 
+        await incrementScanCount(user.id, 'competitive');
+
         return NextResponse.json({
             success: true,
             data: {
@@ -71,13 +71,13 @@ export async function POST(req: Request) {
     } catch (error: any) {
         console.error('Competitive API Error:', error);
         // Refund credits on failure
-        if (user && !user.is_admin) {
+        if (user) {
             try { await refundCredits(user.id, 20); } catch (e) { console.error('[Competitive] Refund failed:', e); }
         }
         return NextResponse.json({
             success: false,
             error: error.message || 'Internal analysis error',
-            creditsRefunded: (user && !user.is_admin) ? 20 : 0,
+            creditsRefunded: user ? 20 : 0,
         }, { status: 500 });
     }
 }

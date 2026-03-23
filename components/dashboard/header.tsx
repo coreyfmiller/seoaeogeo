@@ -43,7 +43,7 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
         .eq("id", user.id)
         .single()
       if (prof) {
-        setCredits(prof.is_admin ? null : (prof.credits || 0))
+        setCredits(prof.credits || 0)
       }
     }
     fetchCredits()

@@ -55,13 +55,8 @@ export function CreditConfirmDialog({
         .eq("id", user.id)
         .single()
       if (prof) {
-        if (prof.is_admin) {
-          setBalance(999)
-          setIsAdmin(true)
-        } else {
-          setBalance(prof.credits || 0)
-          setIsAdmin(false)
-        }
+        setBalance(prof.credits || 0)
+        setIsAdmin(prof.is_admin || false)
       } else {
         setBalance(null)
       }
@@ -75,7 +70,7 @@ export function CreditConfirmDialog({
   const effectiveBreakdown = showPageSelector
     ? `10 base + ${selectedPages} pages × 1 credit = ${effectiveCost} credits`
     : costBreakdown
-  const hasEnough = isAdmin || (balance !== null && balance >= effectiveCost)
+  const hasEnough = balance !== null && balance >= effectiveCost
   const remaining = balance !== null ? balance - effectiveCost : 0
 
   return (

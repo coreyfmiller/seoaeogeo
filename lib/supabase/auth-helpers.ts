@@ -48,15 +48,11 @@ export async function getAuthUser(): Promise<UserProfile | null> {
 }
 
 // Use credits from unified pool. Returns whether allowed and remaining balance.
+// Admin accounts are treated the same as regular users.
 export async function useCredits(
   userId: string,
   amount: number,
-  isAdmin: boolean = false
 ): Promise<{ allowed: boolean; remaining: number }> {
-  if (isAdmin) {
-    return { allowed: true, remaining: 999 }
-  }
-
   const { data: profile } = await supabaseAdmin
     .from('profiles')
     .select('credits, credits_used')
@@ -73,13 +69,36 @@ export async function useCredits(
     .from('profiles')
     .update({
       credits: current - amount,
-      credits_used: (profile as any).credits_used ? (profile as any).credits_used + amount : amount,
+      credits_used: ((profile as any).credits_used || 0) + amount,
     })
     .eq('id', userId)
     .select('credits')
     .single()
 
   return { allowed: true, remaining: updated?.credits ?? (current - amount) }
+}
+
+// Increment lifetime scan counter on profile after a successful scan
+export async function incrementScanCount(
+  userId: string,
+  type: 'pro' | 'deep' | 'competitive'
+): Promise<void> {
+  const col = type === 'pro' ? 'total_pro_audits'
+    : type === 'deep' ? 'total_deep_scans'
+    : 'total_competitive_intel'
+
+  const { data: profile } = await supabaseAdmin
+    .from('profiles')
+    .select(col)
+    .eq('id', userId)
+    .single()
+
+  if (!profile) return
+
+  await supabaseAdmin
+    .from('profiles')
+    .update({ [col]: ((profile as any)[col] || 0) + 1 })
+    .eq('id', userId)
 }
 
 // Add credits to a user (called from Stripe webhook after purchase)
