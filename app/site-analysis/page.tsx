@@ -622,6 +622,10 @@ export default function SiteAnalysis() {
                                                         <CardTitle className="flex items-center gap-2">
                                                             <Zap className="h-5 w-5 text-geo" />
                                                             Prioritized Site Improvements
+                                                            <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-[#BC13FE]/30 text-[#BC13FE] bg-[#BC13FE]/10 gap-1">
+                                                              <Sparkles className="h-2.5 w-2.5" />
+                                                              AI-Powered
+                                                            </Badge>
                                                         </CardTitle>
                                                         <CardDescription>Sitewide actions to unify authority, prune crawl issues, and expand semantic reach</CardDescription>
                                                     </div>

@@ -510,6 +510,10 @@ export default function DeepV3Page() {
                       <div className="flex items-center gap-2">
                         <Zap className="h-5 w-5 text-[#00e5ff]" />
                         <CardTitle>Prioritized Site Improvements</CardTitle>
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-[#BC13FE]/30 text-[#BC13FE] bg-[#BC13FE]/10 gap-1">
+                          <Sparkles className="h-2.5 w-2.5" />
+                          AI-Powered
+                        </Badge>
                         <InfoTooltip content="AI-generated strategic roadmap ranked by impact. Each recommendation includes step-by-step fix instructions, code snippets, and validation links tailored to your site type." />
                         <button
                           onClick={() => {
