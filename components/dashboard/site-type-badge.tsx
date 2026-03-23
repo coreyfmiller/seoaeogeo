@@ -332,7 +332,7 @@ export function SiteTypeBadge({ siteType, onConfirm, onManualSelect }: SiteTypeB
   }
 
   return (
-    <div className="rounded-lg border bg-background/60" style={{
+    <div className="rounded-lg border bg-background/60 overflow-hidden" style={{
       borderColor: confidenceConfig.low.borderColor.replace('border-', ''),
       backgroundColor: confidenceConfig.low.bgColor.replace('bg-', '')
     }}>
@@ -369,7 +369,7 @@ export function SiteTypeBadge({ siteType, onConfirm, onManualSelect }: SiteTypeB
           Why am I seeing this?
         </button>
         {showWhy && (
-          <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
+          <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed break-words">
             Duelly scores each site differently based on its type — an e-commerce store is evaluated differently than a blog or a SaaS product. Our AI couldn't confidently determine what kind of site this is, which usually means the page is missing clear signals like structured data, descriptive headings, or focused content. Please select your site type so we can score it accurately.
           </p>
         )}
