@@ -97,47 +97,98 @@ export function AuditPageHeader({
 
   return (
     <div className="mb-6">
-      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-            <Activity className="h-6 w-6 text-seo" />
-            {title}
+      <div className="flex flex-col gap-4">
+        {/* Title row with action buttons */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <Activity className="h-6 w-6 text-seo shrink-0" />
+            <h1 className="text-2xl font-bold text-foreground truncate">{title}</h1>
             {badge && (
-              <Badge variant="secondary" className={`${getBadgeStyles()} px-3 py-1`}>
+              <Badge variant="secondary" className={`${getBadgeStyles()} px-3 py-1 shrink-0`}>
                 {badge}
               </Badge>
             )}
-          </h1>
-          {description && (
-            <p className="text-sm text-muted-foreground mt-1 max-w-3xl truncate">
-              {description}
-            </p>
-          )}
-          <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <Search className="h-4 w-4" />
-              {currentUrl || "No analysis active"}
-            </span>
-            {hasResults && (
-              <>
-                <Badge variant="outline" className="border-[#fe3f8c]/50 text-[#fe3f8c]">
-                  <Clock className="h-3 w-3 mr-1" />
-                  Analysis Live
-                </Badge>
-                <Badge variant="outline" className="border-[#fe3f8c]/50 text-[#fe3f8c] bg-[#fe3f8c]/5">
-                  <Activity className="h-3 w-3 mr-1.5" />
-                  {pageCount} Page{pageCount !== 1 ? 's' : ''} Scanned
-                </Badge>
-              </>
-            )}
           </div>
+          {hasResults && (
+            <div className="flex items-center gap-2 sm:ml-auto shrink-0">
+              <button
+                onClick={() => {
+                  if (!analysisData) return
+                  const scores = analysisData.scores || {}
+                  const seo = scores.seo?.score ?? 'N/A'
+                  const aeo = scores.aeo?.score ?? 'N/A'
+                  const geo = scores.geo?.score ?? 'N/A'
+                  const penalties = (analysisData.enhancedPenalties || [])
+                    .map((p: any) => `[${p.severity?.toUpperCase()}] ${p.category} — ${p.component}\n  ${p.explanation}\n  Fix: ${p.fix}`)
+                    .join('\n\n')
+                  const text = `DUELLY AUDIT REPORT\n${'='.repeat(50)}\nURL: ${currentUrl}\nDate: ${new Date().toLocaleString()}\nSite Type: ${siteType?.primaryType || 'Unknown'}\n\nSCORES\n  SEO: ${seo}/100\n  AEO: ${aeo}/100\n  GEO: ${geo}/100\n\nISSUES FOUND\n${penalties || '  No issues detected.'}`
+                  navigator.clipboard.writeText(text)
+                  setCopied(true)
+                  setTimeout(() => setCopied(false), 2000)
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-aeo/50 transition-colors"
+              >
+                {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied ? 'Copied' : 'Copy Report'}
+              </button>
+              <button
+                onClick={() => {
+                  if (!analysisData) return
+                  const scores = analysisData.scores || {}
+                  const seo = scores.seo?.score ?? 'N/A'
+                  const aeo = scores.aeo?.score ?? 'N/A'
+                  const geo = scores.geo?.score ?? 'N/A'
+                  const penalties = (analysisData.enhancedPenalties || [])
+                    .map((p: any) => `[${p.severity?.toUpperCase()}] ${p.category} — ${p.component}\n  ${p.explanation}\n  Fix: ${p.fix}`)
+                    .join('\n\n')
+                  const text = `DUELLY AUDIT REPORT\n${'='.repeat(50)}\nURL: ${currentUrl}\nDate: ${new Date().toLocaleString()}\nSite Type: ${siteType?.primaryType || 'Unknown'}\n\nSCORES\n  SEO: ${seo}/100\n  AEO: ${aeo}/100\n  GEO: ${geo}/100\n\nISSUES FOUND\n${penalties || '  No issues detected.'}`
+                  const blob = new Blob([text], { type: 'text/plain' })
+                  const url = URL.createObjectURL(blob)
+                  const a = document.createElement('a')
+                  a.href = url
+                  a.download = `duelly-audit-${currentUrl.replace(/[^a-zA-Z0-9]/g, '-')}-${new Date().toISOString().slice(0, 10)}.txt`
+                  a.click()
+                  URL.revokeObjectURL(url)
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-geo/50 transition-colors"
+              >
+                <FileDown className="h-3.5 w-3.5" />
+                Export Report
+              </button>
+              <button
+                onClick={onNewAudit}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-seo/50 transition-colors"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                New Audit
+              </button>
+            </div>
+          )}
         </div>
-        
-        {/* Right Side: Site Intelligence + Action Buttons */}
-        <div className="lg:w-[480px] shrink-0 space-y-2">
+
+        {/* URL + status badges */}
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <Search className="h-4 w-4" />
+            {currentUrl || "No analysis active"}
+          </span>
           {hasResults && (
             <>
-              {siteType && (
+              <Badge variant="outline" className="border-[#fe3f8c]/50 text-[#fe3f8c]">
+                <Clock className="h-3 w-3 mr-1" />
+                Analysis Live
+              </Badge>
+              <Badge variant="outline" className="border-[#fe3f8c]/50 text-[#fe3f8c] bg-[#fe3f8c]/5">
+                <Activity className="h-3 w-3 mr-1.5" />
+                {pageCount} Page{pageCount !== 1 ? 's' : ''} Scanned
+              </Badge>
+            </>
+          )}
+        </div>
+        
+        {/* Right Side: Site Intelligence */}
+        <div className="lg:w-[480px] shrink-0 space-y-2">
+          {hasResults && siteType && (
                 <div className="px-2 py-1.5 rounded-lg border border-[#842ce0]/30 bg-[#842ce0]/5">
                   <div className="flex items-center gap-2 mb-1">
                     <Sparkles className="h-3.5 w-3.5 text-[#842ce0]" />
@@ -236,63 +287,7 @@ export function AuditPageHeader({
                   )}
                 </div>
               )}
-              
-              <div className="flex items-center gap-2 justify-end flex-wrap">
-                <button
-                  onClick={() => {
-                    if (!analysisData) return
-                    const scores = analysisData.scores || {}
-                    const seo = scores.seo?.score ?? 'N/A'
-                    const aeo = scores.aeo?.score ?? 'N/A'
-                    const geo = scores.geo?.score ?? 'N/A'
-                    const penalties = (analysisData.enhancedPenalties || [])
-                      .map((p: any) => `[${p.severity?.toUpperCase()}] ${p.category} — ${p.component}\n  ${p.explanation}\n  Fix: ${p.fix}`)
-                      .join('\n\n')
-                    const text = `DUELLY AUDIT REPORT\n${'='.repeat(50)}\nURL: ${currentUrl}\nDate: ${new Date().toLocaleString()}\nSite Type: ${siteType?.primaryType || 'Unknown'}\n\nSCORES\n  SEO: ${seo}/100\n  AEO: ${aeo}/100\n  GEO: ${geo}/100\n\nISSUES FOUND\n${penalties || '  No issues detected.'}`
-                    navigator.clipboard.writeText(text)
-                    setCopied(true)
-                    setTimeout(() => setCopied(false), 2000)
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 text-sm text-muted-foreground hover:text-foreground hover:border-aeo/50 transition-colors"
-                >
-                  {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-                  {copied ? 'Copied' : 'Copy Report'}
-                </button>
-                <button
-                  onClick={() => {
-                    if (!analysisData) return
-                    const scores = analysisData.scores || {}
-                    const seo = scores.seo?.score ?? 'N/A'
-                    const aeo = scores.aeo?.score ?? 'N/A'
-                    const geo = scores.geo?.score ?? 'N/A'
-                    const penalties = (analysisData.enhancedPenalties || [])
-                      .map((p: any) => `[${p.severity?.toUpperCase()}] ${p.category} — ${p.component}\n  ${p.explanation}\n  Fix: ${p.fix}`)
-                      .join('\n\n')
-                    const text = `DUELLY AUDIT REPORT\n${'='.repeat(50)}\nURL: ${currentUrl}\nDate: ${new Date().toLocaleString()}\nSite Type: ${siteType?.primaryType || 'Unknown'}\n\nSCORES\n  SEO: ${seo}/100\n  AEO: ${aeo}/100\n  GEO: ${geo}/100\n\nISSUES FOUND\n${penalties || '  No issues detected.'}`
-                    const blob = new Blob([text], { type: 'text/plain' })
-                    const url = URL.createObjectURL(blob)
-                    const a = document.createElement('a')
-                    a.href = url
-                    a.download = `duelly-audit-${currentUrl.replace(/[^a-zA-Z0-9]/g, '-')}-${new Date().toISOString().slice(0, 10)}.txt`
-                    a.click()
-                    URL.revokeObjectURL(url)
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 text-sm text-muted-foreground hover:text-foreground hover:border-geo/50 transition-colors"
-                >
-                  <FileDown className="h-4 w-4" />
-                  Export Report
-                </button>
-                <button
-                  onClick={onNewAudit}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border/50 text-sm text-muted-foreground hover:text-foreground hover:border-seo/50 transition-colors"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                  New Audit
-                </button>
-              </div>
-            </>
-          )}
-          
+
           {!hasResults && !isAnalyzing && (
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground italic">Ready to optimize?</span>
