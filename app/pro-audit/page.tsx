@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Zap, Search, Sparkles, Bot, CheckCircle2, Clock } from 'lucide-react'
+import { Zap, Search, Sparkles, Bot, CheckCircle2, Clock, Copy } from 'lucide-react'
 import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -17,6 +17,7 @@ import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
 import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
 import { Badge } from '@/components/ui/badge'
+import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { cn } from '@/lib/utils'
 
 interface AnalysisResult {
@@ -594,6 +595,109 @@ export default function V3Page() {
               </TabsContent>
             </div>
           </Tabs>
+
+          {/* Prioritized Site Improvements */}
+          {result.aiAnalysis?.recommendations?.length > 0 && (
+            <Card className="border-[#00e5ff]/30 bg-gradient-to-br from-[#00e5ff]/5 to-[#BC13FE]/5">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-[#00e5ff]" />
+                  <CardTitle>Prioritized Site Improvements</CardTitle>
+                  <InfoTooltip content="AI-generated strategic roadmap ranked by impact. Each recommendation includes step-by-step fix instructions, code snippets, and validation links tailored to your site type." />
+                  <button
+                    onClick={() => {
+                      const recs = result.aiAnalysis!.recommendations!
+                      const sep = '\u2500'.repeat(60)
+                      const text = `PRIORITIZED SITE IMPROVEMENTS (${recs.length})\n${'='.repeat(60)}\n\n` + recs.map((r: any, i: number) => {
+                        const p = (r.priority || 'medium').toUpperCase()
+                        const domain = r.domain || r.category || 'SEO'
+                        let t = `${sep}\n${i + 1}. [${p}] [${domain.toUpperCase()}] ${r.title}\n${sep}`
+                        if (r.description) t += `\n\nWhy This Matters:\n${r.description}`
+                        if (r.platform) t += `\n\nPlatform: ${r.platform}`
+                        if (r.estimatedTime || r.effort) t += `\nEffort: ${r.estimatedTime || r.effort + 'h'}`
+                        if (r.steps?.length) {
+                          t += '\n\nImplementation Steps:'
+                          r.steps.forEach((s: any) => {
+                            t += `\n\n  Step ${s.step}: ${s.title}\n  ${s.description}`
+                            if (s.code) t += `\n\n  Code:\n  ${s.code}`
+                          })
+                        }
+                        if (r.code || r.codeSnippet) t += `\n\nCode:\n${r.code || r.codeSnippet}`
+                        if (r.validationLinks?.length) {
+                          t += '\n\nValidation Links:'
+                          r.validationLinks.forEach((v: any) => { t += `\n  - ${v.tool}: ${v.url}` })
+                        }
+                        return t
+                      }).join('\n\n')
+                      navigator.clipboard.writeText(text)
+                    }}
+                    className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-[#00e5ff]/50 transition-colors"
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                    Copy All
+                  </button>
+                </div>
+                <CardDescription>Actions ranked by impact to improve your scores</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {(() => {
+                  const recs = result.aiAnalysis!.recommendations!
+                  const normPriority = (r: any) => {
+                    const p = (r.priority || 'medium').toUpperCase()
+                    if (p === 'STEADY') return 'MEDIUM'
+                    if (p === 'CRITICAL' || p === 'HIGH' || p === 'MEDIUM' || p === 'LOW') return p
+                    return 'MEDIUM'
+                  }
+                  const normDomain = (r: any): 'seo' | 'aeo' | 'geo' | 'all' => {
+                    if (r.domain) return r.domain.toLowerCase() as any
+                    const cat = (r.category || '').toLowerCase()
+                    if (cat === 'aeo') return 'aeo'
+                    if (cat === 'schema' || cat === 'trust') return 'seo'
+                    if (cat === 'content') return 'seo'
+                    return 'seo'
+                  }
+                  const urgent = recs.filter((r: any) => normPriority(r) === 'CRITICAL')
+                  const high = recs.filter((r: any) => normPriority(r) === 'HIGH')
+                  const medium = recs.filter((r: any) => normPriority(r) === 'MEDIUM' || normPriority(r) === 'LOW')
+                  const groups = [
+                    { label: '🔥 Urgent', items: urgent },
+                    { label: '⚡ High', items: high },
+                    { label: '→ Medium', items: medium },
+                  ].filter(g => g.items.length > 0)
+
+                  const renderCard = (rec: any, i: number) => (
+                    <FixInstructionCard
+                      key={i}
+                      title={rec.title}
+                      domain={normDomain(rec)}
+                      priority={normPriority(rec)}
+                      steps={rec.steps || [{ step: 1, title: 'Implementation', description: rec.description }]}
+                      code={rec.code || rec.codeSnippet}
+                      platform={rec.platform || 'Any'}
+                      estimatedTime={rec.estimatedTime || `${rec.effort || 1}h`}
+                      difficulty={rec.effort >= 3 ? 'difficult' : rec.effort >= 2 ? 'moderate' : 'easy'}
+                      impact={rec.priority === 'CRITICAL' ? 'high' : rec.priority === 'HIGH' ? 'medium' : 'low'}
+                      affectedPages={1}
+                      validationLinks={rec.validationLinks}
+                    />
+                  )
+
+                  return (
+                    <div className="space-y-6">
+                      {groups.map(group => (
+                        <div key={group.label}>
+                          <p className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-3">{group.label} ({group.items.length})</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {group.items.map((rec: any, i: number) => renderCard(rec, i))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                })()}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Core Web Vitals */}
           {result.cwv && (

@@ -59,6 +59,7 @@ export function AEOTab({ data }: AEOTabProps) {
   const [copiedFix, setCopiedFix] = useState<number | null>(null);
   const [severityFilter, setSeverityFilter] = useState<'all' | 'critical' | 'warning'>('all');
   const [showOpportunities, setShowOpportunities] = useState(false);
+  const [allCopied, setAllCopied] = useState(false);
   
   const aeoData = data?.ai?.aeoAnalysis
   const struct = data?.structuralData
@@ -91,6 +92,25 @@ export function AEOTab({ data }: AEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-destructive">
               <Shield className="h-5 w-5" />
               Roadmap to 100
+              <button
+                onClick={() => {
+                  const sep = '─'.repeat(60)
+                  const text = `ROADMAP TO 100 — AEO Penalties (${allAeoPenalties.length})\n${'═'.repeat(60)}\n\n` + allAeoPenalties.map((p, i) => {
+                    let t = `${sep}\n${i + 1}. [${p.severity.toUpperCase()}] [${p.category}] ${p.component} (${p.pointsDeducted} pts)\n${sep}`
+                    t += `\n\nIssue:\n${p.penalty}`
+                    t += `\n\nWhy This Matters:\n${p.explanation}`
+                    t += `\n\nHow To Fix:\n${p.fix}`
+                    return t
+                  }).join('\n\n')
+                  navigator.clipboard.writeText(text)
+                  setAllCopied(true)
+                  setTimeout(() => setAllCopied(false), 2000)
+                }}
+                className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-destructive/50 transition-colors"
+              >
+                {allCopied ? <Check className="h-3.5 w-3.5 text-geo" /> : <Copy className="h-3.5 w-3.5" />}
+                {allCopied ? 'Copied' : 'Copy All'}
+              </button>
             </CardTitle>
             <p className="text-sm text-muted-foreground">
               Fix these Answer Engine Optimization issues to reach a perfect AEO score. Click any penalty for detailed explanation and fix instructions.

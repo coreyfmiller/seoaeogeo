@@ -276,9 +276,17 @@ export function Recommendations({ data }: RecommendationsProps) {
   const [allCopied, setAllCopied] = useState(false)
 
   const copyAll = () => {
-    const text = displayRecommendations.map(r =>
-      `[${r.category.toUpperCase()}] ${r.title}\nImpact: ${r.description}`
-    ).join('\n\n')
+    const sep = '\u2500'.repeat(60)
+    const text = `ROADMAP TO 100 \u2014 Recommendations (${displayRecommendations.length})\n${'='.repeat(60)}\n\n` + displayRecommendations.map((r, i) => {
+      let t = `${sep}\n${i + 1}. [${(r.priority || 'medium').toUpperCase()}] [${r.category.toUpperCase()}] ${r.title}\n${sep}`
+      t += `\n\nWhy This Matters:\n${r.description}`
+      t += `\n\nImpact: ${r.impact}`
+      if (r.effort) t += `\nEffort: ${r.effort}`
+      if (r.affectedElement) t += `\n\nAffected Element:\n${r.affectedElement}`
+      if (r.howToFix) t += `\n\nHow To Fix:\n${r.howToFix}`
+      if (r.codeSnippet) t += `\n\nCode:\n${r.codeSnippet}`
+      return t
+    }).join('\n\n')
     navigator.clipboard.writeText(text)
     setAllCopied(true)
     setTimeout(() => setAllCopied(false), 2000)

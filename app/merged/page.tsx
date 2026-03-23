@@ -36,6 +36,7 @@ import {
   AlertCircle,
   Zap,
   AlertTriangle,
+  Copy,
 } from "lucide-react"
 import { CrawlConfig } from "@/components/dashboard/crawl-config"
 import { MultiPageDashboard } from "@/components/dashboard/multi-page-dashboard"
@@ -437,6 +438,38 @@ export default function MergedDashboard() {
                               <CardTitle className="flex items-center gap-2">
                                 <Zap className="h-5 w-5 text-geo" />
                                 Prioritized Site Improvements
+                                <button
+                                  onClick={() => {
+                                    const recs = ai.recommendations
+                                    const sep = '\u2500'.repeat(60)
+                                    const text = `PRIORITIZED SITE IMPROVEMENTS (${recs.length})\n${'='.repeat(60)}\n\n` + recs.map((r: any, i: number) => {
+                                      const p = (r.priority || 'MEDIUM').toUpperCase()
+                                      const domain = r.domain || 'SEO'
+                                      let t = `${sep}\n${i + 1}. [${p}] [${domain.toUpperCase()}] ${r.title}\n${sep}`
+                                      if (r.description) t += `\n\nWhy This Matters:\n${r.description}`
+                                      if (r.platform) t += `\n\nPlatform: ${r.platform}`
+                                      if (r.estimatedTime || r.effort) t += `\nEffort: ${r.estimatedTime || r.effort + 'h'}`
+                                      if (r.steps?.length) {
+                                        t += '\n\nImplementation Steps:'
+                                        r.steps.forEach((s: any) => {
+                                          t += `\n\n  Step ${s.step}: ${s.title}\n  ${s.description}`
+                                          if (s.code) t += `\n\n  Code:\n  ${s.code}`
+                                        })
+                                      }
+                                      if (r.code || r.codeSnippet) t += `\n\nCode:\n${r.code || r.codeSnippet}`
+                                      if (r.validationLinks?.length) {
+                                        t += '\n\nValidation Links:'
+                                        r.validationLinks.forEach((v: any) => { t += `\n  - ${v.tool}: ${v.url}` })
+                                      }
+                                      return t
+                                    }).join('\n\n')
+                                    navigator.clipboard.writeText(text)
+                                  }}
+                                  className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs font-normal text-muted-foreground hover:text-foreground hover:border-[#00e5ff]/50 transition-colors"
+                                >
+                                  <Copy className="h-3.5 w-3.5" />
+                                  Copy All
+                                </button>
                               </CardTitle>
                               <CardDescription>
                                 Sitewide actions to improve authority and visibility

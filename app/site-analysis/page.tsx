@@ -29,6 +29,7 @@ import {
     Info,
     Code2,
     RefreshCw,
+    Copy,
 } from "lucide-react"
 import { SemanticMap } from "@/components/dashboard/semantic-map"
 import { CrawlConfig } from "@/components/dashboard/crawl-config"
@@ -625,18 +626,37 @@ export default function SiteAnalysis() {
                                                         <CardDescription>Sitewide actions to unify authority, prune crawl issues, and expand semantic reach</CardDescription>
                                                     </div>
                                                     <div className="flex items-center gap-3">
-                                                        <Badge variant="outline" className="border-geo/30 text-geo font-black text-[10px] tracking-widest uppercase px-3 py-1 bg-geo/5">
-                                                            Strategic Roadmap
-                                                        </Badge>
                                                         <button
                                                             onClick={() => {
-                                                                const text = ai.recommendations.map((f: any) => `[RANK ${f.rank}] ${f.title}\nACTION: ${f.description}\nIMPACT: ${f.impact}`).join('\n\n');
+                                                                const recs = ai.recommendations
+                                                                const sep = '\u2500'.repeat(60)
+                                                                const text = `PRIORITIZED SITE IMPROVEMENTS (${recs.length})\n${'='.repeat(60)}\n\n` + recs.map((r: any, i: number) => {
+                                                                    const p = (r.priority || 'MEDIUM').toUpperCase()
+                                                                    const domain = r.domain || 'SEO'
+                                                                    let t = `${sep}\n${i + 1}. [${p}] [${domain.toUpperCase()}] ${r.title}\n${sep}`
+                                                                    if (r.description) t += `\n\nWhy This Matters:\n${r.description}`
+                                                                    if (r.platform) t += `\n\nPlatform: ${r.platform}`
+                                                                    if (r.estimatedTime || r.effort) t += `\nEffort: ${r.estimatedTime || r.effort + 'h'}`
+                                                                    if (r.steps?.length) {
+                                                                        t += '\n\nImplementation Steps:'
+                                                                        r.steps.forEach((s: any) => {
+                                                                            t += `\n\n  Step ${s.step}: ${s.title}\n  ${s.description}`
+                                                                            if (s.code) t += `\n\n  Code:\n  ${s.code}`
+                                                                        })
+                                                                    }
+                                                                    if (r.code || r.codeSnippet) t += `\n\nCode:\n${r.code || r.codeSnippet}`
+                                                                    if (r.validationLinks?.length) {
+                                                                        t += '\n\nValidation Links:'
+                                                                        r.validationLinks.forEach((v: any) => { t += `\n  - ${v.tool}: ${v.url}` })
+                                                                    }
+                                                                    return t
+                                                                }).join('\n\n')
                                                                 navigator.clipboard.writeText(text);
-                                                                alert("Roadmap copied to clipboard!");
                                                             }}
-                                                            className="bg-background/50 hover:bg-background/80 border border-border/50 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+                                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-[#00e5ff]/50 transition-colors"
                                                         >
-                                                            Copy Plan
+                                                            <Copy className="h-3.5 w-3.5" />
+                                                            Copy All
                                                         </button>
                                                     </div>
                                                 </CardHeader>
