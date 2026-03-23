@@ -72,7 +72,7 @@ ${options?.platform ? `
       "strategicGaps": string[],
       "winnerVerdict": string,
       "recommendations": Array<{
-        "rank": number (1-6),
+        "rank": number (1-10),
         "title": string (RUTHLESS ACTION - e.g. "Clone Competitor's FAQ Structure"),
         "description": string (THE WHY/IMPACT REASONING),
         "howToFix": string (STEP-BY-STEP fix instructions, platform-specific if platform detected. Be thorough.),
@@ -87,7 +87,7 @@ ${options?.platform ? `
     }
     
     IMPORTANT: 
-    - You MUST generate exactly 6 recommendations, prioritized by impact. Focus on the highest-ROI actions only.
+    - You MUST generate exactly 10 recommendations, prioritized by impact. Focus on the highest-ROI actions only.
     - Use modern 2026 crawler standards (arrays and @graph are valid)
     - Focus on real competitive advantages, not implementation style
     `;

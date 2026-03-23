@@ -6,15 +6,16 @@ import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatest
 import { DualSearchInput } from "@/components/dashboard/search-input"
 import { Badge } from "@/components/ui/badge"
 import {
-    Globe, Swords, Search, TrendingUp, ShieldAlert, Activity,
+    Globe, Swords, Search, ShieldAlert,
     CheckCircle2, Clock, Sparkles, Zap, Bot, RefreshCw,
-    ChevronDown, Copy, Check, Code2
+    Copy
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
 import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
+import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 
 /* ── Glowing Radial Ring (SVG) ── */
 function BattleRing({ value, color, glowColor, size = 130 }: { value: number; color: string; glowColor: string; size?: number }) {
@@ -51,8 +52,6 @@ export default function BattleMode() {
     const [loadingProgress, setLoadingProgress] = useState(0)
     const [loadingPhase, setLoadingPhase] = useState("")
     const [elapsedSeconds, setElapsedSeconds] = useState(0)
-    const [expandedStrategy, setExpandedStrategy] = useState<number | null>(null)
-    const [copiedFix, setCopiedFix] = useState<number | null>(null)
 
     // Session restore
     useEffect(() => {
@@ -300,88 +299,90 @@ export default function BattleMode() {
                                 </div>
                             )}
 
-                            {/* ── Counter-Strategies ── */}
-                            {(comparisonData.recommendations || comparisonData.comparison?.recommendations)?.length > 0 && (
-                                <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-xl overflow-hidden">
-                                    <div className="px-6 py-4 border-b border-white/[0.06] flex items-center justify-between">
-                                        <div>
-                                            <h3 className="text-sm font-black text-white flex items-center gap-2">
-                                                <Zap className="h-4 w-4 text-green-400" />
-                                                Top 6 Counter-Strategies
-                                                <InfoTooltip content="AI-generated tactical plan to outperform this competitor. Each strategy is ranked by potential impact." />
-                                            </h3>
-                                            <p className="text-[10px] text-white/30 mt-0.5">AI-generated plan to outmaneuver this competitor</p>
-                                        </div>
-                                        <button onClick={() => {
-                                            const recs = comparisonData.recommendations || comparisonData.comparison?.recommendations || []
-                                            const text = recs.slice(0, 6).map((f: any) => `[RANK ${f.rank}] ${f.title}\nACTION: ${f.description}\nHOW TO FIX: ${f.howToFix || 'N/A'}${f.codeSnippet ? '\nCODE: ' + f.codeSnippet : ''}\nIMPACT: ${f.impact}`).join('\n\n')
-                                            navigator.clipboard.writeText(text); alert("Battle Plan copied!")
-                                        }} className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white/80 transition-colors">
-                                            Copy Plan
-                                        </button>
-                                    </div>
-                                    <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {(comparisonData.recommendations || comparisonData.comparison?.recommendations || []).slice(0, 6).map((fix: any, i: number) => {
-                                            const isExpanded = expandedStrategy === i
-                                            return (
-                                                <div key={i} onClick={() => setExpandedStrategy(isExpanded ? null : i)}
-                                                    className={cn(
-                                                        "flex flex-col p-5 rounded-xl border border-white/[0.06] bg-white/[0.02] transition-all cursor-pointer group relative overflow-hidden",
-                                                        isExpanded ? "col-span-full border-[#BC13FE]/30 ring-1 ring-[#BC13FE]/20" : "hover:border-white/[0.12]"
-                                                    )}>
-                                                    <div className="flex items-center justify-between mb-3">
-                                                        <div className="flex gap-1.5 flex-wrap">
-                                                            <Badge className="bg-white/[0.06] text-white/50 text-[8px] font-black uppercase tracking-tighter px-1.5 py-0 border-0">{fix.category}</Badge>
-                                                            <Badge className={cn("text-[8px] font-black uppercase tracking-tighter px-1.5 py-0 border-0",
-                                                                (fix.priority || fix.roi) === 'CRITICAL' ? "bg-red-500/20 text-red-400" :
-                                                                (fix.priority || fix.roi) === 'HIGH' ? "bg-yellow-500/20 text-yellow-400" : "bg-green-500/20 text-green-400"
-                                                            )}>
-                                                                {(fix.priority || fix.roi) === 'CRITICAL' ? '🔥 URGENT' : (fix.priority || fix.roi) === 'HIGH' ? '⚡ HIGH' : '✓ QUICK WIN'}
-                                                            </Badge>
-                                                        </div>
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="h-6 w-6 rounded-full bg-white/[0.06] flex items-center justify-center text-[10px] font-black text-white/40">{fix.rank}</div>
-                                                            <ChevronDown className={cn("h-4 w-4 text-white/20 transition-transform", isExpanded && "rotate-180")} />
+                            {/* ── Counter-Strategies (Prioritized Style) ── */}
+                            {(comparisonData.recommendations || comparisonData.comparison?.recommendations)?.length > 0 && (() => {
+                                const recs = comparisonData.recommendations || comparisonData.comparison?.recommendations || []
+                                const normPriority = (r: any) => r.roi === 'STEADY' ? 'MEDIUM' : r.roi === 'CRITICAL' ? 'CRITICAL' : r.roi === 'HIGH' ? 'HIGH' : (r.priority || 'MEDIUM').toUpperCase()
+                                const normDomain = (r: any) => {
+                                    const cat = (r.category || '').toLowerCase()
+                                    if (cat === 'aeo') return 'aeo'
+                                    if (cat === 'geo' || cat === 'trust') return 'geo'
+                                    return 'seo' // Schema, Content, SEO, and anything else → SEO
+                                }
+                                const urgent = recs.filter((r: any) => normPriority(r) === 'CRITICAL')
+                                const high = recs.filter((r: any) => normPriority(r) === 'HIGH')
+                                const medium = recs.filter((r: any) => normPriority(r) === 'MEDIUM' || normPriority(r) === 'STEADY')
+
+                                const groups = [
+                                    { label: '🔥 Urgent', items: urgent },
+                                    { label: '⚡ High', items: high },
+                                    { label: '📌 Medium', items: medium },
+                                ].filter(g => g.items.length > 0)
+
+                                return (
+                                    <Card className="border-[#00e5ff]/30 bg-gradient-to-br from-[#00e5ff]/5 to-[#BC13FE]/5">
+                                        <CardHeader>
+                                            <div className="flex items-center gap-2">
+                                                <Zap className="h-5 w-5 text-[#00e5ff]" />
+                                                <CardTitle className="text-white">Counter-Strategies</CardTitle>
+                                                <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-[#BC13FE]/30 text-[#BC13FE] bg-[#BC13FE]/10 gap-1">
+                                                    <Sparkles className="h-2.5 w-2.5" />
+                                                    AI-Powered
+                                                </Badge>
+                                                <InfoTooltip content="AI-generated tactical plan to outperform this competitor. Each strategy is ranked by potential impact with step-by-step fix instructions." />
+                                                <button
+                                                    onClick={() => {
+                                                        const sep = '\u2500'.repeat(60)
+                                                        const text = `COUNTER-STRATEGIES (${recs.length})\n${'='.repeat(60)}\n\n` + recs.map((r: any, i: number) => {
+                                                            const p = normPriority(r)
+                                                            const domain = r.category || 'SEO'
+                                                            let t = `${sep}\n${i + 1}. [${p}] [${domain.toUpperCase()}] ${r.title}\n${sep}`
+                                                            if (r.description) t += `\n\nWhy This Matters:\n${r.description}`
+                                                            if (r.howToFix) t += `\n\nHow To Fix:\n${r.howToFix}`
+                                                            if (r.codeSnippet) t += `\n\nCode:\n${r.codeSnippet}`
+                                                            if (r.impactedScores) t += `\n\nImpacts: ${r.impactedScores}`
+                                                            return t
+                                                        }).join('\n\n')
+                                                        navigator.clipboard.writeText(text)
+                                                    }}
+                                                    className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-[#00e5ff]/50 transition-colors"
+                                                >
+                                                    <Copy className="h-3.5 w-3.5" />
+                                                    Copy All
+                                                </button>
+                                            </div>
+                                            <CardDescription>AI-generated plan to outmaneuver this competitor</CardDescription>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="space-y-6">
+                                                {groups.map(group => (
+                                                    <div key={group.label}>
+                                                        <p className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-3">{group.label} ({group.items.length})</p>
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                            {group.items.map((rec: any, i: number) => (
+                                                                <FixInstructionCard
+                                                                    key={i}
+                                                                    title={rec.title}
+                                                                    domain={normDomain(rec) as any}
+                                                                    priority={normPriority(rec)}
+                                                                    steps={rec.howToFix ? [{ step: 1, title: 'How To Fix', description: rec.howToFix }] : [{ step: 1, title: rec.title, description: rec.description }]}
+                                                                    code={rec.codeSnippet}
+                                                                    platform={rec.platform || 'Any'}
+                                                                    estimatedTime={`${rec.effort || 1}h`}
+                                                                    difficulty={rec.effort >= 3 ? 'difficult' : rec.effort >= 2 ? 'moderate' : 'easy'}
+                                                                    impact={rec.roi === 'CRITICAL' ? 'high' : rec.roi === 'HIGH' ? 'medium' : 'low'}
+                                                                    affectedPages={1}
+                                                                    impactedScores={rec.impactedScores}
+                                                                />
+                                                            ))}
                                                         </div>
                                                     </div>
-                                                    <h5 className="font-bold text-sm text-white/90 mb-2 leading-tight group-hover:text-[#00e5ff] transition-colors">{fix.title}</h5>
-                                                    <p className="text-xs text-white/40 leading-relaxed italic mb-4">&ldquo;{fix.description}&rdquo;</p>
-
-                                                    {isExpanded && (
-                                                        <div className="space-y-3 mb-3 animate-in fade-in slide-in-from-top-2" onClick={e => e.stopPropagation()}>
-                                                            {fix.howToFix && (
-                                                                <div className="p-4 rounded-xl bg-[#BC13FE]/5 border border-[#BC13FE]/20">
-                                                                    <div className="flex items-center justify-between mb-2">
-                                                                        <span className="text-xs font-black uppercase text-[#BC13FE] tracking-wider flex items-center gap-2"><Zap className="h-3.5 w-3.5" />How To Fix</span>
-                                                                        <button onClick={() => { navigator.clipboard.writeText(fix.howToFix + (fix.codeSnippet ? '\n\nCode:\n' + fix.codeSnippet : '')); setCopiedFix(i); setTimeout(() => setCopiedFix(null), 2000) }}
-                                                                            className="p-1.5 rounded-md hover:bg-[#BC13FE]/10 transition-colors">
-                                                                            {copiedFix === i ? <Check className="h-3.5 w-3.5 text-[#BC13FE]" /> : <Copy className="h-3.5 w-3.5 text-white/30" />}
-                                                                        </button>
-                                                                    </div>
-                                                                    <p className="text-sm text-white/70 leading-relaxed whitespace-pre-line">{fix.howToFix}</p>
-                                                                </div>
-                                                            )}
-                                                            {fix.codeSnippet?.trim() && (
-                                                                <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                                                                    <div className="flex items-center gap-2 mb-2"><Code2 className="h-3.5 w-3.5 text-white/30" /><span className="text-xs font-black uppercase text-white/30 tracking-wider">Code</span></div>
-                                                                    <pre className="text-xs font-mono text-white/50 overflow-x-auto whitespace-pre-wrap leading-relaxed">{fix.codeSnippet}</pre>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    )}
-
-                                                    <div className="mt-auto pt-3 border-t border-white/[0.04] flex items-end justify-between">
-                                                        <div><p className="text-[9px] font-black uppercase text-white/20">Impacts</p><p className="text-[10px] font-bold text-white/50">{fix.impactedScores || fix.category}</p></div>
-                                                        <div className="text-right"><p className="text-[9px] font-black uppercase text-white/20">Effort</p>
-                                                            <div className="flex gap-0.5">{[1,2,3].map(l => <div key={l} className={cn("h-1 w-3 rounded-full", l <= (fix.effort||2) ? (fix.effort>=3?"bg-red-500":fix.effort===2?"bg-[#BC13FE]":"bg-green-500") : "bg-white/[0.06]")} />)}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
-                                </div>
-                            )}
+                                                ))}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                )
+                            })()}
 
                             {/* ── Stolen Opportunities & Strategic Gaps ── */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

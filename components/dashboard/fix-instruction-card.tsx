@@ -39,6 +39,7 @@ interface FixInstructionCardProps {
   impact: 'high' | 'medium' | 'low'
   affectedPages: number
   validationLinks?: Array<{ tool: string; url: string }>
+  impactedScores?: string
   onMarkComplete?: () => void
   isCompleted?: boolean
 }
@@ -116,6 +117,7 @@ export function FixInstructionCard({
   impact,
   affectedPages,
   validationLinks,
+  impactedScores,
   onMarkComplete,
   isCompleted = false
 }: FixInstructionCardProps) {
@@ -197,6 +199,13 @@ export function FixInstructionCard({
                 </div>
               </div>
             </div>
+
+            {impactedScores && (
+              <div className="flex items-start gap-1 mt-2 text-xs text-muted-foreground">
+                <span className="text-[10px] uppercase font-bold shrink-0">Impacts:</span>
+                <span className="text-[10px] leading-relaxed">{impactedScores}</span>
+              </div>
+            )}
           </div>
           
           <button className="shrink-0 p-2 hover:bg-background/50 rounded-lg transition-colors">

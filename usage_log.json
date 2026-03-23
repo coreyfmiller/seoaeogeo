@@ -8438,5 +8438,14 @@
     "url": "Home - Gisele's Pizzeria",
     "timestamp": "2026-03-23T15:19:47.830Z",
     "cost": 0.1103284
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Competitive Battle",
+    "inputTokens": 3233,
+    "outputTokens": 3408,
+    "url": "Valley Marketing - Branding And Marketing | Video | Photo vs uprock tech limited | mobile repairs | 53f Clark Rd, Rothesay, NB, Canada",
+    "timestamp": "2026-03-23T23:41:07.235Z",
+    "cost": 0.038367875
   }
 ]
