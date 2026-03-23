@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -338,10 +338,15 @@ export function SEOTab({ data }: SEOTabProps) {
       </div>
 
       {/* Technical Health & Structure */}
-      <h2 className="text-xl font-bold mt-4 flex items-center gap-2">
-        <Bot className="h-6 w-6 text-geo" />
-        Extracted DOM Intelligence
-      </h2>
+      <Card className="border-[#00e5ff]/20 bg-gradient-to-br from-[#00e5ff]/5 to-transparent">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2">
+            <Bot className="h-5 w-5 text-[#00e5ff]" />
+            Extracted DOM Intelligence
+          </CardTitle>
+          <CardDescription>Raw technical signals and semantic structure extracted from the page DOM</CardDescription>
+        </CardHeader>
+        <CardContent>
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="border-seo/20 bg-seo/5 h-full">
           <CardHeader className="pb-2">
@@ -424,6 +429,8 @@ export function SEOTab({ data }: SEOTabProps) {
           </CardContent>
         </Card>
       </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
