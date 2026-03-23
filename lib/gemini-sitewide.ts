@@ -316,7 +316,8 @@ ${context.currentScores ? `
         "impact": "High" | "Medium",
         "priority": "CRITICAL" | "HIGH" | "MEDIUM" (CRITICAL = urgent fix needed now, HIGH = important to address soon, MEDIUM = moderate improvement),
         "effort": 1 | 2 | 3,
-        "domain": "SEO" | "AEO" | "GEO" (which score domain this recommendation primarily improves. SEO = traditional search ranking factors like meta tags, content, internal linking, technical SEO. AEO = AI engine optimization like schema markup, structured data, FAQ content, entity clarity. GEO = generative engine optimization like brand authority, trust signals, social proof, citations, E-E-A-T signals.)
+        "domain": "SEO" | "AEO" | "GEO" (which score domain this recommendation primarily improves. SEO = traditional search ranking factors like meta tags, content, internal linking, technical SEO. AEO = AI engine optimization like schema markup, structured data, FAQ content, entity clarity. GEO = generative engine optimization like brand authority, trust signals, social proof, citations, E-E-A-T signals.),
+        "impactedScores": string (comma-separated list of specific scores and metrics this fix improves, e.g. "SEO Score, AEO Score, Rich Results, Brand Authority, Long-Tail Traffic")
       }
     }
 

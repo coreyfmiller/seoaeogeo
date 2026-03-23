@@ -506,6 +506,7 @@ export default function MergedDashboard() {
                                     impact={fix.impact || 'medium'}
                                     affectedPages={fix.affectedPages || 1}
                                     validationLinks={fix.validationLinks || []}
+                                    impactedScores={fix.impactedScores}
                                     onMarkComplete={() => {
                                       const updated = { ...analysisData }
                                       const idx = recs.indexOf(fix)

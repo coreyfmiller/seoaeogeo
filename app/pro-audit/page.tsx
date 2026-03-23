@@ -616,6 +616,7 @@ export default function V3Page() {
                       difficulty={rec.effort >= 3 ? 'difficult' : rec.effort >= 2 ? 'moderate' : 'easy'}
                       impact={rec.priority === 'CRITICAL' ? 'high' : rec.priority === 'HIGH' ? 'medium' : 'low'}
                       validationLinks={rec.validationLinks}
+                      impactedScores={rec.impactedScores}
                     />
                   )
 

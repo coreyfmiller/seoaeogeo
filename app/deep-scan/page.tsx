@@ -577,6 +577,7 @@ export default function DeepV3Page() {
                             impact={rec.priority === 'CRITICAL' ? 'high' : rec.priority === 'HIGH' ? 'medium' : 'low'}
                             affectedPages={result.pagesCrawled}
                             validationLinks={rec.validationLinks}
+                            impactedScores={rec.impactedScores}
                           />
                         )
 
