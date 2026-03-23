@@ -112,8 +112,9 @@ ${context.platform ? `
         "howToFix": string (STEP-BY-STEP fix instructions, platform-specific if platform detected. Be thorough — include exact menu paths, file locations, plugin names, or code changes needed.),
         "codeSnippet": string (Before/after code example if applicable, or empty string if not code-related),
         "affectedElement": string (What specific element on the page is the problem, e.g. "Second <h1> tag: About Us"),
-        "priority": "high" | "medium" | "low",
-        "category": "Schema" | "Content" | "AEO" | "Trust",
+        "priority": "CRITICAL" | "HIGH" | "MEDIUM" (CRITICAL = urgent fix needed now, HIGH = important to address soon, MEDIUM = moderate improvement),
+        "effort": 1 | 2 | 3,
+        "domain": "SEO" | "AEO" | "GEO" (which score domain this recommendation primarily improves. SEO = traditional search ranking factors like meta tags, content, internal linking, technical SEO. AEO = AI engine optimization like schema markup, structured data, FAQ content, entity clarity. GEO = generative engine optimization like brand authority, trust signals, social proof, citations, E-E-A-T signals.),
         "impact": "High" | "Medium"
       }
     }

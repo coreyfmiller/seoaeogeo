@@ -556,7 +556,7 @@ export default function DeepV3Page() {
                         const groups = [
                           { label: '🔥 Urgent', items: urgent },
                           { label: '⚡ High', items: high },
-                          { label: '→ Medium', items: medium },
+                          { label: '🔧 Medium', items: medium },
                         ].filter(g => g.items.length > 0)
 
                         const renderCard = (rec: any, i: number) => (
