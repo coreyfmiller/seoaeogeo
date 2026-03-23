@@ -121,16 +121,16 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
 
         {/* Credit Balance */}
         {credits !== null && (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#842ce0]/30 bg-[#842ce0]/5">
-            <Coins className="h-3.5 w-3.5 text-[#842ce0]" />
-            <span className="text-sm font-bold text-[#842ce0] tabular-nums">{credits}</span>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#BC13FE]/30 bg-[#BC13FE]/5">
+            <Coins className="h-3.5 w-3.5 text-[#BC13FE]" />
+            <span className="text-sm font-bold text-[#BC13FE] tabular-nums">{credits}</span>
           </div>
         )}
 
         {/* Buy Credits Button */}
         <Link href="/pro">
           <Button
-            className="bg-[#118fff] hover:bg-[#118fff]/90 text-white font-semibold px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base shadow-md"
+            className="bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-semibold px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base shadow-md"
           >
             <Crown className="h-4 w-4 sm:h-5 sm:w-5 sm:mr-2" />
             <span className="hidden sm:inline">Buy Credits</span>

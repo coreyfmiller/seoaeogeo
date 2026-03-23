@@ -412,13 +412,13 @@ export default function V2Page() {
           })()}
 
           {/* Funnel CTA */}
-          <Card id="upgrade-cta-v3" className="border-[#118fff]/30 bg-gradient-to-br from-[#118fff]/5 via-[#842ce0]/5 to-[#fe3f8c]/5 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-[#842ce0]/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#118fff]/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+          <Card id="upgrade-cta-v3" className="border-[#00e5ff]/30 bg-gradient-to-br from-[#00e5ff]/5 via-[#BC13FE]/5 to-[#fe3f8c]/5 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-[#BC13FE]/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#00e5ff]/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
             <CardContent className="p-6 sm:p-8 relative">
               {/* Step 1: Hook */}
               <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#118fff]/10 text-[#118fff] text-xs font-bold mb-4 border border-[#118fff]/20">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#00e5ff]/10 text-[#00e5ff] text-xs font-bold mb-4 border border-[#00e5ff]/20">
                   <Zap className="h-3.5 w-3.5" />
                   YOU FOUND THE PROBLEMS. NOW FIX THEM.
                 </div>
@@ -449,13 +449,13 @@ export default function V2Page() {
               </div>
 
               {/* Step 3: The offer */}
-              <div className="rounded-2xl border-2 border-[#842ce0]/30 bg-[#842ce0]/5 p-6 text-center mb-6">
-                <p className="text-xs font-bold text-[#842ce0] uppercase tracking-widest mb-2">Start for free</p>
+              <div className="rounded-2xl border-2 border-[#BC13FE]/30 bg-[#BC13FE]/5 p-6 text-center mb-6">
+                <p className="text-xs font-bold text-[#BC13FE] uppercase tracking-widest mb-2">Start for free</p>
                 <p className="text-3xl font-black text-foreground mb-1">20 Free Credits on Signup</p>
                 <p className="text-muted-foreground text-sm mb-4">No credit card required. Enough for 2 Pro Audits or 1 Deep Scan.</p>
                 <button
                   onClick={() => router.push('/signup')}
-                  className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#842ce0] hover:bg-[#842ce0]/90 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all"
+                  className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#BC13FE] hover:bg-[#BC13FE]/90 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all"
                 >
                   Create Free Account
                   <ArrowRight className="h-5 w-5" />
@@ -467,7 +467,7 @@ export default function V2Page() {
                 <p className="text-xs text-muted-foreground mb-2">Already have an account?</p>
                 <button
                   onClick={() => router.push('/pro-audit')}
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-[#118fff] hover:underline"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-[#00e5ff] hover:underline"
                 >
                   Run Pro Audit on this URL
                   <ArrowRight className="h-3.5 w-3.5" />

@@ -52,15 +52,15 @@ type SortField = 'url' | 'seoScore' | 'aeoScore' | 'geoScore' | 'wordCount' | 'i
 type SortDirection = 'asc' | 'desc'
 
 function getScoreColor(score: number): string {
-  if (score >= 80) return 'text-geo'
-  if (score >= 60) return 'text-yellow-600'
-  return 'text-destructive'
+  if (score >= 75) return 'text-green-500'
+  if (score >= 50) return 'text-yellow-500'
+  return 'text-red-500'
 }
 
 function getScoreBg(score: number): string {
-  if (score >= 80) return 'bg-geo/10'
-  if (score >= 60) return 'bg-yellow-500/10'
-  return 'bg-destructive/10'
+  if (score >= 75) return 'bg-green-500/10'
+  if (score >= 50) return 'bg-yellow-500/10'
+  return 'bg-red-500/10'
 }
 
 export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparisonTableProps) {
@@ -122,24 +122,24 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/50" />
     return sortDirection === 'asc' 
-      ? <ArrowUp className="h-3.5 w-3.5 text-geo" />
-      : <ArrowDown className="h-3.5 w-3.5 text-geo" />
+      ? <ArrowUp className="h-3.5 w-3.5 text-[#00e5ff]" />
+      : <ArrowDown className="h-3.5 w-3.5 text-[#00e5ff]" />
   }
 
   return (
-    <Card className="border-geo/20">
+    <Card className="border-[#00e5ff]/20">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Table className="h-5 w-5 text-geo" />
+              <Table className="h-5 w-5 text-[#00e5ff]" />
               Page-by-Page Comparison
             </CardTitle>
             <CardDescription>
               Detailed metrics for all {pages.length} crawled pages
             </CardDescription>
           </div>
-          <Badge variant="outline" className="border-geo/30 text-geo bg-geo/5">
+          <Badge variant="outline" className="border-[#00e5ff]/30 text-[#00e5ff] bg-[#00e5ff]/5">
             {pages.length} Pages
           </Badge>
         </div>
@@ -154,7 +154,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                   <th className="text-left p-3 text-xs font-bold uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('url')}
-                      className="flex items-center gap-1 hover:text-geo transition-colors"
+                      className="flex items-center gap-1 hover:text-[#00e5ff] transition-colors"
                     >
                       URL
                       <SortIcon field="url" />
@@ -163,7 +163,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                   <th className="text-center p-3 text-xs font-bold uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('seoScore')}
-                      className="flex items-center gap-1 hover:text-geo transition-colors mx-auto"
+                      className="flex items-center gap-1 hover:text-[#00e5ff] transition-colors mx-auto"
                     >
                       SEO
                       <SortIcon field="seoScore" />
@@ -172,7 +172,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                   <th className="text-center p-3 text-xs font-bold uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('aeoScore')}
-                      className="flex items-center gap-1 hover:text-geo transition-colors mx-auto"
+                      className="flex items-center gap-1 hover:text-[#00e5ff] transition-colors mx-auto"
                     >
                       AEO
                       <SortIcon field="aeoScore" />
@@ -181,7 +181,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                   <th className="text-center p-3 text-xs font-bold uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('geoScore')}
-                      className="flex items-center gap-1 hover:text-geo transition-colors mx-auto"
+                      className="flex items-center gap-1 hover:text-[#00e5ff] transition-colors mx-auto"
                     >
                       GEO
                       <SortIcon field="geoScore" />
@@ -190,7 +190,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                   <th className="text-center p-3 text-xs font-bold uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('wordCount')}
-                      className="flex items-center gap-1 hover:text-geo transition-colors mx-auto"
+                      className="flex items-center gap-1 hover:text-[#00e5ff] transition-colors mx-auto"
                     >
                       Words
                       <SortIcon field="wordCount" />
@@ -199,7 +199,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                   <th className="text-center p-3 text-xs font-bold uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('issueCount')}
-                      className="flex items-center gap-1 hover:text-geo transition-colors mx-auto"
+                      className="flex items-center gap-1 hover:text-[#00e5ff] transition-colors mx-auto"
                     >
                       Issues
                       <SortIcon field="issueCount" />
@@ -229,7 +229,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                               href={page.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-xs font-mono text-geo hover:underline truncate flex-1"
+                              className="text-xs font-mono text-[#00e5ff] hover:underline truncate flex-1"
                               title={page.url}
                             >
                               {page.url}
@@ -238,10 +238,10 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                               href={page.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="shrink-0 hover:text-geo transition-colors"
+                              className="shrink-0 hover:text-[#00e5ff] transition-colors"
                               title="Open in new tab"
                             >
-                              <ExternalLink className="h-3 w-3 text-muted-foreground hover:text-geo" />
+                              <ExternalLink className="h-3 w-3 text-muted-foreground hover:text-[#00e5ff]" />
                             </a>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1 truncate max-w-md" title={page.title}>
@@ -287,7 +287,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                             className={cn(
                               "text-xs font-bold",
                               page.issueCount === 0 
-                                ? "border-geo/30 text-geo bg-geo/5"
+                                ? "border-green-500/30 text-green-500 bg-green-500/5"
                                 : page.issueCount <= 2
                                 ? "border-yellow-500/30 text-yellow-600 bg-yellow-500/5"
                                 : "border-destructive/30 text-destructive bg-destructive/5"
@@ -335,7 +335,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                                 >
                                   {copiedUrl === page.url ? (
                                     <>
-                                      <CheckCircle2 className="h-3 w-3 mr-1.5 text-geo" />
+                                      <CheckCircle2 className="h-3 w-3 mr-1.5 text-[#00e5ff]" />
                                       Copied
                                     </>
                                   ) : (
@@ -378,9 +378,9 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                                       <div className="flex-1 min-w-0">
                                         <p className="text-sm font-bold mb-1">{issue.type}</p>
                                         <div className="flex items-start gap-2 p-2 rounded bg-background/50 border border-border/30">
-                                          <Zap className="h-3 w-3 text-geo shrink-0 mt-0.5" />
+                                          <Zap className="h-3 w-3 text-[#00e5ff] shrink-0 mt-0.5" />
                                           <p className="text-xs text-foreground/90 leading-relaxed">
-                                            <span className="font-semibold text-geo">Fix:</span> {issue.fix}
+                                            <span className="font-semibold text-[#00e5ff]">Fix:</span> {issue.fix}
                                           </p>
                                         </div>
                                       </div>
@@ -423,7 +423,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                       onClick={() => setCurrentPage(page)}
                       className={cn(
                         "h-8 w-8 p-0",
-                        currentPage === page && "bg-geo text-geo-foreground hover:bg-geo/90"
+                        currentPage === page && "bg-[#00e5ff] text-white hover:bg-[#00e5ff]/90"
                       )}
                     >
                       {page}

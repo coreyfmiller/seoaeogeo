@@ -144,8 +144,8 @@ const quickStartGuides = [
     title: "Deep Scan",
     desc: "Crawl multiple pages for site-wide insights.",
     icon: Layers,
-    color: "text-[#842ce0]",
-    bg: "bg-[#842ce0]/10",
+    color: "text-[#BC13FE]",
+    bg: "bg-[#BC13FE]/10",
     href: "/deep-scan",
     steps: ["Enter your domain", "Configure crawl depth & page limit", "Review page-by-page comparison", "Identify site-wide patterns & issues"],
   },
@@ -208,7 +208,7 @@ export default function HelpPage() {
                 { label: "Quick Start", icon: Zap, color: "text-seo", anchor: "#quickstart" },
                 { label: "FAQs", icon: MessageSquare, color: "text-aeo", anchor: "#faq" },
                 { label: "Our Standards", icon: FileText, color: "text-geo", anchor: "/standards" },
-                { label: "Contact Us", icon: Mail, color: "text-[#842ce0]", anchor: "#contact" },
+                { label: "Contact Us", icon: Mail, color: "text-[#BC13FE]", anchor: "#contact" },
               ].map(link => (
                 <a
                   key={link.label}
@@ -378,7 +378,7 @@ export default function HelpPage() {
             {/* Tips & Best Practices */}
             <section>
               <div className="flex items-center gap-2 mb-4">
-                <Shield className="h-5 w-5 text-[#842ce0]" />
+                <Shield className="h-5 w-5 text-[#BC13FE]" />
                 <h2 className="text-xl font-bold">Tips & Best Practices</h2>
               </div>
               <div className="grid md:grid-cols-2 gap-4">

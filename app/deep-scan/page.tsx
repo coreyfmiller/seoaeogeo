@@ -254,10 +254,10 @@ export default function DeepV3Page() {
 
             {/* Hero Section - Only show when no results */}
             {!result && !isAnalyzing && (
-              <Card className="border-2 border-[#842ce0]/20 bg-gradient-to-br from-[#842ce0]/5 to-transparent">
+              <Card className="border-2 border-[#BC13FE]/20 bg-gradient-to-br from-[#BC13FE]/5 to-transparent">
                 <CardHeader className="text-center space-y-4 pb-8">
-                  <div className="mx-auto w-16 h-16 rounded-full bg-[#842ce0]/10 flex items-center justify-center">
-                    <Layers className="h-8 w-8 text-[#842ce0]" />
+                  <div className="mx-auto w-16 h-16 rounded-full bg-[#BC13FE]/10 flex items-center justify-center">
+                    <Layers className="h-8 w-8 text-[#BC13FE]" />
                   </div>
                   <div>
                     <CardTitle className="text-3xl mb-2">
@@ -284,7 +284,7 @@ export default function DeepV3Page() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-[#842ce0]" />
+                      <Sparkles className="h-5 w-5 text-[#BC13FE]" />
                       AI Content Analysis
                     </CardTitle>
                   </CardHeader>
@@ -298,7 +298,7 @@ export default function DeepV3Page() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
-                      <Layers className="h-5 w-5 text-[#842ce0]" />
+                      <Layers className="h-5 w-5 text-[#BC13FE]" />
                       Multi-Page Crawling
                     </CardTitle>
                   </CardHeader>
@@ -312,7 +312,7 @@ export default function DeepV3Page() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
-                      <Zap className="h-5 w-5 text-[#842ce0]" />
+                      <Zap className="h-5 w-5 text-[#BC13FE]" />
                       Priority Matrix
                     </CardTitle>
                   </CardHeader>
@@ -328,11 +328,11 @@ export default function DeepV3Page() {
             {/* Crawl Progress */}
             {isAnalyzing && (
               <div className="space-y-8 animate-in fade-in zoom-in-95">
-                <Card className="border-2 border-[#842ce0]/20 bg-gradient-to-br from-seo/5 via-[#842ce0]/5 to-geo/5 overflow-hidden relative">
+                <Card className="border-2 border-[#BC13FE]/20 bg-gradient-to-br from-seo/5 via-[#BC13FE]/5 to-geo/5 overflow-hidden relative">
                   {/* Animated gradient bar at top */}
                   <div className="h-1 w-full bg-muted/30 overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-seo via-[#842ce0] to-geo transition-all duration-700 ease-out"
+                      className="h-full bg-gradient-to-r from-seo via-[#BC13FE] to-geo transition-all duration-700 ease-out"
                       style={{ width: `${sse.progress}%` }}
                     />
                   </div>
@@ -341,7 +341,7 @@ export default function DeepV3Page() {
                     <div className="flex flex-col items-center gap-6">
                       {/* Spinner with percentage */}
                       <div className="relative h-24 w-24">
-                        <div className="absolute inset-0 rounded-full border-4 border-t-seo border-r-[#842ce0] border-b-geo border-l-transparent animate-spin" />
+                        <div className="absolute inset-0 rounded-full border-4 border-t-seo border-r-[#BC13FE] border-b-geo border-l-transparent animate-spin" />
                         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
                           <span className="text-xl font-black text-foreground tabular-nums">{sse.progress}%</span>
                         </div>
@@ -358,7 +358,7 @@ export default function DeepV3Page() {
                       <div className="w-full max-w-md">
                         <div className="h-2 w-full bg-muted/30 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-seo via-[#842ce0] to-geo rounded-full transition-all duration-700 ease-out"
+                            className="h-full bg-gradient-to-r from-seo via-[#BC13FE] to-geo rounded-full transition-all duration-700 ease-out"
                             style={{ width: `${sse.progress}%` }}
                           />
                         </div>
@@ -399,7 +399,7 @@ export default function DeepV3Page() {
                           <div className="flex items-start gap-3">
                             <div className={cn(
                               "h-10 w-10 rounded-lg flex items-center justify-center shrink-0 transition-all duration-500",
-                              i === 0 ? "bg-seo/10 text-seo" : i === 1 ? "bg-[#842ce0]/10 text-[#842ce0]" : "bg-[#fe3f8c]/10 text-[#fe3f8c]",
+                              i === 0 ? "bg-seo/10 text-seo" : i === 1 ? "bg-[#BC13FE]/10 text-[#BC13FE]" : "bg-[#fe3f8c]/10 text-[#fe3f8c]",
                               isActive && !isDone && "animate-pulse"
                             )}>
                               {isDone ? <CheckCircle2 className="h-5 w-5" /> : phase.icon}
@@ -466,8 +466,8 @@ export default function DeepV3Page() {
                   const h1Pct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.hasH1 === true).length / pages.length) * 100) : 0
                   const httpsPct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.isHttps === true).length / pages.length) * 100) : 0
                   const metaPct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.hasDescription === true).length / pages.length) * 100) : 0
-                  const pctColor = (v: number) => v >= 75 ? "text-green-500" : v >= 50 ? "text-amber-500" : "text-red-500"
-                  const respColor = (ms: number) => ms <= 300 ? "text-green-500" : ms <= 600 ? "text-amber-500" : "text-red-500"
+                  const pctColor = (v: number) => v >= 75 ? "text-green-500" : v >= 50 ? "text-yellow-500" : "text-red-500"
+                  const respColor = (ms: number) => ms <= 300 ? "text-green-500" : ms <= 600 ? "text-yellow-500" : "text-red-500"
                   const metrics = [
                     { label: "Domain Health", value: `${ai?.domainHealthScore ?? '–'}%`, color: pctColor(ai?.domainHealthScore ?? 0), tip: "AI-powered aggregate domain quality score combining content quality, schema implementation, metadata completeness, technical performance, and site architecture across all crawled pages. This is the single most important metric for understanding your site's overall health." },
                     { label: "Brand", value: `${ai?.consistencyScore ?? '–'}%`, color: pctColor(ai?.consistencyScore ?? 0), tip: "Brand consistency across all crawled pages — measures uniform tone, messaging, visual identity signals, and content voice. Inconsistent branding confuses both users and AI engines, reducing citation likelihood and trust." },
@@ -497,25 +497,36 @@ export default function DeepV3Page() {
 
                 {/* Prioritized Site Improvements */}
                 {result.sitewideIntelligence?.recommendations?.length > 0 && (
-                  <Card className="border-geo/30 bg-gradient-to-br from-geo/5 to-aeo/5">
+                  <Card className="border-[#00e5ff]/30 bg-gradient-to-br from-[#00e5ff]/5 to-[#BC13FE]/5">
                     <CardHeader>
                       <div className="flex items-center gap-2">
-                        <Zap className="h-5 w-5 text-geo" />
+                        <Zap className="h-5 w-5 text-[#00e5ff]" />
                         <CardTitle>Prioritized Site Improvements</CardTitle>
                         <InfoTooltip content="AI-generated strategic roadmap ranked by impact. Each recommendation includes step-by-step fix instructions, code snippets, and validation links tailored to your site type." />
                       </div>
                       <CardDescription>Sitewide actions ranked by impact</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {result.sitewideIntelligence.recommendations.map((rec: any, i: number) => (
+                      {(() => {
+                        const recs = result.sitewideIntelligence.recommendations
+                        const normPriority = (r: any) => r.priority === 'STEADY' ? 'MEDIUM' : (r.priority || 'MEDIUM')
+                        const urgent = recs.filter((r: any) => normPriority(r) === 'CRITICAL')
+                        const high = recs.filter((r: any) => normPriority(r) === 'HIGH')
+                        const medium = recs.filter((r: any) => normPriority(r) === 'MEDIUM')
+                        const groups = [
+                          { label: '🔥 Urgent', items: urgent },
+                          { label: '⚡ High', items: high },
+                          { label: '→ Medium', items: medium },
+                        ].filter(g => g.items.length > 0)
+
+                        const renderCard = (rec: any, i: number) => (
                           <FixInstructionCard
                             key={i}
                             title={rec.title}
-                            category={rec.category === 'Quick Win' ? 'Quick Win' : rec.priority === 'CRITICAL' ? 'High Priority' : rec.priority === 'HIGH' ? 'Medium Priority' : 'Long-term Investment'}
-                            priority={rec.priority || 'MEDIUM'}
+                            domain={rec.domain ? rec.domain.toLowerCase() as any : 'seo'}
+                            priority={normPriority(rec)}
                             steps={rec.steps || [{ step: 1, title: 'Implementation', description: rec.description }]}
-                            code={rec.code}
+                            code={rec.code || rec.codeSnippet}
                             platform={rec.platform || 'Any'}
                             estimatedTime={rec.estimatedTime || `${rec.effort || 1}h`}
                             difficulty={rec.effort >= 3 ? 'difficult' : rec.effort >= 2 ? 'moderate' : 'easy'}
@@ -523,8 +534,21 @@ export default function DeepV3Page() {
                             affectedPages={result.pagesCrawled}
                             validationLinks={rec.validationLinks}
                           />
-                        ))}
-                      </div>
+                        )
+
+                        return (
+                          <div className="space-y-6">
+                            {groups.map(group => (
+                              <div key={group.label}>
+                                <p className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-3">{group.label} ({group.items.length})</p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                  {group.items.map((rec: any, i: number) => renderCard(rec, i))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )
+                      })()}
                     </CardContent>
                   </Card>
                 )}
@@ -555,29 +579,33 @@ export default function DeepV3Page() {
 
                 {/* Domain Health Breakdown */}
                 {result.sitewideIntelligence?.domainHealthBreakdown && (
-                  <Card className="border-geo/20 bg-geo/5">
+                  <Card className="border-[#00e5ff]/20 bg-[#00e5ff]/5">
                     <CardHeader>
                       <div className="flex items-center gap-2">
-                        <ShieldCheck className="h-5 w-5 text-geo" />
-                        <CardTitle className="text-geo">Domain Health Breakdown</CardTitle>
+                        <ShieldCheck className="h-5 w-5 text-[#00e5ff]" />
+                        <CardTitle className="text-foreground">Domain Health Breakdown</CardTitle>
                         <InfoTooltip content="Aggregate domain quality across 5 key areas: content, schema, metadata, technical performance, and architecture." />
-                        <Badge className="ml-auto bg-geo/10 text-geo border-geo/30 text-xs font-black">{result.sitewideIntelligence.domainHealthScore ?? '–'} / 100</Badge>
+                        <Badge className="ml-auto bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-xs font-black">{result.sitewideIntelligence.domainHealthScore ?? '–'} / 100</Badge>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 pb-4 border-b border-border/50 mb-4">
                         {[
-                          { label: "Content", value: result.sitewideIntelligence.domainHealthBreakdown.contentQuality, color: "text-geo" },
-                          { label: "Schema", value: result.sitewideIntelligence.domainHealthBreakdown.schemaQuality, color: "text-seo" },
-                          { label: "Metadata", value: result.sitewideIntelligence.domainHealthBreakdown.metadataQuality, color: "text-aeo" },
-                          { label: "Technical", value: result.sitewideIntelligence.domainHealthBreakdown.technicalHealth, color: "text-[#842ce0]" },
-                          { label: "Architecture", value: result.sitewideIntelligence.domainHealthBreakdown.architectureHealth, color: "text-blue-500" },
-                        ].map(item => (
-                          <div key={item.label} className="text-center">
-                            <p className={`text-2xl font-black ${item.color}`}>{item.value ?? 0}</p>
-                            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">{item.label}</p>
-                          </div>
-                        ))}
+                          { label: "Content", value: result.sitewideIntelligence.domainHealthBreakdown.contentQuality },
+                          { label: "Schema", value: result.sitewideIntelligence.domainHealthBreakdown.schemaQuality },
+                          { label: "Metadata", value: result.sitewideIntelligence.domainHealthBreakdown.metadataQuality },
+                          { label: "Technical", value: result.sitewideIntelligence.domainHealthBreakdown.technicalHealth },
+                          { label: "Architecture", value: result.sitewideIntelligence.domainHealthBreakdown.architectureHealth },
+                        ].map(item => {
+                          const v = item.value ?? 0
+                          const scoreColor = v >= 75 ? "text-green-500" : v >= 50 ? "text-yellow-500" : "text-red-500"
+                          return (
+                            <div key={item.label} className="text-center">
+                              <p className={`text-2xl font-black ${scoreColor}`}>{v}</p>
+                              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">{item.label}</p>
+                            </div>
+                          )
+                        })}
                       </div>
                       {/* Health explanations */}
                       {result.sitewideIntelligence.domainHealthExplanations && (
@@ -600,7 +628,7 @@ export default function DeepV3Page() {
                               {data.recommendations?.length > 0 && (
                                 <ul className="text-xs space-y-0.5 mt-2">
                                   {data.recommendations.slice(0, 3).map((rec: string, i: number) => (
-                                    <li key={i} className="flex items-start gap-1 text-geo">
+                                    <li key={i} className="flex items-start gap-1 text-[#00e5ff]">
                                       <Zap className="h-3 w-3 shrink-0 mt-0.5" /> <span className="text-foreground/80">{rec}</span>
                                     </li>
                                   ))}
@@ -629,18 +657,20 @@ export default function DeepV3Page() {
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-border/50">
-                        <div className="text-center">
-                          <p className="text-xl font-black text-seo">{result.sitewideIntelligence.schemaHealthAudit.breakdown?.coverage ?? 0}%</p>
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Coverage</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-xl font-black text-aeo">{result.sitewideIntelligence.schemaHealthAudit.breakdown?.quality ?? 0}%</p>
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Quality</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-xl font-black text-geo">{result.sitewideIntelligence.schemaHealthAudit.breakdown?.diversity ?? 0}%</p>
-                          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Diversity</p>
-                        </div>
+                        {[
+                          { label: "Coverage", value: result.sitewideIntelligence.schemaHealthAudit.breakdown?.coverage ?? 0 },
+                          { label: "Quality", value: result.sitewideIntelligence.schemaHealthAudit.breakdown?.quality ?? 0 },
+                          { label: "Diversity", value: result.sitewideIntelligence.schemaHealthAudit.breakdown?.diversity ?? 0 },
+                        ].map(item => {
+                          const v = typeof item.value === 'number' ? item.value : 0
+                          const color = v >= 75 ? "text-green-500" : v >= 50 ? "text-yellow-500" : "text-red-500"
+                          return (
+                            <div key={item.label} className="text-center">
+                              <p className={`text-xl font-black ${color}`}>{v}%</p>
+                              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">{item.label}</p>
+                            </div>
+                          )
+                        })}
                       </div>
                       {result.sitewideIntelligence.schemaHealthAudit.issues?.length > 0 && (
                         <div className="space-y-2">
@@ -656,9 +686,9 @@ export default function DeepV3Page() {
                               </div>
                               <p className="text-xs text-muted-foreground">{issue.affectedCount} page(s) affected • -{issue.pointsDeducted} pts</p>
                               {issue.howToFix && (
-                                <div className="flex items-start gap-1.5 mt-1.5 p-1.5 rounded bg-geo/5 border border-geo/20">
-                                  <Zap className="h-3 w-3 text-geo shrink-0 mt-0.5" />
-                                  <p className="text-xs text-foreground/80"><span className="font-semibold text-geo">Fix:</span> {issue.howToFix}</p>
+                                <div className="flex items-start gap-1.5 mt-1.5 p-1.5 rounded bg-[#00e5ff]/5 border border-[#00e5ff]/20">
+                                  <Zap className="h-3 w-3 text-[#00e5ff] shrink-0 mt-0.5" />
+                                  <p className="text-xs text-foreground/80"><span className="font-semibold text-[#00e5ff]">Fix:</span> {issue.howToFix}</p>
                                 </div>
                               )}
                             </div>
@@ -687,9 +717,9 @@ export default function DeepV3Page() {
                           <div className="space-y-0.5">
                             {dup.urls.map((u, j) => <p key={j} className="text-xs text-muted-foreground truncate">{u}</p>)}
                           </div>
-                          <div className="flex items-start gap-1.5 mt-2 p-1.5 rounded bg-geo/5 border border-geo/20">
-                            <Zap className="h-3 w-3 text-geo shrink-0 mt-0.5" />
-                            <p className="text-xs text-foreground/80"><span className="font-semibold text-geo">Fix:</span> Write a unique, descriptive title for each page that reflects its specific content. Duplicate titles cause keyword cannibalization.</p>
+                          <div className="flex items-start gap-1.5 mt-2 p-1.5 rounded bg-[#00e5ff]/5 border border-[#00e5ff]/20">
+                            <Zap className="h-3 w-3 text-[#00e5ff] shrink-0 mt-0.5" />
+                            <p className="text-xs text-foreground/80"><span className="font-semibold text-[#00e5ff]">Fix:</span> Write a unique, descriptive title for each page that reflects its specific content. Duplicate titles cause keyword cannibalization.</p>
                           </div>
                         </div>
                       ))}
@@ -700,9 +730,9 @@ export default function DeepV3Page() {
                           <div className="space-y-0.5">
                             {dup.urls.map((u, j) => <p key={j} className="text-xs text-muted-foreground truncate">{u}</p>)}
                           </div>
-                          <div className="flex items-start gap-1.5 mt-2 p-1.5 rounded bg-geo/5 border border-geo/20">
-                            <Zap className="h-3 w-3 text-geo shrink-0 mt-0.5" />
-                            <p className="text-xs text-foreground/80"><span className="font-semibold text-geo">Fix:</span> Write a unique meta description (120-160 chars) for each page summarizing its specific value proposition.</p>
+                          <div className="flex items-start gap-1.5 mt-2 p-1.5 rounded bg-[#00e5ff]/5 border border-[#00e5ff]/20">
+                            <Zap className="h-3 w-3 text-[#00e5ff] shrink-0 mt-0.5" />
+                            <p className="text-xs text-foreground/80"><span className="font-semibold text-[#00e5ff]">Fix:</span> Write a unique meta description (120-160 chars) for each page summarizing its specific value proposition.</p>
                           </div>
                         </div>
                       ))}
@@ -712,13 +742,13 @@ export default function DeepV3Page() {
 
                 {/* AEO Readiness */}
                 {result.sitewideIntelligence?.aeoReadiness && (
-                  <Card className="border-[#842ce0]/20 bg-[#842ce0]/5">
+                  <Card className="border-[#BC13FE]/20 bg-[#BC13FE]/5">
                     <CardHeader>
                       <div className="flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-[#842ce0]" />
+                        <Sparkles className="h-5 w-5 text-[#BC13FE]" />
                         <CardTitle>AEO Readiness</CardTitle>
                         <InfoTooltip content="How ready your domain is to be cited by AI assistants like ChatGPT, Perplexity, and Gemini." />
-                        <Badge className="ml-auto bg-[#842ce0]/10 text-[#842ce0] border-[#842ce0]/30 text-xs font-black">
+                        <Badge className="ml-auto bg-[#BC13FE]/10 text-[#BC13FE] border-[#BC13FE]/30 text-xs font-black">
                           {result.sitewideIntelligence.aeoReadiness.score}/100
                         </Badge>
                       </div>

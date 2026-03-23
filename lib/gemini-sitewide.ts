@@ -29,8 +29,9 @@ export async function analyzeSitewideIntelligence(context: {
     imgWithAlt?: number;
     outboundLinks?: string[];
   }>;
-  siteType?: SiteType; // NEW: Site type for context-aware analysis
-  platform?: string; // Detected CMS/framework
+  siteType?: SiteType;
+  platform?: string;
+  currentScores?: { seo: number; aeo: number; geo: number };
 }) {
   // DETERMINISTIC CALCULATIONS (run before AI to ensure consistency)
   
@@ -137,6 +138,20 @@ export async function analyzeSitewideIntelligence(context: {
 ${context.platform ? `
     DETECTED PLATFORM: ${context.platform}
     All fix instructions and recommendations MUST be tailored to ${context.platform}. Reference specific ${context.platform} admin paths, plugins/apps/extensions, template files, and platform-specific approaches. Do NOT give generic HTML fixes when a ${context.platform}-specific solution exists.
+` : ''}
+${context.currentScores ? `
+    CURRENT AVERAGE SCORES ACROSS ALL PAGES:
+    - SEO Score: ${context.currentScores.seo}/100
+    - AEO Score: ${context.currentScores.aeo}/100
+    - GEO Score: ${context.currentScores.geo}/100
+    
+    SCORE-GAP PRIORITIZATION RULE:
+    The LOWEST scoring domain needs the MOST recommendations. Distribute your 15 recommendations proportionally to the score gaps.
+    For example, if GEO is 52, SEO is 77, AEO is 85:
+    - GEO should get ~6-7 recommendations (biggest gap from 100)
+    - SEO should get ~4-5 recommendations (moderate gap)
+    - AEO should get ~2-3 recommendations (smallest gap)
+    Recommendations for the weakest domain should also be ranked HIGHER in priority.
 ` : ''}
     
     IMPORTANT: Schema quality and brand consistency are calculated deterministically. 
@@ -299,10 +314,9 @@ ${context.platform ? `
         "codeSnippet": string (Before/after code example if applicable, or empty string if not code-related),
         "affectedElement": string (What specific element or pages are affected),
         "impact": "High" | "Medium",
-        "priority": "CRITICAL" | "HIGH" | "STEADY" (CRITICAL = urgent fix needed now, HIGH = important to address soon, STEADY = quick win with consistent results),
+        "priority": "CRITICAL" | "HIGH" | "MEDIUM" (CRITICAL = urgent fix needed now, HIGH = important to address soon, MEDIUM = moderate improvement),
         "effort": 1 | 2 | 3,
-        "impactedScores": string (e.g. "AEO Score, Brand Clarity, Trust"),
-        "category": "Schema" | "Content" | "AEO" | "Trust"
+        "domain": "SEO" | "AEO" | "GEO" (which score domain this recommendation primarily improves. SEO = traditional search ranking factors like meta tags, content, internal linking, technical SEO. AEO = AI engine optimization like schema markup, structured data, FAQ content, entity clarity. GEO = generative engine optimization like brand authority, trust signals, social proof, citations, E-E-A-T signals.)
       }
     }
 

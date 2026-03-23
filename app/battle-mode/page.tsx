@@ -186,7 +186,7 @@ export default function BattleMode() {
                             <div className="mt-10 grid grid-cols-3 gap-6 w-full max-w-3xl text-center">
                                 {[
                                     { icon: <Search className="h-5 w-5" />, label: "SEO Authority", desc: "Technical & content dominance", color: "#00e5ff" },
-                                    { icon: <Sparkles className="h-5 w-5" />, label: "AEO Snippet Share", desc: "AI answer engine visibility", color: "#842ce0" },
+                                    { icon: <Sparkles className="h-5 w-5" />, label: "AEO Snippet Share", desc: "AI answer engine visibility", color: "#BC13FE" },
                                     { icon: <Bot className="h-5 w-5" />, label: "GEO Citation", desc: "LLM recommendation likelihood", color: "#fe3f8c" },
                                 ].map(c => (
                                     <div key={c.label} className="space-y-2">
@@ -201,10 +201,10 @@ export default function BattleMode() {
                         /* ── LOADING STATE ── */
                         <div className="space-y-6 animate-in fade-in">
                             <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-xl overflow-hidden relative">
-                                <div className="h-1 w-full bg-white/[0.04]"><div className="h-full bg-gradient-to-r from-[#00e5ff] via-[#842ce0] to-[#fe3f8c] transition-all duration-700" style={{ width: `${loadingProgress}%` }} /></div>
+                                <div className="h-1 w-full bg-white/[0.04]"><div className="h-full bg-gradient-to-r from-[#00e5ff] via-[#BC13FE] to-[#fe3f8c] transition-all duration-700" style={{ width: `${loadingProgress}%` }} /></div>
                                 <div className="py-12 flex flex-col items-center gap-6">
                                     <div className="relative h-24 w-24">
-                                        <div className="absolute inset-0 rounded-full border-4 border-t-[#00e5ff] border-r-[#842ce0] border-b-[#fe3f8c] border-l-transparent animate-spin" />
+                                        <div className="absolute inset-0 rounded-full border-4 border-t-[#00e5ff] border-r-[#BC13FE] border-b-[#fe3f8c] border-l-transparent animate-spin" />
                                         <div className="absolute inset-0 flex items-center justify-center"><span className="text-xl font-black text-white tabular-nums">{loadingProgress}%</span></div>
                                     </div>
                                     <div className="text-center space-y-1.5">
@@ -212,7 +212,7 @@ export default function BattleMode() {
                                         <p className="text-sm text-white/40 max-w-md">{loadingPhase}</p>
                                     </div>
                                     <div className="w-full max-w-md">
-                                        <div className="h-1.5 w-full bg-white/[0.04] rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-[#00e5ff] via-[#842ce0] to-[#fe3f8c] rounded-full transition-all duration-700" style={{ width: `${loadingProgress}%` }} /></div>
+                                        <div className="h-1.5 w-full bg-white/[0.04] rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-[#00e5ff] via-[#BC13FE] to-[#fe3f8c] rounded-full transition-all duration-700" style={{ width: `${loadingProgress}%` }} /></div>
                                         <div className="flex justify-between mt-1"><span className="text-[10px] text-white/30 tabular-nums">{loadingProgress}%</span><span className="text-[10px] text-white/30 tabular-nums flex items-center gap-1"><Clock className="h-3 w-3" />{elapsedSeconds}s</span></div>
                                     </div>
                                     <div className="flex items-center gap-4">
@@ -327,7 +327,7 @@ export default function BattleMode() {
                                                 <div key={i} onClick={() => setExpandedStrategy(isExpanded ? null : i)}
                                                     className={cn(
                                                         "flex flex-col p-5 rounded-xl border border-white/[0.06] bg-white/[0.02] transition-all cursor-pointer group relative overflow-hidden",
-                                                        isExpanded ? "col-span-full border-[#842ce0]/30 ring-1 ring-[#842ce0]/20" : "hover:border-white/[0.12]"
+                                                        isExpanded ? "col-span-full border-[#BC13FE]/30 ring-1 ring-[#BC13FE]/20" : "hover:border-white/[0.12]"
                                                     )}>
                                                     <div className="flex items-center justify-between mb-3">
                                                         <div className="flex gap-1.5 flex-wrap">
@@ -350,12 +350,12 @@ export default function BattleMode() {
                                                     {isExpanded && (
                                                         <div className="space-y-3 mb-3 animate-in fade-in slide-in-from-top-2" onClick={e => e.stopPropagation()}>
                                                             {fix.howToFix && (
-                                                                <div className="p-4 rounded-xl bg-[#842ce0]/5 border border-[#842ce0]/20">
+                                                                <div className="p-4 rounded-xl bg-[#BC13FE]/5 border border-[#BC13FE]/20">
                                                                     <div className="flex items-center justify-between mb-2">
-                                                                        <span className="text-xs font-black uppercase text-[#842ce0] tracking-wider flex items-center gap-2"><Zap className="h-3.5 w-3.5" />How To Fix</span>
+                                                                        <span className="text-xs font-black uppercase text-[#BC13FE] tracking-wider flex items-center gap-2"><Zap className="h-3.5 w-3.5" />How To Fix</span>
                                                                         <button onClick={() => { navigator.clipboard.writeText(fix.howToFix + (fix.codeSnippet ? '\n\nCode:\n' + fix.codeSnippet : '')); setCopiedFix(i); setTimeout(() => setCopiedFix(null), 2000) }}
-                                                                            className="p-1.5 rounded-md hover:bg-[#842ce0]/10 transition-colors">
-                                                                            {copiedFix === i ? <Check className="h-3.5 w-3.5 text-[#842ce0]" /> : <Copy className="h-3.5 w-3.5 text-white/30" />}
+                                                                            className="p-1.5 rounded-md hover:bg-[#BC13FE]/10 transition-colors">
+                                                                            {copiedFix === i ? <Check className="h-3.5 w-3.5 text-[#BC13FE]" /> : <Copy className="h-3.5 w-3.5 text-white/30" />}
                                                                         </button>
                                                                     </div>
                                                                     <p className="text-sm text-white/70 leading-relaxed whitespace-pre-line">{fix.howToFix}</p>
@@ -373,7 +373,7 @@ export default function BattleMode() {
                                                     <div className="mt-auto pt-3 border-t border-white/[0.04] flex items-end justify-between">
                                                         <div><p className="text-[9px] font-black uppercase text-white/20">Impacts</p><p className="text-[10px] font-bold text-white/50">{fix.impactedScores || fix.category}</p></div>
                                                         <div className="text-right"><p className="text-[9px] font-black uppercase text-white/20">Effort</p>
-                                                            <div className="flex gap-0.5">{[1,2,3].map(l => <div key={l} className={cn("h-1 w-3 rounded-full", l <= (fix.effort||2) ? (fix.effort>=3?"bg-red-500":fix.effort===2?"bg-[#842ce0]":"bg-green-500") : "bg-white/[0.06]")} />)}</div>
+                                                            <div className="flex gap-0.5">{[1,2,3].map(l => <div key={l} className={cn("h-1 w-3 rounded-full", l <= (fix.effort||2) ? (fix.effort>=3?"bg-red-500":fix.effort===2?"bg-[#BC13FE]":"bg-green-500") : "bg-white/[0.06]")} />)}</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -387,11 +387,11 @@ export default function BattleMode() {
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 {/* Stolen Opportunities */}
                                 {(comparisonData.stolenOpportunities || comparisonData.comparison?.stolenOpportunities)?.length > 0 && (
-                                    <div className="rounded-2xl border border-[#842ce0]/20 bg-[#842ce0]/[0.03] backdrop-blur-xl overflow-hidden">
-                                        <div className="px-6 py-4 border-b border-[#842ce0]/10 flex items-center justify-between">
+                                    <div className="rounded-2xl border border-[#BC13FE]/20 bg-[#BC13FE]/[0.03] backdrop-blur-xl overflow-hidden">
+                                        <div className="px-6 py-4 border-b border-[#BC13FE]/10 flex items-center justify-between">
                                             <div>
                                                 <h3 className="text-sm font-black text-white flex items-center gap-2">
-                                                    <Zap className="h-4 w-4 text-[#842ce0]" /> Stolen Opportunities
+                                                    <Zap className="h-4 w-4 text-[#BC13FE]" /> Stolen Opportunities
                                                     <InfoTooltip content="Areas where your competitor is outperforming you in AI search visibility. Fixing these has the highest ROI." />
                                                 </h3>
                                                 <p className="text-[10px] text-white/30 mt-0.5">Where they are winning LLM citations</p>
@@ -405,7 +405,7 @@ export default function BattleMode() {
                                             {(comparisonData.stolenOpportunities || comparisonData.comparison?.stolenOpportunities || []).map((opp: any, i: number) => (
                                                 <div key={i} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 flex gap-3">
                                                     <div className={cn("h-9 w-9 shrink-0 rounded-lg flex items-center justify-center",
-                                                        opp.category === 'seo' ? "bg-[#00e5ff]/10 text-[#00e5ff]" : opp.category === 'aeo' ? "bg-[#842ce0]/10 text-[#842ce0]" : "bg-[#fe3f8c]/10 text-[#fe3f8c]"
+                                                        opp.category === 'seo' ? "bg-[#00e5ff]/10 text-[#00e5ff]" : opp.category === 'aeo' ? "bg-[#BC13FE]/10 text-[#BC13FE]" : "bg-[#fe3f8c]/10 text-[#fe3f8c]"
                                                     )}>
                                                         {opp.category === 'seo' ? <Search className="h-4 w-4" /> : opp.category === 'aeo' ? <Sparkles className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
                                                     </div>

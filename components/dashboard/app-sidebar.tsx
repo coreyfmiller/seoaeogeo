@@ -37,7 +37,7 @@ const mainNav: NavItem[] = [
   { name: "Deep Scan", icon: Layers, href: "/deep-scan", badge: "PRO AI" },
   { name: "Competitive Intel", icon: Globe, href: "/competitive-intel", badge: "PRO AI" },
   { name: "Battle Mode", icon: Swords, href: "/battle-mode", badge: "PRO AI" },
-  { name: "Dashboard", icon: Home, href: "/dashboard", badge: "PRO AI" },
+  { name: "Dashboard", icon: Home, href: "/dashboard" },
 ]
 
 const proOnlyPaths = ['/pro-audit', '/deep-scan', '/competitive-intel', '/battle-mode', '/dashboard']
@@ -176,17 +176,17 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
                     </span>
                   )}
                   {item.badge === "PRO AI" && (
-                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-[#118fff]/10 to-[#842ce0]/10 text-[#118fff] border border-[#118fff]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-[#00e5ff]/10 to-[#BC13FE]/10 text-[#00e5ff] border border-[#00e5ff]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       PRO AI
                     </span>
                   )}
                   {item.badge === "FREE" && (
-                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       FREE
                     </span>
                   )}
                   {item.badge === "ADMIN" && (
-                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-[#842ce0]/10 text-[#842ce0] border border-[#842ce0]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-[#BC13FE]/10 text-[#BC13FE] border border-[#BC13FE]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       {item.badge}
                     </span>
                   )}
@@ -196,7 +196,7 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
                     </span>
                   )}
                   {item.badge === "BETA AI" && (
-                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-orange-500/10 to-[#842ce0]/10 text-[#842ce0] border border-[#842ce0]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-orange-500/10 to-[#BC13FE]/10 text-[#BC13FE] border border-[#BC13FE]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       BETA AI
                     </span>
                   )}
@@ -273,7 +273,7 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
                 <item.icon className="h-4 w-4" />
                 <span className="flex-1">{item.name}</span>
                 {item.badge === "ADMIN" && (
-                  <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-[#842ce0]/10 text-[#842ce0] border border-[#842ce0]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                  <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-[#BC13FE]/10 text-[#BC13FE] border border-[#BC13FE]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                     {item.badge}
                   </span>
                 )}

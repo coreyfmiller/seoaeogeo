@@ -23,27 +23,27 @@ interface PriorityMatrixProps {
 
 const categoryConfig = {
   'Quick Win': {
-    color: 'text-geo',
-    bg: 'bg-geo/10',
-    border: 'border-geo/30',
+    color: 'text-[#00e5ff]',
+    bg: 'bg-[#00e5ff]/10',
+    border: 'border-[#00e5ff]/30',
     label: 'Quick Win'
   },
   'High Priority': {
-    color: 'text-aeo',
-    bg: 'bg-aeo/10',
-    border: 'border-aeo/30',
+    color: 'text-[#BC13FE]',
+    bg: 'bg-[#BC13FE]/10',
+    border: 'border-[#BC13FE]/30',
     label: 'High Priority'
   },
   'Medium Priority': {
-    color: 'text-yellow-600',
-    bg: 'bg-yellow-500/10',
-    border: 'border-yellow-500/30',
+    color: 'text-[#fe3f8c]',
+    bg: 'bg-[#fe3f8c]/10',
+    border: 'border-[#fe3f8c]/30',
     label: 'Medium'
   },
   'Long-term Investment': {
-    color: 'text-[#842ce0]',
-    bg: 'bg-[#842ce0]/10',
-    border: 'border-[#842ce0]/30',
+    color: 'text-[#BC13FE]/60',
+    bg: 'bg-[#BC13FE]/5',
+    border: 'border-[#BC13FE]/20',
     label: 'Long-term'
   },
   'Low Priority': {
@@ -74,12 +74,12 @@ export function PriorityMatrix({ recommendations, onRecommendationClick }: Prior
   const lowPriority = recommendations.filter(r => r.category === 'Low Priority')
 
   return (
-    <Card className="border-geo/20">
+    <Card className="border-[#00e5ff]/20">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-geo" />
+              <Target className="h-5 w-5 text-[#00e5ff]" />
               Priority Matrix
             </CardTitle>
             <CardDescription>
@@ -117,11 +117,11 @@ export function PriorityMatrix({ recommendations, onRecommendationClick }: Prior
             {/* Quadrant Background Colors */}
             <div className="absolute inset-8">
               {/* Top Right - Quick Wins */}
-              <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-geo/5 rounded-tl-lg" />
+              <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-[#00e5ff]/5 rounded-tl-lg" />
               {/* Top Left - Long-term */}
-              <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-[#842ce0]/5 rounded-tr-lg" />
+              <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-[#BC13FE]/5 rounded-tr-lg" />
               {/* Bottom Right - High Priority */}
-              <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-aeo/5 rounded-bl-lg" />
+              <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-[#fe3f8c]/5 rounded-bl-lg" />
               {/* Bottom Left - Low Priority */}
               <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-muted/20 rounded-br-lg" />
             </div>

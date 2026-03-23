@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
       {/* Navigation */}
       <header>
         <nav className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50" aria-label="Main navigation">
@@ -46,7 +46,7 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-6 pt-20 pb-4 text-center">
         <h1 className="text-5xl md:text-6xl font-black tracking-tight leading-tight mb-6">
           Search Intelligence for the
-          <span className="bg-gradient-to-r from-[#118fff] via-[#842ce0] to-[#fe3f8c] bg-clip-text text-transparent"> AI Era</span>
+          <span className="bg-gradient-to-r from-[#00e5ff] via-[#BC13FE] to-[#fe3f8c] bg-clip-text text-transparent"> AI Era</span>
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
           Duelly is a search intelligence platform that audits your website across three dimensions:
@@ -57,13 +57,13 @@ export default function HomePage() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/free-audit"
-            className="px-8 py-3 rounded-xl bg-[#118fff] hover:bg-[#118fff]/90 text-white font-bold text-lg transition-colors flex items-center gap-2"
+            className="px-8 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-lg transition-colors flex items-center gap-2"
           >
             Try Free Audit <ArrowRight className="h-5 w-5" />
           </Link>
           <Link
             href="/pro"
-            className="px-8 py-3 rounded-xl border border-border/50 hover:border-[#842ce0]/50 hover:bg-[#842ce0]/5 font-bold text-lg transition-colors"
+            className="px-8 py-3 rounded-xl border border-border/50 hover:border-[#BC13FE]/50 hover:bg-[#BC13FE]/5 font-bold text-lg transition-colors"
           >
             View Pricing
           </Link>
@@ -84,27 +84,27 @@ export default function HomePage() {
         </p>
 
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="p-6 rounded-2xl border border-[#118fff]/20 bg-[#118fff]/5">
-            <div className="h-12 w-12 rounded-xl bg-[#118fff]/10 flex items-center justify-center mb-4">
-              <Search className="h-6 w-6 text-[#118fff]" />
+          <div className="p-6 rounded-2xl border border-[#00e5ff]/20 bg-[#00e5ff]/5">
+            <div className="h-12 w-12 rounded-xl bg-[#00e5ff]/10 flex items-center justify-center mb-4">
+              <Search className="h-6 w-6 text-[#00e5ff]" />
             </div>
             <h3 className="text-xl font-bold mb-2">SEO Analysis</h3>
             <p className="text-muted-foreground leading-relaxed">
               Evaluates technical SEO, content quality, metadata, schema markup, internal linking,
-              and <a href="https://web.dev/articles/vitals" target="_blank" rel="noopener noreferrer" className="text-[#118fff] hover:underline">Core Web Vitals</a> using
+              and <a href="https://web.dev/articles/vitals" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Core Web Vitals</a> using
               real PageSpeed Insights data. Scores against 2026 Google crawling standards.
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl border border-[#842ce0]/20 bg-[#842ce0]/5">
-            <div className="h-12 w-12 rounded-xl bg-[#842ce0]/10 flex items-center justify-center mb-4">
-              <Sparkles className="h-6 w-6 text-[#842ce0]" />
+          <div className="p-6 rounded-2xl border border-[#BC13FE]/20 bg-[#BC13FE]/5">
+            <div className="h-12 w-12 rounded-xl bg-[#BC13FE]/10 flex items-center justify-center mb-4">
+              <Sparkles className="h-6 w-6 text-[#BC13FE]" />
             </div>
             <h3 className="text-xl font-bold mb-2">AEO Analysis</h3>
             <p className="text-muted-foreground leading-relaxed">
               Measures how likely AI assistants like ChatGPT, Perplexity, and Gemini are to cite
               your content. Evaluates Q&A coverage, definition clarity, entity density, and
-              <a href="https://schema.org" target="_blank" rel="noopener noreferrer" className="text-[#842ce0] hover:underline">structured data</a> quality.
+              <a href="https://schema.org" target="_blank" rel="noopener noreferrer" className="text-[#BC13FE] hover:underline">structured data</a> quality.
             </p>
           </div>
 
@@ -153,7 +153,7 @@ export default function HomePage() {
         <div className="grid md:grid-cols-3 gap-6">
           <div className="p-6 rounded-2xl border border-border/50 bg-card/50">
             <div className="flex items-center gap-2 mb-3">
-              <Zap className="h-5 w-5 text-[#118fff]" />
+              <Zap className="h-5 w-5 text-[#00e5ff]" />
               <h3 className="text-lg font-bold">Pro Audit</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
@@ -161,14 +161,14 @@ export default function HomePage() {
               from PageSpeed Insights, site type detection, and up to 15 prioritized fix instructions.
               10 credits per scan.
             </p>
-            <Link href="/pro-audit" className="text-sm font-semibold text-[#118fff] hover:underline flex items-center gap-1">
+            <Link href="/pro-audit" className="text-sm font-semibold text-[#00e5ff] hover:underline flex items-center gap-1">
               Run Pro Audit <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
 
-          <div className="p-6 rounded-2xl border border-[#842ce0]/30 bg-[#842ce0]/5">
+          <div className="p-6 rounded-2xl border border-[#BC13FE]/30 bg-[#BC13FE]/5">
             <div className="flex items-center gap-2 mb-3">
-              <Shield className="h-5 w-5 text-[#842ce0]" />
+              <Shield className="h-5 w-5 text-[#BC13FE]" />
               <h3 className="text-lg font-bold">Deep Scan</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
@@ -176,7 +176,7 @@ export default function HomePage() {
               detects duplicate titles and meta descriptions, checks robots.txt and sitemap,
               and provides sitewide intelligence. 10 credits + 1 per page.
             </p>
-            <Link href="/deep-scan" className="text-sm font-semibold text-[#842ce0] hover:underline flex items-center gap-1">
+            <Link href="/deep-scan" className="text-sm font-semibold text-[#BC13FE] hover:underline flex items-center gap-1">
               Run Deep Scan <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
@@ -203,11 +203,11 @@ export default function HomePage() {
         <h2 className="text-3xl font-black text-center mb-12">What Sets Duelly Apart</h2>
         <div className="grid md:grid-cols-2 gap-6">
           {[
-            { icon: <Brain className="h-5 w-5 text-[#842ce0]" />, title: 'Dual AI Scoring', desc: 'Every Pro Audit runs two parallel Gemini AI calls and averages the results for consistent, stable scores across repeated scans.' },
-            { icon: <Globe className="h-5 w-5 text-[#118fff]" />, title: 'Real Core Web Vitals', desc: 'Integrates the Google PageSpeed Insights API for real LCP, INP, and CLS data — the same metrics Google uses as ranking signals.' },
+            { icon: <Brain className="h-5 w-5 text-[#BC13FE]" />, title: 'Dual AI Scoring', desc: 'Every Pro Audit runs two parallel Gemini AI calls and averages the results for consistent, stable scores across repeated scans.' },
+            { icon: <Globe className="h-5 w-5 text-[#00e5ff]" />, title: 'Real Core Web Vitals', desc: 'Integrates the Google PageSpeed Insights API for real LCP, INP, and CLS data — the same metrics Google uses as ranking signals.' },
             { icon: <Target className="h-5 w-5 text-[#fe3f8c]" />, title: 'Site Type Detection', desc: 'Automatically detects your site type (e-commerce, blog, SaaS, portfolio, etc.) and adjusts scoring weights accordingly.' },
-            { icon: <Shield className="h-5 w-5 text-[#842ce0]" />, title: 'Platform-Specific Fixes', desc: 'Detects WordPress, Shopify, Wix, Squarespace, Next.js, and more. Fix instructions reference your actual admin paths and plugins.' },
-            { icon: <BarChart3 className="h-5 w-5 text-[#118fff]" />, title: 'Transparent Scoring', desc: 'Every point deducted is explained with severity, impact reasoning, and a step-by-step fix. No black-box scores.' },
+            { icon: <Shield className="h-5 w-5 text-[#BC13FE]" />, title: 'Platform-Specific Fixes', desc: 'Detects WordPress, Shopify, Wix, Squarespace, Next.js, and more. Fix instructions reference your actual admin paths and plugins.' },
+            { icon: <BarChart3 className="h-5 w-5 text-[#00e5ff]" />, title: 'Transparent Scoring', desc: 'Every point deducted is explained with severity, impact reasoning, and a step-by-step fix. No black-box scores.' },
             { icon: <Zap className="h-5 w-5 text-[#fe3f8c]" />, title: 'Live Interrogation', desc: 'Secretly asks AI models if they would recommend your business — revealing your actual visibility in AI-generated answers.' },
           ].map((feature, i) => (
             <div key={i} className="flex gap-4 p-4 rounded-xl border border-border/30 bg-card/30">
@@ -289,7 +289,7 @@ export default function HomePage() {
         </p>
         <Link
           href="/free-audit"
-          className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#118fff] hover:bg-[#118fff]/90 text-white font-bold text-lg transition-colors"
+          className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-lg transition-colors"
         >
           Start Free Audit <ArrowRight className="h-5 w-5" />
         </Link>

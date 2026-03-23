@@ -23,15 +23,15 @@
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.88 0.005 260);
   --input: oklch(0.93 0.005 260);
-  --ring: #118fff;
+  --ring: #00e5ff;
 
   /* SEO - Blue */
-  --seo: #118fff;
+  --seo: #00e5ff;
   --seo-foreground: oklch(0.98 0 0);
   --seo-muted: oklch(0.9 0.05 250);
 
   /* AEO - Purple */
-  --aeo: #842ce0;
+  --aeo: #BC13FE;
   --aeo-foreground: oklch(0.98 0 0);
   --aeo-muted: oklch(0.9 0.06 300);
 
@@ -41,8 +41,8 @@
   --geo-muted: oklch(0.9 0.05 160);
 
   /* Chart colors */
-  --chart-1: #118fff;
-  --chart-2: #842ce0;
+  --chart-1: #00e5ff;
+  --chart-2: #BC13FE;
   --chart-3: oklch(0.55 0.2 160);
   --chart-4: oklch(0.6 0.15 50);
   --chart-5: oklch(0.5 0.2 25);
@@ -50,12 +50,12 @@
   --radius: 0.625rem;
   --sidebar: oklch(0.96 0.005 260);
   --sidebar-foreground: oklch(0.15 0.01 260);
-  --sidebar-primary: #118fff;
+  --sidebar-primary: #00e5ff;
   --sidebar-primary-foreground: oklch(0.98 0 0);
   --sidebar-accent: oklch(0.92 0.005 260);
   --sidebar-accent-foreground: oklch(0.15 0.01 260);
   --sidebar-border: oklch(0.88 0.005 260);
-  --sidebar-ring: #118fff;
+  --sidebar-ring: #00e5ff;
 }
 
 .dark {
@@ -77,20 +77,20 @@
   --destructive-foreground: oklch(0.95 0 0);
   --border: oklch(0.25 0.01 260);
   --input: oklch(0.18 0.01 260);
-  --ring: #118fff;
-  --chart-1: #118fff;
-  --chart-2: #842ce0;
+  --ring: #00e5ff;
+  --chart-1: #00e5ff;
+  --chart-2: #BC13FE;
   --chart-3: oklch(0.7 0.2 160);
   --chart-4: oklch(0.75 0.15 50);
   --chart-5: oklch(0.6 0.2 25);
   --sidebar: oklch(0.08 0.01 260);
   --sidebar-foreground: oklch(0.95 0 0);
-  --sidebar-primary: #118fff;
+  --sidebar-primary: #00e5ff;
   --sidebar-primary-foreground: oklch(0.95 0 0);
   --sidebar-accent: oklch(0.15 0.01 260);
   --sidebar-accent-foreground: oklch(0.95 0 0);
   --sidebar-border: oklch(0.2 0.01 260);
-  --sidebar-ring: #118fff;
+  --sidebar-ring: #00e5ff;
 }
 
 @theme inline {
@@ -250,4 +250,11 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Prevent double scrollbars — must be outside @layer for highest specificity */
+html, body {
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
 }

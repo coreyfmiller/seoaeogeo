@@ -82,8 +82,8 @@ export function CreditConfirmDialog({
       <div className="relative bg-card border border-border rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center gap-3 mb-5">
-          <div className="h-10 w-10 rounded-full bg-[#842ce0]/10 flex items-center justify-center">
-            <Coins className="h-5 w-5 text-[#842ce0]" />
+          <div className="h-10 w-10 rounded-full bg-[#BC13FE]/10 flex items-center justify-center">
+            <Coins className="h-5 w-5 text-[#BC13FE]" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-foreground">Confirm {scanType}</h3>
@@ -107,8 +107,8 @@ export function CreditConfirmDialog({
                   className={cn(
                     "flex-1 py-2 rounded-lg border text-sm font-medium transition-all",
                     selectedPages === count
-                      ? "border-[#842ce0] bg-[#842ce0]/10 text-[#842ce0] font-bold"
-                      : "border-border/50 text-muted-foreground hover:border-[#842ce0]/30 hover:bg-[#842ce0]/5"
+                      ? "border-[#BC13FE] bg-[#BC13FE]/10 text-[#BC13FE] font-bold"
+                      : "border-border/50 text-muted-foreground hover:border-[#BC13FE]/30 hover:bg-[#BC13FE]/5"
                   )}
                 >
                   {count}
@@ -122,7 +122,7 @@ export function CreditConfirmDialog({
         <div className="rounded-xl border border-border/50 bg-muted/30 p-4 space-y-3 mb-5">
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Credit Cost</span>
-            <span className="text-lg font-black text-[#842ce0]">{effectiveCost} credits</span>
+            <span className="text-lg font-black text-[#BC13FE]">{effectiveCost} credits</span>
           </div>
           {effectiveBreakdown && (
             <p className="text-xs text-muted-foreground/80 italic">{effectiveBreakdown}</p>
@@ -176,7 +176,7 @@ export function CreditConfirmDialog({
             disabled={loading || !hasEnough}
             className={cn(
               "flex-1 py-2.5 rounded-xl text-sm font-bold transition-all",
-              "bg-[#842ce0] text-white hover:bg-[#842ce0]/90",
+              "bg-[#BC13FE] text-white hover:bg-[#BC13FE]/90",
               "disabled:opacity-40 disabled:cursor-not-allowed"
             )}
           >

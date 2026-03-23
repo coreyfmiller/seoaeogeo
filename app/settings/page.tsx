@@ -247,7 +247,7 @@ export default function SettingsPage() {
                   {!isAdmin && (
                     <Link
                       href="/pro"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#118fff] hover:bg-[#118fff]/90 text-white font-medium text-sm transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-medium text-sm transition-colors"
                     >
                       <Crown className="h-4 w-4" />
                       Buy Credits
@@ -259,8 +259,8 @@ export default function SettingsPage() {
                   <div className="p-4 rounded-lg border border-border/50">
                     <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Credits Available</p>
                     <div className="flex items-center gap-2">
-                      <Coins className="h-5 w-5 text-[#842ce0]" />
-                      <p className="text-2xl font-black text-[#842ce0]">
+                      <Coins className="h-5 w-5 text-[#BC13FE]" />
+                      <p className="text-2xl font-black text-[#BC13FE]">
                         {creditsAvailable}
                       </p>
                     </div>
@@ -357,12 +357,12 @@ export default function SettingsPage() {
 
             {/* Admin: Generate Promo Codes */}
             {isAdmin && (
-              <Card className="border-amber-500/30">
+              <Card className="border-yellow-500/30">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <Crown className="h-5 w-5 text-amber-500" />
+                    <Crown className="h-5 w-5 text-yellow-500" />
                     Generate Promo Codes
-                    <span className="text-xs font-normal text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full">Admin</span>
+                    <span className="text-xs font-normal text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded-full">Admin</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -371,16 +371,16 @@ export default function SettingsPage() {
                     {CREDIT_TIERS.map((tier) => (
                       <div key={tier} className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-muted/10">
                         <div className="flex items-center gap-3">
-                          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#842ce0]/10 border border-[#842ce0]/20">
-                            <Coins className="h-3.5 w-3.5 text-[#842ce0]" />
-                            <span className="text-sm font-bold text-[#842ce0]">{tier}</span>
+                          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#BC13FE]/10 border border-[#BC13FE]/20">
+                            <Coins className="h-3.5 w-3.5 text-[#BC13FE]" />
+                            <span className="text-sm font-bold text-[#BC13FE]">{tier}</span>
                           </div>
                           <span className="text-sm text-muted-foreground">credits</span>
                         </div>
                         <button
                           onClick={() => handleGenerateCodes(tier)}
                           disabled={promoGenerating !== null}
-                          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm transition-colors disabled:opacity-50"
+                          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white font-medium text-sm transition-colors disabled:opacity-50"
                         >
                           {promoGenerating === tier ? <><Loader2 className="h-4 w-4 animate-spin" /> Generating...</> : 'Generate Code'}
                         </button>
@@ -397,7 +397,7 @@ export default function SettingsPage() {
                             <div key={i} className={cn("flex items-center justify-between px-3 py-2 rounded-md text-sm font-mono", item.copied ? "bg-muted/30 text-muted-foreground line-through" : fullyUsed ? "bg-muted/30 text-muted-foreground" : "bg-background border border-border/40")}>
                               <div className="flex items-center gap-3 min-w-0">
                                 <span className="truncate">{item.code}</span>
-                                <span className="text-[10px] font-sans font-medium text-[#842ce0] bg-[#842ce0]/10 px-1.5 py-0.5 rounded shrink-0">{item.credits}cr</span>
+                                <span className="text-[10px] font-sans font-medium text-[#BC13FE] bg-[#BC13FE]/10 px-1.5 py-0.5 rounded shrink-0">{item.credits}cr</span>
                                 {fullyUsed && <span className="text-[10px] font-sans font-medium text-destructive/70 bg-destructive/10 px-1.5 py-0.5 rounded shrink-0">used</span>}
                                 {item.timesUsed > 0 && !fullyUsed && <span className="text-[10px] font-sans text-muted-foreground shrink-0">{item.timesUsed}/{item.maxUses}</span>}
                               </div>
@@ -465,7 +465,7 @@ export default function SettingsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <Lock className="h-5 w-5 text-[#842ce0]" />
+                  <Lock className="h-5 w-5 text-[#BC13FE]" />
                   Change Password
                 </CardTitle>
               </CardHeader>
@@ -507,7 +507,7 @@ export default function SettingsPage() {
                 <button
                   onClick={handleChangePassword}
                   disabled={changingPassword || !newPassword}
-                  className="px-4 py-2 rounded-lg bg-[#842ce0] hover:bg-[#842ce0]/90 text-white font-medium text-sm transition-colors disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-[#BC13FE] hover:bg-[#BC13FE]/90 text-white font-medium text-sm transition-colors disabled:opacity-50"
                 >
                   {changingPassword ? 'Updating...' : 'Update Password'}
                 </button>

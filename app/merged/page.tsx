@@ -443,15 +443,26 @@ export default function MergedDashboard() {
                               </CardDescription>
                             </CardHeader>
                             <CardContent>
-                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {ai.recommendations.map((fix: any, i: number) => (
+                              {(() => {
+                                const recs = ai.recommendations
+                                const normPriority = (r: any) => r.priority === 'STEADY' ? 'MEDIUM' : (r.priority || 'MEDIUM')
+                                const urgent = recs.filter((r: any) => normPriority(r) === 'CRITICAL')
+                                const high = recs.filter((r: any) => normPriority(r) === 'HIGH')
+                                const medium = recs.filter((r: any) => normPriority(r) === 'MEDIUM')
+                                const groups = [
+                                  { label: '🔥 Urgent', items: urgent },
+                                  { label: '⚡ High', items: high },
+                                  { label: '→ Medium', items: medium },
+                                ].filter(g => g.items.length > 0)
+
+                                const renderCard = (fix: any, i: number) => (
                                   <FixInstructionCard
                                     key={i}
                                     title={fix.title}
-                                    category={fix.category || 'Medium Priority'}
-                                    priority={fix.priority || 'MEDIUM'}
+                                    domain={fix.domain ? fix.domain.toLowerCase() as any : 'seo'}
+                                    priority={normPriority(fix)}
                                     steps={fix.steps || [{ step: 1, title: fix.title, description: fix.description }]}
-                                    code={fix.code}
+                                    code={fix.code || fix.codeSnippet}
                                     platform={fix.platform || 'general'}
                                     estimatedTime={fix.estimatedTime || '30 minutes'}
                                     difficulty={fix.effort === 1 ? 'easy' : fix.effort === 3 ? 'difficult' : 'moderate'}
@@ -460,13 +471,27 @@ export default function MergedDashboard() {
                                     validationLinks={fix.validationLinks || []}
                                     onMarkComplete={() => {
                                       const updated = { ...analysisData }
-                                      updated.ai.recommendations[i].completed = true
+                                      const idx = recs.indexOf(fix)
+                                      if (idx >= 0) updated.ai.recommendations[idx].completed = true
                                       setAnalysisData(updated)
                                     }}
                                     isCompleted={fix.completed || false}
                                   />
-                                ))}
-                              </div>
+                                )
+
+                                return (
+                                  <div className="space-y-6">
+                                    {groups.map(group => (
+                                      <div key={group.label}>
+                                        <p className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-3">{group.label} ({group.items.length})</p>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                          {group.items.map((fix: any, i: number) => renderCard(fix, i))}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )
+                              })()}
                             </CardContent>
                           </Card>
                         )}

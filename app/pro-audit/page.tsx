@@ -597,13 +597,13 @@ export default function V3Page() {
 
           {/* Core Web Vitals */}
           {result.cwv && (
-            <Card className="border-[#842ce0]/20 bg-[#842ce0]/5">
+            <Card className="border-[#BC13FE]/20 bg-[#BC13FE]/5">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <Zap className="h-5 w-5 text-[#842ce0]" />
+                  <Zap className="h-5 w-5 text-[#BC13FE]" />
                   Core Web Vitals
                   <InfoTooltip content="Google's Core Web Vitals measure real-world user experience — loading speed (LCP), interactivity (INP), and visual stability (CLS). These are direct ranking signals that affect your position in search results." />
-                  <span className="ml-auto text-sm font-black text-[#842ce0]">{result.cwv.performanceScore}/100</span>
+                  <span className="ml-auto text-sm font-black text-[#BC13FE]">{result.cwv.performanceScore}/100</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>

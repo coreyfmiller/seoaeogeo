@@ -27,8 +27,10 @@ interface InstructionStep {
 
 interface FixInstructionCardProps {
   title: string
-  category: 'Quick Win' | 'High Priority' | 'Medium Priority' | 'Long-term Investment' | 'Low Priority'
-  priority: 'CRITICAL' | 'HIGH' | 'MEDIUM'
+  domain?: 'seo' | 'aeo' | 'geo' | 'all'
+  /** @deprecated Use domain instead */
+  category?: string
+  priority: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'
   steps: InstructionStep[]
   code?: string
   platform: string
@@ -41,63 +43,69 @@ interface FixInstructionCardProps {
   isCompleted?: boolean
 }
 
-const categoryConfig = {
-  'Quick Win': {
-    color: 'text-geo',
-    bg: 'bg-geo/10',
-    border: 'border-geo/30'
+const domainConfig = {
+  seo: {
+    label: 'SEO',
+    color: 'text-[#00e5ff]',
+    bg: 'bg-[#00e5ff]/10',
+    border: 'border-[#00e5ff]/30'
   },
-  'High Priority': {
-    color: 'text-aeo',
-    bg: 'bg-aeo/10',
-    border: 'border-aeo/30'
+  aeo: {
+    label: 'AEO',
+    color: 'text-[#BC13FE]',
+    bg: 'bg-[#BC13FE]/10',
+    border: 'border-[#BC13FE]/30'
   },
-  'Medium Priority': {
-    color: 'text-yellow-600',
-    bg: 'bg-yellow-500/10',
-    border: 'border-yellow-500/30'
+  geo: {
+    label: 'GEO',
+    color: 'text-[#fe3f8c]',
+    bg: 'bg-[#fe3f8c]/10',
+    border: 'border-[#fe3f8c]/30'
   },
-  'Long-term Investment': {
-    color: 'text-[#842ce0]',
-    bg: 'bg-[#842ce0]/10',
-    border: 'border-[#842ce0]/30'
+  all: {
+    label: 'ALL',
+    color: 'text-[#00e5ff]',
+    bg: 'bg-[#00e5ff]/10',
+    border: 'border-[#00e5ff]/30'
+  }
+}
+
+const priorityConfig = {
+  CRITICAL: {
+    label: '🔥 Urgent',
+    color: 'text-destructive',
+    bg: 'bg-destructive/10',
+    border: 'border-destructive/30'
   },
-  'Low Priority': {
+  HIGH: {
+    label: '⚡ High',
+    color: 'text-[#00e5ff]',
+    bg: 'bg-[#00e5ff]/10',
+    border: 'border-[#00e5ff]/30'
+  },
+  MEDIUM: {
+    label: '→ Medium',
+    color: 'text-[#fe3f8c]',
+    bg: 'bg-[#fe3f8c]/10',
+    border: 'border-[#fe3f8c]/30'
+  },
+  LOW: {
+    label: '○ Low',
     color: 'text-muted-foreground',
     bg: 'bg-muted/30',
     border: 'border-border/50'
   }
 }
 
-const priorityConfig = {
-  CRITICAL: {
-    label: '🔥 URGENT',
-    color: 'text-destructive',
-    bg: 'bg-destructive/10',
-    border: 'border-destructive/30'
-  },
-  HIGH: {
-    label: '⚡ HIGH PRIORITY',
-    color: 'text-yellow-600',
-    bg: 'bg-yellow-500/10',
-    border: 'border-yellow-500/30'
-  },
-  MEDIUM: {
-    label: '✓ QUICK WIN',
-    color: 'text-geo',
-    bg: 'bg-geo/10',
-    border: 'border-geo/30'
-  }
-}
-
 const difficultyConfig = {
-  easy: { label: 'Easy', dots: 1, color: 'bg-geo' },
-  moderate: { label: 'Moderate', dots: 2, color: 'bg-aeo' },
+  easy: { label: 'Easy', dots: 1, color: 'bg-[#00e5ff]' },
+  moderate: { label: 'Moderate', dots: 2, color: 'bg-[#BC13FE]' },
   difficult: { label: 'Difficult', dots: 3, color: 'bg-destructive' }
 }
 
 export function FixInstructionCard({
   title,
+  domain,
   category,
   priority,
   steps,
@@ -114,8 +122,9 @@ export function FixInstructionCard({
   const [isExpanded, setIsExpanded] = useState(false)
   const [copiedCode, setCopiedCode] = useState(false)
 
-  // Add fallback for invalid categories
-  const categoryStyle = categoryConfig[category] || categoryConfig['Medium Priority']
+  // Resolve domain: use explicit domain prop, or infer from legacy category
+  const resolvedDomain = domain || 'all'
+  const domainStyle = domainConfig[resolvedDomain] || domainConfig['all']
   const priorityStyle = priorityConfig[priority] || priorityConfig['MEDIUM']
   const difficultyStyle = difficultyConfig[difficulty] || difficultyConfig['moderate']
 
@@ -130,28 +139,28 @@ export function FixInstructionCard({
   return (
     <Card className={cn(
       "border-2 transition-all hover:shadow-lg h-full flex flex-col",
-      isCompleted ? "opacity-60 border-muted" : categoryStyle.border,
+      isCompleted ? "opacity-60 border-muted" : "border-[#00e5ff]/30",
       isCompleted && "bg-muted/20"
     )}>
       {/* Header */}
       <div 
         className={cn(
           "p-4 cursor-pointer",
-          !isCompleted && categoryStyle.bg
+          !isCompleted && "bg-[#00e5ff]/5"
         )}
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-start gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2 flex-wrap">
-              <Badge className={cn("text-[10px] font-black uppercase tracking-wider", categoryStyle.bg, categoryStyle.color, categoryStyle.border)}>
-                {category}
+              <Badge className={cn("text-xs px-2.5 py-0.5 font-black uppercase tracking-wider", domainStyle.bg, domainStyle.color, domainStyle.border)}>
+                {domainStyle.label}
               </Badge>
-              <Badge className={cn("text-[10px] font-black uppercase tracking-wider", priorityStyle.bg, priorityStyle.color, priorityStyle.border)}>
+              <Badge className={cn("text-xs px-2.5 py-0.5 font-black uppercase tracking-wider", priorityStyle.bg, priorityStyle.color, priorityStyle.border)}>
                 {priorityStyle.label}
               </Badge>
               {isCompleted && (
-                <Badge className="text-[10px] font-black bg-geo/10 text-geo border-geo/30">
+                <Badge className="text-[10px] font-black bg-green-500/10 text-green-500 border-green-500/30">
                   <CheckCircle2 className="h-3 w-3 mr-1" />
                   COMPLETED
                 </Badge>
@@ -213,8 +222,8 @@ export function FixInstructionCard({
               <div key={step.step} className="flex gap-3">
                 <div className={cn(
                   "h-6 w-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold",
-                  categoryStyle.bg,
-                  categoryStyle.color
+                  domainStyle.bg,
+                  domainStyle.color
                 )}>
                   {step.step}
                 </div>
@@ -231,7 +240,7 @@ export function FixInstructionCard({
                       href={step.validationUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 mt-2 text-xs text-geo hover:underline"
+                      className="inline-flex items-center gap-1 mt-2 text-xs text-[#00e5ff] hover:underline"
                     >
                       <ExternalLink className="h-3 w-3" />
                       Validate this step
@@ -258,7 +267,7 @@ export function FixInstructionCard({
                 >
                   {copiedCode ? (
                     <>
-                      <CheckCircle2 className="h-3.5 w-3.5 mr-1.5 text-geo" />
+                      <CheckCircle2 className="h-3.5 w-3.5 mr-1.5 text-[#00e5ff]" />
                       Copied!
                     </>
                   ) : (
@@ -288,7 +297,7 @@ export function FixInstructionCard({
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-background border border-border/50 rounded-lg text-xs hover:border-geo/50 hover:bg-geo/5 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-background border border-border/50 rounded-lg text-xs hover:border-[#00e5ff]/50 hover:bg-[#00e5ff]/5 transition-colors"
                   >
                     <ExternalLink className="h-3 w-3" />
                     {link.tool}
@@ -303,7 +312,7 @@ export function FixInstructionCard({
             <div className="pt-3 border-t border-border/50">
               <Button
                 onClick={onMarkComplete}
-                className="w-full bg-geo text-geo-foreground hover:bg-geo/90"
+                className="w-full bg-[#00e5ff] text-white hover:bg-[#00e5ff]/90"
               >
                 <CheckCircle2 className="h-4 w-4 mr-2" />
                 Mark as Complete

@@ -156,7 +156,7 @@ export default function V4Page() {
             />
 
             {isAnalyzing && (
-              <Card className="border-[#842ce0]/30">
+              <Card className="border-[#BC13FE]/30">
                 <CardContent className="pt-6">
                   <div className="flex flex-col items-center gap-4 py-8">
                     <div className="h-12 w-12 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
@@ -174,10 +174,10 @@ export default function V4Page() {
             )}
 
             {!result && !isAnalyzing && (
-              <Card className="border-2 border-[#842ce0]/20 bg-gradient-to-br from-[#842ce0]/5 to-transparent">
+              <Card className="border-2 border-[#BC13FE]/20 bg-gradient-to-br from-[#BC13FE]/5 to-transparent">
                 <CardHeader className="text-center space-y-4 pb-8">
-                  <div className="mx-auto w-16 h-16 rounded-full bg-[#842ce0]/10 flex items-center justify-center">
-                    <Sparkles className="h-8 w-8 text-[#842ce0]" />
+                  <div className="mx-auto w-16 h-16 rounded-full bg-[#BC13FE]/10 flex items-center justify-center">
+                    <Sparkles className="h-8 w-8 text-[#BC13FE]" />
                   </div>
                   <div>
                     <CardTitle className="text-3xl mb-2">V4 Free Audit</CardTitle>
@@ -194,7 +194,7 @@ export default function V4Page() {
                     variant="large"
                   />
                   <div className="mt-4 text-center">
-                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-[#842ce0]/10 text-[#842ce0] border border-[#842ce0]/20">
+                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-[#BC13FE]/10 text-[#BC13FE] border border-[#BC13FE]/20">
                       <Sparkles className="h-3 w-3" />
                       BETA AI - Lite Analysis
                     </span>

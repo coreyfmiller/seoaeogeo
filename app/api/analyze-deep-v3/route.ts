@@ -236,6 +236,14 @@ export async function POST(request: NextRequest) {
       // Step 6: Sitewide AI Intelligence
       send({ type: 'progress', phase: 'Running sitewide intelligence analysis...', progress: 93 })
       let sitewideIntelligence: any = null
+
+      // Pre-calculate avg scores so we can pass them to the AI for score-gap-aware recommendations
+      const preAvgScores = {
+        seo: Math.round(pageAnalyses.reduce((s: number, a: any) => s + a.scores.seo.score, 0) / pageAnalyses.length),
+        aeo: Math.round(pageAnalyses.reduce((s: number, a: any) => s + a.scores.aeo.score, 0) / pageAnalyses.length),
+        geo: Math.round(pageAnalyses.reduce((s: number, a: any) => s + a.scores.geo.score, 0) / pageAnalyses.length),
+      }
+
       try {
         const parsedUrl = new URL(url)
         sitewideIntelligence = await analyzeSitewideIntelligence({
@@ -257,6 +265,7 @@ export async function POST(request: NextRequest) {
           })),
           siteType: siteTypeResult.primaryType as any,
           platform: scanResults[0]?.scanResult?.platformDetection?.label,
+          currentScores: preAvgScores,
         })
       } catch (err) {
         console.error('[Deep Scan] Sitewide intelligence failed:', err instanceof Error ? err.message : err)

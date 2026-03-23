@@ -89,7 +89,7 @@ export default function ProPage() {
 
             {/* Hero */}
             <div className="text-center space-y-5">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#118fff]/10 text-[#118fff] text-sm font-bold border border-[#118fff]/20">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#00e5ff]/10 text-[#00e5ff] text-sm font-bold border border-[#00e5ff]/20">
                 <Coins className="h-4 w-4" />
                 BUY CREDITS
               </div>
@@ -105,9 +105,9 @@ export default function ProPage() {
             {/* Credit Pack Cards */}
             <div className="grid md:grid-cols-3 gap-6">
               {creditPacks.map(pack => (
-                <Card key={pack.name} className={`relative flex flex-col ${pack.popular ? 'border-[#118fff] shadow-lg shadow-[#118fff]/10' : 'border-border/50'}`}>
+                <Card key={pack.name} className={`relative flex flex-col ${pack.popular ? 'border-[#00e5ff] shadow-lg shadow-[#00e5ff]/10' : 'border-border/50'}`}>
                   {pack.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#118fff] text-white text-xs font-bold">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#00e5ff] text-white text-xs font-bold">
                       Best Value
                     </div>
                   )}
@@ -116,14 +116,14 @@ export default function ProPage() {
                     <div className="flex items-baseline justify-center gap-1 mt-2">
                       <span className="text-5xl font-black">{pack.price}</span>
                     </div>
-                    <p className="text-2xl font-bold text-[#118fff] mt-2">{pack.credits.toLocaleString()} credits</p>
+                    <p className="text-2xl font-bold text-[#00e5ff] mt-2">{pack.credits.toLocaleString()} credits</p>
                     <p className="text-xs text-muted-foreground mt-1">{pack.perCredit} per credit • never expire</p>
                   </CardHeader>
                   <CardContent className="flex flex-col flex-1 space-y-4">
                     <ul className="space-y-2 flex-1">
                       {pack.examples.map(ex => (
                         <li key={ex} className="flex items-center gap-2 text-sm">
-                          <CheckCircle2 className="h-4 w-4 text-[#118fff] shrink-0" />
+                          <CheckCircle2 className="h-4 w-4 text-[#00e5ff] shrink-0" />
                           {ex}
                         </li>
                       ))}
@@ -133,8 +133,8 @@ export default function ProPage() {
                       disabled={loadingPack !== null}
                       className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors ${
                         pack.popular
-                          ? 'bg-[#118fff] hover:bg-[#118fff]/90 text-white shadow-md'
-                          : 'border border-border hover:border-[#118fff]/50 hover:bg-[#118fff]/5'
+                          ? 'bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white shadow-md'
+                          : 'border border-border hover:border-[#00e5ff]/50 hover:bg-[#00e5ff]/5'
                       }`}
                     >
                       {loadingPack === pack.packId ? (
@@ -155,7 +155,7 @@ export default function ProPage() {
             <Card className="border-border/50">
               <CardHeader>
                 <CardTitle className="text-center flex items-center justify-center gap-2">
-                  <Coins className="h-5 w-5 text-[#118fff]" />
+                  <Coins className="h-5 w-5 text-[#00e5ff]" />
                   Credit Costs
                 </CardTitle>
                 <p className="text-sm text-muted-foreground text-center">Use your credits on any scan type — mix and match however you want</p>
@@ -165,7 +165,7 @@ export default function ProPage() {
                   {creditCosts.map(item => (
                     <div key={item.action} className="rounded-xl border border-border/50 bg-muted/20 p-4 text-center space-y-1">
                       <p className="text-sm font-bold">{item.action}</p>
-                      <p className="text-xl font-black text-[#118fff]">{item.cost}</p>
+                      <p className="text-xl font-black text-[#00e5ff]">{item.cost}</p>
                       <p className="text-[10px] text-muted-foreground">{item.note}</p>
                     </div>
                   ))}
@@ -177,7 +177,7 @@ export default function ProPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {features.map(f => (
                 <div key={f.title} className="rounded-xl border border-border/50 bg-card/50 p-4 space-y-2">
-                  <f.icon className="h-5 w-5 text-[#118fff]" />
+                  <f.icon className="h-5 w-5 text-[#00e5ff]" />
                   <p className="text-sm font-bold">{f.title}</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
                 </div>

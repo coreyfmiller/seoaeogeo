@@ -389,7 +389,7 @@ export default function SiteVsSite() {
                                             tooltip: "Compares traditional SEO strength between both sites — technical health, backlink authority, content optimization, metadata quality, and crawlability. The higher score indicates stronger search engine visibility.",
                                             data: comparisonData.comparison.seo,
                                             titleColor: "text-seo",
-                                            accentHex: "#118fff",
+                                            accentHex: "#00e5ff",
                                             icon: <Search className="h-3.5 w-3.5" />,
                                         },
                                         {
@@ -397,7 +397,7 @@ export default function SiteVsSite() {
                                             tooltip: "Compares Answer Engine Optimization — which site is more likely to be cited by AI assistants like ChatGPT, Perplexity, and Gemini. Measures structured data, FAQ coverage, direct answer formatting, and schema quality.",
                                             data: comparisonData.comparison.aeo,
                                             titleColor: "text-aeo",
-                                            accentHex: "#842ce0",
+                                            accentHex: "#BC13FE",
                                             icon: <Sparkles className="h-3.5 w-3.5" />,
                                         },
                                         {
