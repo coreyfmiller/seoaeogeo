@@ -84,7 +84,7 @@ const priorityConfig = {
     border: 'border-[#00e5ff]/30'
   },
   MEDIUM: {
-    label: '🔧 Medium',
+    label: '📌 Medium',
     color: 'text-[#fe3f8c]',
     bg: 'bg-[#fe3f8c]/10',
     border: 'border-[#fe3f8c]/30'
