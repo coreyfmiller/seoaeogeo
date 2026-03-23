@@ -208,11 +208,19 @@ export default function DeepV3Page() {
         return
       }
     }
-    const latest = getLatestFullScan('deep')
-    if (latest) {
-      setCurrentUrl(latest.entry.url)
-      sse.setData(latest.result)
-    }
+    // Check for a pending/completed scan job server-side (navigation-away recovery)
+    sse.checkPendingScan().then(({ found, url: jobUrl }) => {
+      if (found && jobUrl) {
+        setCurrentUrl(jobUrl)
+        return
+      }
+      // Fall back to localStorage history
+      const latest = getLatestFullScan('deep')
+      if (latest) {
+        setCurrentUrl(latest.entry.url)
+        sse.setData(latest.result)
+      }
+    })
   }, [])
 
   return (

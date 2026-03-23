@@ -13,6 +13,7 @@ interface UseSSEAnalysisReturn<T = any> extends SSEAnalysisState<T> {
   startAnalysis: (url: string, body?: Record<string, unknown>) => Promise<void>
   reset: () => void
   setData: (data: T) => void
+  checkPendingScan: () => Promise<{ found: boolean; url?: string }>
 }
 
 /**
@@ -30,6 +31,8 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
   })
   const [displayProgress, setDisplayProgress] = useState(0)
   const abortRef = useRef<AbortController | null>(null)
+  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const isPollingRef = useRef(false)
 
   // Client-side progress creep: slowly walks up when server goes quiet, caps at 99
   useEffect(() => {
@@ -50,7 +53,7 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
         if (target >= 99) return 99
         return Math.min(target + 1, 99)
       })
-    }, 3000)
+    }, 1500)
     return () => clearInterval(timer)
   }, [state.isAnalyzing, state.progress])
 
@@ -161,6 +164,8 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
 
   const reset = useCallback(() => {
     abortRef.current?.abort()
+    if (pollTimerRef.current) { clearTimeout(pollTimerRef.current); pollTimerRef.current = null }
+    isPollingRef.current = false
     setDisplayProgress(0)
     setState({
       isAnalyzing: false,
@@ -183,5 +188,116 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
     })
   }, [])
 
-  return { ...state, progress: displayProgress, startAnalysis, reset, setData }
+  // Map API endpoint to scan type for the scan-status check
+  const scanType = apiEndpoint.includes('deep') ? 'deep'
+    : apiEndpoint.includes('competitive') ? 'competitive'
+    : 'pro'
+
+  /**
+   * Check if there's a pending or completed scan job server-side.
+   * Called on page mount to recover from navigation-away.
+   * If running, polls every 3s until completed/failed.
+   */
+  const checkPendingScan = useCallback(async (): Promise<{ found: boolean; url?: string }> => {
+    try {
+      const res = await fetch(`/api/scan-status?type=${scanType}`)
+      if (!res.ok) return { found: false }
+      const { job } = await res.json()
+      if (!job) return { found: false }
+
+      if (job.status === 'completed' && job.result) {
+        // Scan finished while user was away — load the result
+        setState({
+          isAnalyzing: false,
+          phase: 'Loaded from server',
+          progress: 100,
+          data: job.result as T,
+          error: null,
+          creditsRefunded: 0,
+        })
+        setDisplayProgress(100)
+        return { found: true, url: job.url }
+      }
+
+      if (job.status === 'running') {
+        // Scan is still in progress — show polling state and wait
+        const initialProgress = job.progress || 0
+        setState({
+          isAnalyzing: true,
+          phase: job.phase || 'Scan in progress...',
+          progress: initialProgress,
+          data: null,
+          error: null,
+          creditsRefunded: 0,
+        })
+        setDisplayProgress(initialProgress)
+        isPollingRef.current = true
+
+        // Poll until done
+        const poll = async () => {
+          if (!isPollingRef.current) return
+          try {
+            const r = await fetch(`/api/scan-status?type=${scanType}`)
+            if (!r.ok) return
+            const { job: j } = await r.json()
+            if (!j) {
+              isPollingRef.current = false
+              setState(prev => ({ ...prev, isAnalyzing: false, error: 'Scan job lost' }))
+              return
+            }
+            if (j.status === 'completed' && j.result) {
+              isPollingRef.current = false
+              setState({
+                isAnalyzing: false,
+                phase: 'Complete!',
+                progress: 100,
+                data: j.result as T,
+                error: null,
+                creditsRefunded: 0,
+              })
+              setDisplayProgress(100)
+              if (typeof window !== 'undefined') window.dispatchEvent(new Event('credits-changed'))
+              return
+            }
+            if (j.status === 'failed') {
+              isPollingRef.current = false
+              setState(prev => ({ ...prev, isAnalyzing: false, error: j.phase || 'Scan failed' }))
+              return
+            }
+            // Still running — update progress (never go backwards)
+            const serverProgress = j.progress || 0
+            setState(prev => ({
+              ...prev,
+              phase: j.phase || prev.phase,
+              progress: Math.max(prev.progress, serverProgress),
+            }))
+            setDisplayProgress(prev => Math.max(prev, serverProgress))
+            if (isPollingRef.current) {
+              pollTimerRef.current = setTimeout(poll, 3000)
+            }
+          } catch {
+            isPollingRef.current = false
+            setState(prev => ({ ...prev, isAnalyzing: false, error: 'Connection lost' }))
+          }
+        }
+        pollTimerRef.current = setTimeout(poll, 3000)
+        return { found: true, url: job.url }
+      }
+
+      // Failed or other status — don't load
+      return { found: false }
+    } catch {
+      return { found: false }
+    }
+  }, [scanType])
+
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      isPollingRef.current = false
+      if (pollTimerRef.current) { clearTimeout(pollTimerRef.current); pollTimerRef.current = null }
+    }
+  }, [])
+
+  return { ...state, progress: displayProgress, startAnalysis, reset, setData, checkPendingScan }
 }

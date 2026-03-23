@@ -9,6 +9,7 @@ import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-he
 import { chromium as playwright, type Browser } from 'playwright-core'
 import chromium from '@sparticuz/chromium'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
+import { createScanJob, completeScanJob, failScanJob, updateScanProgress } from '@/lib/scan-jobs'
 
 export const maxDuration = 300
 
@@ -40,11 +41,15 @@ export async function POST(request: NextRequest) {
   const creditCost = cost
   const url = rawUrl.startsWith('http') ? rawUrl : `https://${rawUrl}`
 
+  // Create persistent scan job
+  try { await createScanJob(user.id, 'deep', url, creditCost) } catch (e) { console.error('[Deep Scan] Scan job create failed:', e) }
+
   const stream = createSSEStream(async (send) => {
     let browser: Browser | null = null
     try {
       // Step 1: Launch browser and discover internal URLs
       send({ type: 'progress', phase: 'Launching browser...', progress: 5 })
+      updateScanProgress(user.id, 'deep', 5, 'Launching browser...').catch(() => {})
 
       const isLocal = process.env.NODE_ENV === 'development'
       browser = await playwright.launch({
@@ -121,6 +126,9 @@ export async function POST(request: NextRequest) {
 
         batchResults.forEach(r => { if (r) scanResults.push(r) })
         completed += batch.length
+        // Update DB progress during crawl so polling clients see movement
+        const crawlProgress = Math.round(12 + (completed / totalPages) * 18)
+        updateScanProgress(user.id, 'deep', crawlProgress, `Crawling ${completed}/${totalPages} pages...`).catch(() => {})
       }
 
       if (scanResults.length === 0) {
@@ -129,10 +137,12 @@ export async function POST(request: NextRequest) {
       }
 
       send({ type: 'progress', phase: `Crawled ${scanResults.length} pages. Detecting site type...`, progress: 32 })
+      updateScanProgress(user.id, 'deep', 32, `Crawled ${scanResults.length} pages`).catch(() => {})
 
       // Step 3: Site type detection (using first page, same as before)
       const siteTypeResult = detectSiteType(scanResults[0].scanResult as any, [])
       send({ type: 'progress', phase: `Site type: ${siteTypeResult.primaryType}. Starting AI analysis...`, progress: 35 })
+      updateScanProgress(user.id, 'deep', 35, `Site type: ${siteTypeResult.primaryType}. Starting AI...`).catch(() => {})
 
       // Step 4: AI analysis + grading for each page — identical pipeline to Pro Audit
       const pageAnalyses: any[] = []
@@ -206,6 +216,9 @@ export async function POST(request: NextRequest) {
 
         batchResults.forEach(r => { if (r) pageAnalyses.push(r) })
         aiCompleted += batch.length
+        // Update DB progress during AI analysis so polling clients see movement
+        const aiProgress = Math.round(35 + (aiCompleted / scanResults.length) * 55)
+        updateScanProgress(user.id, 'deep', aiProgress, `AI analyzed ${aiCompleted}/${scanResults.length} pages...`).catch(() => {})
       }
 
       aiTicker.stop()
@@ -235,6 +248,7 @@ export async function POST(request: NextRequest) {
 
       // Step 6: Sitewide AI Intelligence
       send({ type: 'progress', phase: 'Running sitewide intelligence analysis...', progress: 93 })
+      updateScanProgress(user.id, 'deep', 93, 'Running sitewide intelligence...').catch(() => {})
       let sitewideIntelligence: any = null
 
       // Pre-calculate avg scores so we can pass them to the AI for score-gap-aware recommendations
@@ -272,6 +286,7 @@ export async function POST(request: NextRequest) {
       }
 
       send({ type: 'progress', phase: 'Calculating aggregate scores...', progress: 95 })
+      updateScanProgress(user.id, 'deep', 95, 'Calculating aggregate scores...').catch(() => {})
 
       // Aggregate scores
       const avgScores = {
@@ -332,7 +347,7 @@ export async function POST(request: NextRequest) {
 
       send({ type: 'progress', phase: 'Deep scan complete!', progress: 100 })
       await incrementScanCount(user.id, 'deep')
-      send({ type: 'result', success: true, data: {
+      const resultData = {
         url, analyzedAt: new Date().toISOString(), siteTypeResult,
         platformDetection: scanResults[0]?.scanResult?.platformDetection,
         pagesCrawled: pageAnalyses.length, scores: avgScores, pages: pageAnalyses,
@@ -345,11 +360,15 @@ export async function POST(request: NextRequest) {
         aggregateMetrics: { totalWords, totalSchemas, avgResponseTime, totalImages, totalImagesWithAlt },
         duplicateTitles,
         duplicateDescriptions,
-      }})
+      }
+      // Persist result to scan_jobs so user can retrieve it if they navigated away
+      try { await completeScanJob(user.id, 'deep', resultData) } catch (e) { console.error('[Deep Scan] Scan job complete failed:', e) }
+      send({ type: 'result', success: true, data: resultData })
     } catch (error: any) {
       console.error('[Deep Scan] Error:', error)
       // Refund credits on failure
       try { await refundCredits(user.id, creditCost) } catch (e) { console.error('[Deep Scan] Refund failed:', e) }
+      try { await failScanJob(user.id, 'deep') } catch (e) { console.error('[Deep Scan] Scan job fail update failed:', e) }
       send({ type: 'error', success: false, error: error.message || 'Analysis failed', creditsRefunded: creditCost })
     } finally {
       if (browser) await browser.close()

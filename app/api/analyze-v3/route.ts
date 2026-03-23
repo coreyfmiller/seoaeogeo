@@ -7,6 +7,7 @@ import { detectSiteType } from '@/lib/site-type-detector'
 import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers'
 import { fetchPageSpeedInsights } from '@/lib/pagespeed'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
+import { createScanJob, completeScanJob, failScanJob, updateScanProgress } from '@/lib/scan-jobs'
 
 export const maxDuration = 300
 
@@ -34,17 +35,23 @@ export async function POST(request: NextRequest) {
     })
   }
 
+  // Create persistent scan job
+  try { await createScanJob(user.id, 'pro', url, 10) } catch (e) { console.error('[V3 API] Scan job create failed:', e) }
+
   const stream = createSSEStream(async (send) => {
     try {
       // Step 1: Crawl
       send({ type: 'progress', phase: 'Crawling page and extracting content...', progress: 10 })
+      updateScanProgress(user.id, 'pro', 10, 'Crawling page...').catch(() => {})
       const pageData = await performScan(url)
       send({ type: 'progress', phase: 'Detecting site type...', progress: 25 })
+      updateScanProgress(user.id, 'pro', 25, 'Detecting site type...').catch(() => {})
 
       // Step 2: Site type
       const siteTypeResult = detectSiteType(pageData, [])
       pageData.siteType = siteTypeResult.primaryType
       send({ type: 'progress', phase: `Detected: ${siteTypeResult.primaryType}. Starting AI analysis...`, progress: 30 })
+      updateScanProgress(user.id, 'pro', 30, `Detected: ${siteTypeResult.primaryType}. Starting AI...`).catch(() => {})
 
       // Step 3: AI Analysis + PageSpeed (all parallel)
       const geminiPromise = analyzeWithGemini({
@@ -64,6 +71,7 @@ export async function POST(request: NextRequest) {
       let sub = ticker1.stop()
       sub = Math.max(sub, 60)
       send({ type: 'progress', phase: 'Live interrogation complete. Waiting for deep analysis...', progress: sub })
+      updateScanProgress(user.id, 'pro', sub, 'Live interrogation complete. Deep analysis...').catch(() => {})
 
       const ticker2 = createProgressTicker(send, 'Deep AI analysis in progress...', sub, 85)
       const aiAnalysis = await geminiPromise
@@ -74,10 +82,12 @@ export async function POST(request: NextRequest) {
       pageData.aiAnalysis = aiAnalysis
       pageData.liveInterrogation = liveInterrogation
       send({ type: 'progress', phase: 'AI complete. Calculating scores...', progress: 78 })
+      updateScanProgress(user.id, 'pro', 78, 'Calculating scores...').catch(() => {})
 
       // Step 4: Grade
       const graderResult = calculateScoresFromScanResult(pageData)
       send({ type: 'progress', phase: 'Generating actionable fixes...', progress: 88 })
+      updateScanProgress(user.id, 'pro', 88, 'Generating actionable fixes...').catch(() => {})
 
       // Step 5: Enhanced penalties
       let enhancedPenalties: any[] = []
@@ -86,21 +96,26 @@ export async function POST(request: NextRequest) {
       } catch (e: any) { console.error('[V3 API] Penalty error:', e.message) }
 
       send({ type: 'progress', phase: 'Finalizing report...', progress: 95 })
+      updateScanProgress(user.id, 'pro', 95, 'Finalizing report...').catch(() => {})
 
       const scores = { seo: { score: graderResult.seoScore }, aeo: { score: graderResult.aeoScore }, geo: { score: graderResult.geoScore } }
       const cwv = await pageSpeedPromise
 
       send({ type: 'progress', phase: 'Audit complete!', progress: 100 })
       await incrementScanCount(user.id, 'pro')
-      send({ type: 'result', success: true, data: {
+      const resultData = {
         url, pageData, scores, graderResult, enhancedPenalties, siteTypeResult,
         platformDetection: pageData.platformDetection,
         aiAnalysis, liveInterrogation, cwv, analyzedAt: new Date().toISOString(), version: 'v3'
-      }})
+      }
+      // Persist result to scan_jobs so user can retrieve it if they navigated away
+      try { await completeScanJob(user.id, 'pro', resultData) } catch (e) { console.error('[V3 API] Scan job complete failed:', e) }
+      send({ type: 'result', success: true, data: resultData })
     } catch (error: any) {
       console.error('[V3 API] Error:', error)
       // Refund credits on failure
       try { await refundCredits(user.id, 10) } catch (e) { console.error('[V3 API] Refund failed:', e) }
+      try { await failScanJob(user.id, 'pro') } catch (e) { console.error('[V3 API] Scan job fail update failed:', e) }
       send({ type: 'error', success: false, error: error.message || 'Analysis failed', creditsRefunded: 10 })
     }
   })

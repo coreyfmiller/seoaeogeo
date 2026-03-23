@@ -131,3 +131,31 @@ CREATE TRIGGER profiles_updated_at
 CREATE TRIGGER usage_updated_at
   BEFORE UPDATE ON public.usage
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+-- 7. Persistent scan jobs (for navigation-away recovery)
+-- One row per user per scan_type, overwritten each scan. Auto-cleaned after 24h.
+CREATE TABLE public.scan_jobs (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  scan_type TEXT NOT NULL CHECK (scan_type IN ('pro', 'deep', 'competitive')),
+  url TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'running' CHECK (status IN ('running', 'completed', 'failed')),
+  progress INTEGER NOT NULL DEFAULT 0,
+  phase TEXT,
+  result JSONB,
+  credits_charged INTEGER NOT NULL DEFAULT 0,
+  started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  completed_at TIMESTAMPTZ,
+  UNIQUE (user_id, scan_type)
+);
+
+ALTER TABLE public.scan_jobs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own scan jobs"
+  ON public.scan_jobs FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Service role full access to scan_jobs"
+  ON public.scan_jobs FOR ALL
+  USING (true)
+  WITH CHECK (true);
