@@ -155,7 +155,6 @@ export function SiteTypeBadge({ siteType, onConfirm, onManualSelect }: SiteTypeB
   const [isManualSelecting, setIsManualSelecting] = useState(false)
   const [selectedType, setSelectedType] = useState<SiteType>(siteType.primaryType)
   const [isConfirmed, setIsConfirmed] = useState(false)
-  const [showWhy, setShowWhy] = useState(false)
 
   const config = siteTypeConfig[siteType.primaryType]
   const Icon = config.icon
@@ -362,17 +361,19 @@ export function SiteTypeBadge({ siteType, onConfirm, onManualSelect }: SiteTypeB
         </Button>
       </div>
       <div className="px-2 pb-1.5">
-        <button
-          onClick={() => setShowWhy(!showWhy)}
-          className="text-[10px] text-muted-foreground hover:text-foreground transition-colors underline decoration-dashed underline-offset-2"
-        >
-          Why am I seeing this?
-        </button>
-        {showWhy && (
-          <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed break-words">
-            Duelly scores each site differently based on its type — an e-commerce store is evaluated differently than a blog or a SaaS product. Our AI couldn't confidently determine what kind of site this is, which usually means the page is missing clear signals like structured data, descriptive headings, or focused content. Please select your site type so we can score it accurately.
-          </p>
-        )}
+        <div className="group relative inline-flex">
+          <button
+            className="text-[10px] text-muted-foreground hover:text-foreground transition-colors underline decoration-dashed underline-offset-2"
+          >
+            Why am I seeing this?
+          </button>
+          <div className="absolute bottom-full left-0 mb-2 w-72 px-3 py-2 bg-popover border border-border rounded-lg text-xs shadow-2xl z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150">
+            <p className="text-foreground font-semibold mb-1">Why is the site type uncertain?</p>
+            <p className="text-muted-foreground leading-relaxed">
+              Duelly scores each site differently based on its type — an e-commerce store is evaluated differently than a blog or a SaaS product. Our AI couldn't confidently determine what kind of site this is, which usually means the page is missing clear signals like structured data, descriptive headings, or focused content. Please select your site type so we can score it accurately.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )

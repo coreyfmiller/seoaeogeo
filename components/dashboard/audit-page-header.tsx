@@ -191,7 +191,7 @@ export function AuditPageHeader({
 
         {/* Right column: Site Intelligence */}
         {hasResults && (
-          <div className="shrink-0 flex flex-col gap-3 min-w-[320px] max-w-[380px]">
+          <div className="shrink-0 flex flex-col gap-3 min-w-[320px]">
             {siteType && (
               <div className="px-4 py-3 rounded-lg border border-[#BC13FE]/30 bg-[#BC13FE]/5 space-y-2">
                 <div className="flex items-center gap-2">
