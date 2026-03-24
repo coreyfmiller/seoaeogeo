@@ -38,11 +38,12 @@ const mainNav: NavItem[] = [
   { name: "Deep Scan", icon: Layers, href: "/deep-scan", badge: "PRO AI" },
   { name: "Competitive Intel", icon: Globe, href: "/competitive-intel", badge: "PRO AI" },
   { name: "Battle Mode", icon: Swords, href: "/battle-mode", badge: "PRO AI" },
-  { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena", badge: "NEW" },
+  { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena", badge: "V1" },
+  { name: "Keyword Arena V2", icon: Trophy, href: "/keyword-arena-v2", badge: "AI" },
   { name: "Dashboard", icon: Home, href: "/dashboard" },
 ]
 
-const proOnlyPaths = ['/pro-audit', '/deep-scan', '/competitive-intel', '/battle-mode', '/keyword-arena', '/dashboard']
+const proOnlyPaths = ['/pro-audit', '/deep-scan', '/competitive-intel', '/battle-mode', '/keyword-arena', '/keyword-arena-v2', '/dashboard']
 
 const comingSoonNav: NavItem[] = []
 
@@ -200,6 +201,16 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
                   {item.badge === "BETA AI" && (
                     <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-orange-500/10 to-[#BC13FE]/10 text-[#BC13FE] border border-[#BC13FE]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       BETA AI
+                    </span>
+                  )}
+                  {item.badge === "V1" && (
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-zinc-500/10 text-zinc-400 border border-zinc-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                      V1
+                    </span>
+                  )}
+                  {item.badge === "AI" && (
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-[#00e5ff]/10 to-[#BC13FE]/10 text-[#BC13FE] border border-[#BC13FE]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                      AI
                     </span>
                   )}
                 </Link>

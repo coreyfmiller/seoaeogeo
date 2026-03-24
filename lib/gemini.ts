@@ -207,3 +207,115 @@ ${context.platform ? `
     throw error;
   }
 }
+
+/**
+ * Single-call variant of analyzeWithGemini for batch/arena use.
+ * Same prompt, same model, same output — but only 1 Gemini call instead of 2.
+ * Trades scoring stability for lower cost and rate-limit friendliness.
+ */
+export async function analyzeWithGeminiSingle(context: {
+  title: string;
+  description: string;
+  thinnedText: string;
+  summarizedContent?: string;
+  schemas: any[];
+  structuralData?: any;
+  platform?: string;
+}) {
+  const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
+  const modelName = await getGeminiModel();
+  const model = genAI.getGenerativeModel({
+    model: modelName,
+    generationConfig: {
+      temperature: 0.1,
+      topP: 0.1,
+      responseMimeType: "application/json"
+    }
+  });
+
+  const contentToAnalyze = context.thinnedText;
+
+  const prompt = `
+    You are a Search Intelligence Analyst evaluating a website using MODERN CRAWLER STANDARDS (Google 2026, Bing 2026).
+    
+    MODERN SCHEMA EVALUATION STANDARDS:
+    - JSON-LD arrays at root level are VALID and PREFERRED
+    - @graph structures are VALID and should be parsed correctly
+    - Multiple schema blocks per page are VALID
+    - Only penalize: missing required properties, placeholder data (000-0000, example@example.com), invalid JSON
+    - DO NOT penalize: arrays, @graph, distributed schema patterns
+    
+    CRITICAL EXTRACTION RULES:
+    1. You are a Semantic Data Extractor providing objective analysis
+    2. Rate each semantic flag as a SEVERITY SCORE from 0-100 (0 = not present at all, 100 = extremely severe). Be precise and consistent.
+    3. Evaluate schema quality using modern standards (not legacy parser rules)
+    4. Generate qualitative analysis for dashboard UI
+    
+    Analyze the following extracted data:
+    
+    WEBSITE TITLE: ${context.title}
+    METADATA: ${context.description}
+    LD+JSON SCHEMAS (Normalized): ${JSON.stringify(context.schemas, null, 2)}
+    
+    STRUCTURAL DATA (Extracted from DOM):
+    ${context.structuralData ? JSON.stringify(context.structuralData, null, 2) : "Not available"}
+    
+    CONTENT SUMMARY (Optimized Extract):
+    ---
+    ${contentToAnalyze}
+    ---
+${context.platform ? `
+    DETECTED PLATFORM: ${context.platform}
+    All fix instructions and recommendations MUST be tailored to ${context.platform}.
+` : ''}
+    Return a JSON object exactly matching this structure:
+    {
+      "semanticFlags": {
+        "topicMisalignment": number (0-100),
+        "keywordStuffing": number (0-100),
+        "poorReadability": number (0-100),
+        "noDirectQnAMatching": number (0-100),
+        "lowEntityDensity": number (0-100),
+        "poorFormattingConciseness": number (0-100),
+        "lackOfDefinitionStatements": number (0-100),
+        "promotionalTone": number (0-100),
+        "lackOfExpertiseSignals": number (0-100),
+        "lackOfHardData": number (0-100),
+        "heavyFirstPersonUsage": number (0-100),
+        "unsubstantiatedClaims": number (0-100)
+      },
+      "schemaQuality": {
+        "score": number (0-100),
+        "hasSchema": boolean,
+        "schemaTypes": string[],
+        "issues": string[],
+        "strengths": string[]
+      }
+    }
+    
+    IMPORTANT: Return ONLY semanticFlags and schemaQuality. No recommendations, no analysis sections.
+  `;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
+
+    if (result.response.usageMetadata) {
+      logUsage({
+        model: modelName,
+        type: "Arena Single-Call Audit",
+        inputTokens: result.response.usageMetadata.promptTokenCount || 0,
+        outputTokens: result.response.usageMetadata.candidatesTokenCount || 0,
+        url: context.title
+      });
+    }
+
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("Could not parse AI response as JSON");
+
+    return safeJsonParse(jsonMatch[0]);
+  } catch (error) {
+    console.error("[Gemini Single] Error:", error);
+    throw error;
+  }
+}
