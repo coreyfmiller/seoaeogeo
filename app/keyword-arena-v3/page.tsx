@@ -339,7 +339,7 @@ export default function KeywordArenaV3Page() {
                 Keyword Arena
                 <Badge className="bg-[#BC13FE]/10 text-[#BC13FE] border border-[#BC13FE]/30 text-[10px] font-black uppercase tracking-widest">V3</Badge>
               </h1>
-              <p className="text-sm text-white/40 mt-1.5">Search a keyword. Select your site. See how you stack up with AI scoring.</p>
+              <p className="text-sm text-white/60 mt-1.5">Search a keyword. Select your site. See how you stack up with AI scoring.</p>
             </div>
             {(searchResults || arenaResult) && !isAnalyzing && (
               <button onClick={handleReset}
@@ -364,7 +364,7 @@ export default function KeywordArenaV3Page() {
                     <Trophy className="h-8 w-8 text-[#00e5ff]" />
                   </div>
                   <h2 className="text-2xl font-black text-white">Enter a Keyword to Battle</h2>
-                  <p className="text-sm text-white/40">We&apos;ll find the top-ranking sites and score them all against each other</p>
+                  <p className="text-sm text-white/60">We&apos;ll find the top-ranking sites and score them all against each other</p>
                 </div>
                 <div className="flex gap-3">
                   <input type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)}
@@ -377,13 +377,13 @@ export default function KeywordArenaV3Page() {
                   </button>
                 </div>
                 <div className="flex items-center justify-center gap-3">
-                  <span className="text-xs text-white/30">Analyze:</span>
+                  <span className="text-xs text-white/60">Analyze:</span>
                   <button onClick={() => setResultCount(5)} className={cn("px-4 py-1.5 rounded-lg text-xs font-bold transition-all border",
-                    resultCount === 5 ? "bg-[#00e5ff]/20 text-[#00e5ff] border-[#00e5ff]/40" : "bg-white/[0.03] text-white/40 border-white/[0.08] hover:border-white/[0.15]")}>
+                    resultCount === 5 ? "bg-[#00e5ff]/20 text-[#00e5ff] border-[#00e5ff]/40" : "bg-white/[0.03] text-white/60 border-white/[0.08] hover:border-white/[0.15]")}>
                     Top 5 — 25 credits
                   </button>
                   <button onClick={() => setResultCount(10)} className={cn("px-4 py-1.5 rounded-lg text-xs font-bold transition-all border",
-                    resultCount === 10 ? "bg-[#BC13FE]/20 text-[#BC13FE] border-[#BC13FE]/40" : "bg-white/[0.03] text-white/40 border-white/[0.08] hover:border-white/[0.15]")}>
+                    resultCount === 10 ? "bg-[#BC13FE]/20 text-[#BC13FE] border-[#BC13FE]/40" : "bg-white/[0.03] text-white/60 border-white/[0.08] hover:border-white/[0.15]")}>
                     Top 10 — 50 credits
                   </button>
                 </div>
@@ -410,11 +410,11 @@ export default function KeywordArenaV3Page() {
                       <div className="h-8 w-8 rounded-lg bg-[#00e5ff]/20 flex items-center justify-center"><Crown className="h-4 w-4 text-[#00e5ff]" /></div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-[#00e5ff] truncate">{userSiteUrl}</p>
-                        <p className="text-[10px] text-white/60">
+                        <p className="text-xs text-white/60">
                           {selectedFromResults !== null ? `Google Rank #${searchResults[selectedFromResults].rank} for "${keyword}"` : 'Not ranked in search results — added manually'}
                         </p>
                       </div>
-                      <button onClick={handleClearSiteSelection} className="p-1.5 text-white/30 hover:text-white/60 transition-colors"><X className="h-4 w-4" /></button>
+                      <button onClick={handleClearSiteSelection} className="p-1.5 text-white/50 hover:text-white/80 transition-colors"><X className="h-4 w-4" /></button>
                     </div>
                   ) : (
                     <div className="space-y-3">
@@ -433,7 +433,7 @@ export default function KeywordArenaV3Page() {
                             className="px-4 py-2 bg-[#00e5ff] text-black font-bold rounded-lg text-sm disabled:opacity-50 transition-all">
                             Confirm
                           </button>
-                          <button onClick={() => { setShowManualAdd(false); setUserSiteUrl("") }} className="p-2 text-white/30 hover:text-white/60 transition-colors">
+                          <button onClick={() => { setShowManualAdd(false); setUserSiteUrl("") }} className="p-2 text-white/50 hover:text-white/80 transition-colors">
                             <X className="h-4 w-4" />
                           </button>
                         </div>
@@ -487,10 +487,10 @@ export default function KeywordArenaV3Page() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className={cn("text-sm font-bold truncate", isSelected ? "text-[#00e5ff]" : "text-white")}>{result.title}</p>
-                          <p className="text-[10px] text-[#00e5ff]/70 truncate">{result.displayLink}</p>
+                          <p className="text-xs text-[#00e5ff] truncate">{result.displayLink}</p>
                         </div>
                         {isSelected && <Badge className="shrink-0 bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-[8px] font-black">YOUR SITE</Badge>}
-                        {!isSelected && <span className="text-[10px] text-[#00e5ff]/50 shrink-0">Click to select</span>}
+                        {!isSelected && <span className="text-xs text-[#00e5ff]/60 shrink-0">Click to select</span>}
                       </button>
                     )
                   })}
@@ -515,15 +515,15 @@ export default function KeywordArenaV3Page() {
                   </div>
                   <div className="text-center space-y-1.5">
                     <h2 className="text-xl font-black text-white">Arena Battle in Progress</h2>
-                    <p className="text-sm text-white/40 max-w-md">{loadingPhase}</p>
+                    <p className="text-sm text-white/60 max-w-md">{loadingPhase}</p>
                   </div>
                   <div className="w-full max-w-md">
                     <div className="h-1.5 w-full bg-white/[0.04] rounded-full overflow-hidden">
                       <div className="h-full bg-gradient-to-r from-[#00e5ff] via-[#BC13FE] to-[#fe3f8c] rounded-full transition-all duration-700" style={{ width: `${loadingProgress}%` }} />
                     </div>
                     <div className="flex justify-between mt-1">
-                      <span className="text-[10px] text-white/30 tabular-nums">{loadingProgress}%</span>
-                      <span className="text-[10px] text-white/30 tabular-nums flex items-center gap-1"><Clock className="h-3 w-3" />{elapsedSeconds}s</span>
+                      <span className="text-xs text-white/50 tabular-nums">{loadingProgress}%</span>
+                      <span className="text-xs text-white/50 tabular-nums flex items-center gap-1"><Clock className="h-3 w-3" />{elapsedSeconds}s</span>
                     </div>
                   </div>
                   <Badge className="border-[#BC13FE]/30 text-[#BC13FE] bg-[#BC13FE]/5 px-4 py-1.5 text-sm font-bold">
@@ -550,7 +550,7 @@ export default function KeywordArenaV3Page() {
                         </div>
                         <div>
                           <h3 className="text-sm font-black text-white">Your Position: &ldquo;{arenaResult.keyword}&rdquo;</h3>
-                          <p className="text-[10px] text-white/30">
+                          <p className="text-xs text-white/70">
                             {arenaResult.scoredSites}/{arenaResult.totalSites} sites scored • {arenaResult.creditCost} credits used
                           </p>
                         </div>
@@ -560,18 +560,18 @@ export default function KeywordArenaV3Page() {
                     {/* Rank comparison boxes */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
                       <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 text-center">
-                        <p className="text-[10px] text-white/30 uppercase font-bold tracking-widest mb-1">Google Rank</p>
+                        <p className="text-xs text-white/60 uppercase font-bold tracking-widest mb-1">Google Rank</p>
                         <p className="text-3xl font-black text-white tabular-nums">
                           {userSite.googleRank ? `#${userSite.googleRank}` : '—'}
                         </p>
-                        <p className="text-[10px] text-white/20 mt-1">{userSite.googleRank ? 'In search results' : 'Not ranked'}</p>
+                        <p className="text-xs text-white/50 mt-1">{userSite.googleRank ? 'In search results' : 'Not ranked'}</p>
                       </div>
                       <div className="rounded-xl border border-[#00e5ff]/30 bg-[#00e5ff]/[0.05] p-4 text-center">
-                        <p className="text-[10px] text-[#00e5ff]/60 uppercase font-bold tracking-widest mb-1">AI Rank</p>
+                        <p className="text-xs text-[#00e5ff]/80 uppercase font-bold tracking-widest mb-1">AI Rank</p>
                         <p className="text-3xl font-black text-[#00e5ff] tabular-nums">
                           #{arenaResult.userSiteRank}
                         </p>
-                        <p className="text-[10px] text-white/20 mt-1">Duelly AI Score</p>
+                        <p className="text-xs text-white/50 mt-1">Duelly AI Score</p>
                       </div>
                       {userSite.googleRank && arenaResult.userSiteRank && (
                         <div className={cn("rounded-xl border p-4 text-center sm:col-span-1 col-span-2",
@@ -581,14 +581,14 @@ export default function KeywordArenaV3Page() {
                               ? "border-red-500/30 bg-red-500/[0.05]"
                               : "border-yellow-500/30 bg-yellow-500/[0.05]"
                         )}>
-                          <p className="text-[10px] text-white/30 uppercase font-bold tracking-widest mb-1">Delta</p>
+                          <p className="text-xs text-white/60 uppercase font-bold tracking-widest mb-1">Delta</p>
                           {arenaResult.userSiteRank < userSite.googleRank ? (
                             <>
                               <div className="flex items-center justify-center gap-1">
                                 <TrendingUp className="h-5 w-5 text-green-400" />
                                 <p className="text-3xl font-black text-green-400 tabular-nums">+{userSite.googleRank - arenaResult.userSiteRank}</p>
                               </div>
-                              <p className="text-[10px] text-green-400/60 mt-1">AI-ready content</p>
+                              <p className="text-xs text-green-400/80 mt-1">AI-ready content</p>
                             </>
                           ) : arenaResult.userSiteRank > userSite.googleRank ? (
                             <>
@@ -596,12 +596,12 @@ export default function KeywordArenaV3Page() {
                                 <TrendingDown className="h-5 w-5 text-red-400" />
                                 <p className="text-3xl font-black text-red-400 tabular-nums">-{arenaResult.userSiteRank - userSite.googleRank}</p>
                               </div>
-                              <p className="text-[10px] text-red-400/60 mt-1">AI readiness gap</p>
+                              <p className="text-xs text-red-400/80 mt-1">AI readiness gap</p>
                             </>
                           ) : (
                             <>
                               <p className="text-3xl font-black text-yellow-400 tabular-nums">0</p>
-                              <p className="text-[10px] text-yellow-400/60 mt-1">Consistent ranking</p>
+                              <p className="text-xs text-yellow-400/80 mt-1">Consistent ranking</p>
                             </>
                           )}
                         </div>
@@ -687,12 +687,12 @@ export default function KeywordArenaV3Page() {
                             <Sparkles className="h-3.5 w-3.5 text-[#00e5ff]" />
                           </div>
                           <span className="text-xs font-bold text-[#00e5ff]">Pro Audit</span>
-                          <span className="text-[9px] text-white/20 ml-auto">10 credits</span>
+                          <span className="text-xs text-white/40 ml-auto">10 credits</span>
                         </div>
-                        <p className="text-[11px] text-white/50 leading-relaxed">
+                        <p className="text-xs text-white/60 leading-relaxed">
                           Get step-by-step fix instructions for every issue found on your site.
                         </p>
-                        <div className="flex items-center gap-1 mt-2 text-[10px] text-[#00e5ff]/60 group-hover:text-[#00e5ff] transition-colors">
+                        <div className="flex items-center gap-1 mt-2 text-xs text-[#00e5ff]/60 group-hover:text-[#00e5ff] transition-colors">
                           Run Pro Audit <ArrowRight className="h-3 w-3" />
                         </div>
                       </Link>
@@ -705,12 +705,12 @@ export default function KeywordArenaV3Page() {
                             <Bot className="h-3.5 w-3.5 text-[#BC13FE]" />
                           </div>
                           <span className="text-xs font-bold text-[#BC13FE]">Deep Scan</span>
-                          <span className="text-[9px] text-white/20 ml-auto">10+ credits</span>
+                          <span className="text-xs text-white/40 ml-auto">10+ credits</span>
                         </div>
-                        <p className="text-[11px] text-white/50 leading-relaxed">
+                        <p className="text-xs text-white/60 leading-relaxed">
                           Scan your entire site — find schema gaps, thin pages, and AI blind spots.
                         </p>
-                        <div className="flex items-center gap-1 mt-2 text-[10px] text-[#BC13FE]/60 group-hover:text-[#BC13FE] transition-colors">
+                        <div className="flex items-center gap-1 mt-2 text-xs text-[#BC13FE]/60 group-hover:text-[#BC13FE] transition-colors">
                           Run Deep Scan <ArrowRight className="h-3 w-3" />
                         </div>
                       </Link>
@@ -722,12 +722,12 @@ export default function KeywordArenaV3Page() {
                           <Globe className="h-3.5 w-3.5 text-[#fe3f8c]" />
                         </div>
                         <span className="text-xs font-bold text-[#fe3f8c]">Competitive Intel</span>
-                        <span className="text-[9px] text-white/20 ml-auto">20 credits</span>
+                        <span className="text-xs text-white/40 ml-auto">20 credits</span>
                       </div>
-                      <p className="text-[11px] text-white/50 leading-relaxed">
+                      <p className="text-xs text-white/60 leading-relaxed">
                         Deep-dive comparison against specific competitors with full gap analysis.
                       </p>
-                      <div className="flex items-center gap-1 mt-2 text-[10px] text-[#fe3f8c]/60 group-hover:text-[#fe3f8c] transition-colors">
+                      <div className="flex items-center gap-1 mt-2 text-xs text-[#fe3f8c]/60 group-hover:text-[#fe3f8c] transition-colors">
                         Run Competitive Intel <ArrowRight className="h-3 w-3" />
                       </div>
                     </Link>
@@ -751,7 +751,7 @@ export default function KeywordArenaV3Page() {
                       }).join('\n\n')
                     navigator.clipboard.writeText(text)
                   }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white/80 transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-xs font-black uppercase tracking-widest text-white/60 hover:text-white/90 transition-colors"
                 >
                   <Copy className="h-3 w-3" /> Copy
                 </button>
@@ -763,13 +763,13 @@ export default function KeywordArenaV3Page() {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-white/[0.06]">
-                        <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-white/30">Rank</th>
-                        <th className="px-4 py-3 text-left text-[10px] font-black uppercase tracking-widest text-white/30">Site</th>
-                        <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest text-white/20">Google</th>
-                        <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest text-[#00e5ff]/60">SEO</th>
-                        <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest text-[#BC13FE]/60">AEO</th>
-                        <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest text-[#fe3f8c]/60">GEO</th>
-                        <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest text-white/40">Overall</th>
+                        <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-widest text-white/50">Rank</th>
+                        <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-widest text-white/50">Site</th>
+                        <th className="px-4 py-3 text-center text-xs font-black uppercase tracking-widest text-white/40">Google</th>
+                        <th className="px-4 py-3 text-center text-xs font-black uppercase tracking-widest text-[#00e5ff]/70">SEO</th>
+                        <th className="px-4 py-3 text-center text-xs font-black uppercase tracking-widest text-[#BC13FE]/70">AEO</th>
+                        <th className="px-4 py-3 text-center text-xs font-black uppercase tracking-widest text-[#fe3f8c]/70">GEO</th>
+                        <th className="px-4 py-3 text-center text-xs font-black uppercase tracking-widest text-white/60">Overall</th>
                         <th className="px-2 py-3 w-8"></th>
                       </tr>
                     </thead>
@@ -800,28 +800,28 @@ export default function KeywordArenaV3Page() {
                                   </div>
                                 )
                               ) : (
-                                <div className="h-7 w-7 rounded-full bg-white/[0.04] flex items-center justify-center text-xs text-white/20">—</div>
+                                <div className="h-7 w-7 rounded-full bg-white/[0.04] flex items-center justify-center text-xs text-white/40">—</div>
                               )}
                             </td>
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-2 min-w-0">
                                 <div className="min-w-0">
-                                  <p className={cn("text-sm font-bold truncate max-w-[240px]", isUser ? "text-[#00e5ff]" : "text-white/80")}>
+                                  <p className={cn("text-sm font-bold truncate max-w-[500px]", isUser ? "text-[#00e5ff]" : "text-white/80")}>
                                     {site.title || site.url}
                                   </p>
-                                  <p className="text-[10px] text-white/30 truncate max-w-[240px]">{site.url}</p>
+                                  <p className="text-xs text-white/60 truncate max-w-[500px]">{site.url}</p>
                                 </div>
                                 {isUser && <Badge className="shrink-0 bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-[8px] font-black">YOU</Badge>}
                                 {!scored && (
                                   <button onClick={() => handleRetry(site.url)} disabled={!!isRetrying}
-                                    className="shrink-0 flex items-center gap-1 px-2 py-1 rounded-md bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 text-[10px] font-bold hover:bg-yellow-500/20 transition-all disabled:opacity-50">
+                                    className="shrink-0 flex items-center gap-1 px-2 py-1 rounded-md bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 text-xs font-bold hover:bg-yellow-500/20 transition-all disabled:opacity-50">
                                     {isRetrying ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />} Retry
                                   </button>
                                 )}
                               </div>
                             </td>
                             <td className="px-4 py-3 text-center">
-                              <span className="text-xs text-white/30 tabular-nums">{site.googleRank ? `#${site.googleRank}` : '—'}</span>
+                              <span className="text-xs text-white/50 tabular-nums">{site.googleRank ? `#${site.googleRank}` : '—'}</span>
                             </td>
                             <td className="px-4 py-3 text-center">
                               <span className={cn("text-sm font-black tabular-nums", scoreColor(site.scores.seo))}>{site.scores.seo ?? '—'}</span>
@@ -838,7 +838,7 @@ export default function KeywordArenaV3Page() {
                             <td className="px-2 py-3">
                               {scored && site.scanDetails && (
                                 <button onClick={() => setExpandedSite(isExpanded ? null : site.url)}
-                                  className="p-1 text-white/20 hover:text-white/50 transition-colors">
+                                  className="p-1 text-white/40 hover:text-white/70 transition-colors">
                                   {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                                 </button>
                               )}
@@ -860,39 +860,39 @@ export default function KeywordArenaV3Page() {
                     <div className="border-t border-white/[0.06] bg-white/[0.01] px-6 py-4">
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
                         <div>
-                          <p className="text-[10px] text-white/30 uppercase font-bold">Words</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Words</p>
                           <p className="text-lg font-black text-white/70 tabular-nums">{d.wordCount.toLocaleString()}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-white/30 uppercase font-bold">Schema</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Schema</p>
                           <p className={cn("text-lg font-black tabular-nums", d.hasSchema ? "text-green-400" : "text-red-400")}>{d.hasSchema ? 'Yes' : 'No'}</p>
-                          {d.schemaTypes.length > 0 && <p className="text-[9px] text-white/20 truncate">{d.schemaTypes.join(', ')}</p>}
+                          {d.schemaTypes.length > 0 && <p className="text-xs text-white/50 truncate">{d.schemaTypes.join(', ')}</p>}
                         </div>
                         <div>
-                          <p className="text-[10px] text-white/30 uppercase font-bold">Alt Text</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Alt Text</p>
                           <p className={cn("text-lg font-black tabular-nums", altPct >= 90 ? "text-green-400" : altPct >= 50 ? "text-yellow-400" : "text-red-400")}>{altPct}%</p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-white/30 uppercase font-bold">Open Graph</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Open Graph</p>
                           <p className={cn("text-lg font-black", d.hasOgTitle && d.hasOgDescription ? "text-green-400" : "text-yellow-400")}>
                             {[d.hasOgTitle, d.hasOgDescription, d.hasOgImage].filter(Boolean).length}/3
                           </p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-white/30 uppercase font-bold">Headings</p>
-                          <p className="text-sm text-white/50">H1: {d.h1Count} · H2: {d.h2Count}</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Headings</p>
+                          <p className="text-sm text-white/70">H1: {d.h1Count} · H2: {d.h2Count}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-white/30 uppercase font-bold">Links</p>
-                          <p className="text-sm text-white/50">Int: {d.internalLinks} · Ext: {d.externalLinks}</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Links</p>
+                          <p className="text-sm text-white/70">Int: {d.internalLinks} · Ext: {d.externalLinks}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-white/30 uppercase font-bold">HTTPS</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">HTTPS</p>
                           <p className={cn("text-lg font-black", d.isHttps ? "text-green-400" : "text-red-400")}>{d.isHttps ? '✓' : '✗'}</p>
                         </div>
                         <div>
-                          <p className="text-[10px] text-white/30 uppercase font-bold">Platform</p>
-                          <p className="text-sm text-white/50">{d.platform || 'Custom'}</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Platform</p>
+                          <p className="text-sm text-white/70">{d.platform || 'Custom'}</p>
                         </div>
                       </div>
                     </div>
@@ -918,12 +918,12 @@ export default function KeywordArenaV3Page() {
                         <div className="h-7 w-7 rounded-lg flex items-center justify-center" style={{ background: `${cat.color}15`, color: cat.color }}>
                           {cat.icon}
                         </div>
-                        <span className="text-xs font-black uppercase tracking-widest text-white/50">{cat.label} Leader</span>
+                        <span className="text-xs font-black uppercase tracking-widest text-white/60">{cat.label} Leader</span>
                       </div>
                       <p className="text-sm font-bold text-white/80 truncate">{leader?.title || leader?.url}</p>
                       <p className="text-2xl font-black tabular-nums mt-1" style={{ color: cat.color }}>{leader?.scores[cat.key]}</p>
                       {userS && (
-                        <p className="text-[10px] text-white/30 mt-2">
+                        <p className="text-xs text-white/60 mt-2">
                           Your score: <span className={cn("font-bold", scoreColor(userS.scores[cat.key]))}>{userS.scores[cat.key]}</span>
                           {' '}({(userS.scores[cat.key] ?? 0) >= (leader.scores[cat.key] ?? 0) ? '🏆 Leading' : `${(leader.scores[cat.key] ?? 0) - (userS.scores[cat.key] ?? 0)} pts behind`})
                         </p>
