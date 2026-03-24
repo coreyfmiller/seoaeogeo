@@ -402,7 +402,7 @@ export default function KeywordArenaV3Page() {
                     Select Your Site
                     <Badge className="bg-red-500/10 text-red-400 border-red-500/30 text-[9px]">REQUIRED</Badge>
                   </CardTitle>
-                  <CardDescription className="text-white/30">Pick your site from the results below, or add it manually if it&apos;s not listed.</CardDescription>
+                  <CardDescription className="text-white/70">Look for your website in the search results below and click it. If it&apos;s not listed, add it manually.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {userSiteConfirmed ? (
@@ -410,7 +410,7 @@ export default function KeywordArenaV3Page() {
                       <div className="h-8 w-8 rounded-lg bg-[#00e5ff]/20 flex items-center justify-center"><Crown className="h-4 w-4 text-[#00e5ff]" /></div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-[#00e5ff] truncate">{userSiteUrl}</p>
-                        <p className="text-[10px] text-white/30">
+                        <p className="text-[10px] text-white/60">
                           {selectedFromResults !== null ? `Google Rank #${searchResults[selectedFromResults].rank} for "${keyword}"` : 'Not ranked in search results — added manually'}
                         </p>
                       </div>
@@ -438,7 +438,7 @@ export default function KeywordArenaV3Page() {
                           </button>
                         </div>
                       )}
-                      <p className="text-[10px] text-white/40 text-center">Click any result below to select it as your site</p>
+                      <p className="text-xs text-[#00e5ff] text-center font-bold animate-pulse">👇 Click your site in the list below to select it</p>
                     </div>
                   )}
                 </CardContent>
@@ -453,12 +453,12 @@ export default function KeywordArenaV3Page() {
                         <Globe className="h-5 w-5 text-[#00e5ff]" />
                         Top {searchResults.length} Results for &ldquo;{keyword}&rdquo;
                       </CardTitle>
-                      <CardDescription className="text-white/30">
+                      <CardDescription className="text-white/70">
                         {userSiteConfirmed
                           ? selectedFromResults !== null
                             ? `Your site is #${searchResults[selectedFromResults].rank} — all ${searchResults.length} sites will be scored.`
                             : `Your site will replace result #${searchResults.length} — ${searchResults.length} sites total.`
-                          : 'Select your site from the list, or add it manually above.'}
+                          : 'Click any result to select it as your site, then start the battle.'}
                       </CardDescription>
                     </div>
                     <button onClick={handleStartArena} disabled={!userSiteConfirmed}
@@ -484,15 +484,15 @@ export default function KeywordArenaV3Page() {
                               : "border-white/[0.06] bg-white/[0.02] hover:border-[#00e5ff]/30 hover:bg-[#00e5ff]/[0.03] cursor-pointer"
                         )}>
                         <div className={cn("h-8 w-8 rounded-lg flex items-center justify-center text-xs font-black",
-                          isSelected ? "bg-[#00e5ff]/20 text-[#00e5ff]" : "bg-white/[0.06] text-white/40")}>
+                          isSelected ? "bg-[#00e5ff]/20 text-[#00e5ff]" : "bg-white/[0.06] text-white/70")}>
                           #{result.rank}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className={cn("text-sm font-bold truncate", isSelected ? "text-[#00e5ff]" : "text-white/80")}>{result.title}</p>
-                          <p className="text-[10px] text-[#00e5ff]/60 truncate">{result.displayLink}</p>
+                          <p className={cn("text-sm font-bold truncate", isSelected ? "text-[#00e5ff]" : "text-white")}>{result.title}</p>
+                          <p className="text-[10px] text-[#00e5ff]/70 truncate">{result.displayLink}</p>
                         </div>
                         {isSelected && <Badge className="shrink-0 bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-[8px] font-black">YOUR SITE</Badge>}
-                        {!userSiteConfirmed && !isSelected && <span className="text-[10px] text-white/20 shrink-0">Click to select</span>}
+                        {!userSiteConfirmed && !isSelected && <span className="text-[10px] text-[#00e5ff]/50 shrink-0">Click to select</span>}
                       </button>
                     )
                   })}
