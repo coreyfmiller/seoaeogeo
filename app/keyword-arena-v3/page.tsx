@@ -474,14 +474,12 @@ export default function KeywordArenaV3Page() {
                   {searchResults.map((result, i) => {
                     const isSelected = selectedFromResults === i
                     return (
-                      <button key={i} onClick={() => !userSiteConfirmed && handleSelectFromResults(i)}
+                      <button key={i} onClick={() => handleSelectFromResults(i)}
                         className={cn(
-                          "w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left",
+                          "w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left cursor-pointer",
                           isSelected
                             ? "border-[#00e5ff]/40 bg-[#00e5ff]/10"
-                            : userSiteConfirmed
-                              ? "border-white/[0.06] bg-white/[0.02] opacity-60 cursor-default"
-                              : "border-white/[0.06] bg-white/[0.02] hover:border-[#00e5ff]/30 hover:bg-[#00e5ff]/[0.03] cursor-pointer"
+                            : "border-white/[0.06] bg-white/[0.02] hover:border-[#00e5ff]/30 hover:bg-[#00e5ff]/[0.03]"
                         )}>
                         <div className={cn("h-8 w-8 rounded-lg flex items-center justify-center text-xs font-black",
                           isSelected ? "bg-[#00e5ff]/20 text-[#00e5ff]" : "bg-white/[0.06] text-white/70")}>
@@ -492,7 +490,7 @@ export default function KeywordArenaV3Page() {
                           <p className="text-[10px] text-[#00e5ff]/70 truncate">{result.displayLink}</p>
                         </div>
                         {isSelected && <Badge className="shrink-0 bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-[8px] font-black">YOUR SITE</Badge>}
-                        {!userSiteConfirmed && !isSelected && <span className="text-[10px] text-[#00e5ff]/50 shrink-0">Click to select</span>}
+                        {!isSelected && <span className="text-[10px] text-[#00e5ff]/50 shrink-0">Click to select</span>}
                       </button>
                     )
                   })}
