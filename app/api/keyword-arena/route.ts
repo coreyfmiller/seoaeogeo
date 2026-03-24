@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { performScan } from '@/lib/crawler'
-import { gradeV2 } from '@/lib/grader-v2'
+import { calculateScoresFromScanResult } from '@/lib/grader-v2'
 import { detectSiteType } from '@/lib/site-type-detector'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
 
@@ -49,7 +49,8 @@ export async function POST(req: Request) {
         try {
           const scan = await performScan(url, { lightweight: true })
           const siteType = detectSiteType(scan)
-          const graded = gradeV2(scan, siteType.primaryType)
+          scan.siteType = siteType.primaryType
+          const graded = calculateScoresFromScanResult(scan)
 
           return {
             url,
