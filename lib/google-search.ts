@@ -5,6 +5,7 @@
  */
 
 import { GoogleGenAI } from "@google/genai";
+import { getGeminiModel } from "./gemini-model-resolver";
 
 interface SearchResult {
   rank: number
@@ -42,8 +43,10 @@ Important:
 - displayLink should be just the domain (e.g. "example.com")
 - Return ONLY the JSON array, nothing else`
 
+  const modelName = await getGeminiModel()
+
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
+    model: modelName,
     contents: prompt,
     config: {
       tools: [{ googleSearch: {} }],

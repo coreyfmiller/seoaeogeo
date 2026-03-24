@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 import { logUsage } from "./usage";
 import { safeJsonParse } from "./utils/json-sanitizer";
+import { getGeminiModel } from "./gemini-model-resolver";
 
 /**
  * Prompt to analyze website data for SEO, AEO, and GEO using MODERN 2026 STANDARDS.
@@ -17,8 +18,9 @@ export async function analyzeWithGemini(context: {
 }) {
 
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
+  const modelName = await getGeminiModel();
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
+    model: modelName,
     generationConfig: {
       temperature: 0.1,
       topP: 0.1,
@@ -145,7 +147,7 @@ ${context.platform ? `
                         (result2.response.usageMetadata?.candidatesTokenCount || 0);
     if (totalInput > 0) {
       logUsage({
-        model: "gemini-2.5-flash",
+        model: modelName,
         type: "Single Page Audit (2-call avg)",
         inputTokens: totalInput,
         outputTokens: totalOutput,

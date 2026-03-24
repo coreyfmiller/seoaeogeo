@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { logUsage } from "./usage";
 import { safeJsonParse } from "./utils/json-sanitizer";
+import { getGeminiModel } from "./gemini-model-resolver";
 import { validateSchemas, calculateBrandConsistency } from "./schema-validator";
 import { getRecommendedSchemas, formatSiteType } from "./site-type-detector";
 import type { SiteType } from "./types/audit";
@@ -86,7 +87,8 @@ export async function analyzeSitewideIntelligence(context: {
   const brandConsistency = brandConsistencyResult.score;
 
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const modelName = await getGeminiModel();
+  const model = genAI.getGenerativeModel({ model: modelName });
 
   debugLog('[GEMINI-SITEWIDE] Starting AI analysis', { domain: context.domain, pageCount: context.pages.length });
   debugLog('[GEMINI-SITEWIDE] Schema health score', { score: schemaHealthAudit.overallScore });
@@ -356,7 +358,7 @@ ${context.currentScores ? `
     // Log Usage
     if (result.response.usageMetadata) {
       logUsage({
-        model: "gemini-2.5-flash",
+        model: modelName,
         type: "Sitewide Pro Audit",
         inputTokens: result.response.usageMetadata.promptTokenCount || 0,
         outputTokens: result.response.usageMetadata.candidatesTokenCount || 0,
@@ -397,7 +399,7 @@ ${context.currentScores ? `
       _metadata: {
         inputTokens: result.response.usageMetadata?.promptTokenCount || 0,
         outputTokens: result.response.usageMetadata?.candidatesTokenCount || 0,
-        model: "gemini-2.5-flash"
+        model: modelName
       }
     };
     

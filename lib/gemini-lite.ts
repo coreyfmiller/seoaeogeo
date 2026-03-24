@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { logUsage } from "./usage";
 import { safeJsonParse } from "./utils/json-sanitizer";
+import { getGeminiModel } from "./gemini-model-resolver";
 import { calculateBrandConsistency } from "./schema-validator";
 import { formatSiteType } from "./site-type-detector";
 import type { SiteType } from "./types/audit";
@@ -28,7 +29,8 @@ export async function analyzeLiteIntelligence(context: {
   const brandConsistency = 100;
 
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const modelName = await getGeminiModel();
+  const model = genAI.getGenerativeModel({ model: modelName });
 
   const prompt = `You are a concise SEO auditor. Analyze this single page and return a JSON object.
 ${context.siteType ? `Site type: ${formatSiteType(context.siteType)}.` : ''}
@@ -62,7 +64,7 @@ Return ONLY this JSON (no markdown):
 
     if (result.response.usageMetadata) {
       logUsage({
-        model: "gemini-2.5-flash",
+        model: modelName,
         type: "Lite Free Audit",
         inputTokens: result.response.usageMetadata.promptTokenCount || 0,
         outputTokens: result.response.usageMetadata.candidatesTokenCount || 0,
@@ -93,7 +95,7 @@ Return ONLY this JSON (no markdown):
       _metadata: {
         inputTokens: result.response.usageMetadata?.promptTokenCount || 0,
         outputTokens: result.response.usageMetadata?.candidatesTokenCount || 0,
-        model: "gemini-2.5-flash",
+        model: modelName,
       },
     };
   } catch (error) {

@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { logUsage } from "./usage";
 import { safeJsonParse } from "./utils/json-sanitizer";
+import { getGeminiModel } from "./gemini-model-resolver";
 
 /**
  * Live Interrogation Engine: 
@@ -13,8 +14,9 @@ export async function performLiveInterrogation(context: {
     contentSummary: string;
 }) {
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
+    const modelName = await getGeminiModel();
     const model = genAI.getGenerativeModel({
-        model: "gemini-2.5-flash",
+        model: modelName,
         generationConfig: {
             temperature: 0.1,
             topP: 0.1,
@@ -61,7 +63,7 @@ export async function performLiveInterrogation(context: {
         // Log Usage
         if (result.response.usageMetadata) {
             logUsage({
-                model: "gemini-2.5-flash",
+                model: modelName,
                 type: "Live Interrogation",
                 inputTokens: result.response.usageMetadata.promptTokenCount || 0,
                 outputTokens: result.response.usageMetadata.candidatesTokenCount || 0,

@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { logUsage } from "./usage";
 import { safeJsonParse } from "./utils/json-sanitizer";
+import { getGeminiModel } from "./gemini-model-resolver";
 
 /**
  * Comparative Analysis: Compares two sites and identifies competitive gaps.
@@ -19,8 +20,9 @@ export async function analyzeCompetitive(siteA: {
   schemas: any[];
 }, options?: { platform?: string }) {
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
+  const modelName = await getGeminiModel();
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
+    model: modelName,
     generationConfig: {
       temperature: 0.1,
       topP: 0.1,
@@ -100,7 +102,7 @@ ${options?.platform ? `
     // Log Usage
     if (result.response.usageMetadata) {
       logUsage({
-        model: "gemini-2.5-flash",
+        model: modelName,
         type: "Competitive Battle",
         inputTokens: result.response.usageMetadata.promptTokenCount || 0,
         outputTokens: result.response.usageMetadata.candidatesTokenCount || 0,
