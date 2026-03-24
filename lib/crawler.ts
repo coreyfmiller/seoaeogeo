@@ -5,6 +5,9 @@ import { summarizeContent, formatSummaryForAI } from './utils/content-summarizer
 import { getCrawlerErrorMessage } from './utils/crawler-errors';
 import { detectPlatform, type PlatformResult } from './platform-detector';
 
+const CRAWL_WORKER_URL = process.env.CRAWL_WORKER_URL || '';
+const CRAWL_WORKER_SECRET = process.env.CRAWL_WORKER_SECRET || '';
+
 export interface ScanResult {
     url: string;
     title: string;
@@ -152,11 +155,54 @@ export async function extractPageDataFromPage(page: Page, targetUrl: string, sta
 }
 
 /**
+ * Scan via the Railway crawl worker (dedicated Playwright service).
+ * Used in production to avoid Vercel serverless memory exhaustion.
+ */
+async function performScanRemote(targetUrl: string, options?: { lightweight?: boolean }): Promise<ScanResult> {
+    console.log(`[Crawler] Remote scan via worker: ${targetUrl}`);
+    const start = Date.now();
+
+    const res = await fetch(`${CRAWL_WORKER_URL}/crawl`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${CRAWL_WORKER_SECRET}`,
+        },
+        body: JSON.stringify({ url: targetUrl, lightweight: options?.lightweight }),
+        signal: AbortSignal.timeout(90_000), // 90s timeout for remote crawl
+    });
+
+    const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+
+    if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        console.error(`[Crawler] Remote failed: ${targetUrl} (${elapsed}s):`, body);
+        const err = new Error(body.error || 'Remote crawl failed');
+        (err as any).technicalMessage = body.technicalMessage;
+        (err as any).suggestion = body.suggestion;
+        (err as any).category = body.category;
+        throw err;
+    }
+
+    const { data } = await res.json();
+    console.log(`[Crawler] Remote done: ${targetUrl} (${elapsed}s)`);
+    return data as ScanResult;
+}
+
+/**
  * Scan a website using a headless browser to render 
  * JS and extract relevant search/AI intelligence.
+ * 
+ * Routes to Railway worker in production when CRAWL_WORKER_URL is set.
+ * Falls back to local Playwright for development.
  */
 export async function performScan(targetUrl: string, options?: { lightweight?: boolean }): Promise<ScanResult> {
-    // 0. Sanitize URL (ensure protocol)
+    // Use remote worker when configured (production)
+    if (CRAWL_WORKER_URL) {
+        return performScanRemote(targetUrl, options);
+    }
+
+    // Local Playwright fallback (development)
     if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
         targetUrl = `https://${targetUrl}`;
     }

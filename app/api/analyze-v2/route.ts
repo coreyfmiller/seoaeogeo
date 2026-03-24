@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { performScan } from '@/lib/crawler'
 import { calculateScoresFromScanResult, convertBreakdownToEnhancedPenalties } from '@/lib/grader-v2'
-import { detectSiteType } from '@/lib/site-type-detector'
+import { prepareScanForGrading } from '@/lib/scan-preparation'
 import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers'
 
 export const maxDuration = 300
@@ -25,36 +25,10 @@ export async function POST(request: NextRequest) {
       const pageData = await performScan(url)
       send({ type: 'progress', phase: 'Detecting site type...', progress: 35 })
 
-      // Step 2: Site type detection
-      const siteTypeResult = detectSiteType(pageData, [])
-      pageData.siteType = siteTypeResult.primaryType
-      send({ type: 'progress', phase: `Detected: ${siteTypeResult.primaryType}. Analyzing content...`, progress: 45 })
-
-      // Step 3: Content quality analysis
-      const wordCount = pageData.structuralData?.wordCount || 0
-      let schemaQuality = null
-      if (pageData.schemas && pageData.schemas.length > 0) {
-        const hasRequiredProps = pageData.schemas.some((schema: any) => schema.name || schema.headline || schema['@type'])
-        schemaQuality = { hasSchema: true, score: hasRequiredProps ? 70 : 40, issues: hasRequiredProps ? [] : ['Missing required properties in schema'] }
-      } else {
-        schemaQuality = { hasSchema: false, score: 0, issues: ['No structured data found'] }
-      }
-      pageData.schemaQuality = schemaQuality
-
-      if (wordCount < 500) {
-        pageData.semanticFlags = {
-          noDirectQnAMatching: true, lowEntityDensity: true, poorFormattingConciseness: wordCount < 300,
-          lackOfDefinitionStatements: true, promotionalTone: false, lackOfExpertiseSignals: true,
-          lackOfHardData: true, heavyFirstPersonUsage: false, unsubstantiatedClaims: false,
-        }
-      } else {
-        pageData.semanticFlags = {
-          noDirectQnAMatching: false, lowEntityDensity: false, poorFormattingConciseness: false,
-          lackOfDefinitionStatements: false, promotionalTone: false, lackOfExpertiseSignals: false,
-          lackOfHardData: false, heavyFirstPersonUsage: false, unsubstantiatedClaims: false,
-        }
-      }
-      send({ type: 'progress', phase: 'Calculating scores...', progress: 65 })
+      // Step 2: Prepare scan for grading (site type, schema quality, semantic flags)
+      send({ type: 'progress', phase: 'Detecting site type and analyzing content...', progress: 35 })
+      const siteTypeResult = prepareScanForGrading(pageData)
+      send({ type: 'progress', phase: `Detected: ${siteTypeResult.primaryType}. Calculating scores...`, progress: 65 })
 
       // Step 4: Grade
       const graderResult = calculateScoresFromScanResult(pageData)

@@ -4,15 +4,14 @@ import { useState, useEffect } from "react"
 import { PageShell } from "@/components/dashboard/page-shell"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
 import { CreditConfirmDialog } from "@/components/dashboard/credit-confirm-dialog"
 import { ScanErrorDialog } from "@/components/dashboard/scan-error-dialog"
 import { cn } from "@/lib/utils"
 import {
   Trophy, Search, Sparkles, Bot, Clock, Crown,
-  Plus, X, Globe, Zap, Target, ChevronUp, ChevronDown,
-  Swords, Loader2, Copy, MapPin
+  Plus, X, Globe,
+  Swords, Loader2, Copy, RefreshCw, Brain
 } from "lucide-react"
 
 interface SearchResult {
@@ -28,7 +27,9 @@ interface ArenaSite {
   title: string
   description?: string
   siteType?: string
-  scores: { seo: number; aeo: number; geo: number; overall: number }
+  scores: { seo: number | null; aeo: number | null; geo: number | null; aiQuality: number | null; overall: number | null }
+  aiStatus: 'scored' | 'failed'
+  aiBreakdown?: Record<string, number> | null
   isUserSite: boolean
   error?: string
   penaltyCount?: number
@@ -39,45 +40,18 @@ interface ArenaResult {
   sites: ArenaSite[]
   userSiteRank: number | null
   totalSites: number
+  scoredSites: number
   creditCost: number
 }
 
 export default function KeywordArenaPage() {
   const [keyword, setKeyword] = useState("")
-  const [resultCount, setResultCount] = useState<5 | 10>(5)
+  const [resultCount, setResultCount] = useState<5 | 10>(10)
   const [searchResults, setSearchResults] = useState<SearchResult[] | null>(null)
   const [isSearching, setIsSearching] = useState(false)
   const [userSiteUrl, setUserSiteUrl] = useState("")
   const [showAddSite, setShowAddSite] = useState(false)
-  const [location, setLocation] = useState("")
-  const [geoStatus, setGeoStatus] = useState<'idle' | 'loading' | 'granted' | 'denied'>('idle')
 
-  const requestGeolocation = () => {
-    if (!navigator.geolocation) { setGeoStatus('denied'); return }
-    setGeoStatus('loading')
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const { latitude, longitude } = pos.coords
-        setGeoStatus('granted')
-        // Reverse geocode to get city name in canonical format
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=10`,
-            { headers: { 'Accept-Language': 'en' } }
-          )
-          const data = await res.json()
-          const addr = data.address || {}
-          const city = addr.city || addr.town || addr.village || addr.hamlet || ''
-          const state = addr.state || addr.province || ''
-          const country = addr.country || ''
-          const parts = [city, state, country].filter(Boolean)
-          if (parts.length) setLocation(parts.join(', '))
-        } catch { /* silent */ }
-      },
-      () => { setGeoStatus('denied') },
-      { enableHighAccuracy: true, timeout: 10000 }
-    )
-  }
 
   // Arena state
   const [arenaResult, setArenaResult] = useState<ArenaResult | null>(null)
@@ -89,6 +63,7 @@ export default function KeywordArenaPage() {
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [loadingPhase, setLoadingPhase] = useState("")
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
+  const [retryingUrl, setRetryingUrl] = useState<string | null>(null)
 
   // Progress ticker
   useEffect(() => {
@@ -98,15 +73,16 @@ export default function KeywordArenaPage() {
       { at: 0, label: "Initiating multi-site crawl..." },
       { at: 10, label: "Crawling competitor sites in parallel..." },
       { at: 30, label: "Extracting content, metadata, and schemas..." },
-      { at: 50, label: "Running SEO/AEO/GEO scoring engine..." },
-      { at: 70, label: "Calculating rankings and comparisons..." },
-      { at: 85, label: "Building leaderboard..." },
+      { at: 50, label: "Running heuristic SEO/AEO/GEO scoring..." },
+      { at: 65, label: "Running AI quality analysis on each site..." },
+      { at: 80, label: "Calculating rankings and comparisons..." },
+      { at: 90, label: "Building leaderboard..." },
     ]
     setLoadingPhase(phases[0].label)
     const iv = setInterval(() => {
       const el = (Date.now() - start) / 1000
       setElapsedSeconds(Math.floor(el))
-      const pct = Math.min(95, Math.round(95 * (1 - Math.exp(-el / 30))))
+      const pct = Math.min(95, Math.round(95 * (1 - Math.exp(-el / 35))))
       setLoadingProgress(pct)
       const cur = [...phases].reverse().find(p => pct >= p.at)
       if (cur) setLoadingPhase(cur.label)
@@ -124,7 +100,7 @@ export default function KeywordArenaPage() {
       const res = await fetch('/api/keyword-search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ keyword: keyword.trim(), count: resultCount, location: location.trim() || undefined }),
+        body: JSON.stringify({ keyword: keyword.trim(), count: resultCount }),
       })
       const data = await res.json()
       if (data.success) {
@@ -179,8 +155,46 @@ export default function KeywordArenaPage() {
     }
   }
 
+  const handleRetry = async (url: string) => {
+    if (!arenaResult || retryingUrl) return
+    setRetryingUrl(url)
+    try {
+      const res = await fetch('/api/keyword-arena/retry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, userSiteUrl: userSiteUrl.trim() || undefined }),
+      })
+      const data = await res.json()
+      if (data.success && data.site) {
+        // Replace the failed site with the scored one and re-sort
+        setArenaResult(prev => {
+          if (!prev) return prev
+          const updated = prev.sites.map(s => s.url === url ? data.site : s)
+          // Re-sort: scored first by overall desc, failed at bottom
+          updated.sort((a, b) => {
+            if (a.scores.overall !== null && b.scores.overall === null) return -1
+            if (a.scores.overall === null && b.scores.overall !== null) return 1
+            if (a.scores.overall === null && b.scores.overall === null) return 0
+            return (b.scores.overall ?? 0) - (a.scores.overall ?? 0)
+          })
+          const scoredSites = updated.filter(s => s.scores.overall !== null)
+          const userRank = userSiteUrl
+            ? (() => { const idx = scoredSites.findIndex(s => s.isUserSite); return idx >= 0 ? idx + 1 : null })()
+            : null
+          return { ...prev, sites: updated, userSiteRank: userRank, scoredSites: scoredSites.length }
+        })
+      } else {
+        setError(data.error || 'Retry failed')
+      }
+    } catch {
+      setError('Retry connection failed')
+    } finally {
+      setRetryingUrl(null)
+    }
+  }
+
   const creditCost = pendingUrls.length * 5
-  const scoreColor = (v: number) => v >= 75 ? "text-green-500" : v >= 50 ? "text-yellow-500" : "text-red-500"
+  const scoreColor = (v: number | null) => v === null ? "text-white/20" : v >= 75 ? "text-green-500" : v >= 50 ? "text-yellow-500" : "text-red-500"
 
   const handleReset = () => {
     setKeyword("")
@@ -202,9 +216,9 @@ export default function KeywordArenaPage() {
               <h1 className="text-2xl font-black text-white flex items-center gap-3 tracking-tight">
                 <Trophy className="h-6 w-6 text-[#00e5ff]" />
                 Keyword Arena
-                <Badge className="bg-[#BC13FE]/10 text-[#BC13FE] border border-[#BC13FE]/30 text-[10px] font-black uppercase tracking-widest">New</Badge>
+                <Badge className="bg-[#BC13FE]/10 text-[#BC13FE] border border-[#BC13FE]/30 text-[10px] font-black uppercase tracking-widest">AI</Badge>
               </h1>
-              <p className="text-sm text-white/40 mt-1.5">Search a keyword. Battle the top-ranking sites. See where you stand.</p>
+              <p className="text-sm text-white/40 mt-1.5">Search a keyword. Battle the top-ranking sites. AI-scored leaderboard.</p>
             </div>
             {(searchResults || arenaResult) && !isAnalyzing && (
               <button onClick={handleReset}
@@ -236,7 +250,7 @@ export default function KeywordArenaPage() {
                     <Trophy className="h-8 w-8 text-[#00e5ff]" />
                   </div>
                   <h2 className="text-2xl font-black text-white">Enter a Keyword to Battle</h2>
-                  <p className="text-sm text-white/40">We'll find the top-ranking sites and score them all against each other</p>
+                  <p className="text-sm text-white/40">We&apos;ll find the top-ranking sites and score them all against each other</p>
                 </div>
 
                 <div className="flex gap-3">
@@ -255,39 +269,6 @@ export default function KeywordArenaPage() {
                   >
                     {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                     Search
-                  </button>
-                </div>
-
-                {/* Location — GPS auto-fills city, or type manually */}
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
-                    <input
-                      type="text"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      placeholder="e.g. Saint John, New Brunswick, Canada"
-                      className="w-full pl-9 pr-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 text-sm"
-                    />
-                  </div>
-                  <button
-                    onClick={requestGeolocation}
-                    disabled={geoStatus === 'loading'}
-                    className={cn(
-                      "shrink-0 px-3 py-2.5 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5",
-                      geoStatus === 'granted'
-                        ? "bg-green-500/10 text-green-400 border-green-500/30"
-                        : geoStatus === 'denied'
-                        ? "bg-red-500/10 text-red-400 border-red-500/30"
-                        : "bg-white/[0.04] text-white/50 border-white/[0.08] hover:border-[#00e5ff]/40 hover:text-[#00e5ff]"
-                    )}
-                  >
-                    {geoStatus === 'loading' ? (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    ) : (
-                      <Target className="h-3.5 w-3.5" />
-                    )}
-                    {geoStatus === 'granted' ? 'GPS Active' : geoStatus === 'denied' ? 'Denied' : 'Use GPS'}
                   </button>
                 </div>
 
@@ -331,11 +312,6 @@ export default function KeywordArenaPage() {
                       <CardTitle className="text-white flex items-center gap-2">
                         <Globe className="h-5 w-5 text-[#00e5ff]" />
                         Top {searchResults.length} Results for &ldquo;{keyword}&rdquo;
-                        {location.trim() && (
-                          <span className="text-white/30 text-sm font-normal flex items-center gap-1">
-                            <MapPin className="h-3 w-3" /> {location.trim()}
-                          </span>
-                        )}
                       </CardTitle>
                       <CardDescription className="text-white/30">These sites will be crawled and scored. Add your site to see where you rank.</CardDescription>
                     </div>
@@ -347,14 +323,12 @@ export default function KeywordArenaPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  {/* Add your site */}
                   {!showAddSite ? (
                     <button
                       onClick={() => setShowAddSite(true)}
                       className="w-full p-3 rounded-xl border-2 border-dashed border-[#00e5ff]/20 hover:border-[#00e5ff]/40 text-[#00e5ff]/60 hover:text-[#00e5ff] transition-all flex items-center justify-center gap-2 text-sm font-bold"
                     >
-                      <Plus className="h-4 w-4" />
-                      Add Your Site to the Battle
+                      <Plus className="h-4 w-4" /> Add Your Site to the Battle
                     </button>
                   ) : (
                     <div className="flex gap-2 p-3 rounded-xl border border-[#00e5ff]/30 bg-[#00e5ff]/5">
@@ -385,7 +359,6 @@ export default function KeywordArenaPage() {
                     </div>
                   )}
 
-                  {/* Search results list */}
                   {searchResults.map((result, i) => (
                     <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12] transition-all">
                       <div className="h-8 w-8 rounded-lg bg-white/[0.06] flex items-center justify-center text-xs font-black text-white/40">
@@ -452,15 +425,25 @@ export default function KeywordArenaPage() {
                     <div>
                       <h3 className="text-sm font-black text-white flex items-center gap-2">
                         Arena Results: &ldquo;{arenaResult.keyword}&rdquo;
-                        <InfoTooltip content="All sites were crawled and scored using the same SEO/AEO/GEO engine. Rankings are based on overall average score." />
+                        <InfoTooltip content="Sites are crawled, heuristic-scored (SEO/AEO/GEO), and AI-scored (domain health). Overall = average of all 4. Failed AI sites show '—' with a retry option." />
                       </h3>
-                      <p className="text-[10px] text-white/30">{arenaResult.totalSites} sites analyzed • {arenaResult.creditCost} credits used</p>
+                      <p className="text-[10px] text-white/30">
+                        {arenaResult.scoredSites}/{arenaResult.totalSites} sites scored • {arenaResult.creditCost} credits used
+                        {arenaResult.totalSites - arenaResult.scoredSites > 0 && (
+                          <span className="text-yellow-500"> • {arenaResult.totalSites - arenaResult.scoredSites} failed AI</span>
+                        )}
+                      </p>
                     </div>
                   </div>
-                  {arenaResult.userSiteRank && (
+                  {arenaResult.userSiteRank ? (
                     <div className="text-right">
                       <p className="text-[10px] text-white/30 uppercase font-bold">Your Rank</p>
-                      <p className="text-2xl font-black text-[#00e5ff]">#{arenaResult.userSiteRank}<span className="text-sm text-white/30">/{arenaResult.totalSites}</span></p>
+                      <p className="text-2xl font-black text-[#00e5ff]">#{arenaResult.userSiteRank}<span className="text-sm text-white/30">/{arenaResult.scoredSites}</span></p>
+                    </div>
+                  ) : userSiteUrl && (
+                    <div className="text-right">
+                      <p className="text-[10px] text-white/30 uppercase font-bold">Your Rank</p>
+                      <p className="text-sm font-black text-yellow-500">Unscored</p>
                     </div>
                   )}
                 </div>
@@ -471,9 +454,12 @@ export default function KeywordArenaPage() {
                 <button
                   onClick={() => {
                     const text = `KEYWORD ARENA: "${arenaResult.keyword}"\n${'='.repeat(50)}\n\n` +
-                      arenaResult.sites.map((s, i) =>
-                        `#${i + 1} ${s.isUserSite ? '⭐ ' : ''}${s.url}\n   SEO: ${s.scores.seo} | AEO: ${s.scores.aeo} | GEO: ${s.scores.geo} | Overall: ${s.scores.overall}`
-                      ).join('\n\n')
+                      arenaResult.sites.map((s, i) => {
+                        const scored = s.scores.overall !== null
+                        return `#${scored ? i + 1 : '—'} ${s.isUserSite ? '⭐ ' : ''}${s.url}\n   ${scored
+                          ? `SEO: ${s.scores.seo} | AEO: ${s.scores.aeo} | GEO: ${s.scores.geo} | AI: ${s.scores.aiQuality} | Overall: ${s.scores.overall}`
+                          : 'N/A — AI scoring failed'}`
+                      }).join('\n\n')
                     navigator.clipboard.writeText(text)
                   }}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white/80 transition-colors"
@@ -493,42 +479,61 @@ export default function KeywordArenaPage() {
                         <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest text-[#00e5ff]/60">SEO</th>
                         <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest text-[#BC13FE]/60">AEO</th>
                         <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest text-[#fe3f8c]/60">GEO</th>
+                        <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest text-[#00e5ff]/40">
+                          <span className="flex items-center justify-center gap-1"><Brain className="h-3 w-3" />AI</span>
+                        </th>
                         <th className="px-4 py-3 text-center text-[10px] font-black uppercase tracking-widest text-white/40">Overall</th>
                       </tr>
                     </thead>
                     <tbody>
                       {arenaResult.sites.map((site, i) => {
-                        const isFirst = i === 0
+                        const scored = site.scores.overall !== null
+                        const scoredIndex = scored ? arenaResult.sites.slice(0, i).filter(s => s.scores.overall !== null).length : -1
+                        const isFirst = scoredIndex === 0 && scored
                         const isUser = site.isUserSite
+                        const isRetrying = retryingUrl === site.url
                         return (
                           <tr key={i} className={cn(
                             "border-b border-white/[0.04] transition-colors",
-                            isUser && "bg-[#00e5ff]/[0.04]",
-                            isFirst && !isUser && "bg-yellow-500/[0.03]"
+                            isUser && scored && "bg-[#00e5ff]/[0.04]",
+                            isFirst && !isUser && "bg-yellow-500/[0.03]",
+                            !scored && "opacity-60"
                           )}>
                             <td className="px-4 py-3">
-                              <div className="flex items-center gap-2">
-                                {isFirst ? (
-                                  <div className="h-7 w-7 rounded-full bg-yellow-500/20 flex items-center justify-center">
-                                    <Crown className="h-3.5 w-3.5 text-yellow-400" />
-                                  </div>
-                                ) : (
-                                  <div className="h-7 w-7 rounded-full bg-white/[0.06] flex items-center justify-center text-xs font-black text-white/40">
-                                    {i + 1}
-                                  </div>
-                                )}
-                              </div>
+                              {scored ? (
+                                <div className="flex items-center gap-2">
+                                  {isFirst ? (
+                                    <div className="h-7 w-7 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                                      <Crown className="h-3.5 w-3.5 text-yellow-400" />
+                                    </div>
+                                  ) : (
+                                    <div className="h-7 w-7 rounded-full bg-white/[0.06] flex items-center justify-center text-xs font-black text-white/40">
+                                      {scoredIndex + 1}
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <div className="h-7 w-7 rounded-full bg-white/[0.04] flex items-center justify-center text-xs text-white/20">—</div>
+                              )}
                             </td>
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-2 min-w-0">
                                 <div className="min-w-0">
-                                  <p className={cn("text-sm font-bold truncate max-w-[300px]", isUser ? "text-[#00e5ff]" : "text-white/80")}>
+                                  <p className={cn("text-sm font-bold truncate max-w-[280px]", isUser ? "text-[#00e5ff]" : "text-white/80")}>
                                     {site.title || site.url}
                                   </p>
-                                  <p className="text-[10px] text-white/30 truncate max-w-[300px]">{site.url}</p>
+                                  <p className="text-[10px] text-white/30 truncate max-w-[280px]">{site.url}</p>
                                 </div>
-                                {isUser && (
-                                  <Badge className="shrink-0 bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-[8px] font-black">YOU</Badge>
+                                {isUser && <Badge className="shrink-0 bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-[8px] font-black">YOU</Badge>}
+                                {!scored && !site.error && (
+                                  <button
+                                    onClick={() => handleRetry(site.url)}
+                                    disabled={isRetrying}
+                                    className="shrink-0 flex items-center gap-1 px-2 py-1 rounded-md bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 text-[10px] font-bold hover:bg-yellow-500/20 transition-all disabled:opacity-50"
+                                  >
+                                    {isRetrying ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />}
+                                    Retry
+                                  </button>
                                 )}
                                 {site.error && (
                                   <Badge className="shrink-0 bg-red-500/10 text-red-400 border-red-500/30 text-[8px]">ERROR</Badge>
@@ -536,16 +541,29 @@ export default function KeywordArenaPage() {
                               </div>
                             </td>
                             <td className="px-4 py-3 text-center">
-                              <span className={cn("text-sm font-black tabular-nums", scoreColor(site.scores.seo))}>{site.scores.seo}</span>
+                              <span className={cn("text-sm font-black tabular-nums", scoreColor(site.scores.seo))}>
+                                {site.scores.seo !== null ? site.scores.seo : '—'}
+                              </span>
                             </td>
                             <td className="px-4 py-3 text-center">
-                              <span className={cn("text-sm font-black tabular-nums", scoreColor(site.scores.aeo))}>{site.scores.aeo}</span>
+                              <span className={cn("text-sm font-black tabular-nums", scoreColor(site.scores.aeo))}>
+                                {site.scores.aeo !== null ? site.scores.aeo : '—'}
+                              </span>
                             </td>
                             <td className="px-4 py-3 text-center">
-                              <span className={cn("text-sm font-black tabular-nums", scoreColor(site.scores.geo))}>{site.scores.geo}</span>
+                              <span className={cn("text-sm font-black tabular-nums", scoreColor(site.scores.geo))}>
+                                {site.scores.geo !== null ? site.scores.geo : '—'}
+                              </span>
                             </td>
                             <td className="px-4 py-3 text-center">
-                              <span className={cn("text-lg font-black tabular-nums", scoreColor(site.scores.overall))}>{site.scores.overall}</span>
+                              <span className={cn("text-sm font-black tabular-nums", scoreColor(site.scores.aiQuality))}>
+                                {site.scores.aiQuality !== null ? site.scores.aiQuality : '—'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-center">
+                              <span className={cn("text-lg font-black tabular-nums", scoreColor(site.scores.overall))}>
+                                {site.scores.overall !== null ? site.scores.overall : '—'}
+                              </span>
                             </td>
                           </tr>
                         )
@@ -556,13 +574,16 @@ export default function KeywordArenaPage() {
               </div>
 
               {/* Score Distribution Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {([
                   { label: "SEO", color: "#00e5ff", icon: <Search className="h-4 w-4" />, key: "seo" as const },
                   { label: "AEO", color: "#BC13FE", icon: <Sparkles className="h-4 w-4" />, key: "aeo" as const },
                   { label: "GEO", color: "#fe3f8c", icon: <Bot className="h-4 w-4" />, key: "geo" as const },
-                ].map(cat => {
-                  const sorted = [...arenaResult.sites].sort((a, b) => b.scores[cat.key] - a.scores[cat.key])
+                  { label: "AI Quality", color: "#00e5ff", icon: <Brain className="h-4 w-4" />, key: "aiQuality" as const },
+                ] as const).map(cat => {
+                  const scored = arenaResult.sites.filter(s => s.scores[cat.key] !== null)
+                  if (scored.length === 0) return null
+                  const sorted = [...scored].sort((a, b) => (b.scores[cat.key] ?? 0) - (a.scores[cat.key] ?? 0))
                   const leader = sorted[0]
                   const userSite = sorted.find(s => s.isUserSite)
                   return (
@@ -575,10 +596,10 @@ export default function KeywordArenaPage() {
                       </div>
                       <p className="text-sm font-bold text-white/80 truncate">{leader?.title || leader?.url}</p>
                       <p className="text-2xl font-black tabular-nums mt-1" style={{ color: cat.color }}>{leader?.scores[cat.key]}</p>
-                      {userSite && !userSite.isUserSite !== undefined && (
+                      {userSite && (
                         <p className="text-[10px] text-white/30 mt-2">
                           Your score: <span className={cn("font-bold", scoreColor(userSite.scores[cat.key]))}>{userSite.scores[cat.key]}</span>
-                          {' '}({userSite.scores[cat.key] >= leader.scores[cat.key] ? '🏆 Leading' : `${leader.scores[cat.key] - userSite.scores[cat.key]} pts behind`})
+                          {' '}({(userSite.scores[cat.key] ?? 0) >= (leader.scores[cat.key] ?? 0) ? '🏆 Leading' : `${(leader.scores[cat.key] ?? 0) - (userSite.scores[cat.key] ?? 0)} pts behind`})
                         </p>
                       )}
                     </div>
