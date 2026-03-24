@@ -42,13 +42,15 @@ export async function logUsage(record: Omit<UsageRecord, 'timestamp' | 'cost'>) 
         };
 
         let logs: UsageRecord[] = [];
-        if (fs.existsSync(USAGE_FILE)) {
-            const data = fs.readFileSync(USAGE_FILE, 'utf-8');
-            logs = JSON.parse(data);
+        // Skip file writes in production (Vercel has read-only filesystem)
+        if (process.env.NODE_ENV !== 'production') {
+          if (fs.existsSync(USAGE_FILE)) {
+              const data = fs.readFileSync(USAGE_FILE, 'utf-8');
+              logs = JSON.parse(data);
+          }
+          logs.push(newRecord);
+          fs.writeFileSync(USAGE_FILE, JSON.stringify(logs, null, 2));
         }
-
-        logs.push(newRecord);
-        fs.writeFileSync(USAGE_FILE, JSON.stringify(logs, null, 2));
 
         console.log(`[Usage Log] ${record.type} | Cost: $${totalCost.toFixed(5)} | Tokens: ${record.inputTokens}i/${record.outputTokens}o`);
         return totalCost;
@@ -59,7 +61,7 @@ export async function logUsage(record: Omit<UsageRecord, 'timestamp' | 'cost'>) 
 }
 
 export function getUsageStats() {
-    if (!fs.existsSync(USAGE_FILE)) return { totalCost: 0, dailyUsage: {} };
+    if (process.env.NODE_ENV === 'production' || !fs.existsSync(USAGE_FILE)) return { totalCost: 0, dailyUsage: {} };
 
     const data = fs.readFileSync(USAGE_FILE, 'utf-8');
     const logs: UsageRecord[] = JSON.parse(data);
