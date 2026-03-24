@@ -13,7 +13,7 @@ export const maxDuration = 300
  *   crawl → analyzeWithGemini (single call) → feed AI results into grader-v2
  * 
  * No heuristic fallback. If AI fails, scores are null.
- * Sites processed sequentially (1 at a time) to avoid memory exhaustion.
+ * Sites processed in parallel batches of 3 (Railway handles crawling).
  * Credit cost: 5 per site.
  */
 export async function POST(req: Request) {
@@ -47,23 +47,17 @@ export async function POST(req: Request) {
       }, { status: 402 })
     }
 
-    console.log(`[Arena V2] Scanning ${finalUrls.length} sites sequentially for: "${keyword}"`)
+    console.log(`[Arena V2] Scanning ${finalUrls.length} sites in parallel (batches of 3) for: "${keyword}"`)
 
-    // Process sites one at a time to avoid memory exhaustion from concurrent Playwright instances
+    // Process sites in parallel batches of 3 — Railway handles crawling, so no memory concern.
+    // Batch size of 3 stays within Gemini free-tier rate limits (15 RPM).
+    const BATCH_SIZE = 3
     const sites: any[] = []
-    for (let i = 0; i < finalUrls.length; i++) {
-      const url = finalUrls[i]
-      console.log(`[Arena V2] Site ${i + 1}/${finalUrls.length}: ${url}`)
-      try {
-        const result = await scoreSite(url, userSiteUrl)
-        sites.push(result)
-      } catch {
-        sites.push({
-          url, title: url,
-          scores: { seo: null, aeo: null, geo: null, overall: null },
-          aiStatus: 'failed', isUserSite: url === userSiteUrl, error: 'Scan failed',
-        })
-      }
+    for (let i = 0; i < finalUrls.length; i += BATCH_SIZE) {
+      const batch = finalUrls.slice(i, i + BATCH_SIZE)
+      console.log(`[Arena V2] Batch ${Math.floor(i / BATCH_SIZE) + 1}: ${batch.join(', ')}`)
+      const results = await Promise.all(batch.map(url => scoreSite(url, userSiteUrl)))
+      sites.push(...results)
     }
 
     // Scored first (by overall desc), failed at bottom
