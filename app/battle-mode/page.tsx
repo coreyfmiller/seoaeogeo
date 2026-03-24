@@ -282,15 +282,15 @@ export default function BattleMode() {
 
                             {/* ── Expert Verdict ── */}
                             {(comparisonData.winnerVerdict || comparisonData.comparison?.winnerVerdict) && (
-                                <div className="rounded-2xl border border-green-500/30 bg-green-500/[0.03] backdrop-blur-xl p-5 relative overflow-hidden"
-                                     style={{ boxShadow: '0 0 30px rgba(34,197,94,0.08), inset 0 1px 0 rgba(34,197,94,0.1)' }}>
-                                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-green-500/5 rounded-full blur-[60px] pointer-events-none" />
+                                <div className="rounded-2xl border border-[#00e5ff]/30 bg-[#00e5ff]/[0.03] backdrop-blur-xl p-5 relative overflow-hidden"
+                                     style={{ boxShadow: '0 0 30px rgba(0,229,255,0.08), inset 0 1px 0 rgba(0,229,255,0.1)' }}>
+                                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#00e5ff]/5 rounded-full blur-[60px] pointer-events-none" />
                                     <div className="relative z-10 flex items-start gap-3">
-                                        <div className="h-9 w-9 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
-                                            <Zap className="h-4 w-4 text-green-400" />
+                                        <div className="h-9 w-9 rounded-lg bg-[#00e5ff]/10 border border-[#00e5ff]/20 flex items-center justify-center shrink-0">
+                                            <Zap className="h-4 w-4 text-[#00e5ff]" />
                                         </div>
                                         <div>
-                                            <h4 className="text-[10px] font-black uppercase text-green-400 tracking-widest mb-1 flex items-center gap-1.5">
+                                            <h4 className="text-[10px] font-black uppercase text-[#00e5ff] tracking-widest mb-1 flex items-center gap-1.5">
                                                 Expert Verdict <InfoTooltip content="AI-generated summary identifying the overall winner and key factors driving the score difference." />
                                             </h4>
                                             <p className="text-sm font-medium text-white/80 leading-relaxed">{comparisonData.winnerVerdict || comparisonData.comparison?.winnerVerdict}</p>
@@ -395,7 +395,7 @@ export default function BattleMode() {
                                                     <Zap className="h-4 w-4 text-[#BC13FE]" /> Stolen Opportunities
                                                     <InfoTooltip content="Areas where your competitor is outperforming you in AI search visibility. Fixing these has the highest ROI." />
                                                 </h3>
-                                                <p className="text-[10px] text-white/30 mt-0.5">Where they are winning LLM citations</p>
+                                                <p className="text-[10px] text-white/30 mt-0.5">Where <span className="text-[#fe3f8c] font-bold">{siteBLabel}</span> is winning over <span className="text-[#00e5ff] font-bold">{siteALabel}</span></p>
                                             </div>
                                             <button onClick={() => {
                                                 const opps = comparisonData.stolenOpportunities || comparisonData.comparison?.stolenOpportunities || []
@@ -429,8 +429,9 @@ export default function BattleMode() {
                                         <div className="px-6 py-4 border-b border-green-500/10">
                                             <h3 className="text-sm font-black text-white flex items-center gap-2">
                                                 <ShieldAlert className="h-4 w-4 text-green-400" /> Critical Strategic Gaps
-                                                <InfoTooltip content="Fundamental weaknesses that will continue to erode your competitive position if left unaddressed." />
+                                                <InfoTooltip content="Fundamental weaknesses in your site that will continue to erode your competitive position if left unaddressed." />
                                             </h3>
+                                            <p className="text-[10px] text-white/30 mt-0.5">Weaknesses in <span className="text-[#00e5ff] font-bold">{siteALabel}</span> that the competitor is exploiting</p>
                                         </div>
                                         <div className="p-6 space-y-3">
                                             {(comparisonData.strategicGaps || comparisonData.comparison?.strategicGaps || []).map((gap: string, i: number) => (

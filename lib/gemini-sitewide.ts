@@ -323,6 +323,7 @@ ${context.currentScores ? `
 
     IMPORTANT FINAL INSTRUCTIONS:
     - You MUST generate up to 15 recommendations, prioritized by impact.
+    - Aim for at least 3 CRITICAL, at least 3 HIGH, and at least 3 MEDIUM priority recommendations. Don't force a priority level if it's not warranted, but try hard to find issues at each level.
     - For schemaHealthAudit.issues, identify ONLY problems that would harm modern SEO/AEO (Google 2026, Bing 2026).
     - DO NOT flag valid JSON-LD patterns (arrays, @graph) as issues.
     - DO NOT penalize modern implementation patterns (distributed schema, multiple scripts).

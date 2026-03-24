@@ -8447,5 +8447,14 @@
     "url": "Valley Marketing - Branding And Marketing | Video | Photo vs uprock tech limited | mobile repairs | 53f Clark Rd, Rothesay, NB, Canada",
     "timestamp": "2026-03-23T23:41:07.235Z",
     "cost": 0.038367875
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Competitive Battle",
+    "inputTokens": 4835,
+    "outputTokens": 5671,
+    "url": "Valley Marketing - Branding And Marketing | Video | Photo vs FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
+    "timestamp": "2026-03-24T00:03:33.948Z",
+    "cost": 0.062605725
   }
 ]

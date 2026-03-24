@@ -122,6 +122,7 @@ ${context.platform ? `
     
     IMPORTANT: 
     - You MUST generate up to 15 recommendations, prioritized by impact. Include every actionable issue you find — do not artificially limit.
+    - Aim for at least 3 CRITICAL, at least 3 HIGH, and at least 3 MEDIUM priority recommendations. Don't force a priority level if it's not warranted, but try hard to find issues at each level.
     - Evaluate schema using modern 2026 standards (arrays and @graph are valid)
     - Only flag real problems, not implementation style choices
   `;

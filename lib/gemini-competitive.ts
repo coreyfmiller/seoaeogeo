@@ -88,6 +88,7 @@ ${options?.platform ? `
     
     IMPORTANT: 
     - You MUST generate exactly 10 recommendations, prioritized by impact. Focus on the highest-ROI actions only.
+    - Aim for at least 3 CRITICAL, at least 3 HIGH, and at least 3 MEDIUM priority recommendations. Don't force a priority level if it's not warranted, but try hard to find issues at each level.
     - Use modern 2026 crawler standards (arrays and @graph are valid)
     - Focus on real competitive advantages, not implementation style
     `;

@@ -169,7 +169,7 @@ export function FixInstructionCard({
               )}
             </div>
             
-            <h3 className="font-bold text-base mb-2 leading-tight">{title}</h3>
+            <h3 className="font-bold text-base mb-2 leading-tight line-clamp-3 min-h-[3.75rem]">{title}</h3>
             
             <div className="flex items-center gap-3 flex-wrap text-xs text-muted-foreground">
               <div className="flex items-center gap-1">
@@ -201,9 +201,9 @@ export function FixInstructionCard({
             </div>
 
             {impactedScores && (
-              <div className="flex items-start gap-1 mt-2 text-xs text-muted-foreground">
+              <div className="flex items-baseline gap-1 mt-2 text-xs text-muted-foreground">
                 <span className="text-[10px] uppercase font-bold shrink-0">Impacts:</span>
-                <span className="text-[10px] leading-relaxed">{impactedScores}</span>
+                <span className="text-[10px] leading-relaxed truncate">{impactedScores}</span>
               </div>
             )}
           </div>
