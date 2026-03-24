@@ -39,11 +39,12 @@ const mainNav: NavItem[] = [
   { name: "Competitive Intel", icon: Globe, href: "/competitive-intel", badge: "PRO AI" },
   { name: "Battle Mode", icon: Swords, href: "/battle-mode", badge: "PRO AI" },
   { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena", badge: "V1" },
-  { name: "Keyword Arena V2", icon: Trophy, href: "/keyword-arena-v2", badge: "AI" },
+  { name: "Keyword Arena V2", icon: Trophy, href: "/keyword-arena-v2", badge: "V2" },
+  { name: "Keyword Arena V3", icon: Trophy, href: "/keyword-arena-v3", badge: "AI" },
   { name: "Dashboard", icon: Home, href: "/dashboard" },
 ]
 
-const proOnlyPaths = ['/pro-audit', '/deep-scan', '/competitive-intel', '/battle-mode', '/keyword-arena', '/keyword-arena-v2', '/dashboard']
+const proOnlyPaths = ['/pro-audit', '/deep-scan', '/competitive-intel', '/battle-mode', '/keyword-arena', '/keyword-arena-v2', '/keyword-arena-v3', '/dashboard']
 
 const comingSoonNav: NavItem[] = []
 
@@ -206,6 +207,11 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
                   {item.badge === "V1" && (
                     <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-zinc-500/10 text-zinc-400 border border-zinc-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       V1
+                    </span>
+                  )}
+                  {item.badge === "V2" && (
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-zinc-500/10 text-zinc-400 border border-zinc-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                      V2
                     </span>
                   )}
                   {item.badge === "AI" && (
