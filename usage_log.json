@@ -8456,5 +8456,14 @@
     "url": "Valley Marketing - Branding And Marketing | Video | Photo vs FundyLogic — AI-Ready Websites & Apps | Quispamsis, NB",
     "timestamp": "2026-03-24T00:03:33.948Z",
     "cost": 0.062605725
+  },
+  {
+    "model": "gemini-2.5-flash",
+    "type": "Competitive Battle",
+    "inputTokens": 2140,
+    "outputTokens": 3339,
+    "url": "Web Power - Reaching around the world vs uprock tech limited | mobile repairs | 53f Clark Rd, Rothesay, NB, Canada",
+    "timestamp": "2026-03-24T09:51:49.013Z",
+    "cost": 0.0352534
   }
 ]

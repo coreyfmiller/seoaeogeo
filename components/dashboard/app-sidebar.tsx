@@ -19,6 +19,7 @@ import {
   Check,
   X,
   Swords,
+  Trophy,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
@@ -37,10 +38,11 @@ const mainNav: NavItem[] = [
   { name: "Deep Scan", icon: Layers, href: "/deep-scan", badge: "PRO AI" },
   { name: "Competitive Intel", icon: Globe, href: "/competitive-intel", badge: "PRO AI" },
   { name: "Battle Mode", icon: Swords, href: "/battle-mode", badge: "PRO AI" },
+  { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena", badge: "NEW" },
   { name: "Dashboard", icon: Home, href: "/dashboard" },
 ]
 
-const proOnlyPaths = ['/pro-audit', '/deep-scan', '/competitive-intel', '/battle-mode', '/dashboard']
+const proOnlyPaths = ['/pro-audit', '/deep-scan', '/competitive-intel', '/battle-mode', '/keyword-arena', '/dashboard']
 
 const comingSoonNav: NavItem[] = []
 
