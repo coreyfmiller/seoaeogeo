@@ -5,6 +5,8 @@ import { detectSiteType } from '@/lib/site-type-detector'
 import { analyzeWithGeminiSingle } from '@/lib/gemini'
 import { getAuthUser } from '@/lib/supabase/auth-helpers'
 
+export const maxDuration = 60
+
 /**
  * Keyword Arena V2 Retry: Re-scores a single failed site.
  * No additional credit cost.

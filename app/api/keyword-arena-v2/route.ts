@@ -5,13 +5,15 @@ import { detectSiteType } from '@/lib/site-type-detector'
 import { analyzeWithGeminiSingle } from '@/lib/gemini'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
 
+export const maxDuration = 300
+
 /**
  * Keyword Arena V2 API
  * Same scoring pipeline as Pro Audit:
  *   crawl → analyzeWithGemini (single call) → feed AI results into grader-v2
  * 
  * No heuristic fallback. If AI fails, scores are null.
- * Sites are processed 2 at a time to avoid rate limits.
+ * Sites processed sequentially (1 at a time) to avoid memory exhaustion.
  * Credit cost: 5 per site.
  */
 export async function POST(req: Request) {
@@ -45,20 +47,21 @@ export async function POST(req: Request) {
       }, { status: 402 })
     }
 
-    console.log(`[Arena V2] Scanning ${finalUrls.length} sites for: "${keyword}"`)
+    console.log(`[Arena V2] Scanning ${finalUrls.length} sites sequentially for: "${keyword}"`)
 
-    // Process sites in batches of 2 to avoid Gemini rate limits
+    // Process sites one at a time to avoid memory exhaustion from concurrent Playwright instances
     const sites: any[] = []
-    for (let i = 0; i < finalUrls.length; i += 2) {
-      const batch = finalUrls.slice(i, i + 2)
-      const batchResults = await Promise.allSettled(
-        batch.map(url => scoreSite(url, userSiteUrl))
-      )
-      for (const r of batchResults) {
-        sites.push(r.status === 'fulfilled' ? r.value : {
-          url: 'unknown', title: 'Scan Failed',
+    for (let i = 0; i < finalUrls.length; i++) {
+      const url = finalUrls[i]
+      console.log(`[Arena V2] Site ${i + 1}/${finalUrls.length}: ${url}`)
+      try {
+        const result = await scoreSite(url, userSiteUrl)
+        sites.push(result)
+      } catch {
+        sites.push({
+          url, title: url,
           scores: { seo: null, aeo: null, geo: null, overall: null },
-          aiStatus: 'failed', isUserSite: false, error: 'Scan failed',
+          aiStatus: 'failed', isUserSite: url === userSiteUrl, error: 'Scan failed',
         })
       }
     }
