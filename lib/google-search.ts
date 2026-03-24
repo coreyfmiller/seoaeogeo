@@ -16,11 +16,11 @@ interface SearchResult {
   displayLink: string
 }
 
-export async function searchGoogle(query: string, count: number = 10): Promise<SearchResult[]> {
+export async function searchGoogle(query: string, count: number = 10, location?: string): Promise<SearchResult[]> {
   const serperKey = process.env.SERPER_API_KEY
 
   if (serperKey) {
-    return searchWithSerper(query, count, serperKey)
+    return searchWithSerper(query, count, serperKey, location)
   }
 
   // Fallback to Gemini grounding if no Serper key
@@ -29,19 +29,68 @@ export async function searchGoogle(query: string, count: number = 10): Promise<S
 }
 
 /**
+ * Country name → Serper gl (country code) and hl (language) mapping
+ */
+const COUNTRY_CODES: Record<string, { gl: string; hl: string }> = {
+  'canada': { gl: 'ca', hl: 'en' },
+  'united states': { gl: 'us', hl: 'en' },
+  'united kingdom': { gl: 'uk', hl: 'en' },
+  'australia': { gl: 'au', hl: 'en' },
+  'france': { gl: 'fr', hl: 'fr' },
+  'germany': { gl: 'de', hl: 'de' },
+  'spain': { gl: 'es', hl: 'es' },
+  'italy': { gl: 'it', hl: 'it' },
+  'brazil': { gl: 'br', hl: 'pt' },
+  'mexico': { gl: 'mx', hl: 'es' },
+  'india': { gl: 'in', hl: 'en' },
+  'japan': { gl: 'jp', hl: 'ja' },
+  'netherlands': { gl: 'nl', hl: 'nl' },
+  'new zealand': { gl: 'nz', hl: 'en' },
+  'ireland': { gl: 'ie', hl: 'en' },
+  'south africa': { gl: 'za', hl: 'en' },
+  'sweden': { gl: 'se', hl: 'sv' },
+  'norway': { gl: 'no', hl: 'no' },
+  'denmark': { gl: 'dk', hl: 'da' },
+  'finland': { gl: 'fi', hl: 'fi' },
+  'portugal': { gl: 'pt', hl: 'pt' },
+  'belgium': { gl: 'be', hl: 'nl' },
+  'switzerland': { gl: 'ch', hl: 'de' },
+  'austria': { gl: 'at', hl: 'de' },
+  'singapore': { gl: 'sg', hl: 'en' },
+  'philippines': { gl: 'ph', hl: 'en' },
+}
+
+function deriveGlHl(location: string): { gl?: string; hl?: string } {
+  const lower = location.toLowerCase()
+  for (const [country, codes] of Object.entries(COUNTRY_CODES)) {
+    if (lower.includes(country)) return codes
+  }
+  return {}
+}
+
+/**
  * Primary: Serper.dev — fast, reliable, real Google results
  */
-async function searchWithSerper(query: string, count: number, apiKey: string): Promise<SearchResult[]> {
+async function searchWithSerper(query: string, count: number, apiKey: string, location?: string): Promise<SearchResult[]> {
+  const body: Record<string, any> = { q: query, num: count }
+
+  if (location) {
+    const { gl, hl } = deriveGlHl(location)
+    if (gl) body.gl = gl
+    if (hl) body.hl = hl
+    // Only use gl/hl for country targeting — Serper's location param uses
+    // Google Ads geo DB which doesn't cover small cities well and can
+    // actually make results worse. The keyword itself carries location intent.
+    console.log(`[Serper] gl: ${gl}, hl: ${hl} (from: ${location})`)
+  }
+
   const res = await fetch('https://google.serper.dev/search', {
     method: 'POST',
     headers: {
       'X-API-KEY': apiKey,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      q: query,
-      num: count,
-    }),
+    body: JSON.stringify(body),
   })
 
   if (!res.ok) {

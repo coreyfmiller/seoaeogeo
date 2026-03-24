@@ -13,14 +13,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
-    const { keyword, count = 10 } = await req.json()
+    const { keyword, count = 10, location } = await req.json()
 
     if (!keyword || typeof keyword !== 'string') {
       return NextResponse.json({ error: 'Keyword is required' }, { status: 400 })
     }
 
     const validCount = count === 5 ? 5 : 10
-    const results = await searchGoogle(keyword.trim(), validCount)
+    const results = await searchGoogle(keyword.trim(), validCount, location?.trim() || undefined)
 
     return NextResponse.json({ success: true, results, keyword: keyword.trim() })
   } catch (error: any) {

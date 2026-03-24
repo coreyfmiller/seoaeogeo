@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
 import {
   Trophy, Search, Sparkles, Bot, Clock, Crown,
   Plus, X, Globe, Zap, Target, ChevronUp, ChevronDown,
-  Swords, Loader2, Copy
+  Swords, Loader2, Copy, MapPin
 } from "lucide-react"
 
 interface SearchResult {
@@ -49,6 +49,35 @@ export default function KeywordArenaPage() {
   const [isSearching, setIsSearching] = useState(false)
   const [userSiteUrl, setUserSiteUrl] = useState("")
   const [showAddSite, setShowAddSite] = useState(false)
+  const [location, setLocation] = useState("")
+  const [geoStatus, setGeoStatus] = useState<'idle' | 'loading' | 'granted' | 'denied'>('idle')
+
+  const requestGeolocation = () => {
+    if (!navigator.geolocation) { setGeoStatus('denied'); return }
+    setGeoStatus('loading')
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords
+        setGeoStatus('granted')
+        // Reverse geocode to get city name in canonical format
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=10`,
+            { headers: { 'Accept-Language': 'en' } }
+          )
+          const data = await res.json()
+          const addr = data.address || {}
+          const city = addr.city || addr.town || addr.village || addr.hamlet || ''
+          const state = addr.state || addr.province || ''
+          const country = addr.country || ''
+          const parts = [city, state, country].filter(Boolean)
+          if (parts.length) setLocation(parts.join(', '))
+        } catch { /* silent */ }
+      },
+      () => { setGeoStatus('denied') },
+      { enableHighAccuracy: true, timeout: 10000 }
+    )
+  }
 
   // Arena state
   const [arenaResult, setArenaResult] = useState<ArenaResult | null>(null)
@@ -95,7 +124,7 @@ export default function KeywordArenaPage() {
       const res = await fetch('/api/keyword-search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ keyword: keyword.trim(), count: resultCount }),
+        body: JSON.stringify({ keyword: keyword.trim(), count: resultCount, location: location.trim() || undefined }),
       })
       const data = await res.json()
       if (data.success) {
@@ -216,7 +245,7 @@ export default function KeywordArenaPage() {
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                    placeholder="e.g. best plumber in Austin"
+                    placeholder="e.g. plumber in Toronto"
                     className="flex-1 px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 text-sm"
                   />
                   <button
@@ -226,6 +255,39 @@ export default function KeywordArenaPage() {
                   >
                     {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                     Search
+                  </button>
+                </div>
+
+                {/* Location — GPS auto-fills city, or type manually */}
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/20" />
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder="e.g. Saint John, New Brunswick, Canada"
+                      className="w-full pl-9 pr-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 text-sm"
+                    />
+                  </div>
+                  <button
+                    onClick={requestGeolocation}
+                    disabled={geoStatus === 'loading'}
+                    className={cn(
+                      "shrink-0 px-3 py-2.5 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5",
+                      geoStatus === 'granted'
+                        ? "bg-green-500/10 text-green-400 border-green-500/30"
+                        : geoStatus === 'denied'
+                        ? "bg-red-500/10 text-red-400 border-red-500/30"
+                        : "bg-white/[0.04] text-white/50 border-white/[0.08] hover:border-[#00e5ff]/40 hover:text-[#00e5ff]"
+                    )}
+                  >
+                    {geoStatus === 'loading' ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Target className="h-3.5 w-3.5" />
+                    )}
+                    {geoStatus === 'granted' ? 'GPS Active' : geoStatus === 'denied' ? 'Denied' : 'Use GPS'}
                   </button>
                 </div>
 
@@ -269,6 +331,11 @@ export default function KeywordArenaPage() {
                       <CardTitle className="text-white flex items-center gap-2">
                         <Globe className="h-5 w-5 text-[#00e5ff]" />
                         Top {searchResults.length} Results for &ldquo;{keyword}&rdquo;
+                        {location.trim() && (
+                          <span className="text-white/30 text-sm font-normal flex items-center gap-1">
+                            <MapPin className="h-3 w-3" /> {location.trim()}
+                          </span>
+                        )}
                       </CardTitle>
                       <CardDescription className="text-white/30">These sites will be crawled and scored. Add your site to see where you rank.</CardDescription>
                     </div>
