@@ -1,7 +1,8 @@
 /**
- * Google Search via Gemini Grounding
- * Uses Gemini's Google Search tool to find top-ranking URLs for a keyword.
- * No additional API keys needed — uses the existing GOOGLE_GENERATIVE_AI_API_KEY.
+ * Google Search via Serper.dev
+ * Returns real Google search results with actual URLs.
+ * Requires SERPER_API_KEY env var.
+ * Falls back to Gemini grounding if Serper is not configured.
  */
 
 import { GoogleGenAI } from "@google/genai";
@@ -16,15 +17,66 @@ interface SearchResult {
 }
 
 export async function searchGoogle(query: string, count: number = 10): Promise<SearchResult[]> {
+  const serperKey = process.env.SERPER_API_KEY
+
+  if (serperKey) {
+    return searchWithSerper(query, count, serperKey)
+  }
+
+  // Fallback to Gemini grounding if no Serper key
+  console.warn('[Google Search] No SERPER_API_KEY, falling back to Gemini grounding')
+  return searchWithGemini(query, count)
+}
+
+/**
+ * Primary: Serper.dev — fast, reliable, real Google results
+ */
+async function searchWithSerper(query: string, count: number, apiKey: string): Promise<SearchResult[]> {
+  const res = await fetch('https://google.serper.dev/search', {
+    method: 'POST',
+    headers: {
+      'X-API-KEY': apiKey,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      q: query,
+      num: count,
+    }),
+  })
+
+  if (!res.ok) {
+    const err = await res.text()
+    console.error('[Serper] Error:', res.status, err)
+    throw new Error(`Serper search failed: ${res.status}`)
+  }
+
+  const data = await res.json()
+  const organic = data.organic || []
+
+  const results: SearchResult[] = organic.slice(0, count).map((item: any, i: number) => ({
+    rank: i + 1,
+    title: item.title || '',
+    url: item.link || '',
+    snippet: item.snippet || '',
+    displayLink: extractDomain(item.link || ''),
+  }))
+
+  console.log(`[Serper] Found ${results.length} results for "${query}"`)
+  return results
+}
+
+/**
+ * Fallback: Gemini with Google Search grounding
+ */
+async function searchWithGemini(query: string, count: number): Promise<SearchResult[]> {
   const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY
   if (!apiKey) {
-    throw new Error('GOOGLE_GENERATIVE_AI_API_KEY is not configured.')
+    throw new Error('Neither SERPER_API_KEY nor GOOGLE_GENERATIVE_AI_API_KEY is configured.')
   }
 
   const ai = new GoogleGenAI({ apiKey })
   const modelName = await getGeminiModel()
 
-  // Ask Gemini to search and list top results with real URLs
   const prompt = `Search Google for: "${query}"
 
 List the top ${count} organic search results with their REAL website URLs (not Google redirect URLs).
@@ -40,153 +92,27 @@ For each result provide the rank number, page title, full URL, and a one-line de
   })
 
   const text = response.text || ''
-  console.log('[Google Search] Raw response length:', text.length)
-
-  // Strategy 1: Try to parse JSON from the response text
-  let results = parseJsonResults(text, count)
-
-  // Strategy 2: Extract URLs from the text using regex
-  if (results.length < count) {
-    const textResults = extractUrlsFromText(text, count)
-    for (const tr of textResults) {
-      if (!results.find(r => r.url === tr.url)) {
-        results.push(tr)
-      }
-    }
-  }
-
-  // Strategy 3: Use grounding chunks as fallback, resolving proxy URLs
-  if (results.length < count) {
-    const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || []
-    for (const chunk of chunks) {
-      const uri = (chunk as any)?.web?.uri || ''
-      const title = (chunk as any)?.web?.title || ''
-      // Resolve vertexaisearch proxy URLs to real URLs
-      const realUrl = await resolveProxyUrl(uri)
-      if (realUrl && !results.find(r => r.url === realUrl)) {
-        let displayLink = title
-        try { displayLink = new URL(realUrl).hostname } catch {}
-        results.push({
-          rank: results.length + 1,
-          title: title || realUrl,
-          url: realUrl,
-          snippet: '',
-          displayLink,
-        })
-      }
-      if (results.length >= count) break
-    }
-  }
-
-  // Re-rank and cap
-  results = results.slice(0, count).map((r, i) => ({ ...r, rank: i + 1 }))
-
-  console.log(`[Google Search] Found ${results.length} results for "${query}"`)
-  if (results.length > 0) {
-    console.log('[Google Search] Sample URL:', results[0].url)
-  }
-  return results
-}
-
-/**
- * Try to parse a JSON array of results from the response text
- */
-function parseJsonResults(text: string, count: number): SearchResult[] {
-  const jsonMatch = text.match(/\[[\s\S]*?\]/)
-  if (!jsonMatch) return []
-
-  try {
-    const parsed = JSON.parse(jsonMatch[0])
-    if (!Array.isArray(parsed)) return []
-    return parsed
-      .filter((r: any) => r.url && r.url.startsWith('http') && !r.url.includes('vertexaisearch.cloud.google.com'))
-      .slice(0, count)
-      .map((r: any, i: number) => ({
-        rank: i + 1,
-        title: r.title || '',
-        url: r.url,
-        snippet: r.snippet || r.description || '',
-        displayLink: r.displayLink || extractDomain(r.url),
-      }))
-  } catch {
-    return []
-  }
-}
-
-/**
- * Extract real URLs from plain text response using regex
- */
-function extractUrlsFromText(text: string, count: number): SearchResult[] {
   const results: SearchResult[] = []
-  // Match URLs that are NOT Google proxy URLs
-  const urlRegex = /https?:\/\/(?!vertexaisearch\.cloud\.google\.com)[^\s\])"',<>]+/g
   const seen = new Set<string>()
-  let match
 
+  // Extract URLs from text
+  const urlRegex = /https?:\/\/(?!vertexaisearch\.cloud\.google\.com)[^\s\])"',<>]+/g
+  let match
   while ((match = urlRegex.exec(text)) !== null && results.length < count) {
-    let url = match[0].replace(/[.)]+$/, '') // trim trailing punctuation
+    let url = match[0].replace(/[.)]+$/, '')
     const domain = extractDomain(url)
-    // Skip Google internal URLs
     if (domain.includes('google.com') || domain.includes('googleapis.com')) continue
-    // Deduplicate by domain
     if (seen.has(domain)) continue
     seen.add(domain)
 
-    // Try to extract a title from nearby text (line containing the URL)
     const lineMatch = text.substring(Math.max(0, match.index - 200), match.index).match(/(?:\d+[\.\)]\s*)?([^\n]+)$/)
     const title = lineMatch?.[1]?.replace(/[\*\#\-]+/g, '').trim() || domain
 
-    results.push({
-      rank: results.length + 1,
-      title,
-      url,
-      snippet: '',
-      displayLink: domain,
-    })
+    results.push({ rank: results.length + 1, title, url, snippet: '', displayLink: domain })
   }
 
+  console.log(`[Google Search Gemini] Found ${results.length} results for "${query}"`)
   return results
-}
-
-/**
- * Resolve a vertexaisearch proxy URL to the real destination URL.
- * These proxy URLs redirect to the actual page.
- */
-async function resolveProxyUrl(proxyUrl: string): Promise<string | null> {
-  if (!proxyUrl) return null
-  // If it's already a real URL, return as-is
-  if (!proxyUrl.includes('vertexaisearch.cloud.google.com')) return proxyUrl
-
-  try {
-    // Follow the redirect to get the real URL
-    const res = await fetch(proxyUrl, {
-      method: 'HEAD',
-      redirect: 'follow',
-      signal: AbortSignal.timeout(5000),
-    })
-    const finalUrl = res.url
-    // Make sure we actually got a real URL
-    if (finalUrl && !finalUrl.includes('vertexaisearch.cloud.google.com')) {
-      return finalUrl
-    }
-    // Try manual redirect header
-    if (res.headers.get('location')) {
-      return res.headers.get('location')
-    }
-    return null
-  } catch {
-    // If HEAD fails, try GET
-    try {
-      const res = await fetch(proxyUrl, {
-        method: 'GET',
-        redirect: 'manual',
-        signal: AbortSignal.timeout(5000),
-      })
-      return res.headers.get('location') || null
-    } catch {
-      return null
-    }
-  }
 }
 
 function extractDomain(url: string): string {
