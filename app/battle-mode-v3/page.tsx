@@ -53,8 +53,8 @@ export default function BattleModeV3() {
     const [loadingProgress, setLoadingProgress] = useState(0)
     const [loadingPhase, setLoadingPhase] = useState("")
     const [elapsedSeconds, setElapsedSeconds] = useState(0)
-    const [showBacklinksA, setShowBacklinksA] = useState(false)
-    const [showBacklinksB, setShowBacklinksB] = useState(false)
+    const [showBacklinksA, setShowBacklinksA] = useState(true)
+    const [showBacklinksB, setShowBacklinksB] = useState(true)
 
     // Session restore
     useEffect(() => {
@@ -408,6 +408,11 @@ export default function BattleModeV3() {
                                             </button>
                                             {showBacklinksA && (
                                                 <div className="px-4 pb-3 space-y-2">
+                                                    <div className="flex items-center gap-2 text-[10px] text-white/30 uppercase font-bold pb-1 border-b border-white/[0.04]">
+                                                        <span className="w-8">DA</span>
+                                                        <span className="flex-1">Linking Domain</span>
+                                                        <span>Type</span>
+                                                    </div>
                                                     {blA.backlinks.map((bl: any, i: number) => (
                                                         <div key={i} className="flex items-center gap-2 text-xs border-b border-white/[0.04] pb-2 last:border-0">
                                                             <span className={cn("font-black tabular-nums w-8", bl.domainAuthority >= 50 ? "text-green-400" : bl.domainAuthority >= 20 ? "text-yellow-400" : "text-white/40")}>{bl.domainAuthority}</span>
@@ -428,6 +433,11 @@ export default function BattleModeV3() {
                                             </button>
                                             {showBacklinksB && (
                                                 <div className="px-4 pb-3 space-y-2">
+                                                    <div className="flex items-center gap-2 text-[10px] text-white/30 uppercase font-bold pb-1 border-b border-white/[0.04]">
+                                                        <span className="w-8">DA</span>
+                                                        <span className="flex-1">Linking Domain</span>
+                                                        <span>Type</span>
+                                                    </div>
                                                     {blB.backlinks.map((bl: any, i: number) => (
                                                         <div key={i} className="flex items-center gap-2 text-xs border-b border-white/[0.04] pb-2 last:border-0">
                                                             <span className={cn("font-black tabular-nums w-8", bl.domainAuthority >= 50 ? "text-green-400" : bl.domainAuthority >= 20 ? "text-yellow-400" : "text-white/40")}>{bl.domainAuthority}</span>
@@ -448,6 +458,11 @@ export default function BattleModeV3() {
                                                 <ExternalLink className="h-3.5 w-3.5" /> Link Gap — Sites linking to competitor but not you ({linkGap.length})
                                             </h4>
                                             <div className="space-y-2">
+                                                <div className="flex items-center gap-2 text-[10px] text-white/30 uppercase font-bold pb-1 border-b border-white/[0.04]">
+                                                    <span className="w-8">DA</span>
+                                                    <span className="flex-1">Domain</span>
+                                                    <span>Status</span>
+                                                </div>
                                                 {linkGap.map((g: any, i: number) => (
                                                     <div key={i} className="flex items-center gap-2 text-xs">
                                                         <span className={cn("font-black tabular-nums w-8", g.da >= 50 ? "text-green-400" : g.da >= 20 ? "text-yellow-400" : "text-white/40")}>{g.da}</span>
