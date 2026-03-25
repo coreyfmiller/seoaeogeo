@@ -18,7 +18,7 @@ export async function analyzeCompetitive(siteA: {
   description: string;
   thinnedText: string;
   schemas: any[];
-}, options?: { platform?: string }) {
+}, options?: { platform?: string; backlinkContext?: string }) {
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
   const modelName = await getGeminiModel();
   const model = genAI.getGenerativeModel({
@@ -52,7 +52,7 @@ export async function analyzeCompetitive(siteA: {
     
     Compare them across SEO, AEO (Answer Engine Optimization), and GEO (Generative Engine Optimization).
     Identify specific "Stolen Opportunities" where Site B is outperforming Site A in LLM citations or Answer Box presence.
-    
+    ${options?.backlinkContext || ''}
     IMPORTANT FOR VERDICT: Use the actual site URLs (${siteA.url} and ${siteB.url}) in your winnerVerdict instead of generic terms like "Site A" or "Site B". Make it personal and specific.
 ${options?.platform ? `
     DETECTED PLATFORM FOR SITE A: ${options.platform}

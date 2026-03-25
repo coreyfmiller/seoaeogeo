@@ -38,13 +38,14 @@ const mainNav: NavItem[] = [
   { name: "Deep Scan", icon: Layers, href: "/deep-scan", badge: "PRO AI" },
   { name: "Competitive Intel", icon: Globe, href: "/competitive-intel", badge: "PRO AI" },
   { name: "Battle Mode", icon: Swords, href: "/battle-mode", badge: "PRO AI" },
+  { name: "Battle Mode V3", icon: Swords, href: "/battle-mode-v3", badge: "AI" },
   { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena", badge: "V1" },
   { name: "Keyword Arena V2", icon: Trophy, href: "/keyword-arena-v2", badge: "V2" },
   { name: "Keyword Arena V3", icon: Trophy, href: "/keyword-arena-v3", badge: "AI" },
   { name: "Dashboard", icon: Home, href: "/dashboard" },
 ]
 
-const proOnlyPaths = ['/pro-audit', '/deep-scan', '/competitive-intel', '/battle-mode', '/keyword-arena', '/keyword-arena-v2', '/keyword-arena-v3', '/dashboard']
+const proOnlyPaths = ['/pro-audit', '/deep-scan', '/competitive-intel', '/battle-mode', '/battle-mode-v3', '/keyword-arena', '/keyword-arena-v2', '/keyword-arena-v3', '/dashboard']
 
 const comingSoonNav: NavItem[] = []
 
