@@ -1,16 +1,21 @@
 /**
- * Moz Links API wrapper
- * Uses Moz's v2 Links API for backlink data and URL metrics.
- * Requires MOZ_ACCESS_ID and MOZ_SECRET_KEY env vars.
+ * Moz API wrapper
  * 
- * Docs: https://moz.com/help/links-api
+ * Two APIs used:
+ *   NEW: api.moz.com/jsonrpc (x-moz-token) → URL metrics (DA, PA, link counts) — 1 row per call
+ *   LEGACY: lsapi.seomoz.com/v2 (Basic auth) → backlinks list — 1 row per link returned
+ * 
+ * Env vars: MOZ_API_TOKEN (new API token or base64 legacy creds — works for both)
  */
 
-const MOZ_ACCESS_ID = process.env.MOZ_ACCESS_ID || ''
-const MOZ_SECRET_KEY = process.env.MOZ_SECRET_KEY || ''
-const MOZ_API_BASE = 'https://lsapi.seomoz.com/v2'
-
+const MOZ_API_TOKEN = process.env.MOZ_API_TOKEN || ''
 const MOZ_BACKLINK_LIMIT = parseInt(process.env.MOZ_BACKLINK_LIMIT || '10', 10)
+
+// Decode legacy credentials from the token (it's base64 of "accessId:secretKey")
+function getLegacyAuth(): string {
+  // The token IS the base64 string already
+  return MOZ_API_TOKEN
+}
 
 export interface MozUrlMetrics {
   domain: string
@@ -39,25 +44,17 @@ export interface MozBacklinkData {
   backlinks: MozBacklink[]
 }
 
-/** Check if Moz API is configured */
 export function isMozConfigured(): boolean {
-  return !!(MOZ_ACCESS_ID && MOZ_SECRET_KEY)
+  return !!MOZ_API_TOKEN
 }
 
-/** Build auth header for Moz API */
-function getAuthHeader(): string {
-  const credentials = Buffer.from(`${MOZ_ACCESS_ID}:${MOZ_SECRET_KEY}`).toString('base64')
-  return `Basic ${credentials}`
-}
-
-/** Extract root domain from URL */
 function extractDomain(url: string): string {
   return url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, '').toLowerCase()
 }
 
 /**
- * Get URL metrics (DA, PA, linking domains, etc.) for a domain.
- * This does NOT count against Moz row quota.
+ * Get URL metrics via NEW API (api.moz.com/jsonrpc).
+ * Costs 1 row.
  */
 export async function getMozUrlMetrics(targetUrl: string): Promise<MozUrlMetrics> {
   if (!isMozConfigured()) throw new Error('Moz API not configured')
@@ -65,40 +62,45 @@ export async function getMozUrlMetrics(targetUrl: string): Promise<MozUrlMetrics
   const domain = extractDomain(targetUrl)
   console.log(`[Moz] Fetching URL metrics for: ${domain}`)
 
-  const res = await fetch(`${MOZ_API_BASE}/url_metrics`, {
+  const res = await fetch('https://api.moz.com/jsonrpc', {
     method: 'POST',
     headers: {
-      'Authorization': getAuthHeader(),
+      'x-moz-token': MOZ_API_TOKEN,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      targets: [domain],
+      jsonrpc: '2.0',
+      id: crypto.randomUUID(),
+      method: 'data.site.metrics.fetch',
+      params: { data: { site_query: { query: domain, scope: 'domain' } } },
     }),
-    signal: AbortSignal.timeout(15_000),
+    signal: AbortSignal.timeout(20_000),
   })
 
   if (!res.ok) {
     const body = await res.text().catch(() => '')
-    console.error(`[Moz] URL metrics failed (${res.status}):`, body)
+    console.error(`[Moz] URL metrics error (${res.status}):`, body)
     throw new Error(`Moz API error: ${res.status}`)
   }
 
   const data = await res.json()
-  const result = data.results?.[0] || data
+  if (data.error) throw new Error(`Moz API: ${data.error.message}`)
+
+  const m = data.result?.site_metrics || {}
 
   return {
     domain,
-    domainAuthority: Math.round(result.domain_authority || 0),
-    pageAuthority: Math.round(result.page_authority || 0),
-    linkingDomains: result.root_domains_to_root_domain || result.linking_root_domains || 0,
-    totalBacklinks: result.external_links_to_root_domain || result.total_links || 0,
-    spamScore: Math.round((result.spam_score || 0) * 100),
+    domainAuthority: Math.round(m.domain_authority ?? 0),
+    pageAuthority: Math.round(m.page_authority ?? 0),
+    linkingDomains: m.root_domains_to_root_domain ?? 0,
+    totalBacklinks: m.external_pages_to_root_domain ?? 0,
+    spamScore: m.spam_score ?? 0,
   }
 }
 
 /**
- * Get top backlinks for a domain, sorted by source DA descending.
- * Each backlink returned counts as 1 row against Moz quota.
+ * Get top backlinks via LEGACY API (lsapi.seomoz.com/v2).
+ * Costs 1 row per link returned.
  */
 export async function getMozBacklinks(targetUrl: string, limit?: number): Promise<MozBacklink[]> {
   if (!isMozConfigured()) throw new Error('Moz API not configured')
@@ -107,10 +109,10 @@ export async function getMozBacklinks(targetUrl: string, limit?: number): Promis
   const fetchLimit = limit || MOZ_BACKLINK_LIMIT
   console.log(`[Moz] Fetching top ${fetchLimit} backlinks for: ${domain}`)
 
-  const res = await fetch(`${MOZ_API_BASE}/links`, {
+  const res = await fetch('https://lsapi.seomoz.com/v2/links', {
     method: 'POST',
     headers: {
-      'Authorization': getAuthHeader(),
+      'Authorization': `Basic ${getLegacyAuth()}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -118,7 +120,6 @@ export async function getMozBacklinks(targetUrl: string, limit?: number): Promis
       target_type: 'root_domain',
       filter: 'external+follow',
       sort: 'source_domain_authority',
-      sort_direction: 'desc',
       limit: fetchLimit,
     }),
     signal: AbortSignal.timeout(20_000),
@@ -126,30 +127,33 @@ export async function getMozBacklinks(targetUrl: string, limit?: number): Promis
 
   if (!res.ok) {
     const body = await res.text().catch(() => '')
-    console.error(`[Moz] Backlinks failed (${res.status}):`, body)
-    throw new Error(`Moz API error: ${res.status}`)
+    console.error(`[Moz] Backlinks error (${res.status}):`, body)
+    throw new Error(`Moz Links API error: ${res.status}`)
   }
 
   const data = await res.json()
-  const links = data.results || data || []
+  const links = data.results || []
 
-  return links.map((link: any) => ({
-    sourceDomain: link.source?.root_domain || link.source_domain || '',
-    sourceUrl: link.source?.page || link.source_url || '',
-    targetUrl: link.target?.page || link.target_url || '',
-    anchorText: link.anchor_text || '',
-    domainAuthority: Math.round(link.source?.domain_authority || link.source_domain_authority || 0),
-    pageAuthority: Math.round(link.source?.page_authority || link.source_page_authority || 0),
-    spamScore: Math.round((link.source?.spam_score || 0) * 100),
-    isDofollow: link.nofollow !== true && link.rel !== 'nofollow',
-    firstDiscovered: link.first_discovered || null,
-    lastSeen: link.last_seen || null,
-  }))
+  return links.map((link: any) => {
+    const src = link.source || {}
+    return {
+      sourceDomain: src.root_domain || src.subdomain || '',
+      sourceUrl: src.page || '',
+      targetUrl: link.target?.page || '',
+      anchorText: link.anchor_text || '',
+      domainAuthority: Math.round(src.domain_authority ?? 0),
+      pageAuthority: Math.round(src.page_authority ?? 0),
+      spamScore: src.spam_score ?? 0,
+      isDofollow: !link.nofollow,
+      firstDiscovered: link.first_discovered || null,
+      lastSeen: link.last_seen || null,
+    }
+  })
 }
 
 /**
  * Get full backlink data (metrics + top backlinks) for a domain.
- * Convenience function that calls both endpoints in parallel.
+ * Runs both calls in parallel.
  */
 export async function getMozBacklinkData(targetUrl: string, limit?: number): Promise<MozBacklinkData> {
   const [metrics, backlinks] = await Promise.all([
