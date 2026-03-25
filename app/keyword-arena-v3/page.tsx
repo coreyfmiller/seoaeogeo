@@ -164,6 +164,30 @@ export default function KeywordArenaV3Page() {
   const [retryingUrl, setRetryingUrl] = useState<string | null>(null)
   const [expandedSite, setExpandedSite] = useState<string | null>(null)
 
+  // Restore state from sessionStorage on mount
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const savedKeyword = sessionStorage.getItem("arena_v3_keyword")
+    const savedUserSite = sessionStorage.getItem("arena_v3_userSite")
+    const savedResult = sessionStorage.getItem("arena_v3_result")
+    if (savedKeyword) setKeyword(savedKeyword)
+    if (savedUserSite) {
+      setUserSiteUrl(savedUserSite)
+      setUserSiteConfirmed(true)
+    }
+    if (savedResult) {
+      try { setArenaResult(JSON.parse(savedResult)) } catch {}
+    }
+  }, [])
+
+  // Save state to sessionStorage when results change
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    if (keyword) sessionStorage.setItem("arena_v3_keyword", keyword)
+    if (userSiteUrl) sessionStorage.setItem("arena_v3_userSite", userSiteUrl)
+    if (arenaResult) sessionStorage.setItem("arena_v3_result", JSON.stringify(arenaResult))
+  }, [keyword, userSiteUrl, arenaResult])
+
   useEffect(() => {
     if (!isAnalyzing) { setLoadingProgress(0); setElapsedSeconds(0); setLoadingPhase(""); return }
     const start = Date.now()
@@ -318,6 +342,11 @@ export default function KeywordArenaV3Page() {
     setKeyword(""); setSearchResults(null); setArenaResult(null)
     setUserSiteUrl(""); setUserSiteConfirmed(false); setSelectedFromResults(null)
     setShowManualAdd(false); setError(null); setExpandedSite(null)
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("arena_v3_keyword")
+      sessionStorage.removeItem("arena_v3_userSite")
+      sessionStorage.removeItem("arena_v3_result")
+    }
   }
 
   // Derived data for results
