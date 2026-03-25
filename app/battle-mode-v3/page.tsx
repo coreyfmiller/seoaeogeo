@@ -259,10 +259,10 @@ export default function BattleModeV3() {
                             {/* ── Score Duel Rings (SEO + AEO + GEO + DA) ── */}
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 {[
-                                    { label: "SEO", data: comparisonData.comparison?.seo || comparisonData.seo, icon: <Search className="h-3.5 w-3.5" />, tooltip: "Traditional SEO strength", colorA: "#00e5ff", colorB: "#fe3f8c" },
-                                    { label: "AEO", data: comparisonData.comparison?.aeo || comparisonData.aeo, icon: <Sparkles className="h-3.5 w-3.5" />, tooltip: "Answer Engine Optimization", colorA: "#00e5ff", colorB: "#fe3f8c" },
-                                    { label: "GEO", data: comparisonData.comparison?.geo || comparisonData.geo, icon: <Globe className="h-3.5 w-3.5" />, tooltip: "Generative Engine Optimization", colorA: "#00e5ff", colorB: "#fe3f8c" },
-                                    { label: "DA", data: blA && blB ? { siteA: blA.metrics.domainAuthority, siteB: blB.metrics.domainAuthority } : null, icon: <Link2 className="h-3.5 w-3.5" />, tooltip: "Domain Authority (Moz)", colorA: "#00e5ff", colorB: "#fe3f8c" },
+                                    { label: "SEO", data: comparisonData.comparison?.seo || comparisonData.seo, icon: <Search className="h-3.5 w-3.5" />, tooltip: "Traditional SEO strength — measures technical health, on-page optimization, content quality, meta tags, heading structure, internal linking, and mobile-friendliness. A higher score means the site follows more SEO best practices.", colorA: "#00e5ff", colorB: "#fe3f8c" },
+                                    { label: "AEO", data: comparisonData.comparison?.aeo || comparisonData.aeo, icon: <Sparkles className="h-3.5 w-3.5" />, tooltip: "Answer Engine Optimization — measures how well a site is optimized for AI answer engines like Google SGE, ChatGPT, and Perplexity. Evaluates structured data (schema markup), FAQ content, direct Q&A formatting, entity density, and content conciseness.", colorA: "#00e5ff", colorB: "#fe3f8c" },
+                                    { label: "GEO", data: comparisonData.comparison?.geo || comparisonData.geo, icon: <Globe className="h-3.5 w-3.5" />, tooltip: "Generative Engine Optimization — measures how likely AI systems are to cite and recommend this site. Evaluates brand authority, expertise signals, objectivity, data-backed claims, image accessibility, and content tone. Higher GEO = more likely to appear in AI-generated answers.", colorA: "#00e5ff", colorB: "#fe3f8c" },
+                                    { label: "Domain Authority", data: blA && blB ? { siteA: blA.metrics.domainAuthority, siteB: blB.metrics.domainAuthority } : null, icon: <Link2 className="h-3.5 w-3.5" />, tooltip: "Moz Domain Authority (DA) — a 0-100 score predicting how well a domain will rank in search results. Based on the quantity and quality of backlinks pointing to the domain. DA 1-20 is low, 20-40 is average, 40-60 is good, 60+ is excellent. This is an off-page signal that complements on-page SEO/AEO/GEO scores.", colorA: "#00e5ff", colorB: "#fe3f8c" },
                                 ].map((battle) => {
                                     const scoreA = battle.data?.siteA ?? 0
                                     const scoreB = battle.data?.siteB ?? 0
@@ -301,6 +301,68 @@ export default function BattleModeV3() {
                                         </div>
                                     )
                                 })}
+                            </div>
+
+                            {/* ── Expert Verdict (right after scores) ── */}
+                            {(comparisonData.winnerVerdict || comparisonData.comparison?.winnerVerdict) && (
+                                <div className="rounded-2xl border border-[#00e5ff]/30 bg-[#00e5ff]/[0.03] backdrop-blur-xl p-5 relative overflow-hidden">
+                                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#00e5ff]/5 rounded-full blur-[60px] pointer-events-none" />
+                                    <div className="relative z-10 flex items-start gap-3">
+                                        <div className="h-9 w-9 rounded-lg bg-[#00e5ff]/10 border border-[#00e5ff]/20 flex items-center justify-center shrink-0">
+                                            <Zap className="h-4 w-4 text-[#00e5ff]" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-black uppercase text-[#00e5ff] tracking-widest mb-1 flex items-center gap-1.5">Expert Verdict</h4>
+                                            <p className="text-sm font-medium text-white/80 leading-relaxed">{comparisonData.winnerVerdict || comparisonData.comparison?.winnerVerdict}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* ── Copy Full Report ── */}
+                            <div className="flex justify-end">
+                                <button onClick={() => {
+                                    const c = comparisonData.comparison || comparisonData
+                                    const sep = '═'.repeat(60)
+                                    let report = `DUELLY STRATEGY DUEL REPORT\n${sep}\n${siteALabel} vs ${siteBLabel}\n${sep}\n\n`
+                                    report += `SCORES:\n`
+                                    report += `  SEO:  ${siteALabel} ${c.seo?.siteA ?? '?'} vs ${siteBLabel} ${c.seo?.siteB ?? '?'}\n`
+                                    report += `  AEO:  ${siteALabel} ${c.aeo?.siteA ?? '?'} vs ${siteBLabel} ${c.aeo?.siteB ?? '?'}\n`
+                                    report += `  GEO:  ${siteALabel} ${c.geo?.siteA ?? '?'} vs ${siteBLabel} ${c.geo?.siteB ?? '?'}\n`
+                                    if (blA && blB) {
+                                        report += `  DA:   ${siteALabel} ${blA.metrics.domainAuthority} vs ${siteBLabel} ${blB.metrics.domainAuthority}\n`
+                                        report += `\nBACKLINK PROFILE:\n`
+                                        report += `  ${siteALabel}: ${blA.metrics.totalBacklinks.toLocaleString()} backlinks, ${blA.metrics.linkingDomains.toLocaleString()} linking domains, DA ${blA.metrics.domainAuthority}\n`
+                                        report += `  ${siteBLabel}: ${blB.metrics.totalBacklinks.toLocaleString()} backlinks, ${blB.metrics.linkingDomains.toLocaleString()} linking domains, DA ${blB.metrics.domainAuthority}\n`
+                                    }
+                                    if (comparisonData.winnerVerdict || c.winnerVerdict) {
+                                        report += `\nEXPERT VERDICT:\n${comparisonData.winnerVerdict || c.winnerVerdict}\n`
+                                    }
+                                    const recs = comparisonData.recommendations || c.recommendations || []
+                                    if (recs.length > 0) {
+                                        report += `\nCOUNTER-STRATEGIES (${recs.length}):\n`
+                                        recs.forEach((r: any, i: number) => {
+                                            report += `\n${i + 1}. [${r.roi || r.priority || 'MEDIUM'}] ${r.title}\n`
+                                            if (r.description) report += `   Why: ${r.description}\n`
+                                            if (r.howToFix) report += `   Fix: ${r.howToFix}\n`
+                                        })
+                                    }
+                                    const opps = comparisonData.stolenOpportunities || c.stolenOpportunities || []
+                                    if (opps.length > 0) {
+                                        report += `\nSTOLEN OPPORTUNITIES (${opps.length}):\n`
+                                        opps.forEach((o: any) => { report += `  • [${o.category?.toUpperCase()}] ${o.title}: ${o.description}\n` })
+                                    }
+                                    const gaps = comparisonData.strategicGaps || c.strategicGaps || []
+                                    if (gaps.length > 0) {
+                                        report += `\nSTRATEGIC GAPS (${gaps.length}):\n`
+                                        gaps.forEach((g: string) => { report += `  • ${g}\n` })
+                                    }
+                                    report += `\n${sep}\nGenerated by Duelly.ai — ${new Date().toLocaleDateString()}\n`
+                                    navigator.clipboard.writeText(report)
+                                }}
+                                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[#00e5ff]/30 bg-[#00e5ff]/5 text-xs font-bold text-[#00e5ff] hover:bg-[#00e5ff]/10 transition-colors">
+                                    <Copy className="h-3.5 w-3.5" /> Copy Full Report
+                                </button>
                             </div>
 
                             {/* ── Backlink Profile Comparison ── */}
@@ -404,22 +466,6 @@ export default function BattleModeV3() {
                                 <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-center">
                                     <Link2 className="h-5 w-5 text-white/20 mx-auto mb-2" />
                                     <p className="text-xs text-white/30">Backlink analysis coming soon — Domain Authority, top backlinks, and link gap comparison.</p>
-                                </div>
-                            )}
-
-                            {/* ── Expert Verdict ── */}
-                            {(comparisonData.winnerVerdict || comparisonData.comparison?.winnerVerdict) && (
-                                <div className="rounded-2xl border border-[#00e5ff]/30 bg-[#00e5ff]/[0.03] backdrop-blur-xl p-5 relative overflow-hidden">
-                                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#00e5ff]/5 rounded-full blur-[60px] pointer-events-none" />
-                                    <div className="relative z-10 flex items-start gap-3">
-                                        <div className="h-9 w-9 rounded-lg bg-[#00e5ff]/10 border border-[#00e5ff]/20 flex items-center justify-center shrink-0">
-                                            <Zap className="h-4 w-4 text-[#00e5ff]" />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-xs font-black uppercase text-[#00e5ff] tracking-widest mb-1 flex items-center gap-1.5">Expert Verdict</h4>
-                                            <p className="text-sm font-medium text-white/80 leading-relaxed">{comparisonData.winnerVerdict || comparisonData.comparison?.winnerVerdict}</p>
-                                        </div>
-                                    </div>
                                 </div>
                             )}
 
