@@ -489,37 +489,34 @@ export default function BattleModeV3() {
                                 </div>
                             )}
 
-                            {/* ── Link Building Intelligence (deterministic, always shows when backlink data available) ── */}
+                            {/* ── Link Building Intelligence ── */}
                             {blA && (
                                 <div className="rounded-2xl border border-[#22c55e]/20 bg-[#22c55e]/[0.02] backdrop-blur-xl p-5">
                                     <h3 className="text-sm font-black text-white flex items-center gap-2 mb-4">
                                         <Link2 className="h-4 w-4 text-green-400" /> Link Building Intelligence
-                                        <InfoTooltip content="Data-driven link building recommendations based on your Domain Authority, backlink profile, and the gap between you and your competitor. Backlinks remain one of the strongest ranking signals in both traditional and AI search." />
+                                        <InfoTooltip content="Backlinks are links from other websites pointing to yours. They're one of the strongest signals Google uses to decide who ranks higher. More quality backlinks = more trust = higher rankings." />
                                     </h3>
 
-                                    {/* DA Assessment */}
+                                    {/* DA Assessment with backlink explainer */}
                                     <div className={cn("rounded-lg p-4 mb-4 border",
                                         blA.metrics.domainAuthority < 20 ? "border-red-500/30 bg-red-500/10" :
                                         blA.metrics.domainAuthority < 40 ? "border-yellow-500/30 bg-yellow-500/10" :
                                         blA.metrics.domainAuthority < 60 ? "border-[#00e5ff]/30 bg-[#00e5ff]/10" :
                                         "border-green-500/30 bg-green-500/10"
                                     )}>
-                                        <p className={cn("text-sm font-bold mb-1",
+                                        <p className={cn("text-sm font-bold mb-2",
                                             blA.metrics.domainAuthority < 20 ? "text-red-400" :
                                             blA.metrics.domainAuthority < 40 ? "text-yellow-400" :
                                             blA.metrics.domainAuthority < 60 ? "text-[#00e5ff]" :
                                             "text-green-400"
                                         )}>
-                                            {blA.metrics.domainAuthority < 20 && `DA ${blA.metrics.domainAuthority} — Critical: Your domain authority is very low`}
-                                            {blA.metrics.domainAuthority >= 20 && blA.metrics.domainAuthority < 40 && `DA ${blA.metrics.domainAuthority} — Below Average: Link building should be a consistent priority`}
-                                            {blA.metrics.domainAuthority >= 40 && blA.metrics.domainAuthority < 60 && `DA ${blA.metrics.domainAuthority} — Solid Foundation: Continue building to stay competitive`}
-                                            {blA.metrics.domainAuthority >= 60 && `DA ${blA.metrics.domainAuthority} — Strong Authority: Maintain your link profile and target high-DA opportunities`}
+                                            {blA.metrics.domainAuthority < 20 && `Domain Authority ${blA.metrics.domainAuthority}/100 — Your site needs more backlinks`}
+                                            {blA.metrics.domainAuthority >= 20 && blA.metrics.domainAuthority < 40 && `Domain Authority ${blA.metrics.domainAuthority}/100 — Building momentum, keep going`}
+                                            {blA.metrics.domainAuthority >= 40 && blA.metrics.domainAuthority < 60 && `Domain Authority ${blA.metrics.domainAuthority}/100 — Solid foundation`}
+                                            {blA.metrics.domainAuthority >= 60 && `Domain Authority ${blA.metrics.domainAuthority}/100 — Strong authority`}
                                         </p>
                                         <p className="text-xs text-white/60 leading-relaxed">
-                                            {blA.metrics.domainAuthority < 20 && "Sites with DA under 20 struggle to rank for anything competitive. Every quality backlink you earn has an outsized impact at this stage. Focus on local directories, industry listings, and creating content worth linking to."}
-                                            {blA.metrics.domainAuthority >= 20 && blA.metrics.domainAuthority < 40 && "You have some authority but not enough to compete for mid-difficulty keywords. Consistent link building — even 2-3 quality links per month — will compound over time and significantly improve your rankings."}
-                                            {blA.metrics.domainAuthority >= 40 && blA.metrics.domainAuthority < 60 && "Your domain has decent authority. Focus on earning links from higher-DA sites (DA 50+) to push into the competitive tier. Guest posting on industry blogs and digital PR are your best bets."}
-                                            {blA.metrics.domainAuthority >= 60 && "You have strong authority. Focus on maintaining your link profile, disavowing toxic links, and targeting high-value placements (news sites, .edu, .gov) to stay ahead."}
+                                            Backlinks are like votes of confidence from other websites. The more reputable sites that link to yours, the more Google trusts you and the higher you rank. Without them, even great content stays invisible.
                                         </p>
                                     </div>
 
@@ -527,28 +524,27 @@ export default function BattleModeV3() {
                                     {blB && blB.metrics.domainAuthority > blA.metrics.domainAuthority && (
                                         <div className="rounded-lg p-4 mb-4 border border-[#BC13FE]/30 bg-[#BC13FE]/10">
                                             <p className="text-sm font-bold text-[#BC13FE] mb-1">
-                                                Competitor DA Gap: {blB.metrics.domainAuthority - blA.metrics.domainAuthority} points
+                                                Your competitor is {blB.metrics.domainAuthority - blA.metrics.domainAuthority} points ahead
                                             </p>
                                             <p className="text-xs text-white/60 leading-relaxed">
-                                                {siteBLabel} has DA {blB.metrics.domainAuthority} vs your DA {blA.metrics.domainAuthority} — a {blB.metrics.domainAuthority - blA.metrics.domainAuthority}-point gap.
+                                                {siteBLabel} has a Domain Authority of {blB.metrics.domainAuthority} compared to your {blA.metrics.domainAuthority}.
                                                 {blB.metrics.linkingDomains > blA.metrics.linkingDomains * 2
-                                                    ? ` They also have ${blB.metrics.linkingDomains.toLocaleString()} linking domains vs your ${blA.metrics.linkingDomains.toLocaleString()}. Closing this gap requires sustained outreach and content marketing.`
-                                                    : ` Focus on earning links from the same caliber of sites that link to them.`
+                                                    ? ` They have ${blB.metrics.linkingDomains.toLocaleString()} websites linking to them vs your ${blA.metrics.linkingDomains.toLocaleString()}. Building quality backlinks is the fastest way to close this gap.`
+                                                    : ` Consistently earning quality backlinks will help you close this gap over time.`
                                                 }
                                             </p>
                                         </div>
                                     )}
 
-                                    {/* Actionable Tactics */}
+                                    {/* Simple Actionable Tactics */}
                                     <div className="space-y-2">
-                                        <p className="text-xs font-bold text-white/50 uppercase tracking-widest">Recommended Tactics</p>
+                                        <p className="text-xs font-bold text-white/50 uppercase tracking-widest">What You Can Do</p>
                                         {[
-                                            blA.metrics.domainAuthority < 30 && { icon: "📍", title: "Claim Local & Industry Directories", desc: "Submit to Google Business Profile, Yelp, industry-specific directories, and local chamber of commerce listings. These are easy wins for new sites." },
-                                            blA.metrics.domainAuthority < 50 && { icon: "✍️", title: "Guest Post on Industry Blogs", desc: "Write valuable content for blogs in your niche with DA 30+. Include a natural link back to your site. Aim for 2-3 per month." },
-                                            { icon: "📰", title: "Digital PR & HARO", desc: "Sign up for Help A Reporter Out (HARO) or Connectively. Respond to journalist queries in your expertise area to earn links from news sites." },
-                                            linkGap.length > 0 && { icon: "🎯", title: `Target ${linkGap.length} Link Gap Opportunities`, desc: `${linkGap.length} sites link to your competitor but not you. Reach out to these sites — they already link to content in your space, so they're warm prospects.` },
-                                            { icon: "📊", title: "Create Linkable Assets", desc: "Original research, data studies, infographics, and free tools naturally attract backlinks. One great linkable asset can earn more links than months of outreach." },
-                                            blA.metrics.spamScore > 20 && { icon: "🧹", title: "Clean Up Toxic Backlinks", desc: `Your spam score is ${blA.metrics.spamScore}%. Review your backlink profile for low-quality or spammy links and submit a disavow file to Google Search Console.` },
+                                            blA.metrics.domainAuthority < 30 && { icon: "📍", title: "Claim your free listings", desc: "Make sure you're listed on Google Business Profile, Yelp, and any directories specific to your industry. These are free and give your site an immediate authority boost." },
+                                            { icon: "🤝", title: "Ask people you already work with", desc: "Your vendors, suppliers, partners, and local business associations already know you. Ask them to add a link to your website on theirs — most will be happy to." },
+                                            { icon: "📝", title: "Create something worth sharing", desc: "Write a helpful guide, build a local resource page, or answer common questions in your industry. Useful content naturally attracts links from other websites over time." },
+                                            linkGap.length > 0 && { icon: "🎯", title: `${linkGap.length} websites link to your competitor but not you`, desc: "These sites already link to businesses in your space — they're your best opportunities. Reaching out to them is the fastest way to earn quality backlinks." },
+                                            blA.metrics.spamScore > 20 && { icon: "⚠️", title: "Some low-quality sites are linking to you", desc: `Your spam score is ${blA.metrics.spamScore}%, which means some questionable websites are linking to your site. This can hurt your rankings. A professional can help clean this up.` },
                                         ].filter(Boolean).map((tactic: any, i) => (
                                             <div key={i} className="flex items-start gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
                                                 <span className="text-lg shrink-0">{tactic.icon}</span>
@@ -560,9 +556,15 @@ export default function BattleModeV3() {
                                         ))}
                                     </div>
 
-                                    {/* Affiliate/CTA placeholder */}
-                                    <div className="mt-4 rounded-lg border border-dashed border-green-500/20 bg-green-500/[0.03] p-3 text-center">
-                                        <p className="text-xs text-green-400/60 italic">Need help building backlinks? Professional link building services coming soon.</p>
+                                    {/* CTA */}
+                                    <div className="mt-4 rounded-lg border border-green-500/30 bg-green-500/[0.05] p-4 flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm font-bold text-green-400">Explore a quality backlink strategy with a professional</p>
+                                            <p className="text-xs text-white/40 mt-0.5">Let experts handle the outreach, content, and relationship building for you.</p>
+                                        </div>
+                                        <button className="shrink-0 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 rounded-lg text-xs font-bold transition-colors">
+                                            Learn More →
+                                        </button>
                                     </div>
                                 </div>
                             )}
