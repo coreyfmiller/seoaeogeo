@@ -20,6 +20,7 @@ import {
   X,
   Swords,
   Trophy,
+  ChevronDown,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
@@ -36,8 +37,8 @@ const mainNav: NavItem[] = [
   { name: "Free Audit", icon: Sparkles, href: "/free-audit" },
   { name: "Pro Audit", icon: Bot, href: "/pro-audit", badge: "PRO AI" },
   { name: "Deep Scan", icon: Layers, href: "/deep-scan", badge: "PRO AI" },
-  { name: "Battle Mode V3", icon: Swords, href: "/battle-mode-v3", badge: "AI" },
-  { name: "Keyword Arena V3", icon: Trophy, href: "/keyword-arena-v3", badge: "AI" },
+  { name: "Battle Mode V3", icon: Swords, href: "/battle-mode-v3", badge: "PRO AI" },
+  { name: "Keyword Arena V3", icon: Trophy, href: "/keyword-arena-v3", badge: "PRO AI" },
   { name: "Dashboard", icon: Home, href: "/dashboard" },
 ]
 
@@ -68,6 +69,7 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
   const [referralOpen, setReferralOpen] = useState(false)
   const [referralCode, setReferralCode] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+  const [eolOpen, setEolOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<{ full_name: string | null; plan: string; is_admin?: boolean; credits?: number } | null>(null)
 
@@ -230,34 +232,6 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
           </ul>
         </div>
 
-        {/* EOL Section — only show for admins */}
-        {isAdmin && eolNav.length > 0 && (
-          <div>
-            <p className="px-3 mb-2 text-xs font-medium text-muted-foreground/50 uppercase tracking-wider">
-              EOL
-            </p>
-            <ul className="space-y-1">
-              {eolNav.map((item) => (
-                <li key={item.name}>
-                  <Link href={item.href}
-                    className={cn(
-                      "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
-                      pathname === item.href
-                        ? "bg-seo/10 text-seo font-medium"
-                        : "text-muted-foreground/40 hover:text-muted-foreground/60 hover:bg-muted/30"
-                    )}>
-                    <item.icon className="h-4 w-4 opacity-50" />
-                    <span className="flex-1 opacity-60">{item.name}</span>
-                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-zinc-500/10 text-zinc-500 border border-zinc-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
-                      EOL
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
       </nav>
       <div className="px-3 py-4 border-t border-border/50 space-y-3">
         {/* Referral Link — only show when logged in */}
@@ -337,6 +311,35 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
             </li>
           ))}
         </ul>
+
+        {/* EOL Section — collapsible, admin only */}
+        {isAdmin && eolNav.length > 0 && (
+          <div className="mt-2">
+            <button onClick={() => setEolOpen(!eolOpen)}
+              className="flex items-center gap-2 px-3 py-1.5 w-full text-left text-xs font-medium text-muted-foreground/40 uppercase tracking-wider hover:text-muted-foreground/60 transition-colors">
+              <ChevronDown className={cn("h-3 w-3 transition-transform", eolOpen && "rotate-180")} />
+              EOL
+            </button>
+            {eolOpen && (
+              <ul className="space-y-1 mt-1">
+                {eolNav.map((item) => (
+                  <li key={item.name}>
+                    <Link href={item.href}
+                      className={cn(
+                        "flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs transition-colors",
+                        pathname === item.href
+                          ? "bg-seo/10 text-seo font-medium"
+                          : "text-muted-foreground/30 hover:text-muted-foreground/50 hover:bg-muted/20"
+                      )}>
+                      <item.icon className="h-3.5 w-3.5 opacity-40" />
+                      <span className="flex-1 opacity-50">{item.name}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
 
       </div>
 
