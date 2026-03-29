@@ -382,7 +382,19 @@ export default function KeywordArenaV3Page() {
           <CreditConfirmDialog open={creditDialogOpen} onConfirm={handleConfirmArena} onCancel={() => setCreditDialogOpen(false)}
             creditCost={creditCost} scanType="Keyword Arena" costBreakdown={`${pendingUrls.length} sites × 5 credits each = ${creditCost} credits`} />
 
-          {/* ── STEP 1: Keyword Search ── */}
+          {/* ── Persistent Keyword Search Bar (always visible) ── */}
+          <div className="mb-6 flex items-center gap-2">
+            <input type="text" value={keyword} onChange={(e) => setKeyword(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              placeholder="Enter a keyword to battle (e.g. plumber in Toronto)"
+              className="flex-1 px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 text-sm" />
+            <button onClick={handleSearch} disabled={isSearching || !keyword.trim() || isAnalyzing}
+              className="px-5 py-2.5 bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-black rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm shrink-0">
+              {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} Search
+            </button>
+          </div>
+
+          {/* ── STEP 1: Keyword Search (hero version, only when no results) ── */}
           {!searchResults && !arenaResult && !isAnalyzing && (
             <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-xl p-8 sm:p-12 flex flex-col items-center relative overflow-hidden">
               <div className="absolute top-0 left-1/4 w-80 h-80 bg-[#00e5ff]/8 rounded-full blur-[120px] pointer-events-none" />

@@ -56,6 +56,8 @@ export default function BattleModeV3() {
     const [showBacklinksA, setShowBacklinksA] = useState(true)
     const [showBacklinksB, setShowBacklinksB] = useState(true)
     const [reportCopied, setReportCopied] = useState(false)
+    const [inlineUrlA, setInlineUrlA] = useState("")
+    const [inlineUrlB, setInlineUrlB] = useState("")
 
     // Session restore
     useEffect(() => {
@@ -204,7 +206,25 @@ export default function BattleModeV3() {
                     <ScanErrorDialog error={error} onClose={() => setError(null)} onRetry={() => handleBattle(siteA, siteB)} creditsRefunded={creditsRefunded} />
                     <CreditConfirmDialog open={creditDialogOpen} onConfirm={handleConfirmBattle} onCancel={() => setCreditDialogOpen(false)} creditCost={20} scanType="Strategy Duel V3" costBreakdown="20 credits per competitive intelligence duel (2 sites analyzed + backlink profiles)" />
 
-                    {/* ── ENTRY FORM ── */}
+                    {/* ── Persistent Search Bar (always visible) ── */}
+                    <div className="mb-6 flex items-center gap-2">
+                        <input type="text" value={inlineUrlA} onChange={(e) => setInlineUrlA(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && inlineUrlA.trim() && inlineUrlB.trim() && handleBattle(inlineUrlA.trim(), inlineUrlB.trim())}
+                            placeholder="yoursite.com"
+                            className="flex-1 px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 text-sm" />
+                        <span className="text-white/20 font-black italic text-sm px-2">VS</span>
+                        <input type="text" value={inlineUrlB} onChange={(e) => setInlineUrlB(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && inlineUrlA.trim() && inlineUrlB.trim() && handleBattle(inlineUrlA.trim(), inlineUrlB.trim())}
+                            placeholder="competitor.com"
+                            className="flex-1 px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#fe3f8c]/50 focus:ring-1 focus:ring-[#fe3f8c]/30 text-sm" />
+                        <button onClick={() => inlineUrlA.trim() && inlineUrlB.trim() && handleBattle(inlineUrlA.trim(), inlineUrlB.trim())}
+                            disabled={!inlineUrlA.trim() || !inlineUrlB.trim() || isAnalyzing}
+                            className="px-5 py-2.5 bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-black rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm shrink-0">
+                            <Swords className="h-4 w-4" /> Battle
+                        </button>
+                    </div>
+
+                    {/* ── ENTRY FORM (hero version, only when no results) ── */}
                     {!comparisonData && !isAnalyzing ? (
                         <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-xl p-8 sm:p-12 flex flex-col items-center relative overflow-hidden">
                             <div className="absolute top-0 left-1/4 w-80 h-80 bg-[#00e5ff]/8 rounded-full blur-[120px] pointer-events-none" />
