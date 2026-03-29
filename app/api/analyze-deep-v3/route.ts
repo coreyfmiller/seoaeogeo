@@ -10,6 +10,7 @@ import { chromium as playwright, type Browser } from 'playwright-core'
 import chromium from '@sparticuz/chromium'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
 import { createScanJob, completeScanJob, failScanJob, updateScanProgress } from '@/lib/scan-jobs'
+import { fetchBacklinksWithCache, buildSingleSiteBacklinkContext } from '@/lib/backlink-fetcher'
 
 export const maxDuration = 300
 
@@ -63,6 +64,9 @@ export async function POST(request: NextRequest) {
       send({ type: 'progress', phase: 'Discovering site pages...', progress: 8 })
       const discoveryPage = await browser.newPage()
       await discoveryPage.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
+
+      // Fetch backlinks in parallel with page discovery (uses cache, zero extra time if cached)
+      const backlinkPromise = fetchBacklinksWithCache(url, true)
 
       // Extract internal links for crawling
       const domain = new URL(url).hostname
@@ -246,10 +250,11 @@ export async function POST(request: NextRequest) {
         }
       } catch (e) { }
 
-      // Step 6: Sitewide AI Intelligence
+      // Step 6: Sitewide AI Intelligence + resolve backlinks
       send({ type: 'progress', phase: 'Running sitewide intelligence analysis...', progress: 93 })
       updateScanProgress(user.id, 'deep', 93, 'Running sitewide intelligence...').catch(() => {})
       let sitewideIntelligence: any = null
+      const backlinkData = await backlinkPromise
 
       // Pre-calculate avg scores so we can pass them to the AI for score-gap-aware recommendations
       const preAvgScores = {
@@ -280,6 +285,7 @@ export async function POST(request: NextRequest) {
           siteType: siteTypeResult.primaryType as any,
           platform: scanResults[0]?.scanResult?.platformDetection?.label,
           currentScores: preAvgScores,
+          backlinkContext: buildSingleSiteBacklinkContext(backlinkData, url),
         })
       } catch (err) {
         console.error('[Deep Scan] Sitewide intelligence failed:', err instanceof Error ? err.message : err)
@@ -360,6 +366,7 @@ export async function POST(request: NextRequest) {
         aggregateMetrics: { totalWords, totalSchemas, avgResponseTime, totalImages, totalImagesWithAlt },
         duplicateTitles,
         duplicateDescriptions,
+        backlinkData,
       }
       // Persist result to scan_jobs so user can retrieve it if they navigated away
       try { await completeScanJob(user.id, 'deep', resultData) } catch (e) { console.error('[Deep Scan] Scan job complete failed:', e) }

@@ -33,6 +33,7 @@ export async function analyzeSitewideIntelligence(context: {
   siteType?: SiteType;
   platform?: string;
   currentScores?: { seo: number; aeo: number; geo: number };
+  backlinkContext?: string;
 }) {
   // DETERMINISTIC CALCULATIONS (run before AI to ensure consistency)
   
@@ -220,6 +221,7 @@ ${context.currentScores ? `
     DOMAIN: ${context.domain}
     DATA FROM ${context.pages.length} PAGES:
     ${pagesSummary}
+    ${context.backlinkContext || ''}
     
     Analyze the full dataset using MODERN CRAWLER STANDARDS and return a JSON object exactly matching this structure. No markdown, pure JSON:
     {

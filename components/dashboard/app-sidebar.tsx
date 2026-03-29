@@ -37,7 +37,7 @@ const mainNav: NavItem[] = [
   { name: "Free Audit", icon: Sparkles, href: "/free-audit" },
   { name: "Pro Audit", icon: Bot, href: "/pro-audit", badge: "PRO" },
   { name: "Deep Scan", icon: Layers, href: "/deep-scan", badge: "PRO" },
-  { name: "Duel Mode", icon: Swords, href: "/battle-mode-v3", badge: "PRO" },
+  { name: "Competitor Duel", icon: Swords, href: "/battle-mode-v3", badge: "PRO" },
   { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena-v3", badge: "PRO" },
   { name: "Dashboard", icon: Home, href: "/dashboard" },
 ]

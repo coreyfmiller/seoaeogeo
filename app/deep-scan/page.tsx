@@ -6,6 +6,7 @@ import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatest
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { PageShell } from '@/components/dashboard/page-shell'
 import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
+import { LinkBuildingIntelligence } from '@/components/dashboard/link-building-intelligence'
 import { CrawlConfig } from '@/components/dashboard/crawl-config'
 import { PageComparisonTable } from '@/components/dashboard/page-comparison-table'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
@@ -68,6 +69,23 @@ interface DeepScanResult {
     inp: { value: number; category: string; displayValue: string; score: number } | null
     cls: { value: number; category: string; displayValue: string; score: number } | null
   }
+  backlinkData?: {
+    metrics: {
+      domain: string
+      domainAuthority: number
+      pageAuthority: number
+      linkingDomains: number
+      totalBacklinks: number
+      spamScore: number
+    }
+    backlinks: Array<{
+      sourceDomain: string
+      sourceUrl: string
+      anchorText: string
+      domainAuthority: number
+      isDofollow: boolean
+    }>
+  } | null
 }
 
 export default function DeepV3Page() {
@@ -596,6 +614,14 @@ export default function DeepV3Page() {
                       })()}
                     </CardContent>
                   </Card>
+                )}
+
+                {/* Link Building Intelligence */}
+                {result.backlinkData && (
+                  <LinkBuildingIntelligence
+                    metrics={result.backlinkData.metrics}
+                    backlinks={result.backlinkData.backlinks}
+                  />
                 )}
 
                 {/* Page Comparison Table */}

@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server'
 import { performScan } from '@/lib/crawler'
 import { analyzeCompetitive } from '@/lib/gemini-competitive'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
-import { isMozConfigured, getMozBacklinkData, type MozBacklinkData } from '@/lib/moz'
-import { getCachedBacklinks, cacheBacklinks } from '@/lib/backlink-cache'
+import { isMozConfigured, type MozBacklinkData } from '@/lib/moz'
+import { fetchBacklinksWithCache } from '@/lib/backlink-fetcher'
 
 export const maxDuration = 300
 
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
 
     const { allowed } = await useCredits(user.id, 20)
     if (!allowed) {
-      return NextResponse.json({ error: 'Insufficient credits. Duel Mode costs 20 credits.' }, { status: 402 })
+      return NextResponse.json({ error: 'Insufficient credits. Competitor Duel costs 20 credits.' }, { status: 402 })
     }
 
     const { siteAUrl, siteBUrl } = await req.json()
@@ -93,32 +93,6 @@ export async function POST(req: Request) {
       error: error.message || 'Battle analysis failed',
       creditsRefunded: user ? 20 : 0,
     }, { status: 500 })
-  }
-}
-
-/**
- * Fetch backlinks with cache layer.
- * Checks Supabase cache first, falls back to Moz API.
- */
-async function fetchBacklinksWithCache(
-  url: string,
-  isOwnSite: boolean
-): Promise<MozBacklinkData | null> {
-  try {
-    // Check cache first
-    const cached = await getCachedBacklinks(url, isOwnSite)
-    if (cached) return cached
-
-    // Fetch from Moz
-    const data = await getMozBacklinkData(url)
-
-    // Store in cache
-    await cacheBacklinks(url, data)
-
-    return data
-  } catch (err: any) {
-    console.error(`[Battle V3] Backlink fetch failed for ${url}:`, err.message)
-    return null // Non-fatal — battle continues without backlinks
   }
 }
 

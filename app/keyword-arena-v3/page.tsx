@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { PageShell } from "@/components/dashboard/page-shell"
+import { saveScanToHistory } from '@/lib/scan-history'
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { CreditConfirmDialog } from "@/components/dashboard/credit-confirm-dialog"
@@ -187,6 +188,22 @@ export default function KeywordArenaV3Page() {
     if (userSiteUrl) localStorage.setItem("arena_v3_userSite", userSiteUrl)
     if (arenaResult) localStorage.setItem("arena_v3_result", JSON.stringify(arenaResult))
   }, [keyword, userSiteUrl, arenaResult])
+
+  // Save to scan history for dashboard
+  useEffect(() => {
+    if (!arenaResult || !keyword) return
+    const userSite = arenaResult.sites.find(s => s.isUserSite)
+    saveScanToHistory({
+      url: `${keyword} (${arenaResult.totalSites} sites)`,
+      type: 'keyword-arena',
+      scores: userSite?.scores?.seo != null ? {
+        seo: userSite.scores.seo ?? 0,
+        aeo: userSite.scores.aeo ?? 0,
+        geo: userSite.scores.geo ?? 0,
+      } : undefined,
+      timestamp: new Date().toISOString(),
+    }, arenaResult)
+  }, [arenaResult])
 
   useEffect(() => {
     if (!isAnalyzing) { setLoadingProgress(0); setElapsedSeconds(0); setLoadingPhase(""); return }
@@ -756,19 +773,19 @@ export default function KeywordArenaV3Page() {
                       </Link>
                     )}
                     {/* Competitive Intel — show if they want deeper comparison */}
-                    <Link href="/competitive-intel" className="group rounded-xl border border-[#fe3f8c]/20 bg-[#fe3f8c]/[0.03] p-4 hover:border-[#fe3f8c]/40 transition-all">
+                    <Link href="/battle-mode-v3" className="group rounded-xl border border-[#fe3f8c]/20 bg-[#fe3f8c]/[0.03] p-4 hover:border-[#fe3f8c]/40 transition-all">
                       <div className="flex items-center gap-2 mb-2">
                         <div className="h-7 w-7 rounded-lg bg-[#fe3f8c]/10 flex items-center justify-center">
                           <Globe className="h-3.5 w-3.5 text-[#fe3f8c]" />
                         </div>
-                        <span className="text-xs font-bold text-[#fe3f8c]">Competitive Intel</span>
+                        <span className="text-xs font-bold text-[#fe3f8c]">Competitor Duel</span>
                         <span className="text-xs text-white/40 ml-auto">20 credits</span>
                       </div>
                       <p className="text-xs text-white/60 leading-relaxed">
                         Deep-dive comparison against specific competitors with full gap analysis.
                       </p>
                       <div className="flex items-center gap-1 mt-2 text-xs text-[#fe3f8c]/60 group-hover:text-[#fe3f8c] transition-colors">
-                        Run Competitive Intel <ArrowRight className="h-3 w-3" />
+                        Run Competitor Duel <ArrowRight className="h-3 w-3" />
                       </div>
                     </Link>
                   </div>
@@ -796,6 +813,42 @@ export default function KeywordArenaV3Page() {
                   <Copy className="h-3 w-3" /> Copy
                 </button>
               </div>
+
+              {/* SEO / AEO / GEO Leaders */}
+              {(() => {
+                const scored = arenaResult.sites.filter(s => s.scores.overall !== null)
+                if (scored.length === 0) return null
+                const seoLeader = scored.reduce((best, s) => (s.scores.seo ?? 0) > (best.scores.seo ?? 0) ? s : best, scored[0])
+                const aeoLeader = scored.reduce((best, s) => (s.scores.aeo ?? 0) > (best.scores.aeo ?? 0) ? s : best, scored[0])
+                const geoLeader = scored.reduce((best, s) => (s.scores.geo ?? 0) > (best.scores.geo ?? 0) ? s : best, scored[0])
+                const leaders = [
+                  { label: "SEO Leader", site: seoLeader, score: seoLeader.scores.seo, color: "#00e5ff", icon: <Search className="h-4 w-4" /> },
+                  { label: "AEO Leader", site: aeoLeader, score: aeoLeader.scores.aeo, color: "#BC13FE", icon: <Sparkles className="h-4 w-4" /> },
+                  { label: "GEO Leader", site: geoLeader, score: geoLeader.scores.geo, color: "#fe3f8c", icon: <Bot className="h-4 w-4" /> },
+                ]
+                return (
+                  <div className="grid grid-cols-3 gap-3">
+                    {leaders.map(l => {
+                      const displayUrl = l.site.url.replace(/^https?:\/\//, '').replace(/\/$/, '')
+                      const isUser = l.site.isUserSite
+                      return (
+                        <div key={l.label} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 relative overflow-hidden">
+                          <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full blur-[40px] pointer-events-none" style={{ background: `${l.color}10` }} />
+                          <div className="relative z-10">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="h-7 w-7 rounded-lg flex items-center justify-center" style={{ background: `${l.color}15`, color: l.color }}>{l.icon}</div>
+                              <span className="text-[10px] font-black uppercase tracking-widest text-white/50">{l.label}</span>
+                            </div>
+                            <p className="text-2xl font-black tabular-nums" style={{ color: l.color }}>{l.score ?? '—'}</p>
+                            <p className={cn("text-xs truncate mt-1", isUser ? "text-[#00e5ff] font-bold" : "text-white/60")}>{displayUrl}</p>
+                            {isUser && <Badge className="mt-1 bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-[7px] font-black">YOU</Badge>}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })()}
 
               {/* Leaderboard Table */}
               <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-xl overflow-hidden">

@@ -1,6 +1,8 @@
+export type ScanType = 'free-v3' | 'free-v4' | 'pro' | 'deep' | 'competitive' | 'keyword-arena'
+
 export interface ScanHistoryEntry {
   url: string
-  type: 'free-v3' | 'free-v4' | 'pro' | 'deep' | 'competitive'
+  type: ScanType
   scores?: { seo: number; aeo: number; geo: number }
   timestamp: string
   hasFullResult?: boolean
@@ -92,7 +94,8 @@ export function getRouteForType(type: ScanHistoryEntry['type']): string {
     case 'free-v4': return '/v4'
     case 'pro': return '/pro-audit'
     case 'deep': return '/deep-scan'
-    case 'competitive': return '/competitive-intel'
+    case 'competitive': return '/battle-mode-v3'
+    case 'keyword-arena': return '/keyword-arena-v3'
     default: return '/free-audit'
   }
 }

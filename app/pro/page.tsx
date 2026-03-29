@@ -10,7 +10,7 @@ const features = [
   { icon: FileText, title: "Step-by-Step Fix Instructions", desc: "Detailed explanations of why each issue matters and how to fix it" },
   { icon: Code, title: "Schema Code Generation", desc: "Auto-generated JSON-LD schema markup tailored to your site type" },
   { icon: Layers, title: "Deep Scan (up to 50 Pages)", desc: "Comprehensive multi-page site analysis with page comparison" },
-  { icon: Sparkles, title: "Duel Mode", desc: "Compare your site against competitors with gap analysis" },
+  { icon: Sparkles, title: "Competitor Duel", desc: "Compare your site against competitors with gap analysis" },
   { icon: BarChart3, title: "ROI & Priority Scoring", desc: "Know which fixes deliver the biggest impact first" },
   { icon: Shield, title: "Platform-Specific Guides", desc: "WordPress, Shopify, Wix, and more — tailored fix instructions" },
   { icon: FileText, title: "Export & Copy Reports", desc: "Download full audit reports or copy to clipboard" },
@@ -52,7 +52,7 @@ const creditPacks = [
 const creditCosts = [
   { action: "Pro Audit", cost: "10 credits", note: "Single page AI-powered audit" },
   { action: "Deep Scan", cost: "10 + 1/page", note: "e.g. 5 pages = 15 credits, 50 pages = 60 credits" },
-  { action: "Duel Mode", cost: "20 credits", note: "Head-to-head comparison of two sites" },
+  { action: "Competitor Duel", cost: "20 credits", note: "Head-to-head comparison of two sites" },
   { action: "Free Audit", cost: "0 credits", note: "Always free, unlimited" },
 ]
 

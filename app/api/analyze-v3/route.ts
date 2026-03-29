@@ -8,6 +8,7 @@ import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-he
 import { fetchPageSpeedInsights } from '@/lib/pagespeed'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
 import { createScanJob, completeScanJob, failScanJob, updateScanProgress } from '@/lib/scan-jobs'
+import { fetchBacklinksWithCache } from '@/lib/backlink-fetcher'
 
 export const maxDuration = 300
 
@@ -53,7 +54,7 @@ export async function POST(request: NextRequest) {
       send({ type: 'progress', phase: `Detected: ${siteTypeResult.primaryType}. Starting AI analysis...`, progress: 30 })
       updateScanProgress(user.id, 'pro', 30, `Detected: ${siteTypeResult.primaryType}. Starting AI...`).catch(() => {})
 
-      // Step 3: AI Analysis + PageSpeed (all parallel)
+      // Step 3: AI Analysis + PageSpeed + Backlinks (all parallel)
       const geminiPromise = analyzeWithGemini({
         title: pageData.title, description: pageData.description,
         thinnedText: pageData.thinnedText, summarizedContent: pageData.summarizedContent,
@@ -65,6 +66,7 @@ export async function POST(request: NextRequest) {
         description: pageData.description, contentSummary: pageData.thinnedText,
       })
       const pageSpeedPromise = fetchPageSpeedInsights(url)
+      const backlinkPromise = fetchBacklinksWithCache(url, true)
 
       const ticker1 = createProgressTicker(send, 'Analyzing content with Gemini AI...', 30, 70)
       const liveInterrogation = await interrogationPromise
@@ -100,13 +102,15 @@ export async function POST(request: NextRequest) {
 
       const scores = { seo: { score: graderResult.seoScore }, aeo: { score: graderResult.aeoScore }, geo: { score: graderResult.geoScore } }
       const cwv = await pageSpeedPromise
+      const backlinkData = await backlinkPromise
 
       send({ type: 'progress', phase: 'Audit complete!', progress: 100 })
       await incrementScanCount(user.id, 'pro')
       const resultData = {
         url, pageData, scores, graderResult, enhancedPenalties, siteTypeResult,
         platformDetection: pageData.platformDetection,
-        aiAnalysis, liveInterrogation, cwv, analyzedAt: new Date().toISOString(), version: 'v3'
+        aiAnalysis, liveInterrogation, cwv, backlinkData,
+        analyzedAt: new Date().toISOString(), version: 'v3'
       }
       // Persist result to scan_jobs so user can retrieve it if they navigated away
       try { await completeScanJob(user.id, 'pro', resultData) } catch (e) { console.error('[V3 API] Scan job complete failed:', e) }

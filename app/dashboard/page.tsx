@@ -14,8 +14,8 @@ import { createClient } from '@/lib/supabase/client'
 
 const quickActions = [
   { label: "Pro Audit", desc: "AI-powered fix instructions", icon: Zap, href: "/pro-audit", color: "text-seo", bg: "bg-seo/10", tip: "Run a full AI-powered audit with Gemini analysis, site intelligence, and detailed fix instructions for every issue found." },
-  { label: "Deep Crawl", desc: "Multi-page site analysis", icon: Layers, href: "/deep-scan", color: "text-[#BC13FE]", bg: "bg-[#BC13FE]/10", tip: "Crawl up to 20 pages of your site to find sitewide issues like duplicate titles, missing schemas, orphan pages, and content gaps." },
-  { label: "Competitive Intel", desc: "Compare against competitors", icon: Globe, href: "/competitive-intel", color: "text-[#fe3f8c]", bg: "bg-[#fe3f8c]/10", tip: "Benchmark your site against a competitor across SEO, AEO, and GEO. Get AI-generated counter-strategies to outperform them." },
+  { label: "Deep Scan", desc: "Multi-page site analysis", icon: Layers, href: "/deep-scan", color: "text-[#BC13FE]", bg: "bg-[#BC13FE]/10", tip: "Crawl up to 20 pages of your site to find sitewide issues like duplicate titles, missing schemas, orphan pages, and content gaps." },
+  { label: "Competitor Duel", desc: "Compare against competitors", icon: Globe, href: "/battle-mode-v3", color: "text-[#fe3f8c]", bg: "bg-[#fe3f8c]/10", tip: "Benchmark your site against a competitor across SEO, AEO, and GEO. Get AI-generated counter-strategies to outperform them." },
 ]
 
 export default function DashboardPage() {
@@ -92,11 +92,12 @@ export default function DashboardPage() {
 
   const getTypeLabel = (type: string) => {
     switch (type) {
-      case 'free-v3': return { label: 'V3 Free', color: 'bg-blue-500/10 text-blue-600 border-blue-500/20' }
-      case 'free-v4': return { label: 'V4 Free', color: 'bg-[#BC13FE]/10 text-[#BC13FE] border-[#BC13FE]/20' }
+      case 'free-v3': return { label: 'Free Audit', color: 'bg-blue-500/10 text-blue-600 border-blue-500/20' }
+      case 'free-v4': return { label: 'Free Audit', color: 'bg-[#BC13FE]/10 text-[#BC13FE] border-[#BC13FE]/20' }
       case 'pro': return { label: 'Pro Audit', color: 'bg-seo/10 text-seo border-seo/20' }
       case 'deep': return { label: 'Deep Scan', color: 'bg-orange-500/10 text-orange-600 border-orange-500/20' }
-      case 'competitive': return { label: 'Competitive', color: 'bg-aeo/10 text-aeo border-aeo/20' }
+      case 'competitive': return { label: 'Competitor Duel', color: 'bg-aeo/10 text-aeo border-aeo/20' }
+      case 'keyword-arena': return { label: 'Keyword Arena', color: 'bg-[#fe3f8c]/10 text-[#fe3f8c] border-[#fe3f8c]/20' }
       default: return { label: 'Scan', color: 'bg-muted text-muted-foreground' }
     }
   }
@@ -119,8 +120,8 @@ export default function DashboardPage() {
             <div className="grid grid-cols-3 gap-4">
               {[
                 { label: "Pro Audits", value: stats.proAudits, icon: Zap, color: "text-seo", tip: "Number of AI-powered Pro Audits completed. Pro Audits use Gemini AI for deep content analysis, site intelligence, and step-by-step fix instructions." },
-                { label: "Deep Crawls", value: stats.deepCrawls, icon: Layers, color: "text-[#BC13FE]", tip: "Number of multi-page Deep Scans completed. Deep Scans crawl up to 20 pages per site, analyzing schema coverage, content gaps, and sitewide health." },
-                { label: "Competitive Intel", value: stats.compIntel, icon: Globe, color: "text-[#fe3f8c]", tip: "Number of competitive intelligence battles run. Each battle compares your site against a competitor across SEO, AEO, and GEO metrics with AI-generated counter-strategies." },
+                { label: "Deep Scans", value: stats.deepCrawls, icon: Layers, color: "text-[#BC13FE]", tip: "Number of multi-page Deep Scans completed. Deep Scans crawl up to 20 pages per site, analyzing schema coverage, content gaps, and sitewide health." },
+                { label: "Duels", value: stats.compIntel, icon: Globe, color: "text-[#fe3f8c]", tip: "Number of Competitor Duels run. Each duel compares your site against a competitor across SEO, AEO, and GEO metrics with AI-generated counter-strategies." },
               ].map(s => (
                 <Card key={s.label}>
                   <CardContent className="p-4 flex items-center gap-3">

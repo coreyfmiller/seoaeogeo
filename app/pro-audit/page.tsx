@@ -18,6 +18,7 @@ import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
 import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
 import { Badge } from '@/components/ui/badge'
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
+import { LinkBuildingIntelligence } from '@/components/dashboard/link-building-intelligence'
 import { cn } from '@/lib/utils'
 
 interface AnalysisResult {
@@ -698,6 +699,14 @@ export default function V3Page() {
               </TabsContent>
             </div>
           </Tabs>
+
+          {/* Link Building Intelligence */}
+          {result.backlinkData && (
+            <LinkBuildingIntelligence
+              metrics={result.backlinkData.metrics}
+              backlinks={result.backlinkData.backlinks}
+            />
+          )}
 
           {/* Core Web Vitals */}
           {result.cwv && (

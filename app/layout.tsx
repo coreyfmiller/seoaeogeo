@@ -80,7 +80,7 @@ export default function RootLayout({
                   description: 'AI-powered website auditing tool that scores pages on SEO, AEO, and GEO with actionable fix instructions.',
                   offers: [
                     { '@type': 'Offer', name: 'Free Audit', price: '0', priceCurrency: 'USD', description: 'Basic SEO, AEO, and GEO score. No account required.' },
-                    { '@type': 'Offer', name: 'Pro Credits', price: '20', priceCurrency: 'USD', description: '200 credits for Pro Audit, Deep Scan, Duel Mode, and Keyword Arena.' },
+                    { '@type': 'Offer', name: 'Pro Credits', price: '20', priceCurrency: 'USD', description: '200 credits for Pro Audit, Deep Scan, Competitor Duel, and Keyword Arena.' },
                     { '@type': 'Offer', name: 'Pro Plus Credits', price: '50', priceCurrency: 'USD', description: '600 credits for all tools.' },
                     { '@type': 'Offer', name: 'Agency Credits', price: '100', priceCurrency: 'USD', description: '1,500 credits for all tools.' },
                   ],

@@ -54,8 +54,8 @@ const faqs: FAQItem[] = [
   },
   {
     category: "Getting Started",
-    question: "What is Duel Mode?",
-    answer: "Duel Mode lets you compare your page against a competitor's page side-by-side. It identifies stolen opportunities, strategic gaps, and provides counter-strategies to help you outperform the competition across all three pillars."
+    question: "What is Competitor Duel?",
+    answer: "Competitor Duel lets you compare your page against a competitor's page side-by-side. It identifies stolen opportunities, strategic gaps, and provides counter-strategies to help you outperform the competition across all three pillars."
   },
   {
     category: "Scoring",
@@ -100,7 +100,7 @@ const faqs: FAQItem[] = [
   {
     category: "Plans & Limits",
     question: "Do free audits count against my plan?",
-    answer: "No. Free audits are unlimited and don't use any AI credits. Only Pro Audits, Deep Scans, and Duel Mode analyses count against your monthly quota."
+    answer: "No. Free audits are unlimited and don't use any AI credits. Only Pro Audits, Deep Scans, and Competitor Duel analyses count against your monthly quota."
   },
   {
     category: "Troubleshooting",
@@ -150,7 +150,7 @@ const quickStartGuides = [
     steps: ["Enter your domain", "Configure crawl depth & page limit", "Review page-by-page comparison", "Identify site-wide patterns & issues"],
   },
   {
-    title: "Duel Mode",
+    title: "Competitor Duel",
     desc: "Compare your page against a competitor.",
     icon: Globe,
     color: "text-aeo",
@@ -385,7 +385,7 @@ export default function HelpPage() {
                 {[
                   { title: "Run Free first, then Pro", tip: "Start with a Free Audit to get baseline scores. If you need specific fix instructions, follow up with a Pro Audit. This saves your Pro credits for when you need them." },
                   { title: "Scan after making changes", tip: "After implementing fixes, run another audit to track your progress. Each scan is saved to your history so you can see improvement over time." },
-                  { title: "Use Duel Mode strategically", tip: "Compare against your top-ranking competitor for your target keyword. The counter-strategies are most valuable when you're competing for the same search intent." },
+                  { title: "Use Competitor Duel strategically", tip: "Compare against your top-ranking competitor for your target keyword. The counter-strategies are most valuable when you're competing for the same search intent." },
                   { title: "Export your data regularly", tip: "Since scan history is stored locally, use the Export button on the Dashboard to back up your data. This protects against browser data loss and lets you share results with your team." },
                   { title: "Check all three pillars", tip: "Don't just focus on SEO. AEO and GEO are increasingly important as AI search grows. A site that scores well across all three is future-proofed." },
                   { title: "Deep Scan for site-wide issues", tip: "Individual page audits are great, but Deep Scan reveals patterns. If every page is missing structured data, that's a site-wide fix — not a page-by-page one." },
