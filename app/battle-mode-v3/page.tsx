@@ -424,13 +424,10 @@ export default function BattleModeV3() {
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
                                         {/* Site A Backlinks */}
                                         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-                                            <button onClick={() => setShowBacklinksA(!showBacklinksA)}
-                                                className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/[0.02] transition-colors">
+                                            <div className="px-4 py-3">
                                                 <span className="text-xs font-bold text-[#00e5ff]">Top Backlinks — {siteALabel} ({blA.backlinks.length})</span>
-                                                {showBacklinksA ? <ChevronUp className="h-4 w-4 text-white/30" /> : <ChevronDown className="h-4 w-4 text-white/30" />}
-                                            </button>
-                                            {showBacklinksA && (
-                                                <div className="px-4 pb-3 space-y-2">
+                                            </div>
+                                            <div className="px-4 pb-3 space-y-2">
                                                     <div className="flex items-center gap-2 text-[10px] text-white/30 uppercase font-bold pb-1 border-b border-white/[0.04]">
                                                         <span className="w-8">DA</span>
                                                         <span className="flex-1">Linking Domain</span>
@@ -445,16 +442,12 @@ export default function BattleModeV3() {
                                                     ))}
                                                     {blA.backlinks.length === 0 && <p className="text-xs text-white/30 italic py-2">No backlinks found</p>}
                                                 </div>
-                                            )}
                                         </div>
                                         {/* Site B Backlinks */}
                                         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-                                            <button onClick={() => setShowBacklinksB(!showBacklinksB)}
-                                                className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-white/[0.02] transition-colors">
+                                            <div className="px-4 py-3">
                                                 <span className="text-xs font-bold text-[#fe3f8c]">Top Backlinks — {siteBLabel} ({blB.backlinks.length})</span>
-                                                {showBacklinksB ? <ChevronUp className="h-4 w-4 text-white/30" /> : <ChevronDown className="h-4 w-4 text-white/30" />}
-                                            </button>
-                                            {showBacklinksB && (
+                                            </div>
                                                 <div className="px-4 pb-3 space-y-2">
                                                     <div className="flex items-center gap-2 text-[10px] text-white/30 uppercase font-bold pb-1 border-b border-white/[0.04]">
                                                         <span className="w-8">DA</span>
@@ -470,7 +463,6 @@ export default function BattleModeV3() {
                                                     ))}
                                                     {blB.backlinks.length === 0 && <p className="text-xs text-white/30 italic py-2">No backlinks found</p>}
                                                 </div>
-                                            )}
                                         </div>
                                     </div>
 
