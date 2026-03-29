@@ -329,6 +329,7 @@ export default function HomePage() {
             <div>
               <h4 className="font-bold text-sm mb-3">Resources</h4>
               <ul className="space-y-2">
+                <li><Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link></li>
                 <li><Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help Center</Link></li>
                 <li><Link href="/standards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Our Standards</Link></li>
                 <li><Link href="/pro" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link></li>
