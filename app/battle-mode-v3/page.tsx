@@ -58,6 +58,7 @@ export default function BattleModeV3() {
     const [reportCopied, setReportCopied] = useState(false)
     const [inlineUrlA, setInlineUrlA] = useState("")
     const [inlineUrlB, setInlineUrlB] = useState("")
+    const [showLinkGap, setShowLinkGap] = useState(false)
 
     // Session restore
     useEffect(() => {
@@ -468,24 +469,30 @@ export default function BattleModeV3() {
 
                                     {/* Link Gap */}
                                     {linkGap.length > 0 && (
-                                        <div className="mt-4 rounded-xl border border-[#BC13FE]/20 bg-[#BC13FE]/[0.03] p-4">
-                                            <h4 className="text-xs font-black text-[#BC13FE] uppercase tracking-widest mb-3 flex items-center gap-1.5">
-                                                <ExternalLink className="h-3.5 w-3.5" /> Link Gap — Sites linking to competitor but not you ({linkGap.length})
-                                            </h4>
-                                            <div className="space-y-2">
-                                                <div className="flex items-center gap-2 text-[10px] text-white/30 uppercase font-bold pb-1 border-b border-white/[0.04]">
-                                                    <span className="w-8">DA</span>
-                                                    <span className="flex-1">Domain</span>
-                                                    <span>Status</span>
-                                                </div>
-                                                {linkGap.map((g: any, i: number) => (
-                                                    <div key={i} className="flex items-center gap-2 text-xs">
-                                                        <span className={cn("font-black tabular-nums w-8", g.da >= 50 ? "text-green-400" : g.da >= 20 ? "text-yellow-400" : "text-white/40")}>{g.da}</span>
-                                                        <span className="text-white/70 truncate flex-1">{g.domain}</span>
-                                                        <span className="text-[10px] text-[#BC13FE]/60">Opportunity</span>
+                                        <div className="mt-4 rounded-xl border border-[#BC13FE]/20 bg-[#BC13FE]/[0.03] overflow-hidden">
+                                            <button onClick={() => setShowLinkGap(!showLinkGap)}
+                                                className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-[#BC13FE]/[0.02] transition-colors">
+                                                <h4 className="text-xs font-black text-[#BC13FE] uppercase tracking-widest flex items-center gap-1.5">
+                                                    <ExternalLink className="h-3.5 w-3.5" /> Link Gap — Sites linking to competitor but not you ({linkGap.length})
+                                                </h4>
+                                                {showLinkGap ? <ChevronUp className="h-4 w-4 text-[#BC13FE]/40" /> : <ChevronDown className="h-4 w-4 text-[#BC13FE]/40" />}
+                                            </button>
+                                            {showLinkGap && (
+                                                <div className="px-4 pb-3 space-y-2">
+                                                    <div className="flex items-center gap-2 text-[10px] text-white/30 uppercase font-bold pb-1 border-b border-white/[0.04]">
+                                                        <span className="w-8">DA</span>
+                                                        <span className="flex-1">Domain</span>
+                                                        <span>Status</span>
                                                     </div>
-                                                ))}
-                                            </div>
+                                                    {linkGap.map((g: any, i: number) => (
+                                                        <div key={i} className="flex items-center gap-2 text-xs">
+                                                            <span className={cn("font-black tabular-nums w-8", g.da >= 50 ? "text-green-400" : g.da >= 20 ? "text-yellow-400" : "text-white/40")}>{g.da}</span>
+                                                            <span className="text-white/70 truncate flex-1">{g.domain}</span>
+                                                            <span className="text-[10px] text-[#BC13FE]/60">Opportunity</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>
@@ -496,6 +503,84 @@ export default function BattleModeV3() {
                                 <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-center">
                                     <Link2 className="h-5 w-5 text-white/20 mx-auto mb-2" />
                                     <p className="text-xs text-white/30">Backlink analysis coming soon — Domain Authority, top backlinks, and link gap comparison.</p>
+                                </div>
+                            )}
+
+                            {/* ── Link Building Intelligence (deterministic, always shows when backlink data available) ── */}
+                            {blA && (
+                                <div className="rounded-2xl border border-[#22c55e]/20 bg-[#22c55e]/[0.02] backdrop-blur-xl p-5">
+                                    <h3 className="text-sm font-black text-white flex items-center gap-2 mb-4">
+                                        <Link2 className="h-4 w-4 text-green-400" /> Link Building Intelligence
+                                        <InfoTooltip content="Data-driven link building recommendations based on your Domain Authority, backlink profile, and the gap between you and your competitor. Backlinks remain one of the strongest ranking signals in both traditional and AI search." />
+                                    </h3>
+
+                                    {/* DA Assessment */}
+                                    <div className={cn("rounded-lg p-4 mb-4 border",
+                                        blA.metrics.domainAuthority < 20 ? "border-red-500/30 bg-red-500/10" :
+                                        blA.metrics.domainAuthority < 40 ? "border-yellow-500/30 bg-yellow-500/10" :
+                                        blA.metrics.domainAuthority < 60 ? "border-[#00e5ff]/30 bg-[#00e5ff]/10" :
+                                        "border-green-500/30 bg-green-500/10"
+                                    )}>
+                                        <p className={cn("text-sm font-bold mb-1",
+                                            blA.metrics.domainAuthority < 20 ? "text-red-400" :
+                                            blA.metrics.domainAuthority < 40 ? "text-yellow-400" :
+                                            blA.metrics.domainAuthority < 60 ? "text-[#00e5ff]" :
+                                            "text-green-400"
+                                        )}>
+                                            {blA.metrics.domainAuthority < 20 && `DA ${blA.metrics.domainAuthority} — Critical: Your domain authority is very low`}
+                                            {blA.metrics.domainAuthority >= 20 && blA.metrics.domainAuthority < 40 && `DA ${blA.metrics.domainAuthority} — Below Average: Link building should be a consistent priority`}
+                                            {blA.metrics.domainAuthority >= 40 && blA.metrics.domainAuthority < 60 && `DA ${blA.metrics.domainAuthority} — Solid Foundation: Continue building to stay competitive`}
+                                            {blA.metrics.domainAuthority >= 60 && `DA ${blA.metrics.domainAuthority} — Strong Authority: Maintain your link profile and target high-DA opportunities`}
+                                        </p>
+                                        <p className="text-xs text-white/60 leading-relaxed">
+                                            {blA.metrics.domainAuthority < 20 && "Sites with DA under 20 struggle to rank for anything competitive. Every quality backlink you earn has an outsized impact at this stage. Focus on local directories, industry listings, and creating content worth linking to."}
+                                            {blA.metrics.domainAuthority >= 20 && blA.metrics.domainAuthority < 40 && "You have some authority but not enough to compete for mid-difficulty keywords. Consistent link building — even 2-3 quality links per month — will compound over time and significantly improve your rankings."}
+                                            {blA.metrics.domainAuthority >= 40 && blA.metrics.domainAuthority < 60 && "Your domain has decent authority. Focus on earning links from higher-DA sites (DA 50+) to push into the competitive tier. Guest posting on industry blogs and digital PR are your best bets."}
+                                            {blA.metrics.domainAuthority >= 60 && "You have strong authority. Focus on maintaining your link profile, disavowing toxic links, and targeting high-value placements (news sites, .edu, .gov) to stay ahead."}
+                                        </p>
+                                    </div>
+
+                                    {/* Competitor Gap */}
+                                    {blB && blB.metrics.domainAuthority > blA.metrics.domainAuthority && (
+                                        <div className="rounded-lg p-4 mb-4 border border-[#BC13FE]/30 bg-[#BC13FE]/10">
+                                            <p className="text-sm font-bold text-[#BC13FE] mb-1">
+                                                Competitor DA Gap: {blB.metrics.domainAuthority - blA.metrics.domainAuthority} points
+                                            </p>
+                                            <p className="text-xs text-white/60 leading-relaxed">
+                                                {siteBLabel} has DA {blB.metrics.domainAuthority} vs your DA {blA.metrics.domainAuthority} — a {blB.metrics.domainAuthority - blA.metrics.domainAuthority}-point gap.
+                                                {blB.metrics.linkingDomains > blA.metrics.linkingDomains * 2
+                                                    ? ` They also have ${blB.metrics.linkingDomains.toLocaleString()} linking domains vs your ${blA.metrics.linkingDomains.toLocaleString()}. Closing this gap requires sustained outreach and content marketing.`
+                                                    : ` Focus on earning links from the same caliber of sites that link to them.`
+                                                }
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* Actionable Tactics */}
+                                    <div className="space-y-2">
+                                        <p className="text-xs font-bold text-white/50 uppercase tracking-widest">Recommended Tactics</p>
+                                        {[
+                                            blA.metrics.domainAuthority < 30 && { icon: "📍", title: "Claim Local & Industry Directories", desc: "Submit to Google Business Profile, Yelp, industry-specific directories, and local chamber of commerce listings. These are easy wins for new sites." },
+                                            blA.metrics.domainAuthority < 50 && { icon: "✍️", title: "Guest Post on Industry Blogs", desc: "Write valuable content for blogs in your niche with DA 30+. Include a natural link back to your site. Aim for 2-3 per month." },
+                                            { icon: "📰", title: "Digital PR & HARO", desc: "Sign up for Help A Reporter Out (HARO) or Connectively. Respond to journalist queries in your expertise area to earn links from news sites." },
+                                            linkGap.length > 0 && { icon: "🎯", title: `Target ${linkGap.length} Link Gap Opportunities`, desc: `${linkGap.length} sites link to your competitor but not you. Reach out to these sites — they already link to content in your space, so they're warm prospects.` },
+                                            { icon: "📊", title: "Create Linkable Assets", desc: "Original research, data studies, infographics, and free tools naturally attract backlinks. One great linkable asset can earn more links than months of outreach." },
+                                            blA.metrics.spamScore > 20 && { icon: "🧹", title: "Clean Up Toxic Backlinks", desc: `Your spam score is ${blA.metrics.spamScore}%. Review your backlink profile for low-quality or spammy links and submit a disavow file to Google Search Console.` },
+                                        ].filter(Boolean).map((tactic: any, i) => (
+                                            <div key={i} className="flex items-start gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
+                                                <span className="text-lg shrink-0">{tactic.icon}</span>
+                                                <div>
+                                                    <p className="text-xs font-bold text-white/80">{tactic.title}</p>
+                                                    <p className="text-xs text-white/50 leading-relaxed mt-0.5">{tactic.desc}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Affiliate/CTA placeholder */}
+                                    <div className="mt-4 rounded-lg border border-dashed border-green-500/20 bg-green-500/[0.03] p-3 text-center">
+                                        <p className="text-xs text-green-400/60 italic">Need help building backlinks? Professional link building services coming soon.</p>
+                                    </div>
                                 </div>
                             )}
 
