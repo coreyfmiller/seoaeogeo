@@ -510,10 +510,10 @@ export default function BattleModeV3() {
                                             blA.metrics.domainAuthority < 60 ? "text-[#00e5ff]" :
                                             "text-green-400"
                                         )}>
-                                            {blA.metrics.domainAuthority < 20 && `Domain Authority ${blA.metrics.domainAuthority}/100 — Your site needs more backlinks`}
-                                            {blA.metrics.domainAuthority >= 20 && blA.metrics.domainAuthority < 40 && `Domain Authority ${blA.metrics.domainAuthority}/100 — Building momentum, keep going`}
-                                            {blA.metrics.domainAuthority >= 40 && blA.metrics.domainAuthority < 60 && `Domain Authority ${blA.metrics.domainAuthority}/100 — Solid foundation`}
-                                            {blA.metrics.domainAuthority >= 60 && `Domain Authority ${blA.metrics.domainAuthority}/100 — Strong authority`}
+                                            {blA.metrics.domainAuthority < 20 && `Domain Authority ${blA.metrics.domainAuthority}/100 — Your site needs more high quality backlinks`}
+                                            {blA.metrics.domainAuthority >= 20 && blA.metrics.domainAuthority < 40 && `Domain Authority ${blA.metrics.domainAuthority}/100 — Building momentum, keep earning quality backlinks`}
+                                            {blA.metrics.domainAuthority >= 40 && blA.metrics.domainAuthority < 60 && `Domain Authority ${blA.metrics.domainAuthority}/100 — Solid foundation, continue building`}
+                                            {blA.metrics.domainAuthority >= 60 && `Domain Authority ${blA.metrics.domainAuthority}/100 — Strong authority, maintain your edge`}
                                         </p>
                                         <p className="text-xs text-white/60 leading-relaxed">
                                             Backlinks are like votes of confidence from other websites. The more reputable sites that link to yours, the more Google trusts you and the higher you rank. Without them, even great content stays invisible.
