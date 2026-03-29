@@ -33,6 +33,9 @@ export default function HomePage() {
             <img src="/logo.png" alt="Duelly" className="h-14 w-auto" />
           </Link>
           <div className="flex items-center gap-4">
+            <Link href="/signup" className="px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-bold text-sm transition-colors">
+              Get Started Free
+            </Link>
             <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Log In
             </Link>
@@ -68,7 +71,7 @@ export default function HomePage() {
             View Pricing
           </Link>
         </div>
-        <Link href="/competitive-intel" className="mt-8 inline-block text-4xl md:text-5xl font-black text-[#fe3f8c] hover:text-[#fe3f8c]/80 transition-colors">
+        <Link href="/battle-mode-v3" className="mt-8 inline-block text-4xl md:text-5xl font-black text-[#fe3f8c] hover:text-[#fe3f8c]/80 transition-colors">
           Beat Your Competition
         </Link>
       </section>
@@ -145,12 +148,12 @@ export default function HomePage() {
 
       {/* Audit Tools */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-border/30">
-        <h2 className="text-3xl font-black text-center mb-4">Three Audit Tools</h2>
+        <h2 className="text-3xl font-black text-center mb-4">Our Tools</h2>
         <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-12">
-          Choose the right level of analysis for your needs.
+          Four powerful tools to analyze, compare, and dominate your search landscape.
         </p>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 gap-6">
           <div className="p-6 rounded-2xl border border-border/50 bg-card/50">
             <div className="flex items-center gap-2 mb-3">
               <Zap className="h-5 w-5 text-[#00e5ff]" />
@@ -181,18 +184,33 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="p-6 rounded-2xl border border-border/50 bg-card/50">
+          <div className="p-6 rounded-2xl border border-[#fe3f8c]/30 bg-[#fe3f8c]/5">
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp className="h-5 w-5 text-[#fe3f8c]" />
-              <h3 className="text-lg font-bold">Competitive Intel</h3>
+              <h3 className="text-lg font-bold">Strategy Duel</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-              Head-to-head comparison of two websites. See exactly where your competitor
-              outperforms you across SEO, AEO, and GEO with gap analysis and strategic
-              recommendations. 20 credits per comparison.
+              Head-to-head comparison of two websites with backlink analysis powered by Moz.
+              See Domain Authority, top backlinks, link gaps, and AI-generated counter-strategies
+              to outrank your competitor. 20 credits per duel.
             </p>
-            <Link href="/competitive-intel" className="text-sm font-semibold text-[#fe3f8c] hover:underline flex items-center gap-1">
-              Run Comparison <ArrowRight className="h-3 w-3" />
+            <Link href="/battle-mode-v3" className="text-sm font-semibold text-[#fe3f8c] hover:underline flex items-center gap-1">
+              Start a Duel <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+
+          <div className="p-6 rounded-2xl border border-border/50 bg-card/50">
+            <div className="flex items-center gap-2 mb-3">
+              <Search className="h-5 w-5 text-[#00e5ff]" />
+              <h3 className="text-lg font-bold">Keyword Arena</h3>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+              Search a keyword, find the top-ranking sites, and battle them all with AI scoring.
+              See how your site stacks up against the competition with Google Rank vs AI Rank
+              comparison and competitive gap insights. 5 credits per site.
+            </p>
+            <Link href="/keyword-arena-v3" className="text-sm font-semibold text-[#00e5ff] hover:underline flex items-center gap-1">
+              Enter the Arena <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
         </div>
@@ -296,13 +314,45 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/30 py-8">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">© 2026 Duelly. All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help</Link>
-            <Link href="/standards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Standards</Link>
-            <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Log In</Link>
+      <footer className="border-t border-border/30 py-12">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <h4 className="font-bold text-sm mb-3">Tools</h4>
+              <ul className="space-y-2">
+                <li><Link href="/pro-audit" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pro Audit</Link></li>
+                <li><Link href="/deep-scan" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Deep Scan</Link></li>
+                <li><Link href="/battle-mode-v3" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Strategy Duel</Link></li>
+                <li><Link href="/keyword-arena-v3" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Keyword Arena</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-sm mb-3">Resources</h4>
+              <ul className="space-y-2">
+                <li><Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help Center</Link></li>
+                <li><Link href="/standards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Our Standards</Link></li>
+                <li><Link href="/pro" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-sm mb-3">Legal</h4>
+              <ul className="space-y-2">
+                <li><Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Terms of Service</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-sm mb-3">Account</h4>
+              <ul className="space-y-2">
+                <li><Link href="/signup" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Sign Up</Link></li>
+                <li><Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Log In</Link></li>
+                <li><a href="mailto:support@duelly.ai" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-border/30 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground">© 2026 Duelly. All rights reserved.</p>
+            <p className="text-xs text-muted-foreground/50">See your site like AI does.</p>
           </div>
         </div>
       </footer>
