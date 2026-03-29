@@ -604,7 +604,7 @@ export default function BattleModeV3() {
                                                     <Copy className="h-3.5 w-3.5" /> Copy All
                                                 </button>
                                             </div>
-                                            <CardDescription>AI-generated plan to outmaneuver this competitor</CardDescription>
+                                            <CardDescription>Your personalized action plan to outrank this competitor</CardDescription>
                                         </CardHeader>
                                         <CardContent>
                                             <div className="space-y-6">
