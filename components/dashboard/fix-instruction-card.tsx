@@ -40,6 +40,8 @@ interface FixInstructionCardProps {
   affectedPages: number
   validationLinks?: Array<{ tool: string; url: string }>
   impactedScores?: string
+  whyItMatters?: string
+  estimatedPoints?: number
   onMarkComplete?: () => void
   isCompleted?: boolean
 }
@@ -118,6 +120,8 @@ export function FixInstructionCard({
   affectedPages,
   validationLinks,
   impactedScores,
+  whyItMatters,
+  estimatedPoints,
   onMarkComplete,
   isCompleted = false
 }: FixInstructionCardProps) {
@@ -171,6 +175,20 @@ export function FixInstructionCard({
             
             <h3 className="font-bold text-base mb-2 leading-tight line-clamp-3 min-h-[3.75rem]">{title}</h3>
             
+            {/* Why This Matters + Points */}
+            {(whyItMatters || estimatedPoints) && (
+              <div className="mb-2 space-y-1">
+                {estimatedPoints && estimatedPoints > 0 && (
+                  <span className="inline-flex items-center gap-1 text-xs font-black text-green-500 bg-green-500/10 border border-green-500/20 rounded px-2 py-0.5">
+                    +{estimatedPoints} pts
+                  </span>
+                )}
+                {whyItMatters && (
+                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{whyItMatters}</p>
+                )}
+              </div>
+            )}
+
             <div className="flex items-center gap-3 flex-wrap text-xs text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />

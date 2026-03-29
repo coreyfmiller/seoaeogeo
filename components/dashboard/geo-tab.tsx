@@ -85,17 +85,17 @@ export function GEOTab({ data }: GEOTabProps) {
 
   return (
     <div className="grid gap-6">
-      {/* Roadmap to 100 - Intelligence Penalty Ledger (GEO) */}
+      {/* Score Deductions - Intelligence Penalty Ledger (GEO) */}
       {allGeoPenalties.length > 0 && (
         <Card className="border-destructive/30 bg-destructive/5 shadow-sm">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2 text-destructive">
               <Shield className="h-5 w-5" />
-              Roadmap to 100
+              Score Deductions
               <button
                 onClick={() => {
                   const sep = '─'.repeat(60)
-                  const text = `ROADMAP TO 100 — GEO Penalties (${allGeoPenalties.length})\n${'═'.repeat(60)}\n\n` + allGeoPenalties.map((p, i) => {
+                  const text = `SCORE DEDUCTIONS — GEO Penalties (${allGeoPenalties.length})\n${'═'.repeat(60)}\n\n` + allGeoPenalties.map((p, i) => {
                     let t = `${sep}\n${i + 1}. [${p.severity.toUpperCase()}] [${p.category}] ${p.component} (${p.pointsDeducted} pts)\n${sep}`
                     t += `\n\nIssue:\n${p.penalty}`
                     t += `\n\nWhy This Matters:\n${p.explanation}`
