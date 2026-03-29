@@ -252,9 +252,19 @@
   }
 }
 
-/* Prevent double scrollbars — must be outside @layer for highest specificity */
+/* Prevent double scrollbars on dashboard/app layouts that manage their own scroll */
 html, body {
-  overflow: hidden;
   height: 100%;
   margin: 0;
+}
+
+/* Pages that manage their own scroll containers can opt in */
+.overflow-hidden-layout {
+  overflow: hidden;
+}
+
+/* Default: allow normal page scrolling */
+html {
+  overflow-x: hidden;
+  overflow-y: auto;
 }

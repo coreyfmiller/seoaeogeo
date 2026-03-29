@@ -30,52 +30,52 @@ export default function WhatIsAEOPage() {
 
         <div className="prose prose-invert prose-lg max-w-none space-y-6">
           <p className="text-lg text-muted-foreground leading-relaxed">
-            When someone asks ChatGPT &ldquo;best plumber in Moncton&rdquo; or Perplexity &ldquo;how to fix a leaky faucet,&rdquo; the AI doesn&apos;t show a list of 10 blue links. It gives one answer. Maybe two. If your business isn&apos;t the one being cited, you&apos;re invisible to a growing segment of searchers.
+            Picture this. Someone opens ChatGPT and types &ldquo;best plumber in Moncton&rdquo; or asks Perplexity &ldquo;how to fix a leaky faucet.&rdquo; The AI doesn&apos;t spit out ten blue links like Google does. It gives one answer. Maybe two. And if your business isn&apos;t the one getting mentioned, you basically don&apos;t exist to that person.
           </p>
           <p className="text-muted-foreground leading-relaxed">
-            That&apos;s what AEO — Answer Engine Optimization — is about. It&apos;s the practice of making your website&apos;s content easy for AI systems to understand, trust, and cite as a source.
-          </p>
-
-          <h2 className="text-2xl font-bold mt-10 mb-4">How is AEO different from SEO?</h2>
-          <p className="text-muted-foreground leading-relaxed">
-            Traditional SEO focuses on ranking in Google&apos;s list of results. You optimize titles, meta descriptions, headings, and build backlinks so Google puts you on page one. That still matters.
-          </p>
-          <p className="text-muted-foreground leading-relaxed">
-            AEO focuses on a different question: when an AI assistant needs to answer a question, will it pull information from your website? AI systems don&apos;t care about your meta description. They care about whether your content clearly and directly answers the question being asked.
+            That&apos;s the problem AEO solves. AEO stands for Answer Engine Optimization, and it&apos;s all about making your website&apos;s content easy for AI systems to understand, trust, and actually cite when they&apos;re pulling together an answer.
           </p>
 
-          <h2 className="text-2xl font-bold mt-10 mb-4">What makes content AEO-friendly?</h2>
+          <h2 className="text-2xl font-bold mt-10 mb-4">So how is AEO different from regular SEO?</h2>
           <p className="text-muted-foreground leading-relaxed">
-            AI systems look for specific signals when deciding which sources to cite:
+            With traditional SEO, you&apos;re trying to climb Google&apos;s rankings. You tweak your titles, write solid meta descriptions, nail your headings, and build backlinks so Google puts you on page one. And honestly, that still matters a lot.
+          </p>
+          <p className="text-muted-foreground leading-relaxed">
+            AEO is a different game though. The question it answers is: when an AI assistant needs to respond to someone, will it pull information from your website? These AI systems couldn&apos;t care less about your meta description. What they care about is whether your content clearly and directly answers the question someone just asked.
+          </p>
+
+          <h2 className="text-2xl font-bold mt-10 mb-4">What makes content work well for AEO?</h2>
+          <p className="text-muted-foreground leading-relaxed">
+            AI systems look for specific things when they&apos;re deciding which sources to cite:
           </p>
           <ul className="space-y-3 text-muted-foreground">
-            <li className="flex gap-2"><span className="text-[#BC13FE] font-bold shrink-0">→</span> Clear definitions and direct answers to common questions</li>
-            <li className="flex gap-2"><span className="text-[#BC13FE] font-bold shrink-0">→</span> Structured data (schema markup) that tells AI what your page is about</li>
-            <li className="flex gap-2"><span className="text-[#BC13FE] font-bold shrink-0">→</span> Specific facts, numbers, and named entities — not vague marketing language</li>
-            <li className="flex gap-2"><span className="text-[#BC13FE] font-bold shrink-0">→</span> Well-organized content with clear headings and logical structure</li>
-            <li className="flex gap-2"><span className="text-[#BC13FE] font-bold shrink-0">→</span> Sufficient depth — thin pages with 200 words won&apos;t get cited</li>
+            <li className="flex gap-2"><span className="text-[#BC13FE] font-bold shrink-0">→</span> Clear definitions and straight answers to the questions people actually ask</li>
+            <li className="flex gap-2"><span className="text-[#BC13FE] font-bold shrink-0">→</span> Structured data (schema markup) that spells out what your page is about</li>
+            <li className="flex gap-2"><span className="text-[#BC13FE] font-bold shrink-0">→</span> Real facts, actual numbers, and named entities instead of fluffy marketing speak</li>
+            <li className="flex gap-2"><span className="text-[#BC13FE] font-bold shrink-0">→</span> Content that&apos;s well organized with clear headings and a logical flow</li>
+            <li className="flex gap-2"><span className="text-[#BC13FE] font-bold shrink-0">→</span> Enough depth to be useful. A page with 200 words isn&apos;t going to cut it</li>
           </ul>
 
-          <h2 className="text-2xl font-bold mt-10 mb-4">Why should small businesses care?</h2>
+          <h2 className="text-2xl font-bold mt-10 mb-4">Why should small businesses pay attention to this?</h2>
           <p className="text-muted-foreground leading-relaxed">
-            AI search is growing fast. Google AI Overviews now appear on a significant percentage of searches. ChatGPT has hundreds of millions of users. When someone asks an AI &ldquo;who should I hire for [service] in [city],&rdquo; the AI pulls from websites that have clear, well-structured content about that service in that location.
+            AI search is growing really fast. Google AI Overviews are showing up on a huge chunk of searches now. ChatGPT has hundreds of millions of users. When someone asks an AI &ldquo;who should I hire for [service] in [city],&rdquo; it goes looking for websites that have clear, well structured content about that exact service in that exact location.
           </p>
           <p className="text-muted-foreground leading-relaxed">
-            If your competitor has a detailed FAQ page, clear service descriptions, and proper schema markup — and you don&apos;t — the AI will recommend them, not you. This is especially true for local businesses where the competition for AI citations is still relatively low.
+            Here&apos;s the thing. If your competitor has a detailed FAQ page, clear service descriptions, and proper schema markup, and you don&apos;t, the AI is going to recommend them instead of you. This is especially true for local businesses where the competition for AI citations is still pretty low. There&apos;s a real window of opportunity right now.
           </p>
 
           <h2 className="text-2xl font-bold mt-10 mb-4">How to get started with AEO</h2>
           <ol className="space-y-3 text-muted-foreground list-decimal list-inside">
-            <li>Add an FAQ section to your main pages with real questions your customers ask</li>
-            <li>Make sure your business name, address, and services are clearly stated (not buried in images)</li>
-            <li>Add schema markup — at minimum, LocalBusiness or Organization schema</li>
-            <li>Write content that directly answers questions, not just promotes your services</li>
-            <li>Audit your site with a tool like Duelly to see your AEO score and what to fix</li>
+            <li>Add an FAQ section to your main pages with the real questions your customers ask you</li>
+            <li>Make sure your business name, address, and services are clearly written out in text (not buried in images)</li>
+            <li>Add schema markup to your site. At minimum, go with LocalBusiness or Organization schema</li>
+            <li>Write content that actually answers questions instead of just promoting your services</li>
+            <li>Run an audit with a tool like Duelly to see your AEO score and figure out what needs fixing</li>
           </ol>
 
           <div className="mt-12 p-6 rounded-2xl border border-[#BC13FE]/30 bg-[#BC13FE]/5">
             <h3 className="font-bold mb-2">Check your AEO score</h3>
-            <p className="text-sm text-muted-foreground mb-4">Run a free audit to see how well your site is optimized for AI search engines.</p>
+            <p className="text-sm text-muted-foreground mb-4">Run a free audit to see how well your site is set up for AI search engines.</p>
             <Link href="/free-audit" className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#BC13FE] hover:bg-[#BC13FE]/90 text-white font-bold text-sm transition-colors">
               Free AEO Audit <ArrowRight className="h-4 w-4" />
             </Link>

@@ -28,7 +28,7 @@ const posts: BlogPost[] = [
   },
   {
     slug: 'seo-vs-aeo-vs-geo',
-    title: 'SEO vs AEO vs GEO — What\'s the Difference?',
+    title: 'SEO vs AEO vs GEO: What\'s the Difference?',
     description: 'Traditional SEO isn\'t enough anymore. Here\'s what AEO and GEO mean for your business and why all three matter in 2026.',
     date: '2026-03-29',
     category: 'Guide',
@@ -37,7 +37,7 @@ const posts: BlogPost[] = [
   {
     slug: 'local-seo-atlantic-canada',
     title: 'Local SEO Guide for Atlantic Canadian Small Businesses',
-    description: 'A practical guide to getting your New Brunswick, Nova Scotia, PEI, or Newfoundland business found online — in Google and AI search.',
+    description: 'A practical guide to getting your New Brunswick, Nova Scotia, PEI, or Newfoundland business found online in Google and AI search.',
     date: '2026-03-29',
     category: 'Local',
     readTime: '8 min',

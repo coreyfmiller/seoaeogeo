@@ -366,7 +366,6 @@ export default function KeywordArenaV3Page() {
               <h1 className="text-2xl font-black text-white flex items-center gap-3 tracking-tight">
                 <Trophy className="h-6 w-6 text-[#00e5ff]" />
                 Keyword Arena
-                <Badge className="bg-[#BC13FE]/10 text-[#BC13FE] border border-[#BC13FE]/30 text-[10px] font-black uppercase tracking-widest">V3</Badge>
               </h1>
               <p className="text-sm text-white/60 mt-1.5">Search a keyword. Select your site. See how you stack up with AI scoring.</p>
             </div>

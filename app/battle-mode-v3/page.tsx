@@ -191,15 +191,14 @@ export default function BattleModeV3() {
                         <div>
                             <h1 className="text-2xl font-black text-white flex items-center gap-3 tracking-tight">
                                 <Swords className="h-6 w-6 text-[#00e5ff]" />
-                                Strategy Duel
-                                <Badge className="bg-[#00e5ff]/10 text-[#00e5ff] border border-[#00e5ff]/30 text-[10px] font-black uppercase tracking-widest">V3</Badge>
+                                Duel Mode
                             </h1>
                             <p className="text-sm text-white/60 mt-1.5">Head-to-head intelligence warfare with backlink analysis. Two sites enter. One dominates.</p>
                         </div>
                     </div>
 
                     <ScanErrorDialog error={error} onClose={() => setError(null)} onRetry={() => handleBattle(siteA, siteB)} creditsRefunded={creditsRefunded} />
-                    <CreditConfirmDialog open={creditDialogOpen} onConfirm={handleConfirmBattle} onCancel={() => setCreditDialogOpen(false)} creditCost={20} scanType="Strategy Duel V3" costBreakdown="20 credits per competitive intelligence duel (2 sites analyzed + backlink profiles)" />
+                    <CreditConfirmDialog open={creditDialogOpen} onConfirm={handleConfirmBattle} onCancel={() => setCreditDialogOpen(false)} creditCost={20} scanType="Duel Mode" costBreakdown="20 credits per competitive intelligence duel (2 sites analyzed + backlink profiles)" />
 
                     {/* ── Persistent Search Bar (always visible) ── */}
                     <div className="mb-6 space-y-2">
@@ -224,7 +223,7 @@ export default function BattleModeV3() {
                                 <button onClick={() => {
                                     const c = comparisonData.comparison || comparisonData
                                     const sep = '═'.repeat(60)
-                                    let report = `DUELLY STRATEGY DUEL REPORT\n${sep}\n${siteALabel} vs ${siteBLabel}\n${sep}\n\n`
+                                    let report = `DUELLY DUEL MODE REPORT\n${sep}\n${siteALabel} vs ${siteBLabel}\n${sep}\n\n`
                                     report += `SCORES:\n`
                                     report += `  SEO:  ${siteALabel} ${c.seo?.siteA ?? '?'} vs ${siteBLabel} ${c.seo?.siteB ?? '?'}\n`
                                     report += `  AEO:  ${siteALabel} ${c.aeo?.siteA ?? '?'} vs ${siteBLabel} ${c.aeo?.siteB ?? '?'}\n`
@@ -290,7 +289,7 @@ export default function BattleModeV3() {
                                         <div className="absolute inset-0 flex items-center justify-center"><span className="text-xl font-black text-white tabular-nums">{loadingProgress}%</span></div>
                                     </div>
                                     <div className="text-center space-y-1.5">
-                                        <h2 className="text-xl font-black text-white">Intelligence Duel in Progress</h2>
+                                        <h2 className="text-xl font-black text-white">Duel Mode in Progress</h2>
                                         <p className="text-sm text-white/60 max-w-md">{loadingPhase}</p>
                                     </div>
                                     <div className="w-full max-w-md">

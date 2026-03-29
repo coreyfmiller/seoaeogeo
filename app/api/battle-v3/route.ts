@@ -23,7 +23,7 @@ export async function POST(req: Request) {
 
     const { allowed } = await useCredits(user.id, 20)
     if (!allowed) {
-      return NextResponse.json({ error: 'Insufficient credits. Strategy Duel costs 20 credits.' }, { status: 402 })
+      return NextResponse.json({ error: 'Insufficient credits. Duel Mode costs 20 credits.' }, { status: 402 })
     }
 
     const { siteAUrl, siteBUrl } = await req.json()

@@ -35,18 +35,18 @@ interface NavItem {
 
 const mainNav: NavItem[] = [
   { name: "Free Audit", icon: Sparkles, href: "/free-audit" },
-  { name: "Pro Audit", icon: Bot, href: "/pro-audit", badge: "PRO AI" },
-  { name: "Deep Scan", icon: Layers, href: "/deep-scan", badge: "PRO AI" },
-  { name: "Battle Mode V3", icon: Swords, href: "/battle-mode-v3", badge: "PRO AI" },
-  { name: "Keyword Arena V3", icon: Trophy, href: "/keyword-arena-v3", badge: "PRO AI" },
+  { name: "Pro Audit", icon: Bot, href: "/pro-audit", badge: "PRO" },
+  { name: "Deep Scan", icon: Layers, href: "/deep-scan", badge: "PRO" },
+  { name: "Duel Mode", icon: Swords, href: "/battle-mode-v3", badge: "PRO" },
+  { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena-v3", badge: "PRO" },
   { name: "Dashboard", icon: Home, href: "/dashboard" },
 ]
 
 const eolNav: NavItem[] = [
-  { name: "Competitive Intel", icon: Globe, href: "/competitive-intel" },
-  { name: "Battle Mode", icon: Swords, href: "/battle-mode" },
-  { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena" },
-  { name: "Keyword Arena V2", icon: Trophy, href: "/keyword-arena-v2" },
+  { name: "Competitive Intel (OLD)", icon: Globe, href: "/competitive-intel" },
+  { name: "Battle Mode (OLD)", icon: Swords, href: "/battle-mode" },
+  { name: "Keyword Arena (OLD)", icon: Trophy, href: "/keyword-arena" },
+  { name: "Keyword Arena 2 (OLD)", icon: Trophy, href: "/keyword-arena-v2" },
 ]
 
 const proOnlyPaths = ['/pro-audit', '/deep-scan', '/competitive-intel', '/battle-mode', '/battle-mode-v3', '/keyword-arena', '/keyword-arena-v2', '/keyword-arena-v3', '/dashboard']
@@ -54,9 +54,9 @@ const proOnlyPaths = ['/pro-audit', '/deep-scan', '/competitive-intel', '/battle
 const comingSoonNav: NavItem[] = []
 
 const bottomNav: NavItem[] = [
-  { name: "Our Standards", icon: FileText, href: "/standards" },
+  { name: "How We Score", icon: FileText, href: "/standards" },
   { name: "Settings", icon: Settings, href: "/settings" },
-  { name: "Usage & Costs", icon: BarChart3, href: "/usage", badge: "ADMIN" },
+  { name: "Usage", icon: BarChart3, href: "/usage", badge: "ADMIN" },
 ]
 
 interface AppSidebarProps {

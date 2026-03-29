@@ -187,7 +187,7 @@ export default function HomePage() {
           <div className="p-6 rounded-2xl border border-[#fe3f8c]/30 bg-[#fe3f8c]/5">
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp className="h-5 w-5 text-[#fe3f8c]" />
-              <h3 className="text-lg font-bold">Strategy Duel</h3>
+              <h3 className="text-lg font-bold">Duel Mode</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
               Head-to-head comparison of two websites with backlink analysis powered by Moz.
@@ -260,11 +260,11 @@ export default function HomePage() {
             },
             {
               q: 'Is there a free tier?',
-              a: 'Yes. The Free Audit provides a basic SEO, AEO, and GEO score with domain health analysis. Pro Audit, Deep Scan, and Competitive Intel require credits, which start at $20 for 200 credits.',
+              a: 'Yes. The Free Audit provides a basic SEO, AEO, and GEO score with domain health analysis. Pro Audit, Deep Scan, and Duel Mode require credits, which start at $20 for 200 credits.',
             },
             {
               q: 'How many credits does each scan cost?',
-              a: 'Pro Audit costs 10 credits per scan. Deep Scan costs 10 credits plus 1 credit per page crawled. Competitive Intel costs 20 credits per comparison.',
+              a: 'Pro Audit costs 10 credits per scan. Deep Scan costs 10 credits plus 1 credit per page crawled. Duel Mode costs 20 credits per comparison.',
             },
             {
               q: 'What platforms does Duelly detect?',
@@ -291,7 +291,7 @@ export default function HomePage() {
               { '@type': 'Question', name: 'What is GEO (Generative Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'GEO measures how well your content performs in AI-generated search results, evaluating expertise signals, factual density, tone objectivity, and citation likelihood.' } },
               { '@type': 'Question', name: 'How does Duelly calculate scores?', acceptedAnswer: { '@type': 'Answer', text: 'Duelly uses a headless browser crawl plus dual Gemini AI analysis with site-type-specific scoring weights for consistent, accurate results.' } },
               { '@type': 'Question', name: 'Is there a free tier?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. The Free Audit provides basic SEO, AEO, and GEO scores. Pro features require credits starting at $20 for 200 credits.' } },
-              { '@type': 'Question', name: 'How many credits does each scan cost?', acceptedAnswer: { '@type': 'Answer', text: 'Pro Audit: 10 credits. Deep Scan: 10 + 1 per page. Competitive Intel: 20 credits.' } },
+              { '@type': 'Question', name: 'How many credits does each scan cost?', acceptedAnswer: { '@type': 'Answer', text: 'Pro Audit: 10 credits. Deep Scan: 10 + 1 per page. Duel Mode: 20 credits.' } },
               { '@type': 'Question', name: 'What platforms does Duelly detect?', acceptedAnswer: { '@type': 'Answer', text: 'WordPress, Shopify, Wix, Squarespace, Webflow, Next.js, Gatsby, Hugo, and more. Fix instructions are tailored to the detected platform.' } },
             ],
           }),
@@ -322,7 +322,7 @@ export default function HomePage() {
               <ul className="space-y-2">
                 <li><Link href="/pro-audit" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pro Audit</Link></li>
                 <li><Link href="/deep-scan" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Deep Scan</Link></li>
-                <li><Link href="/battle-mode-v3" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Strategy Duel</Link></li>
+                <li><Link href="/battle-mode-v3" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Duel Mode</Link></li>
                 <li><Link href="/keyword-arena-v3" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Keyword Arena</Link></li>
               </ul>
             </div>

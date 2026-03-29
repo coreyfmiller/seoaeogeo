@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Strategy Duel V3 | Duelly",
+  title: "Duel Mode | Duelly",
   description: "Head-to-head competitive intelligence with backlink analysis powered by Moz.",
 }
 
