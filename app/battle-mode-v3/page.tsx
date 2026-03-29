@@ -196,79 +196,64 @@ export default function BattleModeV3() {
                             </h1>
                             <p className="text-sm text-white/60 mt-1.5">Head-to-head intelligence warfare with backlink analysis. Two sites enter. One dominates.</p>
                         </div>
-                        {comparisonData && !isAnalyzing && (
-                            <button onClick={handleReset}
-                                className="shrink-0 flex items-center gap-2 px-4 py-2 bg-[#00e5ff]/10 hover:bg-[#00e5ff]/20 text-[#00e5ff] border border-[#00e5ff]/30 rounded-lg font-bold text-sm transition-all">
-                                <RefreshCw className="h-4 w-4" /> New Duel
-                            </button>
-                        )}
                     </div>
 
                     <ScanErrorDialog error={error} onClose={() => setError(null)} onRetry={() => handleBattle(siteA, siteB)} creditsRefunded={creditsRefunded} />
                     <CreditConfirmDialog open={creditDialogOpen} onConfirm={handleConfirmBattle} onCancel={() => setCreditDialogOpen(false)} creditCost={20} scanType="Strategy Duel V3" costBreakdown="20 credits per competitive intelligence duel (2 sites analyzed + backlink profiles)" />
 
                     {/* ── Persistent Search Bar (always visible) ── */}
-                    <div className="mb-6 flex items-center gap-2">
-                        <input type="text" value={inlineUrlA} onChange={(e) => setInlineUrlA(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && inlineUrlA.trim() && inlineUrlB.trim() && handleBattle(inlineUrlA.trim(), inlineUrlB.trim())}
-                            placeholder="yoursite.com"
-                            className="flex-1 px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 text-sm" />
-                        <span className="text-white/20 font-black italic text-sm px-2">VS</span>
-                        <input type="text" value={inlineUrlB} onChange={(e) => setInlineUrlB(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && inlineUrlA.trim() && inlineUrlB.trim() && handleBattle(inlineUrlA.trim(), inlineUrlB.trim())}
-                            placeholder="competitor.com"
-                            className="flex-1 px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#fe3f8c]/50 focus:ring-1 focus:ring-[#fe3f8c]/30 text-sm" />
-                        {comparisonData && !isAnalyzing && (
-                            <button onClick={() => {
-                                const c = comparisonData.comparison || comparisonData
-                                const sep = '═'.repeat(60)
-                                let report = `DUELLY STRATEGY DUEL REPORT\n${sep}\n${siteALabel} vs ${siteBLabel}\n${sep}\n\n`
-                                report += `SCORES:\n`
-                                report += `  SEO:  ${siteALabel} ${c.seo?.siteA ?? '?'} vs ${siteBLabel} ${c.seo?.siteB ?? '?'}\n`
-                                report += `  AEO:  ${siteALabel} ${c.aeo?.siteA ?? '?'} vs ${siteBLabel} ${c.aeo?.siteB ?? '?'}\n`
-                                report += `  GEO:  ${siteALabel} ${c.geo?.siteA ?? '?'} vs ${siteBLabel} ${c.geo?.siteB ?? '?'}\n`
-                                if (blA && blB) {
-                                    report += `  DA:   ${siteALabel} ${blA.metrics.domainAuthority} vs ${siteBLabel} ${blB.metrics.domainAuthority}\n`
-                                    report += `\nBACKLINK PROFILE:\n`
-                                    report += `  ${siteALabel}: ${blA.metrics.totalBacklinks.toLocaleString()} backlinks, ${blA.metrics.linkingDomains.toLocaleString()} linking domains, DA ${blA.metrics.domainAuthority}\n`
-                                    report += `  ${siteBLabel}: ${blB.metrics.totalBacklinks.toLocaleString()} backlinks, ${blB.metrics.linkingDomains.toLocaleString()} linking domains, DA ${blB.metrics.domainAuthority}\n`
-                                }
-                                if (comparisonData.winnerVerdict || c.winnerVerdict) {
-                                    report += `\nEXPERT VERDICT:\n${comparisonData.winnerVerdict || c.winnerVerdict}\n`
-                                }
-                                const recs = comparisonData.recommendations || c.recommendations || []
-                                if (recs.length > 0) {
-                                    report += `\nCOUNTER-STRATEGIES (${recs.length}):\n`
-                                    recs.forEach((r: any, i: number) => {
-                                        report += `\n${i + 1}. [${r.roi || r.priority || 'MEDIUM'}] ${r.title}\n`
-                                        if (r.description) report += `   Why: ${r.description}\n`
-                                        if (r.howToFix) report += `   Fix: ${r.howToFix}\n`
-                                    })
-                                }
-                                const opps = comparisonData.stolenOpportunities || c.stolenOpportunities || []
-                                if (opps.length > 0) {
-                                    report += `\nSTOLEN OPPORTUNITIES (${opps.length}):\n`
-                                    opps.forEach((o: any) => { report += `  • [${o.category?.toUpperCase()}] ${o.title}: ${o.description}\n` })
-                                }
-                                const gaps = comparisonData.strategicGaps || c.strategicGaps || []
-                                if (gaps.length > 0) {
-                                    report += `\nSTRATEGIC GAPS (${gaps.length}):\n`
-                                    gaps.forEach((g: string) => { report += `  • ${g}\n` })
-                                }
-                                report += `\n${sep}\nGenerated by Duelly.ai — ${new Date().toLocaleDateString()}\n`
-                                navigator.clipboard.writeText(report)
-                                setReportCopied(true)
-                                setTimeout(() => setReportCopied(false), 2000)
-                            }}
-                                className="px-4 py-2.5 rounded-xl border border-[#00e5ff]/30 bg-[#00e5ff]/5 text-xs font-bold text-[#00e5ff] hover:bg-[#00e5ff]/10 transition-colors flex items-center gap-1.5 shrink-0">
-                                <Copy className="h-3.5 w-3.5" /> {reportCopied ? '✓ Copied' : 'Copy Report'}
+                    <div className="mb-6 space-y-2">
+                        <div className="flex items-center gap-2">
+                            <input type="text" value={inlineUrlA} onChange={(e) => setInlineUrlA(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && inlineUrlA.trim() && inlineUrlB.trim() && handleBattle(inlineUrlA.trim(), inlineUrlB.trim())}
+                                placeholder="yoursite.com"
+                                className="flex-1 px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 text-sm" />
+                            <span className="text-white/20 font-black italic text-sm px-2">VS</span>
+                            <input type="text" value={inlineUrlB} onChange={(e) => setInlineUrlB(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && inlineUrlA.trim() && inlineUrlB.trim() && handleBattle(inlineUrlA.trim(), inlineUrlB.trim())}
+                                placeholder="competitor.com"
+                                className="flex-1 px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#fe3f8c]/50 focus:ring-1 focus:ring-[#fe3f8c]/30 text-sm" />
+                            <button onClick={() => inlineUrlA.trim() && inlineUrlB.trim() && handleBattle(inlineUrlA.trim(), inlineUrlB.trim())}
+                                disabled={!inlineUrlA.trim() || !inlineUrlB.trim() || isAnalyzing}
+                                className="px-5 py-2.5 bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-black rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm shrink-0">
+                                <Swords className="h-4 w-4" /> Battle
                             </button>
+                        </div>
+                        {comparisonData && !isAnalyzing && (
+                            <div className="flex items-center gap-2 justify-end">
+                                <button onClick={() => {
+                                    const c = comparisonData.comparison || comparisonData
+                                    const sep = '═'.repeat(60)
+                                    let report = `DUELLY STRATEGY DUEL REPORT\n${sep}\n${siteALabel} vs ${siteBLabel}\n${sep}\n\n`
+                                    report += `SCORES:\n`
+                                    report += `  SEO:  ${siteALabel} ${c.seo?.siteA ?? '?'} vs ${siteBLabel} ${c.seo?.siteB ?? '?'}\n`
+                                    report += `  AEO:  ${siteALabel} ${c.aeo?.siteA ?? '?'} vs ${siteBLabel} ${c.aeo?.siteB ?? '?'}\n`
+                                    report += `  GEO:  ${siteALabel} ${c.geo?.siteA ?? '?'} vs ${siteBLabel} ${c.geo?.siteB ?? '?'}\n`
+                                    if (blA && blB) {
+                                        report += `  DA:   ${siteALabel} ${blA.metrics.domainAuthority} vs ${siteBLabel} ${blB.metrics.domainAuthority}\n`
+                                        report += `\nBACKLINK PROFILE:\n`
+                                        report += `  ${siteALabel}: ${blA.metrics.totalBacklinks.toLocaleString()} backlinks, ${blA.metrics.linkingDomains.toLocaleString()} linking domains, DA ${blA.metrics.domainAuthority}\n`
+                                        report += `  ${siteBLabel}: ${blB.metrics.totalBacklinks.toLocaleString()} backlinks, ${blB.metrics.linkingDomains.toLocaleString()} linking domains, DA ${blB.metrics.domainAuthority}\n`
+                                    }
+                                    if (comparisonData.winnerVerdict || c.winnerVerdict) report += `\nEXPERT VERDICT:\n${comparisonData.winnerVerdict || c.winnerVerdict}\n`
+                                    const recs = comparisonData.recommendations || c.recommendations || []
+                                    if (recs.length > 0) { report += `\nCOUNTER-STRATEGIES (${recs.length}):\n`; recs.forEach((r: any, i: number) => { report += `\n${i + 1}. [${r.roi || r.priority || 'MEDIUM'}] ${r.title}\n`; if (r.description) report += `   Why: ${r.description}\n`; if (r.howToFix) report += `   Fix: ${r.howToFix}\n` }) }
+                                    const opps = comparisonData.stolenOpportunities || c.stolenOpportunities || []
+                                    if (opps.length > 0) { report += `\nSTOLEN OPPORTUNITIES:\n`; opps.forEach((o: any) => { report += `  • [${o.category?.toUpperCase()}] ${o.title}: ${o.description}\n` }) }
+                                    const gps = comparisonData.strategicGaps || c.strategicGaps || []
+                                    if (gps.length > 0) { report += `\nSTRATEGIC GAPS:\n`; gps.forEach((g: string) => { report += `  • ${g}\n` }) }
+                                    report += `\n${sep}\nGenerated by Duelly.ai — ${new Date().toLocaleDateString()}\n`
+                                    navigator.clipboard.writeText(report); setReportCopied(true); setTimeout(() => setReportCopied(false), 2000)
+                                }}
+                                    className="px-4 py-2 rounded-lg border border-[#00e5ff]/30 bg-[#00e5ff]/5 text-xs font-bold text-[#00e5ff] hover:bg-[#00e5ff]/10 transition-colors flex items-center gap-1.5">
+                                    <Copy className="h-3.5 w-3.5" /> {reportCopied ? '✓ Copied' : 'Copy Report'}
+                                </button>
+                                <button onClick={handleReset}
+                                    className="px-4 py-2 bg-white/[0.04] hover:bg-white/[0.08] text-white/60 hover:text-white border border-white/[0.08] rounded-lg font-bold text-xs transition-all flex items-center gap-1.5">
+                                    <RefreshCw className="h-3.5 w-3.5" /> New Duel
+                                </button>
+                            </div>
                         )}
-                        <button onClick={() => inlineUrlA.trim() && inlineUrlB.trim() && handleBattle(inlineUrlA.trim(), inlineUrlB.trim())}
-                            disabled={!inlineUrlA.trim() || !inlineUrlB.trim() || isAnalyzing}
-                            className="px-5 py-2.5 bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-black rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm shrink-0">
-                            <Swords className="h-4 w-4" /> Battle
-                        </button>
                     </div>
 
                     {/* ── ENTRY FORM (hero version, only when no results) ── */}
