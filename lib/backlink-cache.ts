@@ -1,8 +1,8 @@
 /**
  * Backlink cache using Supabase.
  * Two-tier TTL:
- *   - User's own site: 30 days (they battle many competitors against it)
- *   - Competitor sites: 7 days (fresher data matters more)
+ *   - User's own site: 7 days (actively building links, need fresh data)
+ *   - Competitor sites: 30 days (stable, used for comparison)
  * 
  * Shared across all users — if User A fetches competitor.com,
  * User B gets cached data for free.
@@ -11,8 +11,8 @@
 import { supabaseAdmin } from './supabase/admin'
 import type { MozBacklinkData } from './moz'
 
-const OWN_SITE_TTL_DAYS = 30
-const COMPETITOR_TTL_DAYS = 7
+const OWN_SITE_TTL_DAYS = 7
+const COMPETITOR_TTL_DAYS = 30
 
 /** Normalize domain for cache key */
 function normalizeDomain(url: string): string {
