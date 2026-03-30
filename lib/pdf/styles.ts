@@ -1,0 +1,43 @@
+import { StyleSheet } from '@react-pdf/renderer'
+
+export const colors = {
+  bg: '#0a0a12',
+  card: '#111118',
+  border: '#1e1e2e',
+  text: '#e5e5e5',
+  muted: '#888888',
+  seo: '#00e5ff',
+  aeo: '#BC13FE',
+  geo: '#fe3f8c',
+  green: '#22c55e',
+  red: '#ef4444',
+  yellow: '#f59e0b',
+  purple: '#BC13FE',
+}
+
+export const styles = StyleSheet.create({
+  page: { backgroundColor: colors.bg, padding: 40, fontFamily: 'Helvetica', color: colors.text },
+  coverPage: { backgroundColor: colors.bg, padding: 40, fontFamily: 'Helvetica', color: colors.text, justifyContent: 'center', alignItems: 'center' },
+  h1: { fontSize: 24, fontWeight: 'bold', marginBottom: 8, color: colors.text },
+  h2: { fontSize: 18, fontWeight: 'bold', marginBottom: 6, color: colors.text },
+  h3: { fontSize: 14, fontWeight: 'bold', marginBottom: 4, color: colors.text },
+  h4: { fontSize: 11, fontWeight: 'bold', marginBottom: 3, color: colors.muted, textTransform: 'uppercase', letterSpacing: 1 },
+  body: { fontSize: 10, lineHeight: 1.5, color: colors.muted },
+  bodyLarge: { fontSize: 12, lineHeight: 1.6, color: colors.muted },
+  small: { fontSize: 8, color: colors.muted },
+  row: { flexDirection: 'row', alignItems: 'center' },
+  spaceBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  card: { backgroundColor: colors.card, borderRadius: 8, padding: 16, marginBottom: 12, border: `1 solid ${colors.border}` },
+  scoreCircle: { width: 80, height: 80, borderRadius: 40, justifyContent: 'center', alignItems: 'center', borderWidth: 3 },
+  scoreValue: { fontSize: 28, fontWeight: 'bold' },
+  scoreLabel: { fontSize: 8, textTransform: 'uppercase', letterSpacing: 1, marginTop: 4, color: colors.muted },
+  metricBox: { backgroundColor: colors.card, borderRadius: 6, padding: 8, border: `1 solid ${colors.border}`, flex: 1, marginHorizontal: 3 },
+  metricLabel: { fontSize: 7, textTransform: 'uppercase', letterSpacing: 0.5, color: colors.muted, marginBottom: 2 },
+  metricValue: { fontSize: 12, fontWeight: 'bold' },
+  badge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, fontSize: 7, fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: 0.5 },
+  divider: { height: 1, backgroundColor: colors.border, marginVertical: 12 },
+  footer: { position: 'absolute', bottom: 20, left: 40, right: 40, flexDirection: 'row', justifyContent: 'space-between', fontSize: 7, color: colors.muted },
+  whyBox: { backgroundColor: '#1a1a2e', borderRadius: 6, padding: 12, marginBottom: 8, border: `1 solid ${colors.border}` },
+  fixBox: { backgroundColor: '#0a1a1a', borderRadius: 6, padding: 12, marginBottom: 8, border: `1 solid #00e5ff20` },
+  codeBlock: { backgroundColor: '#0d0d1a', borderRadius: 4, padding: 8, fontFamily: 'Courier', fontSize: 8, color: colors.seo, marginTop: 4 },
+})

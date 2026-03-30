@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { CreditConfirmDialog } from "@/components/dashboard/credit-confirm-dialog"
 import { ScanErrorDialog } from "@/components/dashboard/scan-error-dialog"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
+import { DownloadReportButton } from "@/components/dashboard/download-report-button"
 import { cn } from "@/lib/utils"
 import {
   Trophy, Search, Sparkles, Bot, Clock, Crown,
@@ -696,21 +697,36 @@ export default function KeywordArenaV3Page() {
                   <Trophy className="h-4 w-4 text-[#00e5ff]" /> Leaderboard
                   <InfoTooltip content="Sites ranked by their combined SEO, AEO, and GEO scores. Higher overall score = better optimized for both traditional and AI search." />
                 </h3>
-                <button
-                  onClick={() => {
-                    const text = `KEYWORD ARENA: "${arenaResult.keyword}"\n${'='.repeat(50)}\n\n` +
-                      arenaResult.sites.map((s, i) => {
-                        const scored = s.scores.overall !== null
-                        return `#${scored ? i + 1 : '—'} ${s.isUserSite ? '⭐ ' : ''}${s.url}\n   ${scored
-                          ? `SEO: ${s.scores.seo} | AEO: ${s.scores.aeo} | GEO: ${s.scores.geo} | Overall: ${s.scores.overall}${s.googleRank ? ` | Google: #${s.googleRank}` : ''}`
-                          : 'N/A — AI scoring failed'}`
-                      }).join('\n\n')
-                    navigator.clipboard.writeText(text)
-                  }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-xs font-black uppercase tracking-widest text-white/60 hover:text-white/90 transition-colors"
-                >
-                  <Copy className="h-3 w-3" /> Copy
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      const text = `KEYWORD ARENA: "${arenaResult.keyword}"\n${'='.repeat(50)}\n\n` +
+                        arenaResult.sites.map((s, i) => {
+                          const scored = s.scores.overall !== null
+                          return `#${scored ? i + 1 : '—'} ${s.isUserSite ? '⭐ ' : ''}${s.url}\n   ${scored
+                            ? `SEO: ${s.scores.seo} | AEO: ${s.scores.aeo} | GEO: ${s.scores.geo} | Overall: ${s.scores.overall}${s.googleRank ? ` | Google: #${s.googleRank}` : ''}`
+                            : 'N/A — AI scoring failed'}`
+                        }).join('\n\n')
+                      navigator.clipboard.writeText(text)
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-xs font-black uppercase tracking-widest text-white/60 hover:text-white/90 transition-colors"
+                  >
+                    <Copy className="h-3 w-3" /> Copy
+                  </button>
+                  <DownloadReportButton
+                    filename={`duelly-keyword-arena-${arenaResult.keyword.replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().slice(0, 10)}.pdf`}
+                    generatePdf={async () => {
+                      const { generatePdfBlob } = await import('@/lib/pdf/generate')
+                      const { KeywordArenaReport } = await import('@/lib/pdf/keyword-arena-report')
+                      const React = (await import('react')).default
+                      return generatePdfBlob(React.createElement(KeywordArenaReport, {
+                        keyword: arenaResult.keyword, date: new Date().toLocaleDateString(),
+                        userSiteUrl: userSiteUrl, userRank: arenaResult.userSiteRank, totalSites: arenaResult.totalSites,
+                        sites: arenaResult.sites,
+                      }))
+                    }}
+                  />
+                </div>
               </div>
 
               {/* SEO / AEO / GEO Leaders */}

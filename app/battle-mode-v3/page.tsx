@@ -16,6 +16,7 @@ import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
 import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
+import { DownloadReportButton } from '@/components/dashboard/download-report-button'
 
 /* ── Glowing Radial Ring (SVG) ── */
 function BattleRing({ value, color, glowColor, size = 130 }: { value: number; color: string; glowColor: string; size?: number }) {
@@ -248,6 +249,22 @@ export default function BattleModeV3() {
                                     className="px-4 py-2 rounded-lg border border-[#00e5ff]/30 bg-[#00e5ff]/5 text-xs font-bold text-[#00e5ff] hover:bg-[#00e5ff]/10 transition-colors flex items-center gap-1.5">
                                     <Copy className="h-3.5 w-3.5" /> {reportCopied ? '✓ Copied' : 'Copy Report'}
                                 </button>
+                                <DownloadReportButton
+                                  filename={`duelly-competitor-duel-${siteALabel}-vs-${siteBLabel}-${new Date().toISOString().slice(0, 10)}.pdf`}
+                                  generatePdf={async () => {
+                                    const { generatePdfBlob } = await import('@/lib/pdf/generate')
+                                    const { CompetitorDuelReport } = await import('@/lib/pdf/competitor-duel-report')
+                                    const React = (await import('react')).default
+                                    const c = comparisonData.comparison || comparisonData
+                                    return generatePdfBlob(React.createElement(CompetitorDuelReport, {
+                                      siteA: siteA, siteB: siteB, date: new Date().toLocaleDateString(),
+                                      scores: { seo: { siteA: c.seo?.siteA ?? 0, siteB: c.seo?.siteB ?? 0 }, aeo: { siteA: c.aeo?.siteA ?? 0, siteB: c.aeo?.siteB ?? 0 }, geo: { siteA: c.geo?.siteA ?? 0, siteB: c.geo?.siteB ?? 0 } },
+                                      verdict: comparisonData.winnerVerdict || c.winnerVerdict,
+                                      recommendations: comparisonData.recommendations || c.recommendations,
+                                      backlinkA: backlinkData?.siteA, backlinkB: backlinkData?.siteB, linkGap: backlinkData?.linkGap,
+                                    }))
+                                  }}
+                                />
                                 <button onClick={handleReset}
                                     className="px-4 py-2 bg-white/[0.04] hover:bg-white/[0.08] text-white/60 hover:text-white border border-white/[0.08] rounded-lg font-bold text-xs transition-all flex items-center gap-1.5">
                                     <RefreshCw className="h-3.5 w-3.5" /> New Duel
