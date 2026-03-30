@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function WhatIsAEOPage() {
   return (
-    <main className="min-h-screen bg-background text-foreground">
+    <main className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
       <header>
         <nav className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
           <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">

@@ -70,7 +70,7 @@ export default function ProAuditV4Page() {
     if (!result?.pageData) return
     try {
       const res = await fetch('/api/recalculate', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scanData: { ...result.pageData, schemas: result.pageData.structuralData?.schemas || [], semanticFlags: result.aiAnalysis?.semanticFlags || {}, schemaQuality: result.aiAnalysis?.schemaQuality, siteType: newType }, siteType: newType }) })
+        body: JSON.stringify({ scanData: { ...result.pageData, schemas: result.pageData.structuralData?.schemas || [], semanticFlags: (result.pageData as any)?.semanticFlags || {}, schemaQuality: result.aiAnalysis?.schemaQuality, siteType: newType }, siteType: newType }) })
       if (!res.ok) return
       const recalc = await res.json()
       sse.setData({ ...result, scores: recalc.scores, graderResult: recalc.graderResult, enhancedPenalties: recalc.enhancedPenalties, siteTypeResult: { ...result.siteTypeResult!, primaryType: newType } })
@@ -81,7 +81,7 @@ export default function ProAuditV4Page() {
     if (!result?.pageData) return
     try {
       const res = await fetch('/api/recalculate', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scanData: { ...result.pageData, schemas: result.pageData.structuralData?.schemas || [], semanticFlags: result.aiAnalysis?.semanticFlags || {}, schemaQuality: result.aiAnalysis?.schemaQuality, siteType: result.siteTypeResult?.primaryType }, siteType: result.siteTypeResult?.primaryType, platformOverride: newPlatform }) })
+        body: JSON.stringify({ scanData: { ...result.pageData, schemas: result.pageData.structuralData?.schemas || [], semanticFlags: (result.pageData as any)?.semanticFlags || {}, schemaQuality: result.aiAnalysis?.schemaQuality, siteType: result.siteTypeResult?.primaryType }, siteType: result.siteTypeResult?.primaryType, platformOverride: newPlatform }) })
       if (!res.ok) return
       const recalc = await res.json()
       sse.setData({ ...result, enhancedPenalties: recalc.enhancedPenalties, platformDetection: { ...result.platformDetection, platform: newPlatform, label: newPlatform.charAt(0).toUpperCase() + newPlatform.slice(1) } })
@@ -243,7 +243,7 @@ export default function ProAuditV4Page() {
               </div>
 
               {/* ═══ ROADMAP TO 100 ═══ */}
-              {result.aiAnalysis?.recommendations?.length > 0 && (() => {
+              {(result.aiAnalysis?.recommendations?.length ?? 0) > 0 && (() => {
                 const recs = result.aiAnalysis!.recommendations!
                 const normPriority = (r: any) => r.priority === 'STEADY' ? 'MEDIUM' : (r.priority || 'MEDIUM')
                 const normDomain = (r: any) => (r.domain || 'SEO').toLowerCase()
@@ -259,14 +259,14 @@ export default function ProAuditV4Page() {
                     <CardHeader>
                       <div className="flex items-center gap-2 flex-wrap">
                         <Zap className="h-5 w-5 text-[#00e5ff]" />
-                        <CardTitle>Roadmap to 100</CardTitle>
+                        <CardTitle>Roadmap to 100 - Prioritized Site Improvements</CardTitle>
                         <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-[#BC13FE]/30 text-[#BC13FE] bg-[#BC13FE]/10 gap-1">
                           <Sparkles className="h-2.5 w-2.5" /> AI-Powered
                         </Badge>
                         <InfoTooltip content="AI-generated strategic roadmap ranked by impact. Each recommendation includes why it matters, estimated point impact, step-by-step fix instructions, and code snippets tailored to your platform." />
                         <button onClick={() => {
                           const sep = '\u2500'.repeat(60)
-                          const text = `ROADMAP TO 100 (${recs.length})\n${'='.repeat(60)}\n\n` + recs.map((r: any, i: number) => {
+                          const text = `ROADMAP TO 100 - PRIORITIZED SITE IMPROVEMENTS (${recs.length})\n${'='.repeat(60)}\n\n` + recs.map((r: any, i: number) => {
                             const p = normPriority(r); const domain = r.domain || 'SEO'; const pts = estimatePoints(r)
                             let t = `${sep}\n${i + 1}. [${p}] [${domain.toUpperCase()}] ${r.title} (~${pts} pts)\n${sep}`
                             if (r.description) t += `\n\nWhy This Matters:\n${r.description}`
@@ -353,9 +353,9 @@ export default function ProAuditV4Page() {
                   </TabsTrigger>
                 </TabsList>
                 <div className="mt-6">
-                  <TabsContent value="seo" className="mt-0"><SEOTabEnhanced data={tabData} /></TabsContent>
-                  <TabsContent value="aeo" className="mt-0"><AEOTab data={tabData} /></TabsContent>
-                  <TabsContent value="geo" className="mt-0"><GEOTab data={tabData} /></TabsContent>
+                  <TabsContent value="seo" className="mt-0"><SEOTabEnhanced data={tabData} hideScoreDeductions /></TabsContent>
+                  <TabsContent value="aeo" className="mt-0"><AEOTab data={tabData} hideScoreDeductions /></TabsContent>
+                  <TabsContent value="geo" className="mt-0"><GEOTab data={tabData} hideScoreDeductions /></TabsContent>
                 </div>
               </Tabs>
 

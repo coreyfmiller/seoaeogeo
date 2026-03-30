@@ -59,9 +59,10 @@ interface SEOTabProps {
       }
     }
   }
+  hideScoreDeductions?: boolean
 }
 
-export function SEOTabEnhanced({ data }: SEOTabProps) {
+export function SEOTabEnhanced({ data, hideScoreDeductions }: SEOTabProps) {
   const [expandedPenalty, setExpandedPenalty] = useState<number | null>(null);
   const [copiedFix, setCopiedFix] = useState<number | null>(null);
   const [severityFilter, setSeverityFilter] = useState<'all' | 'critical' | 'warning'>('all');
@@ -97,7 +98,7 @@ export function SEOTabEnhanced({ data }: SEOTabProps) {
   return (
     <div className="grid gap-6 overflow-hidden">
       {/* Score Deductions - Intelligence Penalty Ledger */}
-      {allPenalties.length > 0 && (
+      {!hideScoreDeductions && allPenalties.length > 0 && (
         <Card className="border-destructive/30 bg-destructive/5 shadow-sm">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2 text-destructive">

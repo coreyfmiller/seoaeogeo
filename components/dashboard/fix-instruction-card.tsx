@@ -37,7 +37,7 @@ interface FixInstructionCardProps {
   estimatedTime: string
   difficulty: 'easy' | 'moderate' | 'difficult'
   impact: 'high' | 'medium' | 'low'
-  affectedPages: number
+  affectedPages?: number
   validationLinks?: Array<{ tool: string; url: string }>
   impactedScores?: string
   whyItMatters?: string

@@ -53,9 +53,10 @@ interface GEOTabProps {
       }
     }
   }
+  hideScoreDeductions?: boolean
 }
 
-export function GEOTab({ data }: GEOTabProps) {
+export function GEOTab({ data, hideScoreDeductions }: GEOTabProps) {
   const [expandedPenalty, setExpandedPenalty] = useState<number | null>(null);
   const [copiedFix, setCopiedFix] = useState<number | null>(null);
   const [severityFilter, setSeverityFilter] = useState<'all' | 'critical' | 'warning'>('all');
@@ -86,7 +87,7 @@ export function GEOTab({ data }: GEOTabProps) {
   return (
     <div className="grid gap-6">
       {/* Score Deductions - Intelligence Penalty Ledger (GEO) */}
-      {allGeoPenalties.length > 0 && (
+      {!hideScoreDeductions && allGeoPenalties.length > 0 && (
         <Card className="border-destructive/30 bg-destructive/5 shadow-sm">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2 text-destructive">

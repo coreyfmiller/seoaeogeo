@@ -244,7 +244,7 @@
   }
 
   html {
-    font-size: clamp(16px, 1.1vw, 22px);
+    font-size: 16px;
   }
 
   body {
@@ -258,13 +258,14 @@ html, body {
   margin: 0;
 }
 
-/* Pages that manage their own scroll containers can opt in */
-.overflow-hidden-layout {
-  overflow: hidden;
-}
-
-/* Default: allow normal page scrolling */
+/* Dashboard pages (PageShell) manage their own scroll via h-screen + overflow-hidden.
+   html/body should not add a second scrollbar on those pages.
+   Standalone pages (blog, homepage, terms) scroll normally via their content height. */
 html {
   overflow-x: hidden;
   overflow-y: auto;
+}
+
+body {
+  overflow: hidden;
 }

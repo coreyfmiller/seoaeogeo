@@ -52,9 +52,10 @@ interface AEOTabProps {
       }
     }
   }
+  hideScoreDeductions?: boolean
 }
 
-export function AEOTab({ data }: AEOTabProps) {
+export function AEOTab({ data, hideScoreDeductions }: AEOTabProps) {
   const [expandedPenalty, setExpandedPenalty] = useState<number | null>(null);
   const [copiedFix, setCopiedFix] = useState<number | null>(null);
   const [severityFilter, setSeverityFilter] = useState<'all' | 'critical' | 'warning'>('all');
@@ -86,7 +87,7 @@ export function AEOTab({ data }: AEOTabProps) {
   return (
     <div className="grid gap-6">
       {/* Score Deductions - Intelligence Penalty Ledger (AEO) */}
-      {allAeoPenalties.length > 0 && (
+      {!hideScoreDeductions && allAeoPenalties.length > 0 && (
         <Card className="border-destructive/30 bg-destructive/5 shadow-sm">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center gap-2 text-destructive">
