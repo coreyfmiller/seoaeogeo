@@ -1,8 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { Link2, ExternalLink, ChevronDown, ChevronUp } from "lucide-react"
-import { useState } from "react"
+import { Link2, ExternalLink } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
@@ -30,7 +29,6 @@ interface LinkBuildingIntelligenceProps {
 }
 
 export function LinkBuildingIntelligence({ metrics, backlinks }: LinkBuildingIntelligenceProps) {
-  const [showBacklinks, setShowBacklinks] = useState(false)
   const da = metrics.domainAuthority
 
   return (
@@ -107,36 +105,48 @@ export function LinkBuildingIntelligence({ metrics, backlinks }: LinkBuildingInt
           ))}
         </div>
 
-        {/* Top Backlinks (collapsible) */}
+        {/* Top Backlinks — always visible, prominent */}
         {backlinks.length > 0 && (
-          <div className="rounded-lg border border-border/50 overflow-hidden">
-            <button onClick={() => setShowBacklinks(!showBacklinks)}
-              className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-muted/30 transition-colors">
-              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
-                <ExternalLink className="h-3.5 w-3.5" /> Top {backlinks.length} Backlinks
-              </span>
-              {showBacklinks ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
-            </button>
-            {showBacklinks && (
-              <div className="px-4 pb-3 space-y-2">
-                <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase font-bold pb-1 border-b border-border/30">
-                  <span className="w-8">DA</span>
-                  <span className="flex-1">Linking Domain</span>
-                  <span className="w-24 text-right">Anchor</span>
-                  <span className="w-14 text-right">Type</span>
-                </div>
-                {backlinks.map((bl, i) => (
-                  <div key={i} className="flex items-center gap-2 text-xs border-b border-border/10 pb-2 last:border-0">
-                    <span className={cn("font-black tabular-nums w-8", bl.domainAuthority >= 50 ? "text-green-500" : bl.domainAuthority >= 20 ? "text-yellow-500" : "text-muted-foreground")}>{bl.domainAuthority}</span>
-                    <span className="text-muted-foreground truncate flex-1">{bl.sourceDomain}</span>
-                    <span className="text-muted-foreground/60 truncate w-24 text-right text-[10px]">{bl.anchorText || '—'}</span>
-                    <span className={cn("text-[10px] px-1.5 py-0.5 rounded w-14 text-right", bl.isDofollow ? "text-green-500" : "text-muted-foreground/50")}>{bl.isDofollow ? 'follow' : 'nofollow'}</span>
-                  </div>
-                ))}
+          <div className="rounded-xl border-2 border-green-500/20 bg-green-500/5 overflow-hidden">
+            <div className="px-5 py-4 border-b border-green-500/10">
+              <div className="flex items-center gap-2">
+                <ExternalLink className="h-5 w-5 text-green-500" />
+                <h3 className="text-base font-black">Top {backlinks.length} Backlinks</h3>
+                <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-green-500/30 text-green-500 bg-green-500/10">MOZ</Badge>
               </div>
-            )}
+              <p className="text-sm text-muted-foreground mt-1">The highest-authority sites linking to your domain</p>
+            </div>
+            <div className="px-5 py-3 space-y-2">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground uppercase font-bold pb-2 border-b border-border/30">
+                <span className="w-10">DA</span>
+                <span className="flex-1">Linking Domain</span>
+                <span className="w-32 text-right">Anchor Text</span>
+                <span className="w-16 text-right">Type</span>
+              </div>
+              {backlinks.map((bl, i) => (
+                <div key={i} className="flex items-center gap-3 text-sm border-b border-border/10 pb-2 last:border-0">
+                  <span className={cn("font-black tabular-nums w-10", bl.domainAuthority >= 50 ? "text-green-500" : bl.domainAuthority >= 20 ? "text-yellow-500" : "text-muted-foreground")}>{bl.domainAuthority}</span>
+                  <span className="text-foreground/80 truncate flex-1 font-medium">{bl.sourceDomain}</span>
+                  <span className="text-muted-foreground truncate w-32 text-right text-xs">{bl.anchorText || '—'}</span>
+                  <span className={cn("text-xs px-2 py-0.5 rounded w-16 text-right font-bold", bl.isDofollow ? "text-green-500 bg-green-500/10" : "text-muted-foreground/50 bg-muted/30")}>{bl.isDofollow ? 'follow' : 'nofollow'}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
+
+        {/* Professional Link Building CTA */}
+        <div className="rounded-xl border border-[#BC13FE]/20 bg-gradient-to-r from-[#BC13FE]/5 to-green-500/5 p-5">
+          <div className="flex items-start gap-4">
+            <div className="h-10 w-10 rounded-lg bg-[#BC13FE]/10 flex items-center justify-center shrink-0">
+              <Link2 className="h-5 w-5 text-[#BC13FE]" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold mb-1">Explore a quality backlink strategy with a professional</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">Let experts handle the outreach, content, and relationship building for you.</p>
+            </div>
+          </div>
+        </div>
       </CardContent>
     </Card>
   )
