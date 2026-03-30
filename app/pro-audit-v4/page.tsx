@@ -283,26 +283,19 @@ export default function ProAuditV4Page() {
                         </button>
                       </div>
 
-                      {/* Severity Status Bar */}
-                      <div className="flex items-center gap-3 mt-2 text-sm">
-                        {criticalCount > 0 && <span className="flex items-center gap-1.5 text-destructive font-bold"><span className="h-2 w-2 rounded-full bg-destructive" />{criticalCount} critical</span>}
-                        {highCount > 0 && <span className="flex items-center gap-1.5 text-[#00e5ff] font-bold"><span className="h-2 w-2 rounded-full bg-[#00e5ff]" />{highCount} high impact</span>}
-                        {mediumCount > 0 && <span className="flex items-center gap-1.5 text-[#fe3f8c] font-bold"><span className="h-2 w-2 rounded-full bg-[#fe3f8c]" />{mediumCount} quick wins</span>}
-                      </div>
-
                       {/* Priority Filter */}
                       <div className="flex items-center gap-2 mt-3">
                         <Filter className="h-3.5 w-3.5 text-muted-foreground" />
                         {[
-                          { key: 'ALL' as const, label: 'All', count: recs.length },
-                          { key: 'CRITICAL' as const, label: 'Critical', count: criticalCount },
-                          { key: 'HIGH' as const, label: 'High', count: highCount },
-                          { key: 'MEDIUM' as const, label: 'Medium', count: mediumCount },
+                          { key: 'ALL' as const, label: 'All', count: recs.length, color: 'bg-[#00e5ff]/20 text-[#00e5ff] border-[#00e5ff]/40' },
+                          { key: 'CRITICAL' as const, label: 'Critical', count: criticalCount, color: 'bg-destructive/20 text-destructive border-destructive/40' },
+                          { key: 'HIGH' as const, label: 'High', count: highCount, color: 'bg-[#f59e0b]/20 text-[#f59e0b] border-[#f59e0b]/40' },
+                          { key: 'MEDIUM' as const, label: 'Medium', count: mediumCount, color: 'bg-[#BC13FE]/20 text-[#BC13FE] border-[#BC13FE]/40' },
                         ].filter(f => f.key === 'ALL' || f.count > 0).map(f => (
                           <button key={f.key} onClick={() => setPriorityFilter(f.key)}
                             className={cn("px-3 py-1 rounded-lg text-xs font-bold transition-all border",
                               priorityFilter === f.key
-                                ? "bg-[#00e5ff]/20 text-[#00e5ff] border-[#00e5ff]/40"
+                                ? f.color
                                 : "bg-muted/30 text-muted-foreground border-border/30 hover:border-border/50"
                             )}>
                             {f.label} ({f.count})
