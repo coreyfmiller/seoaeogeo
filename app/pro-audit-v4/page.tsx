@@ -116,21 +116,6 @@ export default function ProAuditV4Page() {
     }
   } : undefined
 
-  // Compute penalty point estimates per recommendation domain
-  const penaltyPointsByDomain = result?.enhancedPenalties ? {
-    seo: result.enhancedPenalties.filter(p => p.category === 'SEO').reduce((s, p) => s + p.pointsDeducted, 0),
-    aeo: result.enhancedPenalties.filter(p => p.category === 'AEO').reduce((s, p) => s + p.pointsDeducted, 0),
-    geo: result.enhancedPenalties.filter(p => p.category === 'GEO').reduce((s, p) => s + p.pointsDeducted, 0),
-  } : { seo: 0, aeo: 0, geo: 0 }
-
-  const estimatePoints = (rec: any) => {
-    const domain = (rec.domain || 'SEO').toLowerCase()
-    const domainPenalties = penaltyPointsByDomain[domain as keyof typeof penaltyPointsByDomain] || 0
-    const recs = result?.aiAnalysis?.recommendations || []
-    const sameDomainRecs = recs.filter((r: any) => (r.domain || 'SEO').toLowerCase() === domain).length || 1
-    return Math.max(1, Math.round(domainPenalties / sameDomainRecs))
-  }
-
   return (
     <PageShell onAnalyze={handleAnalyze} isAnalyzing={isAnalyzing} currentUrl={currentUrl} apiStatus="idle" placeholder="Enter URL for Pro Audit..." buttonLabel="Pro Audit">
       <main className="flex-1 overflow-y-auto px-3 sm:px-6 pt-4 sm:pt-6">
@@ -301,8 +286,8 @@ export default function ProAuditV4Page() {
                         <button onClick={() => {
                           const sep = '\u2500'.repeat(60)
                           const text = `ROADMAP TO 100 - PRIORITIZED SITE IMPROVEMENTS (${recs.length})\n${'='.repeat(60)}\n\n` + recs.map((r: any, i: number) => {
-                            const p = normPriority(r); const domain = r.domain || 'SEO'; const pts = estimatePoints(r)
-                            let t = `${sep}\n${i + 1}. [${p}] [${domain.toUpperCase()}] ${r.title} (~${pts} pts)\n${sep}`
+                            const p = normPriority(r); const domain = r.domain || 'SEO'
+                            let t = `${sep}\n${i + 1}. [${p}] [${domain.toUpperCase()}] ${r.title}\n${sep}`
                             if (r.description) t += `\n\nWhy This Matters:\n${r.description}`
                             if (r.platform) t += `\n\nPlatform: ${r.platform}`
                             if (r.estimatedTime || r.effort) t += `\nEffort: ${r.estimatedTime || r.effort + 'h'}`
@@ -337,9 +322,7 @@ export default function ProAuditV4Page() {
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {filtered.map((rec: any, i: number) => {
-                          const pts = estimatePoints(rec)
-                          return (
+                        {filtered.map((rec: any, i: number) => (
                             <FixInstructionCard
                               key={i}
                               title={rec.title}
@@ -354,10 +337,8 @@ export default function ProAuditV4Page() {
                               validationLinks={rec.validationLinks}
                               impactedScores={rec.impactedScores}
                               whyItMatters={rec.description}
-                              estimatedPoints={pts}
                             />
-                          )
-                        })}
+                        ))}
                       </div>
                     </CardContent>
                   </Card>

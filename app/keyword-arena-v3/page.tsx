@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { CreditConfirmDialog } from "@/components/dashboard/credit-confirm-dialog"
 import { ScanErrorDialog } from "@/components/dashboard/scan-error-dialog"
+import { InfoTooltip } from "@/components/ui/info-tooltip"
 import { cn } from "@/lib/utils"
 import {
   Trophy, Search, Sparkles, Bot, Clock, Crown,
@@ -693,6 +694,7 @@ export default function KeywordArenaV3Page() {
               <div className="flex justify-between items-center">
                 <h3 className="text-sm font-black text-white flex items-center gap-2">
                   <Trophy className="h-4 w-4 text-[#00e5ff]" /> Leaderboard
+                  <InfoTooltip content="Sites ranked by their combined SEO, AEO, and GEO scores. Higher overall score = better optimized for both traditional and AI search." />
                 </h3>
                 <button
                   onClick={() => {
@@ -908,6 +910,7 @@ export default function KeywordArenaV3Page() {
                     <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.02] p-5">
                       <h3 className="text-sm font-black text-white flex items-center gap-2 mb-3">
                         <AlertTriangle className="h-4 w-4 text-red-400" /> Competitive Gaps
+                        <InfoTooltip content="Areas where your competitors outperform you. These are your biggest opportunities for improvement." />
                       </h3>
                       <div className="space-y-2">
                         {gaps.map((gap, i) => (
@@ -923,6 +926,7 @@ export default function KeywordArenaV3Page() {
                     <div className="rounded-2xl border border-green-500/20 bg-green-500/[0.02] p-5">
                       <h3 className="text-sm font-black text-white flex items-center gap-2 mb-3">
                         <CheckCircle2 className="h-4 w-4 text-green-400" /> Your Strengths
+                        <InfoTooltip content="Areas where you outperform the competition. Maintain these advantages while working on your gaps." />
                       </h3>
                       <div className="space-y-2">
                         {strengths.map((s, i) => (
@@ -942,6 +946,7 @@ export default function KeywordArenaV3Page() {
                 <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
                   <h3 className="text-sm font-black text-white flex items-center gap-2 mb-4">
                     <Zap className="h-4 w-4 text-[#00e5ff]" /> Recommended Next Steps
+                    <InfoTooltip content="Based on your scores and competitive gaps, these are the most impactful tools to run next." />
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {(userSite.scores.overall ?? 0) < 90 && (

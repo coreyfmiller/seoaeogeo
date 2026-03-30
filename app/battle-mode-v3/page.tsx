@@ -393,6 +393,7 @@ export default function BattleModeV3() {
                                             <div className="flex items-center gap-2">
                                                 <Zap className="h-5 w-5 text-[#00e5ff]" />
                                                 <CardTitle className="text-white">Counter-Strategies</CardTitle>
+                                                <InfoTooltip content="AI-generated action plan to outrank your competitor. Each strategy targets a specific weakness in your site relative to theirs, with step-by-step implementation instructions." />
                                                 <button onClick={() => {
                                                     const text = recs.map((r: any, i: number) => `${i + 1}. [${normPriority(r)}] ${r.title}\n${r.description || ''}\n${r.howToFix || ''}`).join('\n\n')
                                                     navigator.clipboard.writeText(text)

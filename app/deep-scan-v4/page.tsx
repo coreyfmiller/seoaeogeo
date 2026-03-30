@@ -532,19 +532,6 @@ export default function DeepV3Page() {
                   const mediumCount = recs.filter((r: any) => normPriority(r) === 'MEDIUM').length
                   const filtered = priorityFilter === 'ALL' ? recs : recs.filter((r: any) => normPriority(r) === priorityFilter)
 
-                  // Estimate points per recommendation based on penalty data
-                  const penaltyPoints = {
-                    seo: (result.pages || []).flatMap((p: any) => p.enhancedPenalties || []).filter((p: any) => p.category === 'SEO').reduce((s: number, p: any) => s + (p.pointsDeducted || 0), 0),
-                    aeo: (result.pages || []).flatMap((p: any) => p.enhancedPenalties || []).filter((p: any) => p.category === 'AEO').reduce((s: number, p: any) => s + (p.pointsDeducted || 0), 0),
-                    geo: (result.pages || []).flatMap((p: any) => p.enhancedPenalties || []).filter((p: any) => p.category === 'GEO').reduce((s: number, p: any) => s + (p.pointsDeducted || 0), 0),
-                  }
-                  const estimatePoints = (rec: any) => {
-                    const domain = normDomain(rec)
-                    const domainPenalties = penaltyPoints[domain as keyof typeof penaltyPoints] || 0
-                    const sameDomainRecs = recs.filter((r: any) => normDomain(r) === domain).length || 1
-                    return Math.max(1, Math.round(domainPenalties / sameDomainRecs))
-                  }
-
                   return (
                     <Card className="border-[#00e5ff]/30 bg-gradient-to-br from-[#00e5ff]/5 to-[#BC13FE]/5">
                       <CardHeader>
@@ -555,8 +542,8 @@ export default function DeepV3Page() {
                           <button onClick={() => {
                             const sep = '\u2500'.repeat(60)
                             const text = `ROADMAP TO 100 - PRIORITIZED SITE IMPROVEMENTS (${recs.length})\n${'='.repeat(60)}\n\n` + recs.map((r: any, i: number) => {
-                              const p = normPriority(r); const domain = r.domain || 'SEO'; const pts = estimatePoints(r)
-                              let t = `${sep}\n${i + 1}. [${p}] [${domain.toUpperCase()}] ${r.title} (~${pts} pts)\n${sep}`
+                              const p = normPriority(r); const domain = r.domain || 'SEO'
+                              let t = `${sep}\n${i + 1}. [${p}] [${domain.toUpperCase()}] ${r.title}\n${sep}`
                               if (r.description) t += `\n\nWhy This Matters:\n${r.description}`
                               if (r.platform) t += `\n\nPlatform: ${r.platform}`
                               if (r.steps?.length) { t += '\n\nSteps:'; r.steps.forEach((s: any) => { t += `\n  ${s.step}. ${s.title}: ${s.description}`; if (s.code) t += `\n  Code: ${s.code}` }) }
@@ -588,9 +575,7 @@ export default function DeepV3Page() {
                       </CardHeader>
                       <CardContent>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          {filtered.map((rec: any, i: number) => {
-                            const pts = estimatePoints(rec)
-                            return (
+                          {filtered.map((rec: any, i: number) => (
                               <FixInstructionCard
                                 key={i}
                                 title={rec.title}
@@ -606,10 +591,8 @@ export default function DeepV3Page() {
                                 validationLinks={rec.validationLinks}
                                 impactedScores={rec.impactedScores}
                                 whyItMatters={rec.description}
-                                estimatedPoints={pts}
                               />
-                            )
-                          })}
+                          ))}
                         </div>
                       </CardContent>
                     </Card>
