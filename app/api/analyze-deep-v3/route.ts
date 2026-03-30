@@ -81,15 +81,17 @@ export async function POST(request: NextRequest) {
 
       // Deduplicate and clean links
       const seen = new Set<string>()
-      seen.add(url.replace(/\/$/, '').toLowerCase())
+      /** Normalize URL for dedup: strip www, trailing slash, lowercase */
+      const normalizeForDedup = (u: string) => u.replace(/\/$/, '').toLowerCase().replace(/^(https?:\/\/)www\./, '$1')
+      seen.add(normalizeForDedup(url))
       const targetUrls: string[] = [url]
 
       for (const link of rawLinks) {
         try {
           const fullLink = new URL(link, url).href.split('#')[0].replace(/\/$/, '')
-          const normalized = fullLink.toLowerCase()
+          const normalized = normalizeForDedup(fullLink)
           if (
-            fullLink.includes(domain) &&
+            fullLink.includes(domain.replace(/^www\./, '')) &&
             !seen.has(normalized) &&
             !fullLink.match(/\.(jpg|jpeg|png|gif|pdf|zip|css|js)$/i)
           ) {
