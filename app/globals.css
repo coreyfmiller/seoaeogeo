@@ -252,20 +252,16 @@
   }
 }
 
-/* Prevent double scrollbars on dashboard/app layouts that manage their own scroll */
+/* 
+ * SCROLL STRATEGY (do not change):
+ * html + body are ALWAYS overflow:hidden. They NEVER scroll.
+ * Every page manages its own scroll container:
+ *   - Dashboard pages: PageShell (flex h-screen) → <main overflow-y-auto>
+ *   - Standalone pages: <main h-screen overflow-y-auto>
+ * This eliminates double scrollbars permanently.
+ */
 html, body {
   height: 100%;
   margin: 0;
-}
-
-/* Dashboard pages (PageShell) manage their own scroll via h-screen + overflow-hidden.
-   html/body should not add a second scrollbar on those pages.
-   Standalone pages (blog, homepage, terms) scroll normally via their content height. */
-html {
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-body {
   overflow: hidden;
 }
