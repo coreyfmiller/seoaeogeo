@@ -126,7 +126,7 @@ export function LinkBuildingIntelligence({ metrics, backlinks }: LinkBuildingInt
               {backlinks.map((bl, i) => (
                 <div key={i} className="flex items-center gap-3 text-sm border-b border-border/10 pb-2 last:border-0">
                   <span className={cn("font-black tabular-nums w-10", bl.domainAuthority >= 50 ? "text-green-500" : bl.domainAuthority >= 20 ? "text-yellow-500" : "text-muted-foreground")}>{bl.domainAuthority}</span>
-                  <a href={bl.sourceUrl || `https://${bl.sourceDomain}`} target="_blank" rel="noopener noreferrer" className="text-foreground/80 truncate flex-1 font-medium hover:text-green-500 hover:underline transition-colors">{bl.sourceDomain}</a>
+                  <a href={(() => { const u = bl.sourceUrl || bl.sourceDomain; return u.startsWith('http') ? u : `https://${u}` })()} target="_blank" rel="noopener noreferrer" className="text-foreground/80 truncate flex-1 font-medium hover:text-green-500 hover:underline transition-colors">{bl.sourceDomain}</a>
                   <span className="text-muted-foreground truncate w-32 text-right text-xs">{bl.anchorText || '—'}</span>
                   <span className={cn("text-xs px-2 py-0.5 rounded w-16 text-right font-bold", bl.isDofollow ? "text-green-500 bg-green-500/10" : "text-muted-foreground/50 bg-muted/30")}>{bl.isDofollow ? 'follow' : 'nofollow'}</span>
                 </div>
