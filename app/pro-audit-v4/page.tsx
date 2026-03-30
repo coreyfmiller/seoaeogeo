@@ -242,6 +242,43 @@ export default function ProAuditV4Page() {
                 </Card>
               </div>
 
+              {/* Key Metrics Strip */}
+              {(() => {
+                const sd = result.pageData?.structuralData || {} as any
+                const tech = result.pageData?.technical || {} as any
+                const schemas = (result.pageData as any)?.schemas || []
+                const hasSchema = schemas.length > 0
+                const hasH1 = (sd.semanticTags?.h1Count || 0) > 0
+                const isHttps = tech.isHttps === true
+                const hasMeta = !!(result.pageData?.title && (result.pageData as any)?.description)
+                const responseTime = tech.responseTimeMs || 0
+                const imgTotal = sd.media?.totalImages || 0
+                const imgWithAlt = sd.media?.imagesWithAlt || 0
+                const altPct = imgTotal > 0 ? Math.round((imgWithAlt / imgTotal) * 100) : 100
+                const wordCount = sd.wordCount || 0
+                const metrics = [
+                  { label: "Schema", value: hasSchema ? `${schemas.length} found` : "None", color: hasSchema ? "text-seo" : "text-red-500", bad: !hasSchema },
+                  { label: "Metadata", value: hasMeta ? "Complete" : "Missing", color: hasMeta ? "text-green-500" : "text-red-500", bad: !hasMeta },
+                  { label: "H1 Tag", value: hasH1 ? "Found" : "Missing", color: hasH1 ? "text-green-500" : "text-red-500", bad: !hasH1 },
+                  { label: "HTTPS", value: isHttps ? "Secure" : "Not Secure", color: isHttps ? "text-green-500" : "text-red-500", bad: !isHttps },
+                  { label: "Response", value: `${responseTime}ms`, color: responseTime < 500 ? "text-green-500" : responseTime < 1000 ? "text-yellow-500" : "text-red-500", bad: responseTime >= 1000 },
+                  { label: "Alt Text", value: `${altPct}%`, color: altPct >= 80 ? "text-green-500" : altPct >= 50 ? "text-yellow-500" : "text-red-500", bad: altPct < 50 },
+                  { label: "Words", value: wordCount.toLocaleString(), color: wordCount >= 800 ? "text-green-500" : wordCount >= 300 ? "text-yellow-500" : "text-red-500", bad: wordCount < 300 },
+                  { label: "Int. Links", value: `${sd.links?.internal || 0}`, color: (sd.links?.internal || 0) >= 3 ? "text-green-500" : "text-yellow-500", bad: false },
+                  { label: "Ext. Links", value: `${sd.links?.external || 0}`, color: "text-foreground", bad: false },
+                ]
+                return (
+                  <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-2">
+                    {metrics.map(m => (
+                      <div key={m.label} className={`rounded-lg border px-2.5 py-2 ${m.bad ? "border-red-500/40 bg-red-500/5" : "border-border/50 bg-card/50"}`}>
+                        <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold leading-tight truncate">{m.label}</p>
+                        <p className={`text-sm font-black ${m.color} truncate`}>{m.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                )
+              })()}
+
               {/* ═══ ROADMAP TO 100 ═══ */}
               {(result.aiAnalysis?.recommendations?.length ?? 0) > 0 && (() => {
                 const recs = result.aiAnalysis!.recommendations!

@@ -422,6 +422,7 @@ export function SEOTabEnhanced({ data, hideScoreDeductions }: SEOTabProps) {
       </div>
 
       {/* Technical Health & Structure */}
+      {!hideScoreDeductions && (
       <Card className="border-[#00e5ff]/20 bg-gradient-to-br from-[#00e5ff]/5 to-transparent">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2">
@@ -517,6 +518,7 @@ export function SEOTabEnhanced({ data, hideScoreDeductions }: SEOTabProps) {
       </div>
         </CardContent>
       </Card>
+      )}
     </div>
   )
 }
