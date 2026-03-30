@@ -75,22 +75,22 @@ const domainConfig = {
 
 const priorityConfig = {
   CRITICAL: {
-    label: '🔥 Urgent',
+    label: '🔥 Critical',
     color: 'text-destructive',
     bg: 'bg-destructive/10',
     border: 'border-destructive/30'
   },
   HIGH: {
     label: '⚡ High',
-    color: 'text-[#00e5ff]',
-    bg: 'bg-[#00e5ff]/10',
-    border: 'border-[#00e5ff]/30'
+    color: 'text-[#f59e0b]',
+    bg: 'bg-[#f59e0b]/10',
+    border: 'border-[#f59e0b]/30'
   },
   MEDIUM: {
     label: '📌 Medium',
-    color: 'text-[#fe3f8c]',
-    bg: 'bg-[#fe3f8c]/10',
-    border: 'border-[#fe3f8c]/30'
+    color: 'text-[#BC13FE]',
+    bg: 'bg-[#BC13FE]/10',
+    border: 'border-[#BC13FE]/30'
   },
   LOW: {
     label: '○ Low',

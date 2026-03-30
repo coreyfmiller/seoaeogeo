@@ -287,16 +287,14 @@ export default function ProAuditV4Page() {
                       <div className="flex items-center gap-2 mt-3">
                         <Filter className="h-3.5 w-3.5 text-muted-foreground" />
                         {[
-                          { key: 'ALL' as const, label: 'All', count: recs.length, color: 'bg-[#00e5ff]/20 text-[#00e5ff] border-[#00e5ff]/40' },
-                          { key: 'CRITICAL' as const, label: 'Critical', count: criticalCount, color: 'bg-destructive/20 text-destructive border-destructive/40' },
-                          { key: 'HIGH' as const, label: 'High', count: highCount, color: 'bg-[#f59e0b]/20 text-[#f59e0b] border-[#f59e0b]/40' },
-                          { key: 'MEDIUM' as const, label: 'Medium', count: mediumCount, color: 'bg-[#BC13FE]/20 text-[#BC13FE] border-[#BC13FE]/40' },
+                          { key: 'ALL' as const, label: 'All', count: recs.length, activeColor: 'bg-[#00e5ff]/20 text-[#00e5ff] border-[#00e5ff]/40', inactiveColor: 'bg-muted/30 text-muted-foreground border-border/30 hover:border-border/50' },
+                          { key: 'CRITICAL' as const, label: 'Critical', count: criticalCount, activeColor: 'bg-destructive/20 text-destructive border-destructive/40', inactiveColor: 'bg-destructive/5 text-destructive/60 border-destructive/20 hover:bg-destructive/10' },
+                          { key: 'HIGH' as const, label: 'High', count: highCount, activeColor: 'bg-[#f59e0b]/20 text-[#f59e0b] border-[#f59e0b]/40', inactiveColor: 'bg-[#f59e0b]/5 text-[#f59e0b]/60 border-[#f59e0b]/20 hover:bg-[#f59e0b]/10' },
+                          { key: 'MEDIUM' as const, label: 'Medium', count: mediumCount, activeColor: 'bg-[#BC13FE]/20 text-[#BC13FE] border-[#BC13FE]/40', inactiveColor: 'bg-[#BC13FE]/5 text-[#BC13FE]/60 border-[#BC13FE]/20 hover:bg-[#BC13FE]/10' },
                         ].filter(f => f.key === 'ALL' || f.count > 0).map(f => (
                           <button key={f.key} onClick={() => setPriorityFilter(f.key)}
                             className={cn("px-3 py-1 rounded-lg text-xs font-bold transition-all border",
-                              priorityFilter === f.key
-                                ? f.color
-                                : "bg-muted/30 text-muted-foreground border-border/30 hover:border-border/50"
+                              priorityFilter === f.key ? f.activeColor : f.inactiveColor
                             )}>
                             {f.label} ({f.count})
                           </button>
