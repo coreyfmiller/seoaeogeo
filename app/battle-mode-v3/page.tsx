@@ -419,7 +419,7 @@ export default function BattleModeV3() {
                                                     {blA.backlinks.map((bl: any, i: number) => (
                                                         <div key={i} className="flex items-center gap-2 text-xs border-b border-white/[0.04] pb-2 last:border-0">
                                                             <span className={cn("font-black tabular-nums w-8", bl.domainAuthority >= 50 ? "text-green-400" : bl.domainAuthority >= 20 ? "text-yellow-400" : "text-white/40")}>{bl.domainAuthority}</span>
-                                                            <span className="text-white/70 truncate flex-1">{bl.sourceDomain}</span>
+                                                            <a href={bl.sourceUrl || `https://${bl.sourceDomain}`} target="_blank" rel="noopener noreferrer" className="text-white/70 truncate flex-1 hover:text-[#00e5ff] hover:underline transition-colors">{bl.sourceDomain}</a>
                                                             <span className={cn("text-[10px] px-1.5 py-0.5 rounded", bl.isDofollow ? "bg-green-500/10 text-green-400" : "bg-white/[0.06] text-white/30")}>{bl.isDofollow ? 'follow' : 'nofollow'}</span>
                                                         </div>
                                                     ))}
@@ -440,7 +440,7 @@ export default function BattleModeV3() {
                                                     {blB.backlinks.map((bl: any, i: number) => (
                                                         <div key={i} className="flex items-center gap-2 text-xs border-b border-white/[0.04] pb-2 last:border-0">
                                                             <span className={cn("font-black tabular-nums w-8", bl.domainAuthority >= 50 ? "text-green-400" : bl.domainAuthority >= 20 ? "text-yellow-400" : "text-white/40")}>{bl.domainAuthority}</span>
-                                                            <span className="text-white/70 truncate flex-1">{bl.sourceDomain}</span>
+                                                            <a href={bl.sourceUrl || `https://${bl.sourceDomain}`} target="_blank" rel="noopener noreferrer" className="text-white/70 truncate flex-1 hover:text-[#fe3f8c] hover:underline transition-colors">{bl.sourceDomain}</a>
                                                             <span className={cn("text-[10px] px-1.5 py-0.5 rounded", bl.isDofollow ? "bg-green-500/10 text-green-400" : "bg-white/[0.06] text-white/30")}>{bl.isDofollow ? 'follow' : 'nofollow'}</span>
                                                         </div>
                                                     ))}
@@ -469,7 +469,7 @@ export default function BattleModeV3() {
                                                     {linkGap.map((g: any, i: number) => (
                                                         <div key={i} className="flex items-center gap-2 text-xs">
                                                             <span className={cn("font-black tabular-nums w-8", g.da >= 50 ? "text-green-400" : g.da >= 20 ? "text-yellow-400" : "text-white/40")}>{g.da}</span>
-                                                            <span className="text-white/70 truncate flex-1">{g.domain}</span>
+                                                            <a href={g.url || `https://${g.domain}`} target="_blank" rel="noopener noreferrer" className="text-white/70 truncate flex-1 hover:text-[#BC13FE] hover:underline transition-colors">{g.domain}</a>
                                                             <span className="text-[10px] text-[#BC13FE]/60">Opportunity</span>
                                                         </div>
                                                     ))}
