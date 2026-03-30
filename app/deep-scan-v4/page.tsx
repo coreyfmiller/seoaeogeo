@@ -484,6 +484,34 @@ export default function DeepV3Page() {
                   </Card>
                 </div>
 
+                {/* Download Full Report */}
+                <div className="flex justify-end">
+                  <DownloadReportButton
+                    filename={`duelly-deep-scan-${currentUrl.replace(/^https?:\/\//, '').replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().slice(0, 10)}.pdf`}
+                    generatePdf={async () => {
+                      const { generatePdfBlob } = await import('@/lib/pdf/generate')
+                      const { ProAuditReport } = await import('@/lib/pdf/pro-audit-report')
+                      const React = (await import('react')).default
+                      return generatePdfBlob(React.createElement(ProAuditReport, {
+                        url: currentUrl, date: new Date().toLocaleDateString(),
+                        scores: { seo: result.scores.seo, aeo: result.scores.aeo, geo: result.scores.geo },
+                        siteType: result.siteTypeResult?.primaryType, platform: result.platformDetection?.label,
+                        overallFeedback: result.sitewideIntelligence?.domainHealthScore ? `Domain Health: ${result.sitewideIntelligence.domainHealthScore}%. ${result.pagesCrawled} pages analyzed.` : undefined,
+                        recommendations: result.sitewideIntelligence?.recommendations,
+                        metrics: [
+                          { label: 'Pages Crawled', value: `${result.pagesCrawled}` },
+                          { label: 'Domain Health', value: `${result.sitewideIntelligence?.domainHealthScore ?? '–'}%` },
+                          { label: 'Schema Coverage', value: `${result.sitewideIntelligence?.authorityMetrics?.schemaCoverage ?? '–'}%` },
+                          { label: 'Avg Response', value: `${result.aggregateMetrics.avgResponseTime}ms` },
+                          { label: 'Robots.txt', value: result.robotsTxt ? 'Found' : 'Missing' },
+                          { label: 'Sitemap', value: result.sitemapFound ? 'Found' : 'Missing' },
+                        ],
+                        backlinkData: result.backlinkData,
+                      }))
+                    }}
+                  />
+                </div>
+
                 {/* Key Metrics — unified strip */}
                 {(() => {
                   const ai = result.sitewideIntelligence
@@ -555,30 +583,6 @@ export default function DeepV3Page() {
                           }} className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-[#00e5ff]/50 transition-colors">
                             <Copy className="h-3.5 w-3.5" /> Copy All
                           </button>
-                          <DownloadReportButton
-                            filename={`duelly-deep-scan-${currentUrl.replace(/^https?:\/\//, '').replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().slice(0, 10)}.pdf`}
-                            generatePdf={async () => {
-                              const { generatePdfBlob } = await import('@/lib/pdf/generate')
-                              const { ProAuditReport } = await import('@/lib/pdf/pro-audit-report')
-                              const React = (await import('react')).default
-                              return generatePdfBlob(React.createElement(ProAuditReport, {
-                                url: currentUrl, date: new Date().toLocaleDateString(),
-                                scores: { seo: result.scores.seo, aeo: result.scores.aeo, geo: result.scores.geo },
-                                siteType: result.siteTypeResult?.primaryType, platform: result.platformDetection?.label,
-                                overallFeedback: result.sitewideIntelligence?.domainHealthExplanations ? `Domain Health: ${result.sitewideIntelligence.domainHealthScore}%. ${result.pagesCrawled} pages analyzed.` : undefined,
-                                recommendations: result.sitewideIntelligence?.recommendations,
-                                metrics: [
-                                  { label: 'Pages Crawled', value: `${result.pagesCrawled}` },
-                                  { label: 'Domain Health', value: `${result.sitewideIntelligence?.domainHealthScore ?? '–'}%` },
-                                  { label: 'Schema Coverage', value: `${result.sitewideIntelligence?.authorityMetrics?.schemaCoverage ?? '–'}%` },
-                                  { label: 'Avg Response', value: `${result.aggregateMetrics.avgResponseTime}ms` },
-                                  { label: 'Robots.txt', value: result.robotsTxt ? 'Found' : 'Missing' },
-                                  { label: 'Sitemap', value: result.sitemapFound ? 'Found' : 'Missing' },
-                                ],
-                                backlinkData: result.backlinkData,
-                              }))
-                            }}
-                          />
                         </div>
                         {/* Priority Filter */}
                         <div className="flex items-center gap-2 mt-3">

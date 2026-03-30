@@ -228,6 +228,37 @@ export default function ProAuditV4Page() {
                 </Card>
               </div>
 
+              {/* Download Full Report */}
+              <div className="flex justify-end">
+                <DownloadReportButton
+                  filename={`duelly-pro-audit-${currentUrl.replace(/^https?:\/\//, '').replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().slice(0, 10)}.pdf`}
+                  generatePdf={async () => {
+                    const { generatePdfBlob } = await import('@/lib/pdf/generate')
+                    const { ProAuditReport } = await import('@/lib/pdf/pro-audit-report')
+                    const React = (await import('react')).default
+                    const sd = result.pageData?.structuralData || {} as any
+                    const tech = result.pageData?.technical || {} as any
+                    const schemas = (result.pageData as any)?.schemas || []
+                    return generatePdfBlob(React.createElement(ProAuditReport, {
+                      url: currentUrl, date: new Date().toLocaleDateString(),
+                      scores: { seo: result.scores.seo.score, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
+                      siteType: result.siteTypeResult?.primaryType, platform: result.platformDetection?.label,
+                      overallFeedback: result.graderResult?.overallFeedback,
+                      recommendations: result.aiAnalysis?.recommendations,
+                      metrics: [
+                        { label: 'Schema', value: schemas.length > 0 ? `${schemas.length} found` : 'None' },
+                        { label: 'HTTPS', value: tech.isHttps ? 'Secure' : 'Not Secure' },
+                        { label: 'Response', value: `${tech.responseTimeMs || 0}ms` },
+                        { label: 'Words', value: `${(sd.wordCount || 0).toLocaleString()}` },
+                        { label: 'Int. Links', value: `${sd.links?.internal || 0}` },
+                        { label: 'Alt Text', value: `${sd.media?.totalImages > 0 ? Math.round((sd.media.imagesWithAlt / sd.media.totalImages) * 100) : 100}%` },
+                      ],
+                      backlinkData: result.backlinkData, cwv: result.cwv?.performanceScore > 0 ? result.cwv : null,
+                    }))
+                  }}
+                />
+              </div>
+
               {/* Key Metrics Strip */}
               {(() => {
                 const sd = result.pageData?.structuralData || {} as any
@@ -301,33 +332,6 @@ export default function ProAuditV4Page() {
                         }} className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-[#00e5ff]/50 transition-colors">
                           <Copy className="h-3.5 w-3.5" /> Copy All
                         </button>
-                        <DownloadReportButton
-                          filename={`duelly-pro-audit-${currentUrl.replace(/^https?:\/\//, '').replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().slice(0, 10)}.pdf`}
-                          generatePdf={async () => {
-                            const { generatePdfBlob } = await import('@/lib/pdf/generate')
-                            const { ProAuditReport } = await import('@/lib/pdf/pro-audit-report')
-                            const React = (await import('react')).default
-                            const sd = result.pageData?.structuralData || {} as any
-                            const tech = result.pageData?.technical || {} as any
-                            const schemas = (result.pageData as any)?.schemas || []
-                            const metricsData = [
-                              { label: 'Schema', value: schemas.length > 0 ? `${schemas.length} found` : 'None' },
-                              { label: 'HTTPS', value: tech.isHttps ? 'Secure' : 'Not Secure' },
-                              { label: 'Response', value: `${tech.responseTimeMs || 0}ms` },
-                              { label: 'Words', value: `${(sd.wordCount || 0).toLocaleString()}` },
-                              { label: 'Int. Links', value: `${sd.links?.internal || 0}` },
-                              { label: 'Alt Text', value: `${sd.media?.totalImages > 0 ? Math.round((sd.media.imagesWithAlt / sd.media.totalImages) * 100) : 100}%` },
-                            ]
-                            return generatePdfBlob(React.createElement(ProAuditReport, {
-                              url: currentUrl, date: new Date().toLocaleDateString(),
-                              scores: { seo: result.scores.seo.score, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
-                              siteType: result.siteTypeResult?.primaryType, platform: result.platformDetection?.label,
-                              overallFeedback: result.graderResult?.overallFeedback,
-                              recommendations: result.aiAnalysis?.recommendations, metrics: metricsData,
-                              backlinkData: result.backlinkData, cwv: result.cwv?.performanceScore > 0 ? result.cwv : null,
-                            }))
-                          }}
-                        />
                       </div>
 
                       {/* Priority Filter */}
