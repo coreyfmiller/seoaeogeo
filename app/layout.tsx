@@ -21,6 +21,21 @@ export const metadata: Metadata = {
   },
   description: 'Comprehensive SEO, AEO, and GEO analytics platform for optimizing your search visibility across traditional and AI-powered search engines.',
   generator: 'v0.app',
+  openGraph: {
+    title: 'Duelly - Search Intelligence Platform',
+    description: 'Audit your website for SEO, AEO, and GEO. Get actionable fixes for the 2026 search landscape.',
+    url: 'https://duelly.ai',
+    siteName: 'Duelly',
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Duelly - SEO, AEO & GEO Intelligence Platform' }],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Duelly - Search Intelligence Platform',
+    description: 'Audit your website for SEO, AEO, and GEO. Get actionable fixes for the 2026 search landscape.',
+    images: ['/og.png'],
+  },
   alternates: {
     canonical: '/',
   },
