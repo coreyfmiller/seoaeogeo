@@ -353,7 +353,7 @@ export default function ProAuditV4Page() {
               )}
 
               {/* Core Web Vitals */}
-              {result.cwv && (
+              {result.cwv && result.cwv.performanceScore > 0 && (
                 <Card className="border-[#BC13FE]/20 bg-[#BC13FE]/5">
                   <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-base">
