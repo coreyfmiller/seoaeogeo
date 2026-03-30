@@ -143,7 +143,7 @@ export function FixInstructionCard({
 
   return (
     <Card className={cn(
-      "border-2 transition-all hover:shadow-lg h-full flex flex-col",
+      "border-2 transition-all hover:shadow-lg self-start flex flex-col",
       isCompleted ? "opacity-60 border-muted" : "border-[#00e5ff]/30",
       isCompleted && "bg-muted/20"
     )}>
@@ -173,13 +173,6 @@ export function FixInstructionCard({
             </div>
             
             <h3 className="font-bold text-base mb-2 leading-tight line-clamp-3 min-h-[3.75rem]">{title}</h3>
-            
-            {/* Why This Matters */}
-            {whyItMatters && (
-              <div className="mb-2">
-                <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{whyItMatters}</p>
-              </div>
-            )}
 
             <div className="flex items-center gap-3 flex-wrap text-xs text-muted-foreground">
               <div className="flex items-center gap-1">
