@@ -136,16 +136,14 @@ export function LinkBuildingIntelligence({ metrics, backlinks }: LinkBuildingInt
         )}
 
         {/* Professional Link Building CTA */}
-        <div className="rounded-xl border border-[#BC13FE]/20 bg-gradient-to-r from-[#BC13FE]/5 to-green-500/5 p-5">
-          <div className="flex items-start gap-4">
-            <div className="h-10 w-10 rounded-lg bg-[#BC13FE]/10 flex items-center justify-center shrink-0">
-              <Link2 className="h-5 w-5 text-[#BC13FE]" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold mb-1">Explore a quality backlink strategy with a professional</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">Let experts handle the outreach, content, and relationship building for you.</p>
-            </div>
+        <div className="rounded-lg border border-green-500/30 bg-green-500/[0.05] p-4 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-bold text-green-500">Explore a quality backlink strategy with a professional</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Let experts handle the outreach, content, and relationship building for you.</p>
           </div>
+          <button className="shrink-0 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-500 border border-green-500/30 rounded-lg text-xs font-bold transition-colors">
+            Learn More →
+          </button>
         </div>
       </CardContent>
     </Card>

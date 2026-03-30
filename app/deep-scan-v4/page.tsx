@@ -551,9 +551,6 @@ export default function DeepV3Page() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <Zap className="h-5 w-5 text-[#00e5ff]" />
                           <CardTitle>Roadmap to 100 - Prioritized Site Improvements</CardTitle>
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-[#BC13FE]/30 text-[#BC13FE] bg-[#BC13FE]/10 gap-1">
-                            <Sparkles className="h-2.5 w-2.5" /> AI-Powered
-                          </Badge>
                           <InfoTooltip content="AI-generated strategic roadmap ranked by impact. Each recommendation includes why it matters, estimated point impact, step-by-step fix instructions, and code snippets tailored to your platform." />
                           <button onClick={() => {
                             const sep = '\u2500'.repeat(60)

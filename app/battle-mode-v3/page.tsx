@@ -372,6 +372,69 @@ export default function BattleModeV3() {
                                 </div>
                             )}
 
+                            {/* ── Counter-Strategies ── */}
+                            {(comparisonData.recommendations || comparisonData.comparison?.recommendations)?.length > 0 && (() => {
+                                const recs = comparisonData.recommendations || comparisonData.comparison?.recommendations || []
+                                const normPriority = (r: any) => r.roi === 'STEADY' ? 'MEDIUM' : r.roi === 'CRITICAL' ? 'CRITICAL' : r.roi === 'HIGH' ? 'HIGH' : (r.priority || 'MEDIUM').toUpperCase()
+                                const normDomain = (r: any) => {
+                                    const cat = (r.category || '').toLowerCase()
+                                    if (cat === 'aeo') return 'aeo'
+                                    if (cat === 'geo' || cat === 'trust') return 'geo'
+                                    return 'seo'
+                                }
+                                const criticalCount = recs.filter((r: any) => normPriority(r) === 'CRITICAL').length
+                                const highCount = recs.filter((r: any) => normPriority(r) === 'HIGH').length
+                                const mediumCount = recs.filter((r: any) => normPriority(r) === 'MEDIUM').length
+                                const filtered = strategyFilter === 'ALL' ? recs : recs.filter((r: any) => normPriority(r) === strategyFilter)
+
+                                return (
+                                    <Card className="border-[#00e5ff]/30 bg-gradient-to-br from-[#00e5ff]/5 to-[#BC13FE]/5">
+                                        <CardHeader>
+                                            <div className="flex items-center gap-2">
+                                                <Zap className="h-5 w-5 text-[#00e5ff]" />
+                                                <CardTitle className="text-white">Counter-Strategies</CardTitle>
+                                                <button onClick={() => {
+                                                    const text = recs.map((r: any, i: number) => `${i + 1}. [${normPriority(r)}] ${r.title}\n${r.description || ''}\n${r.howToFix || ''}`).join('\n\n')
+                                                    navigator.clipboard.writeText(text)
+                                                }} className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                                                    <Copy className="h-3.5 w-3.5" /> Copy All
+                                                </button>
+                                            </div>
+                                            <CardDescription>Your personalized action plan to outrank this competitor</CardDescription>
+                                            <div className="flex items-center gap-2 mt-3">
+                                                <Filter className="h-3.5 w-3.5 text-white/40" />
+                                                {[
+                                                    { key: 'ALL' as const, label: 'All', count: recs.length, activeColor: 'bg-[#00e5ff]/20 text-[#00e5ff] border-[#00e5ff]/40', inactiveColor: 'bg-white/[0.04] text-white/40 border-white/[0.08] hover:border-white/[0.15]' },
+                                                    { key: 'CRITICAL' as const, label: 'Critical', count: criticalCount, activeColor: 'bg-red-500/20 text-red-400 border-red-500/40', inactiveColor: 'bg-red-500/5 text-red-400/60 border-red-500/20 hover:bg-red-500/10' },
+                                                    { key: 'HIGH' as const, label: 'High', count: highCount, activeColor: 'bg-[#f59e0b]/20 text-[#f59e0b] border-[#f59e0b]/40', inactiveColor: 'bg-[#f59e0b]/5 text-[#f59e0b]/60 border-[#f59e0b]/20 hover:bg-[#f59e0b]/10' },
+                                                    { key: 'MEDIUM' as const, label: 'Medium', count: mediumCount, activeColor: 'bg-[#BC13FE]/20 text-[#BC13FE] border-[#BC13FE]/40', inactiveColor: 'bg-[#BC13FE]/5 text-[#BC13FE]/60 border-[#BC13FE]/20 hover:bg-[#BC13FE]/10' },
+                                                ].filter(f => f.key === 'ALL' || f.count > 0).map(f => (
+                                                    <button key={f.key} onClick={() => setStrategyFilter(f.key)}
+                                                        className={cn("px-3 py-1 rounded-lg text-xs font-bold transition-all border",
+                                                            strategyFilter === f.key ? f.activeColor : f.inactiveColor
+                                                        )}>
+                                                        {f.label} ({f.count})
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                {filtered.map((rec: any, i: number) => (
+                                                    <FixInstructionCard key={i} title={rec.title} domain={normDomain(rec) as any} priority={normPriority(rec)}
+                                                        steps={rec.howToFix ? [{ step: 1, title: 'How To Fix', description: rec.howToFix }] : [{ step: 1, title: rec.title, description: rec.description }]}
+                                                        code={rec.codeSnippet} platform={rec.platform || 'Any'} estimatedTime={`${rec.effort || 1}h`}
+                                                        difficulty={rec.effort >= 3 ? 'difficult' : rec.effort >= 2 ? 'moderate' : 'easy'}
+                                                        impact={rec.roi === 'CRITICAL' ? 'high' : rec.roi === 'HIGH' ? 'medium' : 'low'}
+                                                        impactedScores={rec.impactedScores}
+                                                        whyItMatters={rec.description} />
+                                                ))}
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                )
+                            })()}
+
                             {/* ── Backlink Profile Comparison ── */}
                             {blA && blB && (
                                 <div className="rounded-2xl border border-green-500/20 bg-green-500/[0.02] backdrop-blur-xl p-5">
@@ -568,72 +631,6 @@ export default function BattleModeV3() {
                                     </div>
                                 </div>
                             )}
-
-                            {/* ── Counter-Strategies ── */}
-                            {(comparisonData.recommendations || comparisonData.comparison?.recommendations)?.length > 0 && (() => {
-                                const recs = comparisonData.recommendations || comparisonData.comparison?.recommendations || []
-                                const normPriority = (r: any) => r.roi === 'STEADY' ? 'MEDIUM' : r.roi === 'CRITICAL' ? 'CRITICAL' : r.roi === 'HIGH' ? 'HIGH' : (r.priority || 'MEDIUM').toUpperCase()
-                                const normDomain = (r: any) => {
-                                    const cat = (r.category || '').toLowerCase()
-                                    if (cat === 'aeo') return 'aeo'
-                                    if (cat === 'geo' || cat === 'trust') return 'geo'
-                                    return 'seo'
-                                }
-                                const criticalCount = recs.filter((r: any) => normPriority(r) === 'CRITICAL').length
-                                const highCount = recs.filter((r: any) => normPriority(r) === 'HIGH').length
-                                const mediumCount = recs.filter((r: any) => normPriority(r) === 'MEDIUM').length
-                                const filtered = strategyFilter === 'ALL' ? recs : recs.filter((r: any) => normPriority(r) === strategyFilter)
-
-                                return (
-                                    <Card className="border-[#00e5ff]/30 bg-gradient-to-br from-[#00e5ff]/5 to-[#BC13FE]/5">
-                                        <CardHeader>
-                                            <div className="flex items-center gap-2">
-                                                <Zap className="h-5 w-5 text-[#00e5ff]" />
-                                                <CardTitle className="text-white">Counter-Strategies</CardTitle>
-                                                <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-[#BC13FE]/30 text-[#BC13FE] bg-[#BC13FE]/10 gap-1">
-                                                    <Sparkles className="h-2.5 w-2.5" /> AI-Powered
-                                                </Badge>
-                                                <button onClick={() => {
-                                                    const text = recs.map((r: any, i: number) => `${i + 1}. [${normPriority(r)}] ${r.title}\n${r.description || ''}\n${r.howToFix || ''}`).join('\n\n')
-                                                    navigator.clipboard.writeText(text)
-                                                }} className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground transition-colors">
-                                                    <Copy className="h-3.5 w-3.5" /> Copy All
-                                                </button>
-                                            </div>
-                                            <CardDescription>Your personalized action plan to outrank this competitor</CardDescription>
-                                            <div className="flex items-center gap-2 mt-3">
-                                                <Filter className="h-3.5 w-3.5 text-white/40" />
-                                                {[
-                                                    { key: 'ALL' as const, label: 'All', count: recs.length, activeColor: 'bg-[#00e5ff]/20 text-[#00e5ff] border-[#00e5ff]/40', inactiveColor: 'bg-white/[0.04] text-white/40 border-white/[0.08] hover:border-white/[0.15]' },
-                                                    { key: 'CRITICAL' as const, label: 'Critical', count: criticalCount, activeColor: 'bg-red-500/20 text-red-400 border-red-500/40', inactiveColor: 'bg-red-500/5 text-red-400/60 border-red-500/20 hover:bg-red-500/10' },
-                                                    { key: 'HIGH' as const, label: 'High', count: highCount, activeColor: 'bg-[#f59e0b]/20 text-[#f59e0b] border-[#f59e0b]/40', inactiveColor: 'bg-[#f59e0b]/5 text-[#f59e0b]/60 border-[#f59e0b]/20 hover:bg-[#f59e0b]/10' },
-                                                    { key: 'MEDIUM' as const, label: 'Medium', count: mediumCount, activeColor: 'bg-[#BC13FE]/20 text-[#BC13FE] border-[#BC13FE]/40', inactiveColor: 'bg-[#BC13FE]/5 text-[#BC13FE]/60 border-[#BC13FE]/20 hover:bg-[#BC13FE]/10' },
-                                                ].filter(f => f.key === 'ALL' || f.count > 0).map(f => (
-                                                    <button key={f.key} onClick={() => setStrategyFilter(f.key)}
-                                                        className={cn("px-3 py-1 rounded-lg text-xs font-bold transition-all border",
-                                                            strategyFilter === f.key ? f.activeColor : f.inactiveColor
-                                                        )}>
-                                                        {f.label} ({f.count})
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                                {filtered.map((rec: any, i: number) => (
-                                                    <FixInstructionCard key={i} title={rec.title} domain={normDomain(rec) as any} priority={normPriority(rec)}
-                                                        steps={rec.howToFix ? [{ step: 1, title: 'How To Fix', description: rec.howToFix }] : [{ step: 1, title: rec.title, description: rec.description }]}
-                                                        code={rec.codeSnippet} platform={rec.platform || 'Any'} estimatedTime={`${rec.effort || 1}h`}
-                                                        difficulty={rec.effort >= 3 ? 'difficult' : rec.effort >= 2 ? 'moderate' : 'easy'}
-                                                        impact={rec.roi === 'CRITICAL' ? 'high' : rec.roi === 'HIGH' ? 'medium' : 'low'}
-                                                        impactedScores={rec.impactedScores}
-                                                        whyItMatters={rec.description} />
-                                                ))}
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                )
-                            })()}
 
                             {/* ── Stolen Opportunities & Strategic Gaps ── */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
