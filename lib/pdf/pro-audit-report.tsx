@@ -17,11 +17,11 @@ interface ProAuditReportProps {
 
 function ScoreBlock({ label, score, color }: { label: string; score: number; color: string }) {
   return (
-    <View style={{ alignItems: 'center', flex: 1 }}>
+    <View style={{ alignItems: 'center', width: 120, marginHorizontal: 16 }}>
       <View style={[styles.scoreCircle, { borderColor: color }]}>
         <Text style={[styles.scoreValue, { color }]}>{score}</Text>
       </View>
-      <Text style={styles.scoreLabel}>{label}</Text>
+      <Text style={[styles.scoreLabel, { marginTop: 8 }]}>{label}</Text>
     </View>
   )
 }
@@ -43,8 +43,8 @@ function RecommendationCard({ rec, index }: { rec: any; index: number }) {
 
   return (
     <View style={styles.card} wrap={false}>
-      <View style={[styles.row, { marginBottom: 6, gap: 6 }]}>
-        <Text style={[styles.badge, { backgroundColor: `${domainColor}20`, color: domainColor }]}>{domain}</Text>
+      <View style={[styles.row, { marginBottom: 6 }]}>
+        <Text style={[styles.badge, { backgroundColor: `${domainColor}20`, color: domainColor, marginRight: 6 }]}>{domain}</Text>
         <Text style={[styles.badge, { backgroundColor: `${priorityColor}20`, color: priorityColor }]}>{priority}</Text>
       </View>
       <Text style={[styles.h3, { marginBottom: 8 }]}>{index + 1}. {rec.title}</Text>
@@ -70,10 +70,10 @@ function RecommendationCard({ rec, index }: { rec: any; index: number }) {
         )}
       </View>
 
-      <View style={[styles.row, { gap: 12, marginTop: 4 }]}>
-        {rec.estimatedTime && <Text style={styles.small}>⏱ {rec.estimatedTime}</Text>}
-        {rec.platform && <Text style={styles.small}>🔧 {rec.platform}</Text>}
-        {rec.impactedScores && <Text style={styles.small}>📊 {rec.impactedScores}</Text>}
+      <View style={[styles.row, { marginTop: 4 }]}>
+        {rec.estimatedTime && <Text style={[styles.small, { marginRight: 12 }]}>Time: {rec.estimatedTime}</Text>}
+        {rec.platform && <Text style={[styles.small, { marginRight: 12 }]}>Platform: {rec.platform}</Text>}
+        {rec.impactedScores && <Text style={[styles.small, { marginRight: 12 }]}>Impacts: {rec.impactedScores}</Text>}
       </View>
     </View>
   )
@@ -87,7 +87,7 @@ export function ProAuditReport({ url, date, scores, siteType, platform, overallF
         <Text style={{ fontSize: 36, fontWeight: 'bold', color: colors.seo, marginBottom: 8 }}>Pro Audit Report</Text>
         <Text style={{ fontSize: 14, color: colors.text, marginBottom: 4 }}>{url}</Text>
         <Text style={{ fontSize: 10, color: colors.muted, marginBottom: 24 }}>{date}{siteType ? ` · ${siteType}` : ''}{platform ? ` · ${platform}` : ''}</Text>
-        <View style={[styles.row, { gap: 24, marginBottom: 32 }]}>
+        <View style={[styles.row, { marginBottom: 32, justifyContent: 'center' }]}>
           <ScoreBlock label="SEO Score" score={scores.seo} color={colors.seo} />
           <ScoreBlock label="AEO Score" score={scores.aeo} color={colors.aeo} />
           <ScoreBlock label="GEO Score" score={scores.geo} color={colors.geo} />
@@ -106,7 +106,7 @@ export function ProAuditReport({ url, date, scores, siteType, platform, overallF
         <Page size="A4" style={styles.page}>
           <Text style={styles.h2}>Key Metrics</Text>
           <View style={styles.divider} />
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
             {metrics.map((m, i) => (
               <View key={i} style={[styles.metricBox, { width: '30%', marginBottom: 6 }]}>
                 <Text style={styles.metricLabel}>{m.label}</Text>
@@ -120,10 +120,10 @@ export function ProAuditReport({ url, date, scores, siteType, platform, overallF
             <View style={{ marginTop: 16 }}>
               <Text style={styles.h2}>Core Web Vitals</Text>
               <View style={styles.divider} />
-              <View style={[styles.row, { gap: 8 }]}>
+              <View style={styles.row}>
                 <Text style={[styles.h3, { color: colors.aeo }]}>Performance: {cwv.performanceScore}/100</Text>
               </View>
-              <View style={[styles.row, { gap: 8, marginTop: 8 }]}>
+              <View style={[styles.row, { marginTop: 8 }]}>
                 {cwv.lcp && <MetricItem label="LCP" value={cwv.lcp.displayValue} color={cwv.lcp.category === 'FAST' ? colors.green : cwv.lcp.category === 'SLOW' ? colors.red : colors.yellow} />}
                 {cwv.inp && <MetricItem label="INP" value={cwv.inp.displayValue} color={cwv.inp.category === 'FAST' ? colors.green : cwv.inp.category === 'SLOW' ? colors.red : colors.yellow} />}
                 {cwv.cls && <MetricItem label="CLS" value={cwv.cls.displayValue} color={cwv.cls.category === 'FAST' ? colors.green : cwv.cls.category === 'SLOW' ? colors.red : colors.yellow} />}
@@ -136,7 +136,7 @@ export function ProAuditReport({ url, date, scores, siteType, platform, overallF
             <View style={{ marginTop: 16 }}>
               <Text style={styles.h2}>Link Building Intelligence</Text>
               <View style={styles.divider} />
-              <View style={[styles.row, { gap: 8 }]}>
+              <View style={styles.row}>
                 <MetricItem label="Domain Authority" value={`${backlinkData.metrics.domainAuthority}/100`} color={backlinkData.metrics.domainAuthority >= 40 ? colors.green : colors.yellow} />
                 <MetricItem label="Linking Domains" value={backlinkData.metrics.linkingDomains.toLocaleString()} />
                 <MetricItem label="Total Backlinks" value={backlinkData.metrics.totalBacklinks.toLocaleString()} />
@@ -146,7 +146,7 @@ export function ProAuditReport({ url, date, scores, siteType, platform, overallF
                 <View style={{ marginTop: 8 }}>
                   <Text style={[styles.h4, { marginBottom: 4 }]}>Top Backlinks</Text>
                   {backlinkData.backlinks.slice(0, 10).map((bl: any, i: number) => (
-                    <View key={i} style={[styles.row, { gap: 8, paddingVertical: 3, borderBottom: `1 solid ${colors.border}` }]}>
+                    <View key={i} style={[styles.row, { paddingVertical: 3, borderBottom: `1 solid ${colors.border}` }]}>
                       <Text style={[styles.small, { width: 20, fontWeight: 'bold', color: bl.domainAuthority >= 40 ? colors.green : colors.muted }]}>{bl.domainAuthority}</Text>
                       <Text style={[styles.small, { flex: 1 }]}>{bl.sourceDomain}</Text>
                       <Text style={[styles.small, { color: bl.isDofollow ? colors.green : colors.muted }]}>{bl.isDofollow ? 'follow' : 'nofollow'}</Text>

@@ -17,7 +17,7 @@ interface CompetitorDuelReportProps {
 function ScoreRow({ label, a, b, color }: { label: string; a: number; b: number; color: string }) {
   const winner = a > b ? 'A' : b > a ? 'B' : 'tie'
   return (
-    <View style={[styles.row, { marginBottom: 8, gap: 8 }]}>
+    <View style={[styles.row, { marginBottom: 8 }]}>
       <Text style={[styles.body, { width: 40, fontWeight: 'bold', color }]}>{label}</Text>
       <Text style={[styles.h3, { width: 40, textAlign: 'center', color: winner === 'A' ? colors.seo : colors.muted }]}>{a}</Text>
       <Text style={[styles.small, { width: 20, textAlign: 'center' }]}>vs</Text>
@@ -53,7 +53,7 @@ export function CompetitorDuelReport({ siteA, siteB, date, scores, verdict, reco
         <Page size="A4" style={styles.page}>
           <Text style={styles.h2}>Backlink Comparison</Text>
           <View style={styles.divider} />
-          <View style={[styles.row, { gap: 16 }]}>
+          <View style={styles.row}>
             <View style={{ flex: 1 }}>
               <Text style={[styles.h4, { color: colors.seo }]}>{siteA}</Text>
               <Text style={styles.body}>DA: {backlinkA.metrics.domainAuthority} · Links: {backlinkA.metrics.totalBacklinks.toLocaleString()} · Domains: {backlinkA.metrics.linkingDomains.toLocaleString()}</Text>
@@ -67,7 +67,7 @@ export function CompetitorDuelReport({ siteA, siteB, date, scores, verdict, reco
             <View style={{ marginTop: 16 }}>
               <Text style={[styles.h4, { color: colors.purple }]}>Link Gap ({linkGap.length} opportunities)</Text>
               {linkGap.slice(0, 10).map((g: any, i: number) => (
-                <View key={i} style={[styles.row, { gap: 8, paddingVertical: 2 }]}>
+                <View key={i} style={[styles.row, { paddingVertical: 2 }]}>
                   <Text style={[styles.small, { width: 20, fontWeight: 'bold' }]}>{g.da}</Text>
                   <Text style={styles.small}>{g.domain}</Text>
                 </View>
@@ -88,7 +88,7 @@ export function CompetitorDuelReport({ siteA, siteB, date, scores, verdict, reco
             const priorityColor = priority === 'CRITICAL' ? colors.red : priority === 'HIGH' ? colors.yellow : colors.purple
             return (
               <View key={i} style={styles.card} wrap={false}>
-                <View style={[styles.row, { gap: 4, marginBottom: 4 }]}>
+                <View style={[styles.row, { marginBottom: 4 }]}>
                   <Text style={[styles.badge, { backgroundColor: `${priorityColor}20`, color: priorityColor }]}>{priority}</Text>
                 </View>
                 <Text style={[styles.h3, { marginBottom: 4 }]}>{i + 1}. {rec.title}</Text>

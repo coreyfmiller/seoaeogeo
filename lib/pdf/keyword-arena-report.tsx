@@ -31,7 +31,7 @@ export function KeywordArenaReport({ keyword, date, userSiteUrl, userRank, total
         )}
 
         {/* Leaders */}
-        <View style={[styles.row, { gap: 12, marginBottom: 16 }]}>
+        <View style={[styles.row, { marginBottom: 16, justifyContent: 'center' }]}>
           {[
             { label: 'SEO Leader', site: seoLeader, score: seoLeader?.scores.seo, color: colors.seo },
             { label: 'AEO Leader', site: aeoLeader, score: aeoLeader?.scores.aeo, color: colors.aeo },
@@ -51,7 +51,7 @@ export function KeywordArenaReport({ keyword, date, userSiteUrl, userRank, total
       <Page size="A4" style={styles.page}>
         <Text style={styles.h2}>Leaderboard</Text>
         <View style={styles.divider} />
-        <View style={[styles.row, { gap: 4, paddingBottom: 6, borderBottom: `1 solid ${colors.border}` }]}>
+        <View style={[styles.row, { paddingBottom: 6, borderBottom: `1 solid ${colors.border}` }]}>
           <Text style={[styles.small, { width: 25, fontWeight: 'bold' }]}>#</Text>
           <Text style={[styles.small, { flex: 1, fontWeight: 'bold' }]}>Site</Text>
           <Text style={[styles.small, { width: 35, textAlign: 'center', fontWeight: 'bold' }]}>Google</Text>
@@ -64,9 +64,9 @@ export function KeywordArenaReport({ keyword, date, userSiteUrl, userRank, total
           const s = site.scores.overall !== null
           const rank = s ? sites.slice(0, i).filter(x => x.scores.overall !== null).length + 1 : '—'
           return (
-            <View key={i} style={[styles.row, { gap: 4, paddingVertical: 4, borderBottom: `1 solid ${colors.border}`, backgroundColor: site.isUserSite ? `${colors.seo}10` : 'transparent' }]}>
+            <View key={i} style={[styles.row, { paddingVertical: 4, borderBottom: `1 solid ${colors.border}`, backgroundColor: site.isUserSite ? `${colors.seo}10` : 'transparent' }]}>
               <Text style={[styles.small, { width: 25 }]}>{rank}</Text>
-              <Text style={[styles.small, { flex: 1, color: site.isUserSite ? colors.seo : colors.text }]}>{(site.title || site.url).slice(0, 40)}{site.isUserSite ? ' ⭐' : ''}</Text>
+              <Text style={[styles.small, { flex: 1, color: site.isUserSite ? colors.seo : colors.text }]}>{(site.title || site.url).slice(0, 40)}{site.isUserSite ? ' (YOU)' : ''}</Text>
               <Text style={[styles.small, { width: 35, textAlign: 'center' }]}>{site.googleRank ? `#${site.googleRank}` : '—'}</Text>
               <Text style={[styles.small, { width: 30, textAlign: 'center' }]}>{site.scores.seo ?? '—'}</Text>
               <Text style={[styles.small, { width: 30, textAlign: 'center' }]}>{site.scores.aeo ?? '—'}</Text>
