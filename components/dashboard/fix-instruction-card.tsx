@@ -12,6 +12,7 @@ import {
   ExternalLink,
   Code2,
   Zap,
+  Info,
   Clock,
   Target
 } from "lucide-react"
@@ -230,95 +231,73 @@ export function FixInstructionCard({
       {/* Expanded Content */}
       {isExpanded && (
         <CardContent className="pt-0 pb-4 space-y-4">
-          {/* Steps */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-              <Zap className="h-4 w-4" />
-              Implementation Steps
-            </h4>
-            {steps.map((step) => (
-              <div key={step.step} className="flex gap-3">
-                <div className={cn(
-                  "h-6 w-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold",
-                  domainStyle.bg,
-                  domainStyle.color
-                )}>
-                  {step.step}
-                </div>
-                <div className="flex-1">
-                  <h5 className="font-bold text-sm mb-1">{step.title}</h5>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{step.description}</p>
-                  {step.code && (
-                    <pre className="mt-2 p-3 bg-muted/50 rounded-lg text-xs font-mono overflow-x-auto border border-border/50">
-                      <code>{step.code}</code>
-                    </pre>
-                  )}
-                  {step.validationUrl && (
-                    <a
-                      href={step.validationUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 mt-2 text-xs text-[#00e5ff] hover:underline"
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                      Validate this step
-                    </a>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Code Block */}
-          {code && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-                  <Code2 className="h-4 w-4" />
-                  Code Snippet
-                </h4>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleCopyCode}
-                  className="h-8"
-                >
-                  {copiedCode ? (
-                    <>
-                      <CheckCircle2 className="h-3.5 w-3.5 mr-1.5 text-[#00e5ff]" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3.5 w-3.5 mr-1.5" />
-                      Copy Code
-                    </>
-                  )}
-                </Button>
-              </div>
-              <pre className="p-4 bg-muted/50 rounded-lg text-xs font-mono overflow-x-auto border border-border/50 max-h-64">
-                <code>{code}</code>
-              </pre>
+          {/* Why This Matters */}
+          {whyItMatters && (
+            <div className="rounded-lg border border-border/50 bg-muted/20 p-4">
+              <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2 mb-2">
+                <Info className="h-3.5 w-3.5" />
+                Why This Matters
+              </h4>
+              <p className="text-sm text-foreground/80 leading-relaxed">{whyItMatters}</p>
             </div>
           )}
+
+          {/* How To Fix */}
+          <div className="rounded-lg border border-[#00e5ff]/20 bg-[#00e5ff]/5 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-xs font-black uppercase tracking-widest text-[#00e5ff] flex items-center gap-2">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                How To Fix
+              </h4>
+              {(code || steps.some(s => s.code)) && (
+                <Button size="sm" variant="outline" onClick={handleCopyCode} className="h-7 text-xs">
+                  {copiedCode ? <><CheckCircle2 className="h-3 w-3 mr-1 text-[#00e5ff]" /> Copied</> : <><Copy className="h-3 w-3 mr-1" /> Copy</>}
+                </Button>
+              )}
+            </div>
+
+            {/* Steps */}
+            <div className="space-y-3">
+              {steps.map((step) => (
+                <div key={step.step} className="flex gap-3">
+                  <div className={cn("h-6 w-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold", domainStyle.bg, domainStyle.color)}>
+                    {step.step}
+                  </div>
+                  <div className="flex-1">
+                    <h5 className="font-bold text-sm mb-1">{step.title}</h5>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
+                    {step.code && (
+                      <pre className="mt-2 p-3 bg-background/50 rounded-lg text-xs font-mono overflow-x-auto border border-border/50">
+                        <code>{step.code}</code>
+                      </pre>
+                    )}
+                    {step.validationUrl && (
+                      <a href={step.validationUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 mt-2 text-xs text-[#00e5ff] hover:underline">
+                        <ExternalLink className="h-3 w-3" /> Validate this step
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Code Block */}
+            {code && (
+              <pre className="mt-3 p-4 bg-background/50 rounded-lg text-xs font-mono overflow-x-auto border border-border/50 max-h-64">
+                <code>{code}</code>
+              </pre>
+            )}
+          </div>
 
           {/* Validation Links */}
           {validationLinks && validationLinks.length > 0 && (
             <div className="space-y-2">
-              <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-                Validation Tools
-              </h4>
+              <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Validation Tools</h4>
               <div className="flex flex-wrap gap-2">
                 {validationLinks.map((link, idx) => (
-                  <a
-                    key={idx}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-background border border-border/50 rounded-lg text-xs hover:border-[#00e5ff]/50 hover:bg-[#00e5ff]/5 transition-colors"
-                  >
-                    <ExternalLink className="h-3 w-3" />
-                    {link.tool}
+                  <a key={idx} href={link.url} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-background border border-border/50 rounded-lg text-xs hover:border-[#00e5ff]/50 hover:bg-[#00e5ff]/5 transition-colors">
+                    <ExternalLink className="h-3 w-3" /> {link.tool}
                   </a>
                 ))}
               </div>
@@ -328,12 +307,8 @@ export function FixInstructionCard({
           {/* Mark Complete Button */}
           {onMarkComplete && !isCompleted && (
             <div className="pt-3 border-t border-border/50">
-              <Button
-                onClick={onMarkComplete}
-                className="w-full bg-[#00e5ff] text-white hover:bg-[#00e5ff]/90"
-              >
-                <CheckCircle2 className="h-4 w-4 mr-2" />
-                Mark as Complete
+              <Button onClick={onMarkComplete} className="w-full bg-[#00e5ff] text-white hover:bg-[#00e5ff]/90">
+                <CheckCircle2 className="h-4 w-4 mr-2" /> Mark as Complete
               </Button>
             </div>
           )}
