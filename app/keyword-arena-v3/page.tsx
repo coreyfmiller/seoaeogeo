@@ -689,109 +689,6 @@ export default function KeywordArenaV3Page() {
                 </div>
               )}
 
-              {/* Gap Insights & Strengths */}
-              {insights.length > 0 && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {/* Gaps */}
-                  {gaps.length > 0 && (
-                    <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.02] p-5">
-                      <h3 className="text-sm font-black text-white flex items-center gap-2 mb-3">
-                        <AlertTriangle className="h-4 w-4 text-red-400" /> Competitive Gaps
-                      </h3>
-                      <div className="space-y-2">
-                        {gaps.map((gap, i) => (
-                          <div key={i} className={cn("rounded-lg p-3 border",
-                            gap.severity === 'critical' ? "border-red-500/30 bg-red-500/10" : "border-yellow-500/30 bg-yellow-500/10"
-                          )}>
-                            <p className={cn("text-xs font-bold", gap.severity === 'critical' ? "text-red-400" : "text-yellow-400")}>{gap.metric}</p>
-                            <p className="text-[11px] text-white/60 mt-0.5">{gap.detail}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {/* Strengths */}
-                  {strengths.length > 0 && (
-                    <div className="rounded-2xl border border-green-500/20 bg-green-500/[0.02] p-5">
-                      <h3 className="text-sm font-black text-white flex items-center gap-2 mb-3">
-                        <CheckCircle2 className="h-4 w-4 text-green-400" /> Your Strengths
-                      </h3>
-                      <div className="space-y-2">
-                        {strengths.map((s, i) => (
-                          <div key={i} className="rounded-lg p-3 border border-green-500/30 bg-green-500/10">
-                            <p className="text-xs font-bold text-green-400">{s.metric}</p>
-                            <p className="text-[11px] text-white/60 mt-0.5">{s.detail}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Upsell CTAs — contextual based on weakest scores */}
-              {userSite && userSite.scores.overall !== null && (
-                <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
-                  <h3 className="text-sm font-black text-white flex items-center gap-2 mb-4">
-                    <Zap className="h-4 w-4 text-[#00e5ff]" /> Recommended Next Steps
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    {/* Pro Audit — always show if scores aren't perfect */}
-                    {(userSite.scores.overall ?? 0) < 90 && (
-                      <Link href="/pro-audit" className="group rounded-xl border border-[#00e5ff]/20 bg-[#00e5ff]/[0.03] p-4 hover:border-[#00e5ff]/40 transition-all">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="h-7 w-7 rounded-lg bg-[#00e5ff]/10 flex items-center justify-center">
-                            <Sparkles className="h-3.5 w-3.5 text-[#00e5ff]" />
-                          </div>
-                          <span className="text-xs font-bold text-[#00e5ff]">Pro Audit</span>
-                          <span className="text-xs text-white/40 ml-auto">10 credits</span>
-                        </div>
-                        <p className="text-xs text-white/60 leading-relaxed">
-                          Get step-by-step fix instructions for every issue found on your site.
-                        </p>
-                        <div className="flex items-center gap-1 mt-2 text-xs text-[#00e5ff]/60 group-hover:text-[#00e5ff] transition-colors">
-                          Run Pro Audit <ArrowRight className="h-3 w-3" />
-                        </div>
-                      </Link>
-                    )}
-                    {/* Deep Scan — show if AEO is weak */}
-                    {(userSite.scores.aeo ?? 0) < 70 && (
-                      <Link href="/deep-scan" className="group rounded-xl border border-[#BC13FE]/20 bg-[#BC13FE]/[0.03] p-4 hover:border-[#BC13FE]/40 transition-all">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="h-7 w-7 rounded-lg bg-[#BC13FE]/10 flex items-center justify-center">
-                            <Bot className="h-3.5 w-3.5 text-[#BC13FE]" />
-                          </div>
-                          <span className="text-xs font-bold text-[#BC13FE]">Deep Scan</span>
-                          <span className="text-xs text-white/40 ml-auto">10+ credits</span>
-                        </div>
-                        <p className="text-xs text-white/60 leading-relaxed">
-                          Scan your entire site — find schema gaps, thin pages, and AI blind spots.
-                        </p>
-                        <div className="flex items-center gap-1 mt-2 text-xs text-[#BC13FE]/60 group-hover:text-[#BC13FE] transition-colors">
-                          Run Deep Scan <ArrowRight className="h-3 w-3" />
-                        </div>
-                      </Link>
-                    )}
-                    {/* Competitive Intel — show if they want deeper comparison */}
-                    <Link href="/battle-mode-v3" className="group rounded-xl border border-[#fe3f8c]/20 bg-[#fe3f8c]/[0.03] p-4 hover:border-[#fe3f8c]/40 transition-all">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="h-7 w-7 rounded-lg bg-[#fe3f8c]/10 flex items-center justify-center">
-                          <Globe className="h-3.5 w-3.5 text-[#fe3f8c]" />
-                        </div>
-                        <span className="text-xs font-bold text-[#fe3f8c]">Competitor Duel</span>
-                        <span className="text-xs text-white/40 ml-auto">20 credits</span>
-                      </div>
-                      <p className="text-xs text-white/60 leading-relaxed">
-                        Deep-dive comparison against specific competitors with full gap analysis.
-                      </p>
-                      <div className="flex items-center gap-1 mt-2 text-xs text-[#fe3f8c]/60 group-hover:text-[#fe3f8c] transition-colors">
-                        Run Competitor Duel <ArrowRight className="h-3 w-3" />
-                      </div>
-                    </Link>
-                  </div>
-                </div>
-              )}
-
               {/* Copy leaderboard */}
               <div className="flex justify-between items-center">
                 <h3 className="text-sm font-black text-white flex items-center gap-2">
@@ -826,22 +723,33 @@ export default function KeywordArenaV3Page() {
                   { label: "AEO Leader", site: aeoLeader, score: aeoLeader.scores.aeo, color: "#BC13FE", icon: <Sparkles className="h-4 w-4" /> },
                   { label: "GEO Leader", site: geoLeader, score: geoLeader.scores.geo, color: "#fe3f8c", icon: <Bot className="h-4 w-4" /> },
                 ]
+                const userScores = userSite?.scores
                 return (
                   <div className="grid grid-cols-3 gap-3">
                     {leaders.map(l => {
-                      const displayUrl = l.site.url.replace(/^https?:\/\//, '').replace(/\/$/, '')
+                      const leaderTitle = l.site.title || l.site.url.replace(/^https?:\/\//, '').replace(/\/$/, '')
                       const isUser = l.site.isUserSite
+                      const userScore = l.label === 'SEO Leader' ? userScores?.seo : l.label === 'AEO Leader' ? userScores?.aeo : userScores?.geo
+                      const diff = (userScore != null && l.score != null) ? l.score - userScore : null
                       return (
                         <div key={l.label} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 relative overflow-hidden">
                           <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full blur-[40px] pointer-events-none" style={{ background: `${l.color}10` }} />
                           <div className="relative z-10">
-                            <div className="flex items-center gap-2 mb-2">
+                            <div className="flex items-center gap-2 mb-3">
                               <div className="h-7 w-7 rounded-lg flex items-center justify-center" style={{ background: `${l.color}15`, color: l.color }}>{l.icon}</div>
                               <span className="text-[10px] font-black uppercase tracking-widest text-white/50">{l.label}</span>
                             </div>
-                            <p className="text-2xl font-black tabular-nums" style={{ color: l.color }}>{l.score ?? '—'}</p>
-                            <p className={cn("text-xs truncate mt-1", isUser ? "text-[#00e5ff] font-bold" : "text-white/60")}>{displayUrl}</p>
-                            {isUser && <Badge className="mt-1 bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-[7px] font-black">YOU</Badge>}
+                            <p className="text-xs text-white/60 truncate mb-1">{leaderTitle}</p>
+                            <p className="text-3xl font-black tabular-nums" style={{ color: l.color }}>{l.score ?? '—'}</p>
+                            {userSite && !isUser && diff != null && diff > 0 && (
+                              <p className="text-xs text-white/50 mt-2">Your score: <span className="text-white/70 font-bold">{userScore}</span> <span className="text-red-400">({diff} pts behind)</span></p>
+                            )}
+                            {isUser && (
+                              <p className="text-xs text-[#00e5ff] font-bold mt-2">You&apos;re the leader</p>
+                            )}
+                            {userSite && !isUser && diff != null && diff === 0 && (
+                              <p className="text-xs text-yellow-400 mt-2">Tied with leader</p>
+                            )}
                           </div>
                         </div>
                       )
@@ -993,38 +901,83 @@ export default function KeywordArenaV3Page() {
                 })()}
               </div>
 
-              {/* Score Distribution Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {([
-                  { label: "SEO", color: "#00e5ff", icon: <Search className="h-4 w-4" />, key: "seo" as const },
-                  { label: "AEO", color: "#BC13FE", icon: <Sparkles className="h-4 w-4" />, key: "aeo" as const },
-                  { label: "GEO", color: "#fe3f8c", icon: <Bot className="h-4 w-4" />, key: "geo" as const },
-                ] as const).map(cat => {
-                  const scored = arenaResult.sites.filter(s => s.scores[cat.key] !== null)
-                  if (scored.length === 0) return null
-                  const sorted = [...scored].sort((a, b) => (b.scores[cat.key] ?? 0) - (a.scores[cat.key] ?? 0))
-                  const leader = sorted[0]
-                  const userS = sorted.find(s => s.isUserSite)
-                  return (
-                    <div key={cat.label} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="h-7 w-7 rounded-lg flex items-center justify-center" style={{ background: `${cat.color}15`, color: cat.color }}>
-                          {cat.icon}
-                        </div>
-                        <span className="text-xs font-black uppercase tracking-widest text-white/60">{cat.label} Leader</span>
+              {/* Competitive Gaps & Strengths */}
+              {insights.length > 0 && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {gaps.length > 0 && (
+                    <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.02] p-5">
+                      <h3 className="text-sm font-black text-white flex items-center gap-2 mb-3">
+                        <AlertTriangle className="h-4 w-4 text-red-400" /> Competitive Gaps
+                      </h3>
+                      <div className="space-y-2">
+                        {gaps.map((gap, i) => (
+                          <div key={i} className={cn("rounded-lg p-3 border", gap.severity === 'critical' ? "border-red-500/30 bg-red-500/10" : "border-yellow-500/30 bg-yellow-500/10")}>
+                            <p className={cn("text-xs font-bold", gap.severity === 'critical' ? "text-red-400" : "text-yellow-400")}>{gap.metric}</p>
+                            <p className="text-[11px] text-white/60 mt-0.5">{gap.detail}</p>
+                          </div>
+                        ))}
                       </div>
-                      <p className="text-sm font-bold text-white/80 truncate">{leader?.title || leader?.url}</p>
-                      <p className="text-2xl font-black tabular-nums mt-1" style={{ color: cat.color }}>{leader?.scores[cat.key]}</p>
-                      {userS && (
-                        <p className="text-xs text-white/60 mt-2">
-                          Your score: <span className={cn("font-bold", scoreColor(userS.scores[cat.key]))}>{userS.scores[cat.key]}</span>
-                          {' '}({(userS.scores[cat.key] ?? 0) >= (leader.scores[cat.key] ?? 0) ? '🏆 Leading' : `${(leader.scores[cat.key] ?? 0) - (userS.scores[cat.key] ?? 0)} pts behind`})
-                        </p>
-                      )}
                     </div>
-                  )
-                })}
-              </div>
+                  )}
+                  {strengths.length > 0 && (
+                    <div className="rounded-2xl border border-green-500/20 bg-green-500/[0.02] p-5">
+                      <h3 className="text-sm font-black text-white flex items-center gap-2 mb-3">
+                        <CheckCircle2 className="h-4 w-4 text-green-400" /> Your Strengths
+                      </h3>
+                      <div className="space-y-2">
+                        {strengths.map((s, i) => (
+                          <div key={i} className="rounded-lg p-3 border border-green-500/30 bg-green-500/10">
+                            <p className="text-xs font-bold text-green-400">{s.metric}</p>
+                            <p className="text-[11px] text-white/60 mt-0.5">{s.detail}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Recommended Next Steps */}
+              {userSite && userSite.scores.overall !== null && (
+                <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+                  <h3 className="text-sm font-black text-white flex items-center gap-2 mb-4">
+                    <Zap className="h-4 w-4 text-[#00e5ff]" /> Recommended Next Steps
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {(userSite.scores.overall ?? 0) < 90 && (
+                      <Link href="/pro-audit-v4" className="group rounded-xl border border-[#00e5ff]/20 bg-[#00e5ff]/[0.03] p-4 hover:border-[#00e5ff]/40 transition-all">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="h-7 w-7 rounded-lg bg-[#00e5ff]/10 flex items-center justify-center"><Sparkles className="h-3.5 w-3.5 text-[#00e5ff]" /></div>
+                          <span className="text-xs font-bold text-[#00e5ff]">Pro Audit</span>
+                          <span className="text-xs text-white/40 ml-auto">10 credits</span>
+                        </div>
+                        <p className="text-xs text-white/60 leading-relaxed">Get step-by-step fix instructions for every issue found on your site.</p>
+                        <div className="flex items-center gap-1 mt-2 text-xs text-[#00e5ff]/60 group-hover:text-[#00e5ff] transition-colors">Run Pro Audit <ArrowRight className="h-3 w-3" /></div>
+                      </Link>
+                    )}
+                    {(userSite.scores.aeo ?? 0) < 70 && (
+                      <Link href="/deep-scan" className="group rounded-xl border border-[#BC13FE]/20 bg-[#BC13FE]/[0.03] p-4 hover:border-[#BC13FE]/40 transition-all">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="h-7 w-7 rounded-lg bg-[#BC13FE]/10 flex items-center justify-center"><Bot className="h-3.5 w-3.5 text-[#BC13FE]" /></div>
+                          <span className="text-xs font-bold text-[#BC13FE]">Deep Scan</span>
+                          <span className="text-xs text-white/40 ml-auto">10+ credits</span>
+                        </div>
+                        <p className="text-xs text-white/60 leading-relaxed">Scan your entire site to find schema gaps, thin pages, and AI blind spots.</p>
+                        <div className="flex items-center gap-1 mt-2 text-xs text-[#BC13FE]/60 group-hover:text-[#BC13FE] transition-colors">Run Deep Scan <ArrowRight className="h-3 w-3" /></div>
+                      </Link>
+                    )}
+                    <Link href="/battle-mode-v3" className="group rounded-xl border border-[#fe3f8c]/20 bg-[#fe3f8c]/[0.03] p-4 hover:border-[#fe3f8c]/40 transition-all">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="h-7 w-7 rounded-lg bg-[#fe3f8c]/10 flex items-center justify-center"><Globe className="h-3.5 w-3.5 text-[#fe3f8c]" /></div>
+                        <span className="text-xs font-bold text-[#fe3f8c]">Competitor Duel</span>
+                        <span className="text-xs text-white/40 ml-auto">20 credits</span>
+                      </div>
+                      <p className="text-xs text-white/60 leading-relaxed">Deep-dive comparison against specific competitors with full gap analysis.</p>
+                      <div className="flex items-center gap-1 mt-2 text-xs text-[#fe3f8c]/60 group-hover:text-[#fe3f8c] transition-colors">Run Competitor Duel <ArrowRight className="h-3 w-3" /></div>
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

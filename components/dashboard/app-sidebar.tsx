@@ -35,7 +35,7 @@ interface NavItem {
 
 const mainNav: NavItem[] = [
   { name: "Free Audit", icon: Sparkles, href: "/free-audit" },
-  { name: "Pro Audit", icon: Bot, href: "/pro-audit", badge: "PRO" },
+  { name: "Pro Audit", icon: Bot, href: "/pro-audit-v4", badge: "PRO" },
   { name: "Deep Scan", icon: Layers, href: "/deep-scan", badge: "PRO" },
   { name: "Competitor Duel", icon: Swords, href: "/battle-mode-v3", badge: "PRO" },
   { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena-v3", badge: "PRO" },
@@ -43,13 +43,14 @@ const mainNav: NavItem[] = [
 ]
 
 const eolNav: NavItem[] = [
+  { name: "Pro Audit (OLD)", icon: Bot, href: "/pro-audit" },
   { name: "Competitive Intel (OLD)", icon: Globe, href: "/competitive-intel" },
   { name: "Battle Mode (OLD)", icon: Swords, href: "/battle-mode" },
   { name: "Keyword Arena (OLD)", icon: Trophy, href: "/keyword-arena" },
   { name: "Keyword Arena 2 (OLD)", icon: Trophy, href: "/keyword-arena-v2" },
 ]
 
-const proOnlyPaths = ['/pro-audit', '/deep-scan', '/competitive-intel', '/battle-mode', '/battle-mode-v3', '/keyword-arena', '/keyword-arena-v2', '/keyword-arena-v3', '/dashboard']
+const proOnlyPaths = ['/pro-audit', '/pro-audit-v4', '/deep-scan', '/competitive-intel', '/battle-mode', '/battle-mode-v3', '/keyword-arena', '/keyword-arena-v2', '/keyword-arena-v3', '/dashboard']
 
 const comingSoonNav: NavItem[] = []
 
