@@ -35,7 +35,7 @@ export function PublicFooter() {
             <ul className="space-y-2">
               <li><Link href="/signup" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Sign Up</Link></li>
               <li><Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Log In</Link></li>
-              <li><a href="mailto:support@duelly.ai" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</a></li>
+              <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</Link></li>
             </ul>
           </div>
         </div>

@@ -526,7 +526,7 @@ export default function HelpPage() {
                   <Card>
                     <CardContent className="p-5 space-y-3">
                       <h3 className="font-bold text-sm">Direct Email</h3>
-                      <a href="mailto:support@duelly.ai" className="flex items-center gap-2 text-sm text-seo hover:underline">
+                      <a href="/contact" className="flex items-center gap-2 text-sm text-seo hover:underline">
                         <Mail className="h-4 w-4" />
                         support@duelly.ai
                       </a>
