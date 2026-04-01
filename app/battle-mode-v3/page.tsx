@@ -217,7 +217,7 @@ export default function BattleModeV3() {
                             </button>
                         </div>
                         {comparisonData && !isAnalyzing && (
-                            <div className="flex items-center gap-2 justify-end">
+                            <div className="flex items-center gap-2 justify-end mt-4 pt-4 border-t border-white/[0.06]">
                                 <button onClick={() => {
                                     const c = comparisonData.comparison || comparisonData
                                     const sep = '═'.repeat(60)
