@@ -21,6 +21,46 @@ interface BlogPost {
 
 const posts: BlogPost[] = [
   {
+    slug: 'schema-markup-small-business',
+    title: 'Schema Markup for Small Businesses: What It Is and Why You Need It',
+    description: 'Schema markup sounds technical but it\'s one of the easiest ways to stand out in search results. Here\'s how to get started.',
+    date: '2026-04-01',
+    category: 'SEO',
+    readTime: '6 min',
+  },
+  {
+    slug: 'google-rank-vs-ai-rank',
+    title: 'Why Your Google Ranking Doesn\'t Match Your AI Ranking',
+    description: 'You might rank #3 on Google but #8 in AI search. Here\'s why that happens and what you can do about it.',
+    date: '2026-04-01',
+    category: 'AEO',
+    readTime: '5 min',
+  },
+  {
+    slug: 'content-ai-cites',
+    title: 'How to Write Content That AI Actually Cites',
+    description: 'AI search engines pick their sources carefully. Here\'s what makes them choose your page over everyone else\'s.',
+    date: '2026-04-01',
+    category: 'GEO',
+    readTime: '7 min',
+  },
+  {
+    slug: 'backlinks-explained',
+    title: 'Backlinks Explained: Why Other Websites Linking to You Matters',
+    description: 'Backlinks are one of the biggest factors in how Google decides who ranks where. Here\'s what they are and how to get them.',
+    date: '2026-04-01',
+    category: 'SEO',
+    readTime: '6 min',
+  },
+  {
+    slug: 'seo-mistakes-small-business',
+    title: 'The 7 Biggest SEO Mistakes Small Businesses Make',
+    description: 'Most small business websites have the same problems. Here are the ones that hurt the most and how to fix them.',
+    date: '2026-04-01',
+    category: 'Guide',
+    readTime: '8 min',
+  },
+  {
     slug: 'what-is-aeo',
     title: 'What is AEO? Answer Engine Optimization Explained',
     description: 'AI search engines like ChatGPT and Perplexity are changing how people find businesses. AEO is how you make sure they find yours.',

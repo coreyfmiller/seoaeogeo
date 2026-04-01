@@ -32,6 +32,12 @@ export default function HomePage() {
           <Link href="/" className="flex items-center">
             <img src="/logo.png" alt="Duelly" className="h-14 w-auto" />
           </Link>
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
+            <Link href="/pro" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
+            <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help</Link>
+            <Link href="/standards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How We Score</Link>
+          </div>
           <div className="flex items-center gap-4">
             <Link href="/signup" className="px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-bold text-sm transition-colors">
               Get Started Free
