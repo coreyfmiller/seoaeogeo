@@ -71,6 +71,7 @@ export default function HomePage() {
             View Pricing
           </Link>
         </div>
+        <p className="text-sm text-muted-foreground mt-3">No credit card required.</p>
         <Link href="/battle-mode-v3" className="mt-8 inline-block text-4xl md:text-5xl font-black text-[#fe3f8c] hover:text-[#fe3f8c]/80 transition-colors">
           Beat Your Competition
         </Link>
