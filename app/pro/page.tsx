@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { CheckCircle2, Zap, ArrowRight, Shield, Sparkles, Layers, Bot, FileText, Code, BarChart3, Loader2, Coins } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { PageShell } from '@/components/dashboard/page-shell'
+import { PublicNav } from '@/components/public-nav'
+import { PublicFooter } from '@/components/public-footer'
 
 const features = [
   { icon: Bot, title: "AI-Powered Analysis", desc: "Full Gemini AI sitewide intelligence with deep content analysis" },
@@ -83,8 +84,9 @@ export default function ProPage() {
   }
 
   return (
-    <PageShell apiStatus="idle" hideSearch>
-        <main className="flex-1 overflow-y-auto px-3 sm:px-6 pt-4 sm:pt-6">
+    <div className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
+      <PublicNav />
+        <main className="flex-1 px-3 sm:px-6 pt-4 sm:pt-6">
           <div className="max-w-5xl mx-auto space-y-10 pb-6">
 
             {/* Hero */}
@@ -186,6 +188,7 @@ export default function ProPage() {
 
           </div>
         </main>
-    </PageShell>
+      <PublicFooter />
+    </div>
   )
 }
