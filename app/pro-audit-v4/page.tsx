@@ -274,21 +274,24 @@ export default function ProAuditV4Page() {
                 const altPct = imgTotal > 0 ? Math.round((imgWithAlt / imgTotal) * 100) : 100
                 const wordCount = sd.wordCount || 0
                 const metrics = [
-                  { label: "Schema", value: hasSchema ? `${schemas.length} found` : "None", color: hasSchema ? "text-seo" : "text-red-500", bad: !hasSchema },
-                  { label: "Metadata", value: hasMeta ? "Complete" : "Missing", color: hasMeta ? "text-green-500" : "text-red-500", bad: !hasMeta },
-                  { label: "H1 Tag", value: hasH1 ? "Found" : "Missing", color: hasH1 ? "text-green-500" : "text-red-500", bad: !hasH1 },
-                  { label: "HTTPS", value: isHttps ? "Secure" : "Not Secure", color: isHttps ? "text-green-500" : "text-red-500", bad: !isHttps },
-                  { label: "Response", value: `${responseTime}ms`, color: responseTime < 500 ? "text-green-500" : responseTime < 1000 ? "text-yellow-500" : "text-red-500", bad: responseTime >= 1000 },
-                  { label: "Alt Text", value: `${altPct}%`, color: altPct >= 80 ? "text-green-500" : altPct >= 50 ? "text-yellow-500" : "text-red-500", bad: altPct < 50 },
-                  { label: "Words", value: wordCount.toLocaleString(), color: wordCount >= 800 ? "text-green-500" : wordCount >= 300 ? "text-yellow-500" : "text-red-500", bad: wordCount < 300 },
-                  { label: "Int. Links", value: `${sd.links?.internal || 0}`, color: (sd.links?.internal || 0) >= 3 ? "text-green-500" : "text-yellow-500", bad: false },
-                  { label: "Ext. Links", value: `${sd.links?.external || 0}`, color: "text-foreground", bad: false },
+                  { label: "Schema", value: hasSchema ? `${schemas.length} found` : "None", color: hasSchema ? "text-seo" : "text-red-500", bad: !hasSchema, tip: "Structured data (JSON-LD) that tells search engines and AI what your page is about. Enables rich snippets like star ratings, FAQs, and product prices in search results." },
+                  { label: "Metadata", value: hasMeta ? "Complete" : "Missing", color: hasMeta ? "text-green-500" : "text-red-500", bad: !hasMeta, tip: "Whether the page has both a title tag and meta description. These control how your page appears in search results. Missing metadata means Google auto-generates your snippet." },
+                  { label: "H1 Tag", value: hasH1 ? "Found" : "Missing", color: hasH1 ? "text-green-500" : "text-red-500", bad: !hasH1, tip: "The primary heading that tells search engines what the page is about. Every page should have exactly one H1. Missing it confuses crawlers and hurts rankings." },
+                  { label: "HTTPS", value: isHttps ? "Secure" : "Not Secure", color: isHttps ? "text-green-500" : "text-red-500", bad: !isHttps, tip: "Whether the page is served over HTTPS (SSL encryption). Google uses HTTPS as a ranking signal. Non-HTTPS sites show 'Not Secure' warnings in browsers." },
+                  { label: "Response", value: `${responseTime}ms`, color: responseTime < 500 ? "text-green-500" : responseTime < 1000 ? "text-yellow-500" : "text-red-500", bad: responseTime >= 1000, tip: "Server response time (Time to First Byte). Under 500ms is good, 500-1000ms needs attention, over 1000ms is critical. Directly impacts Core Web Vitals and user experience." },
+                  { label: "Alt Text", value: `${altPct}%`, color: altPct >= 80 ? "text-green-500" : altPct >= 50 ? "text-yellow-500" : "text-red-500", bad: altPct < 50, tip: "Percentage of images with descriptive alt text. Critical for accessibility (screen readers) and image search rankings. Aim for 100%." },
+                  { label: "Words", value: wordCount.toLocaleString(), color: wordCount >= 800 ? "text-green-500" : wordCount >= 300 ? "text-yellow-500" : "text-red-500", bad: wordCount < 300, tip: "Total word count on the page. Pages under 300 words are considered thin content and struggle to rank. 800+ words is ideal for most content pages." },
+                  { label: "Int. Links", value: `${sd.links?.internal || 0}`, color: (sd.links?.internal || 0) >= 3 ? "text-green-500" : "text-yellow-500", bad: false, tip: "Number of internal links pointing to other pages on your site. Internal linking helps search engines discover content and distributes page authority across your site." },
+                  { label: "Ext. Links", value: `${sd.links?.external || 0}`, color: "text-foreground", bad: false, tip: "Number of external links pointing to other websites. Linking to authoritative sources signals trust and helps search engines understand your content's context." },
                 ]
                 return (
                   <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-2">
                     {metrics.map(m => (
                       <div key={m.label} className={`rounded-lg border px-2.5 py-2 ${m.bad ? "border-red-500/40 bg-red-500/5" : "border-border/50 bg-card/50"}`}>
-                        <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold leading-tight truncate">{m.label}</p>
+                        <div className="flex items-center gap-0.5 mb-0.5">
+                          <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold leading-tight truncate">{m.label}</p>
+                          <InfoTooltip content={m.tip} className="shrink-0 [&_svg]:h-2.5 [&_svg]:w-2.5" />
+                        </div>
                         <p className={`text-sm font-black ${m.color} truncate`}>{m.value}</p>
                       </div>
                     ))}
