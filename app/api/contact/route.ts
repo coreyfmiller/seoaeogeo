@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     }
 
     await resend.emails.send({
-      from: 'Duelly Contact <onboarding@resend.dev>',
+      from: 'Duelly Contact <support@duelly.ai>',
       to: 'support@duelly.ai',
       replyTo: email,
       subject: `[${(category || 'general').toUpperCase()}] Contact from ${name}`,
