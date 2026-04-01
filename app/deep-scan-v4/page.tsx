@@ -462,28 +462,6 @@ export default function DeepV3Page() {
             {/* Results Display */}
             {result && (
               <div className="space-y-6">
-                {/* Aggregate Score Cards */}
-                <div className="grid gap-6 md:grid-cols-3">
-                  <Card className="flex items-center justify-center p-6">
-                    <div className="flex flex-col items-center gap-1">
-                      <CircularProgress value={result.scores.seo} variant="seo" label="Avg SEO Score" size={140} strokeWidth={10} />
-                      <InfoTooltip content="Average SEO score across all crawled pages, using site-intelligence scoring weights." />
-                    </div>
-                  </Card>
-                  <Card className="flex items-center justify-center p-6">
-                    <div className="flex flex-col items-center gap-1">
-                      <CircularProgress value={result.scores.aeo} variant="aeo" label="Avg AEO Score" size={140} strokeWidth={10} />
-                      <InfoTooltip content="Average Answer Engine Optimization score — how likely AI assistants will cite your pages." />
-                    </div>
-                  </Card>
-                  <Card className="flex items-center justify-center p-6">
-                    <div className="flex flex-col items-center gap-1">
-                      <CircularProgress value={result.scores.geo} variant="geo" label="Avg GEO Score" size={140} strokeWidth={10} />
-                      <InfoTooltip content="Average Generative Engine Optimization score — readiness for AI-generated search results." />
-                    </div>
-                  </Card>
-                </div>
-
                 {/* Download Full Report */}
                 <div className="flex justify-end">
                   <DownloadReportButton
@@ -510,6 +488,27 @@ export default function DeepV3Page() {
                       }))
                     }}
                   />
+                </div>
+                {/* Aggregate Score Cards */}
+                <div className="grid gap-6 md:grid-cols-3">
+                  <Card className="flex items-center justify-center p-6">
+                    <div className="flex flex-col items-center gap-1">
+                      <CircularProgress value={result.scores.seo} variant="seo" label="Avg SEO Score" size={140} strokeWidth={10} />
+                      <InfoTooltip content="Average SEO score across all crawled pages, using site-intelligence scoring weights." />
+                    </div>
+                  </Card>
+                  <Card className="flex items-center justify-center p-6">
+                    <div className="flex flex-col items-center gap-1">
+                      <CircularProgress value={result.scores.aeo} variant="aeo" label="Avg AEO Score" size={140} strokeWidth={10} />
+                      <InfoTooltip content="Average Answer Engine Optimization score — how likely AI assistants will cite your pages." />
+                    </div>
+                  </Card>
+                  <Card className="flex items-center justify-center p-6">
+                    <div className="flex flex-col items-center gap-1">
+                      <CircularProgress value={result.scores.geo} variant="geo" label="Avg GEO Score" size={140} strokeWidth={10} />
+                      <InfoTooltip content="Average Generative Engine Optimization score — readiness for AI-generated search results." />
+                    </div>
+                  </Card>
                 </div>
 
                 {/* Key Metrics — unified strip */}

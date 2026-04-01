@@ -379,7 +379,7 @@ export default function BattleModeV3() {
                                             <Zap className="h-4 w-4 text-[#00e5ff]" />
                                         </div>
                                         <div>
-                                            <h4 className="text-xs font-black uppercase text-[#00e5ff] tracking-widest mb-1 flex items-center gap-1.5">Expert Verdict</h4>
+                                            <h4 className="text-xs font-black uppercase text-[#00e5ff] tracking-widest mb-1 flex items-center gap-1.5">Expert Verdict <InfoTooltip content="AI-generated analysis of which site has the competitive advantage and why." /></h4>
                                             <p className="text-sm font-medium text-white/80 leading-relaxed">{comparisonData.winnerVerdict || comparisonData.comparison?.winnerVerdict}</p>
                                         </div>
                                     </div>
@@ -454,7 +454,7 @@ export default function BattleModeV3() {
                             {blA && blB && (
                                 <div className="rounded-2xl border border-green-500/20 bg-green-500/[0.02] backdrop-blur-xl p-5">
                                     <h3 className="text-sm font-black text-white flex items-center gap-2 mb-4">
-                                        <Link2 className="h-4 w-4 text-green-400" /> Backlink Profile Comparison
+                                        <Link2 className="h-4 w-4 text-green-400" /> Backlink Profile Comparison <InfoTooltip content="Side-by-side comparison of each site's backlink authority from Moz data." />
                                         <Badge className="bg-green-500/10 text-green-400 border-green-500/30 text-[9px]">MOZ</Badge>
                                     </h3>
                                     <div className="grid grid-cols-3 gap-4 text-center">
@@ -653,7 +653,7 @@ export default function BattleModeV3() {
                                     <div className="rounded-2xl border border-[#BC13FE]/20 bg-[#BC13FE]/[0.03] backdrop-blur-xl overflow-hidden">
                                         <div className="px-6 py-4 border-b border-[#BC13FE]/10">
                                             <h3 className="text-sm font-black text-white flex items-center gap-2">
-                                                <Zap className="h-4 w-4 text-[#BC13FE]" /> Stolen Opportunities
+                                                <Zap className="h-4 w-4 text-[#BC13FE]" /> Stolen Opportunities <InfoTooltip content="Specific areas where your competitor is outperforming you in search visibility." />
                                             </h3>
                                             <p className="text-xs text-white/40 mt-0.5">Where <span className="text-[#fe3f8c] font-bold">{siteBLabel}</span> is winning</p>
                                         </div>
@@ -679,7 +679,7 @@ export default function BattleModeV3() {
                                     <div className="rounded-2xl border border-green-500/20 bg-green-500/[0.03] backdrop-blur-xl overflow-hidden">
                                         <div className="px-6 py-4 border-b border-green-500/10">
                                             <h3 className="text-sm font-black text-white flex items-center gap-2">
-                                                <ShieldAlert className="h-4 w-4 text-green-400" /> Critical Strategic Gaps
+                                                <ShieldAlert className="h-4 w-4 text-green-400" /> Critical Strategic Gaps <InfoTooltip content="High-level weaknesses in your site's strategy compared to the competitor." />
                                             </h3>
                                             <p className="text-xs text-white/40 mt-0.5">Weaknesses the competitor is exploiting</p>
                                         </div>

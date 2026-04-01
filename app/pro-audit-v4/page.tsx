@@ -206,28 +206,6 @@ export default function ProAuditV4Page() {
           {/* Results Display */}
           {result && (
             <div className="space-y-6">
-              {/* Score Cards */}
-              <div className="grid gap-6 md:grid-cols-3">
-                <Card className="flex items-center justify-center p-6">
-                  <div className="flex flex-col items-center gap-1">
-                    <CircularProgress value={result.scores.seo.score} variant="seo" label="SEO Score" size={140} strokeWidth={10} />
-                    <InfoTooltip content="Search Engine Optimization score measuring technical SEO, content quality, metadata, and crawlability against 2026 standards." />
-                  </div>
-                </Card>
-                <Card className="flex items-center justify-center p-6">
-                  <div className="flex flex-col items-center gap-1">
-                    <CircularProgress value={result.scores.aeo.score} variant="aeo" label="AEO Score" size={140} strokeWidth={10} />
-                    <InfoTooltip content="Answer Engine Optimization score measuring how likely AI assistants (ChatGPT, Perplexity, Gemini) are to cite your content as a source." />
-                  </div>
-                </Card>
-                <Card className="flex items-center justify-center p-6">
-                  <div className="flex flex-col items-center gap-1">
-                    <CircularProgress value={result.scores.geo.score} variant="geo" label="GEO Score" size={140} strokeWidth={10} />
-                    <InfoTooltip content="Generative Engine Optimization score measuring how well your content is structured for AI-generated search results and summaries." />
-                  </div>
-                </Card>
-              </div>
-
               {/* Download Full Report */}
               <div className="flex justify-end">
                 <DownloadReportButton
@@ -257,6 +235,27 @@ export default function ProAuditV4Page() {
                     }))
                   }}
                 />
+              </div>
+              {/* Score Cards */}
+              <div className="grid gap-6 md:grid-cols-3">
+                <Card className="flex items-center justify-center p-6">
+                  <div className="flex flex-col items-center gap-1">
+                    <CircularProgress value={result.scores.seo.score} variant="seo" label="SEO Score" size={140} strokeWidth={10} />
+                    <InfoTooltip content="Search Engine Optimization score measuring technical SEO, content quality, metadata, and crawlability against 2026 standards." />
+                  </div>
+                </Card>
+                <Card className="flex items-center justify-center p-6">
+                  <div className="flex flex-col items-center gap-1">
+                    <CircularProgress value={result.scores.aeo.score} variant="aeo" label="AEO Score" size={140} strokeWidth={10} />
+                    <InfoTooltip content="Answer Engine Optimization score measuring how likely AI assistants (ChatGPT, Perplexity, Gemini) are to cite your content as a source." />
+                  </div>
+                </Card>
+                <Card className="flex items-center justify-center p-6">
+                  <div className="flex flex-col items-center gap-1">
+                    <CircularProgress value={result.scores.geo.score} variant="geo" label="GEO Score" size={140} strokeWidth={10} />
+                    <InfoTooltip content="Generative Engine Optimization score measuring how well your content is structured for AI-generated search results and summaries." />
+                  </div>
+                </Card>
               </div>
 
               {/* Key Metrics Strip */}

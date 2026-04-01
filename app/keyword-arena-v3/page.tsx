@@ -388,12 +388,6 @@ export default function KeywordArenaV3Page() {
               </h1>
               <p className="text-sm text-white/60 mt-1.5">Search a keyword. Select your site. See how you stack up with AI scoring.</p>
             </div>
-            {(searchResults || arenaResult) && !isAnalyzing && (
-              <button onClick={handleReset}
-                className="shrink-0 flex items-center gap-2 px-4 py-2 bg-[#00e5ff]/10 hover:bg-[#00e5ff]/20 text-[#00e5ff] border border-[#00e5ff]/30 rounded-lg font-bold text-sm transition-all">
-                <Search className="h-4 w-4" /> New Search
-              </button>
-            )}
           </div>
 
           <ScanErrorDialog error={error} onClose={() => setError(null)} onRetry={handleStartArena} creditsRefunded={creditsRefunded} />
@@ -411,6 +405,38 @@ export default function KeywordArenaV3Page() {
               {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} Search
             </button>
           </div>
+          {arenaResult && !isAnalyzing && (
+            <div className="flex items-center gap-2 justify-end mb-6 -mt-4 pt-4 border-t border-white/[0.06]">
+              <button
+                onClick={() => {
+                  const text = `KEYWORD ARENA: "${arenaResult.keyword}"\n${'='.repeat(50)}\n\n` +
+                    arenaResult.sites.map((s, i) => {
+                      const scored = s.scores.overall !== null
+                      return `#${scored ? i + 1 : '—'} ${s.isUserSite ? '* ' : ''}${s.url}\n   ${scored
+                        ? `SEO: ${s.scores.seo} | AEO: ${s.scores.aeo} | GEO: ${s.scores.geo} | Overall: ${s.scores.overall}${s.googleRank ? ` | Google: #${s.googleRank}` : ''}`
+                        : 'N/A'}`
+                    }).join('\n\n')
+                  navigator.clipboard.writeText(text)
+                }}
+                className="px-4 py-2 rounded-lg border border-[#00e5ff]/30 bg-[#00e5ff]/5 text-xs font-bold text-[#00e5ff] hover:bg-[#00e5ff]/10 transition-colors flex items-center gap-1.5"
+              >
+                <Copy className="h-3.5 w-3.5" /> Copy Report
+              </button>
+              <DownloadReportButton
+                filename={`duelly-keyword-arena-${arenaResult.keyword.replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().slice(0, 10)}.pdf`}
+                generatePdf={async () => {
+                  const { generatePdfBlob } = await import('@/lib/pdf/generate')
+                  const { KeywordArenaReport } = await import('@/lib/pdf/keyword-arena-report')
+                  const React = (await import('react')).default
+                  return generatePdfBlob(React.createElement(KeywordArenaReport, {
+                    keyword: arenaResult.keyword, date: new Date().toLocaleDateString(),
+                    userSiteUrl: userSiteUrl, userRank: arenaResult.userSiteRank, totalSites: arenaResult.totalSites,
+                    sites: arenaResult.sites,
+                  }))
+                }}
+              />
+            </div>
+          )}
 
           {/* ── STEP 1: Keyword Search (hero version, only when no results) ── */}
           {!searchResults && !arenaResult && !isAnalyzing && (
@@ -619,14 +645,14 @@ export default function KeywordArenaV3Page() {
                     {/* Rank comparison boxes */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
                       <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 text-center">
-                        <p className="text-xs text-white/60 uppercase font-bold tracking-widest mb-1">Google Rank</p>
+                        <p className="text-xs text-white/60 uppercase font-bold tracking-widest mb-1">Google Rank <InfoTooltip content="Your position in Google's traditional search results for this keyword." /></p>
                         <p className="text-3xl font-black text-white tabular-nums">
                           {userSite.googleRank ? `#${userSite.googleRank}` : '—'}
                         </p>
                         <p className="text-xs text-white/50 mt-1">{userSite.googleRank ? 'In search results' : 'Not ranked'}</p>
                       </div>
                       <div className="rounded-xl border border-[#00e5ff]/30 bg-[#00e5ff]/[0.05] p-4 text-center">
-                        <p className="text-xs text-[#00e5ff]/80 uppercase font-bold tracking-widest mb-1">AI Rank</p>
+                        <p className="text-xs text-[#00e5ff]/80 uppercase font-bold tracking-widest mb-1">AI Rank <InfoTooltip content="Your position based on Duelly's combined SEO, AEO, and GEO scoring. This predicts how well your site performs in AI-powered search." /></p>
                         <p className="text-3xl font-black text-[#00e5ff] tabular-nums">
                           #{arenaResult.userSiteRank}
                         </p>
@@ -640,7 +666,7 @@ export default function KeywordArenaV3Page() {
                               ? "border-red-500/30 bg-red-500/[0.05]"
                               : "border-yellow-500/30 bg-yellow-500/[0.05]"
                         )}>
-                          <p className="text-xs text-white/60 uppercase font-bold tracking-widest mb-1">Delta</p>
+                          <p className="text-xs text-white/60 uppercase font-bold tracking-widest mb-1">Delta <InfoTooltip content="The difference between your Google rank and AI rank. A positive delta means you're better prepared for AI search than your Google position suggests." /></p>
                           {arenaResult.userSiteRank < userSite.googleRank ? (
                             <>
                               <div className="flex items-center justify-center gap-1">
@@ -691,43 +717,11 @@ export default function KeywordArenaV3Page() {
                 </div>
               )}
 
-              {/* Copy leaderboard */}
-              <div className="flex justify-between items-center">
-                <h3 className="text-sm font-black text-white flex items-center gap-2">
-                  <Trophy className="h-4 w-4 text-[#00e5ff]" /> Leaderboard
-                  <InfoTooltip content="Sites ranked by their combined SEO, AEO, and GEO scores. Higher overall score = better optimized for both traditional and AI search." />
-                </h3>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      const text = `KEYWORD ARENA: "${arenaResult.keyword}"\n${'='.repeat(50)}\n\n` +
-                        arenaResult.sites.map((s, i) => {
-                          const scored = s.scores.overall !== null
-                          return `#${scored ? i + 1 : '—'} ${s.isUserSite ? '⭐ ' : ''}${s.url}\n   ${scored
-                            ? `SEO: ${s.scores.seo} | AEO: ${s.scores.aeo} | GEO: ${s.scores.geo} | Overall: ${s.scores.overall}${s.googleRank ? ` | Google: #${s.googleRank}` : ''}`
-                            : 'N/A — AI scoring failed'}`
-                        }).join('\n\n')
-                      navigator.clipboard.writeText(text)
-                    }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-xs font-black uppercase tracking-widest text-white/60 hover:text-white/90 transition-colors"
-                  >
-                    <Copy className="h-3 w-3" /> Copy
-                  </button>
-                  <DownloadReportButton
-                    filename={`duelly-keyword-arena-${arenaResult.keyword.replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().slice(0, 10)}.pdf`}
-                    generatePdf={async () => {
-                      const { generatePdfBlob } = await import('@/lib/pdf/generate')
-                      const { KeywordArenaReport } = await import('@/lib/pdf/keyword-arena-report')
-                      const React = (await import('react')).default
-                      return generatePdfBlob(React.createElement(KeywordArenaReport, {
-                        keyword: arenaResult.keyword, date: new Date().toLocaleDateString(),
-                        userSiteUrl: userSiteUrl, userRank: arenaResult.userSiteRank, totalSites: arenaResult.totalSites,
-                        sites: arenaResult.sites,
-                      }))
-                    }}
-                  />
-                </div>
-              </div>
+              {/* Leaderboard header */}
+              <h3 className="text-sm font-black text-white flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-[#00e5ff]" /> Leaderboard
+                <InfoTooltip content="Sites ranked by their combined SEO, AEO, and GEO scores. Higher overall score = better optimized for both traditional and AI search." />
+              </h3>
 
               {/* SEO / AEO / GEO Leaders */}
               {(() => {
@@ -879,38 +873,38 @@ export default function KeywordArenaV3Page() {
                     <div className="border-t border-white/[0.06] bg-white/[0.01] px-6 py-4">
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">Words</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Words <InfoTooltip content="Total word count. Pages under 300 words are thin content. 800+ is ideal." /></p>
                           <p className="text-lg font-black text-white/70 tabular-nums">{d.wordCount.toLocaleString()}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">Schema</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Schema <InfoTooltip content="Whether structured data (JSON-LD) is present. Enables rich search results." /></p>
                           <p className={cn("text-lg font-black tabular-nums", d.hasSchema ? "text-green-400" : "text-red-400")}>{d.hasSchema ? 'Yes' : 'No'}</p>
                           {d.schemaTypes.length > 0 && <p className="text-xs text-white/50 truncate">{d.schemaTypes.join(', ')}</p>}
                         </div>
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">Alt Text</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Alt Text <InfoTooltip content="Percentage of images with descriptive alt text for accessibility and image search." /></p>
                           <p className={cn("text-lg font-black tabular-nums", altPct >= 90 ? "text-green-400" : altPct >= 50 ? "text-yellow-400" : "text-red-400")}>{altPct}%</p>
                         </div>
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">Open Graph</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Open Graph <InfoTooltip content="Social sharing tags (og:title, og:description, og:image). Controls how links appear on social media." /></p>
                           <p className={cn("text-lg font-black", d.hasOgTitle && d.hasOgDescription ? "text-green-400" : "text-yellow-400")}>
                             {[d.hasOgTitle, d.hasOgDescription, d.hasOgImage].filter(Boolean).length}/3
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">Headings</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Headings <InfoTooltip content="H1 and H2 heading tags that structure content for search engines." /></p>
                           <p className="text-sm text-white/70">H1: {d.h1Count} · H2: {d.h2Count}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">Links</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Links <InfoTooltip content="Internal links (to your own pages) and external links (to other sites)." /></p>
                           <p className="text-sm text-white/70">Int: {d.internalLinks} · Ext: {d.externalLinks}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">HTTPS</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">HTTPS <InfoTooltip content="Whether the page uses SSL encryption. Required for trust and rankings." /></p>
                           <p className={cn("text-lg font-black", d.isHttps ? "text-green-400" : "text-red-400")}>{d.isHttps ? '✓' : '✗'}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">Platform</p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Platform <InfoTooltip content="The detected CMS or framework (WordPress, Shopify, etc.)." /></p>
                           <p className="text-sm text-white/70">{d.platform || 'Custom'}</p>
                         </div>
                       </div>
