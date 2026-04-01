@@ -71,26 +71,27 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
       {/* Search Bar */}
       {!hideSearch && (
       <form onSubmit={handleSubmit} className="flex-1 max-w-2xl min-w-0">
-        <div className="relative">
-          <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder={placeholder || "Enter URL to analyze..."}
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            className={cn(
-              "pl-10 pr-20 sm:pr-24 h-10 sm:h-11 bg-input border-border/50 text-sm",
-              "focus:border-seo/50 focus:ring-seo/20",
-              "placeholder:text-muted-foreground/70"
-            )}
-          />
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder={placeholder || "Enter URL to analyze..."}
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className={cn(
+                "pl-10 h-11 sm:h-12 bg-input border-border/50 text-sm",
+                "focus:border-seo/50 focus:ring-seo/20",
+                "placeholder:text-muted-foreground/70"
+              )}
+            />
+          </div>
           <Button
             type="submit"
-            size="sm"
             disabled={!url || isAnalyzing}
             className={cn(
-              "absolute right-1.5 top-1/2 -translate-y-1/2 overflow-hidden",
-              "bg-seo hover:bg-seo/90 text-seo-foreground"
+              "h-11 sm:h-12 px-4 sm:px-6 shrink-0",
+              "bg-seo hover:bg-seo/90 text-seo-foreground font-bold"
             )}
           >
             {isAnalyzing ? (

@@ -150,30 +150,6 @@ export function AuditPageHeader({
                 {copied ? 'Copied' : 'Copy Report'}
               </button>
               <button
-                onClick={() => {
-                  if (!analysisData) return
-                  const scores = analysisData.scores || {}
-                  const seo = scores.seo?.score ?? 'N/A'
-                  const aeo = scores.aeo?.score ?? 'N/A'
-                  const geo = scores.geo?.score ?? 'N/A'
-                  const penalties = (analysisData.enhancedPenalties || [])
-                    .map((p: any) => `[${p.severity?.toUpperCase()}] ${p.category} — ${p.component}\n  ${p.explanation}\n  Fix: ${p.fix}`)
-                    .join('\n\n')
-                  const text = `DUELLY AUDIT REPORT\n${'='.repeat(50)}\nURL: ${currentUrl}\nDate: ${new Date().toLocaleString()}\nSite Type: ${siteType?.primaryType || 'Unknown'}\n\nSCORES\n  SEO: ${seo}/100\n  AEO: ${aeo}/100\n  GEO: ${geo}/100\n\nISSUES FOUND\n${penalties || '  No issues detected.'}`
-                  const blob = new Blob([text], { type: 'text/plain' })
-                  const url = URL.createObjectURL(blob)
-                  const a = document.createElement('a')
-                  a.href = url
-                  a.download = `duelly-audit-${currentUrl.replace(/[^a-zA-Z0-9]/g, '-')}-${new Date().toISOString().slice(0, 10)}.txt`
-                  a.click()
-                  URL.revokeObjectURL(url)
-                }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-geo/50 transition-colors"
-              >
-                <FileDown className="h-3.5 w-3.5" />
-                Export Report
-              </button>
-              <button
                 onClick={onNewAudit}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-seo/50 transition-colors"
               >

@@ -12,6 +12,8 @@ interface CompetitorDuelReportProps {
   backlinkA?: any
   backlinkB?: any
   linkGap?: any[]
+  stolenOpportunities?: any[]
+  strategicGaps?: string[]
 }
 
 function ScoreRow({ label, a, b, color }: { label: string; a: number; b: number; color: string }) {
@@ -26,7 +28,7 @@ function ScoreRow({ label, a, b, color }: { label: string; a: number; b: number;
   )
 }
 
-export function CompetitorDuelReport({ siteA, siteB, date, scores, verdict, recommendations, backlinkA, backlinkB, linkGap }: CompetitorDuelReportProps) {
+export function CompetitorDuelReport({ siteA, siteB, date, scores, verdict, recommendations, backlinkA, backlinkB, linkGap, stolenOpportunities, strategicGaps }: CompetitorDuelReportProps) {
   return (
     <Document>
       <Page size="A4" style={styles.coverPage}>
@@ -98,6 +100,41 @@ export function CompetitorDuelReport({ siteA, siteB, date, scores, verdict, reco
               </View>
             )
           })}
+          <View style={styles.footer}><Text>Duelly.ai</Text><Text>{date}</Text></View>
+        </Page>
+      )}
+
+      {/* Stolen Opportunities & Strategic Gaps */}
+      {((stolenOpportunities && stolenOpportunities.length > 0) || (strategicGaps && strategicGaps.length > 0)) && (
+        <Page size="A4" style={styles.page}>
+          {stolenOpportunities && stolenOpportunities.length > 0 && (
+            <View style={{ marginBottom: 20 }}>
+              <Text style={styles.h2}>Stolen Opportunities</Text>
+              <Text style={[styles.body, { marginBottom: 8 }]}>Areas where your competitor is outperforming you</Text>
+              <View style={styles.divider} />
+              {stolenOpportunities.map((opp: any, i: number) => {
+                const catColor = opp.category === 'seo' ? colors.seo : opp.category === 'aeo' ? colors.aeo : colors.geo
+                return (
+                  <View key={i} style={[styles.card, { borderLeft: `3 solid ${catColor}` }]} wrap={false}>
+                    <Text style={[styles.badge, { color: catColor, backgroundColor: `${catColor}20`, marginBottom: 4, alignSelf: 'flex-start' }]}>{(opp.category || 'SEO').toUpperCase()}</Text>
+                    <Text style={[styles.h3, { marginBottom: 4 }]}>{opp.title}</Text>
+                    <Text style={styles.body}>{opp.description}</Text>
+                  </View>
+                )
+              })}
+            </View>
+          )}
+          {strategicGaps && strategicGaps.length > 0 && (
+            <View>
+              <Text style={styles.h2}>Strategic Gaps</Text>
+              <View style={styles.divider} />
+              {strategicGaps.map((gap: string, i: number) => (
+                <View key={i} style={{ marginBottom: 6, paddingLeft: 8, borderLeft: `2 solid ${colors.border}` }}>
+                  <Text style={styles.body}>{gap}</Text>
+                </View>
+              ))}
+            </View>
+          )}
           <View style={styles.footer}><Text>Duelly.ai</Text><Text>{date}</Text></View>
         </Page>
       )}

@@ -188,35 +188,31 @@ export default function BattleModeV3() {
             <main className="flex-1 overflow-y-auto bg-[#0a0a0f]">
                 <div className="max-w-7xl mx-auto px-3 sm:px-6 pt-4 sm:pt-6 pb-12">
 
-                    {/* Header */}
-                    <div className="mb-8 flex items-start justify-between gap-4">
-                        <div>
-                            <h1 className="text-2xl font-black text-white flex items-center gap-3 tracking-tight">
-                                <Swords className="h-6 w-6 text-[#00e5ff]" />
-                                Competitor Duel
-                            </h1>
-                            <p className="text-sm text-white/60 mt-1.5">Head-to-head intelligence warfare with backlink analysis. Two sites enter. One dominates.</p>
+                    {/* Header + Search */}
+                    <div className="mb-8">
+                        <div className="flex items-start justify-between gap-4 mb-4">
+                            <div>
+                                <h1 className="text-2xl font-black text-white flex items-center gap-3 tracking-tight">
+                                    <Swords className="h-6 w-6 text-[#00e5ff]" />
+                                    Competitor Duel
+                                </h1>
+                                <p className="text-sm text-white/60 mt-1.5">Head-to-head intelligence warfare with backlink analysis. Two sites enter. One dominates.</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <ScanErrorDialog error={error} onClose={() => setError(null)} onRetry={() => handleBattle(siteA, siteB)} creditsRefunded={creditsRefunded} />
-                    <CreditConfirmDialog open={creditDialogOpen} onConfirm={handleConfirmBattle} onCancel={() => setCreditDialogOpen(false)} creditCost={20} scanType="Competitor Duel" costBreakdown="20 credits per competitive intelligence duel (2 sites analyzed + backlink profiles)" />
-
-                    {/* ── Persistent Search Bar (always visible) ── */}
-                    <div className="mb-6 space-y-2">
                         <div className="flex items-center gap-2">
                             <input type="text" value={inlineUrlA} onChange={(e) => setInlineUrlA(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && inlineUrlA.trim() && inlineUrlB.trim() && handleBattle(inlineUrlA.trim(), inlineUrlB.trim())}
                                 placeholder="yoursite.com"
-                                className="flex-1 px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 text-sm" />
+                                className="flex-1 px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 text-sm" />
                             <span className="text-white/20 font-black italic text-sm px-2">VS</span>
                             <input type="text" value={inlineUrlB} onChange={(e) => setInlineUrlB(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && inlineUrlA.trim() && inlineUrlB.trim() && handleBattle(inlineUrlA.trim(), inlineUrlB.trim())}
                                 placeholder="competitor.com"
-                                className="flex-1 px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#fe3f8c]/50 focus:ring-1 focus:ring-[#fe3f8c]/30 text-sm" />
+                                className="flex-1 px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#fe3f8c]/50 focus:ring-1 focus:ring-[#fe3f8c]/30 text-sm" />
                             <button onClick={() => inlineUrlA.trim() && inlineUrlB.trim() && handleBattle(inlineUrlA.trim(), inlineUrlB.trim())}
                                 disabled={!inlineUrlA.trim() || !inlineUrlB.trim() || isAnalyzing}
-                                className="px-5 py-2.5 bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-black rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm shrink-0">
+                                className="px-6 py-3 bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-black rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm shrink-0">
                                 <Swords className="h-4 w-4" /> Battle
                             </button>
                         </div>
@@ -262,6 +258,8 @@ export default function BattleModeV3() {
                                       verdict: comparisonData.winnerVerdict || c.winnerVerdict,
                                       recommendations: comparisonData.recommendations || c.recommendations,
                                       backlinkA: backlinkData?.siteA, backlinkB: backlinkData?.siteB, linkGap: backlinkData?.linkGap,
+                                      stolenOpportunities: comparisonData.stolenOpportunities || c.stolenOpportunities,
+                                      strategicGaps: comparisonData.strategicGaps || c.strategicGaps,
                                     }))
                                   }}
                                 />
@@ -272,6 +270,9 @@ export default function BattleModeV3() {
                             </div>
                         )}
                     </div>
+
+                    <ScanErrorDialog error={error} onClose={() => setError(null)} onRetry={() => handleBattle(siteA, siteB)} creditsRefunded={creditsRefunded} />
+                    <CreditConfirmDialog open={creditDialogOpen} onConfirm={handleConfirmBattle} onCancel={() => setCreditDialogOpen(false)} creditCost={20} scanType="Competitor Duel" costBreakdown="20 credits per competitive intelligence duel (2 sites analyzed + backlink profiles)" />
 
                     {/* ── ENTRY FORM (hero version, only when no results) ── */}
                     {!comparisonData && !isAnalyzing ? (

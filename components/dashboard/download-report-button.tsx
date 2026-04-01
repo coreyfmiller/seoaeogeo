@@ -35,14 +35,14 @@ export function DownloadReportButton({ generatePdf, filename, className }: Downl
       onClick={handleDownload}
       disabled={isGenerating}
       className={cn(
-        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all",
-        "border-green-500/30 bg-green-500/10 text-green-500 hover:bg-green-500/20",
+        "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all",
+        "bg-green-500 hover:bg-green-500/90 text-black",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         className
       )}
     >
-      {isGenerating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" />}
-      {isGenerating ? 'Generating...' : 'Download Report'}
+      {isGenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
+      {isGenerating ? 'Generating PDF...' : 'Download Report'}
     </button>
   )
 }
