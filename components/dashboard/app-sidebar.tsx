@@ -150,7 +150,7 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
         <a href="/pro-audit">
           <img src="/logo.png" alt="Duelly" className="h-[66px] w-auto" />
         </a>
-        <span className="text-xs text-muted-foreground/60 italic mt-1">See your site like AI does.</span>
+        <span className="text-xs text-muted-foreground/60 italic mt-1">The roadmap to outrank your rivals.</span>
       </div>
 
       {/* Main Navigation */}

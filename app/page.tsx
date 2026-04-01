@@ -354,7 +354,7 @@ export default function HomePage() {
           </div>
           <div className="border-t border-border/30 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">© 2026 Duelly. All rights reserved.</p>
-            <p className="text-xs text-muted-foreground/50">See your site like AI does.</p>
+            <p className="text-xs text-muted-foreground/50">The roadmap to outrank your rivals.</p>
           </div>
         </div>
       </footer>
