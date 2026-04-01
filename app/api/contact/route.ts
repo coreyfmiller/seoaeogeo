@@ -3,27 +3,52 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+async function verifyRecaptcha(token: string): Promise<boolean> {
+  const secret = process.env.RECAPTCHA_SECRET_KEY
+  if (!secret) { console.warn('[Contact] No RECAPTCHA_SECRET_KEY, skipping verification'); return true }
+
+  try {
+    const res = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=${secret}&response=${token}`,
+    })
+    const data = await res.json()
+    return data.success && data.score >= 0.5
+  } catch {
+    console.error('[Contact] reCAPTCHA verification failed')
+    return false
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, category, message } = await req.json()
+    const { name, email, category, message, recaptchaToken } = await req.json()
 
     if (!name || !email || !message) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Send email to support
+    // Verify reCAPTCHA
+    if (recaptchaToken) {
+      const isHuman = await verifyRecaptcha(recaptchaToken)
+      if (!isHuman) {
+        return NextResponse.json({ error: 'Spam detected. Please try again.' }, { status: 403 })
+      }
+    }
+
     await resend.emails.send({
       from: 'Duelly Contact <onboarding@resend.dev>',
       to: 'support@duelly.ai',
       replyTo: email,
-      subject: `[${category.toUpperCase()}] Contact from ${name}`,
-      text: `Name: ${name}\nEmail: ${email}\nCategory: ${category}\n\nMessage:\n${message}`,
+      subject: `[${(category || 'general').toUpperCase()}] Contact from ${name}`,
+      text: `Name: ${name}\nEmail: ${email}\nCategory: ${category || 'general'}\n\nMessage:\n${message}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px;">
-          <h2 style="color: #3b82f6;">New Contact Form Submission</h2>
+          <h2 style="color: #00e5ff;">New Contact Form Submission</h2>
           <p><strong>Name:</strong> ${name}</p>
           <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-          <p><strong>Category:</strong> ${category}</p>
+          <p><strong>Category:</strong> ${category || 'general'}</p>
           <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
           <p><strong>Message:</strong></p>
           <p style="white-space: pre-wrap; background: #f9fafb; padding: 16px; border-radius: 8px;">${message}</p>
