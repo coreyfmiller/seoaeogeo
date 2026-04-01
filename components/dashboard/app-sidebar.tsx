@@ -21,6 +21,7 @@ import {
   Swords,
   Trophy,
   ChevronDown,
+  HelpCircle,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
@@ -57,6 +58,7 @@ const comingSoonNav: NavItem[] = []
 
 const bottomNav: NavItem[] = [
   { name: "How We Score", icon: FileText, href: "/standards" },
+  { name: "Help Center", icon: HelpCircle, href: "/help" },
   { name: "Settings", icon: Settings, href: "/settings" },
   { name: "Usage", icon: BarChart3, href: "/usage", badge: "ADMIN" },
 ]

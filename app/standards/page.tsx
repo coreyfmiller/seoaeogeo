@@ -1,6 +1,7 @@
 "use client"
 
-import { PageShell } from "@/components/dashboard/page-shell"
+import { PublicNav } from "@/components/public-nav"
+import { PublicFooter } from "@/components/public-footer"
 import { FileText } from "lucide-react"
 import { useRouter } from "next/navigation"
 
@@ -8,8 +9,9 @@ export default function StandardsPage() {
   const router = useRouter()
 
   return (
-    <PageShell hideSearch apiStatus="idle">
-        <main className="flex-1 overflow-y-auto">
+    <div className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
+      <PublicNav />
+        <main className="flex-1">
           <div className="max-w-4xl mx-auto p-4 sm:p-8">
             {/* Header */}
             <div className="mb-8">
@@ -166,6 +168,7 @@ export default function StandardsPage() {
             </div>
           </div>
         </main>
-    </PageShell>
+      <PublicFooter />
+    </div>
   )
 }

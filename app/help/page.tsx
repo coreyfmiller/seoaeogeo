@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { PageShell } from "@/components/dashboard/page-shell"
+import { PublicNav } from "@/components/public-nav"
+import { PublicFooter } from "@/components/public-footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   HelpCircle,
@@ -169,7 +170,8 @@ export default function HelpPage() {
   const filteredFaqs = activeCategory === "all" ? faqs : faqs.filter(f => f.category === activeCategory)
 
   return (
-    <PageShell hideSearch apiStatus="idle">
+    <div className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
+      <PublicNav />
       {/* FAQPage JSON-LD */}
       <script
         type="application/ld+json"
@@ -561,6 +563,7 @@ export default function HelpPage() {
             <div className="h-8" />
           </div>
         </main>
-    </PageShell>
+      <PublicFooter />
+    </div>
   )
 }
