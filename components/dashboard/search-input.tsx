@@ -55,33 +55,35 @@ export function SearchInput({
 
   return (
     <form onSubmit={handleSubmit} className={cn(style.container, className)}>
-      <div className="relative group">
-        <Globe className={cn(
-          "absolute top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-seo transition-colors",
-          style.icon
-        )} />
-        <input
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder={placeholder}
-          className={cn(
-            "w-full bg-muted/50 border border-border/50 rounded-2xl",
-            "focus:outline-none focus:ring-2 focus:ring-seo/20 focus:border-seo/50",
-            "transition-all placeholder:text-muted-foreground/70",
-            style.input
-          )}
-          required
-          disabled={isAnalyzing}
-        />
+      <div className="flex items-center gap-3">
+        <div className="relative group flex-1">
+          <Globe className={cn(
+            "absolute top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-seo transition-colors",
+            style.icon
+          )} />
+          <input
+            type="text"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder={placeholder}
+            className={cn(
+              "w-full bg-muted/50 border border-border/50 rounded-2xl",
+              "focus:outline-none focus:ring-2 focus:ring-seo/20 focus:border-seo/50",
+              "transition-all placeholder:text-muted-foreground/70",
+              variant === 'large' ? "pl-14 py-5 text-xl" : variant === 'compact' ? "pl-10 py-3 text-base" : "pl-12 py-4 text-lg"
+            )}
+            required
+            disabled={isAnalyzing}
+          />
+        </div>
         <button
           type="submit"
           disabled={isAnalyzing || !url.trim()}
           className={cn(
-            "absolute top-1/2 -translate-y-1/2 rounded-xl font-bold",
+            "rounded-xl font-bold shrink-0",
             "bg-seo text-seo-foreground hover:bg-seo/90",
             "transition-all disabled:opacity-50 disabled:cursor-not-allowed",
-            style.button
+            variant === 'large' ? "px-8 py-5 text-lg" : variant === 'compact' ? "px-4 py-3 text-sm" : "px-6 py-4 text-base"
           )}
         >
           {isAnalyzing ? (
