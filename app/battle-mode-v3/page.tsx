@@ -263,10 +263,6 @@ export default function BattleModeV3() {
                                     }))
                                   }}
                                 />
-                                <button onClick={handleReset}
-                                    className="px-4 py-2 bg-white/[0.04] hover:bg-white/[0.08] text-white/60 hover:text-white border border-white/[0.08] rounded-lg font-bold text-xs transition-all flex items-center gap-1.5">
-                                    <RefreshCw className="h-3.5 w-3.5" /> New Duel
-                                </button>
                             </div>
                         )}
                     </div>
