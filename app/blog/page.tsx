@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
+import { PublicNav } from '@/components/public-nav'
+import { PublicFooter } from '@/components/public-footer'
 
 export const metadata: Metadata = {
   title: 'Blog — Search Intelligence for Small Business',
@@ -51,17 +53,7 @@ const categoryColor: Record<string, string> = {
 export default function BlogPage() {
   return (
     <main className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
-      <header>
-        <nav className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-          <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center"><img src="/logo.png" alt="Duelly" className="h-14 w-auto" /></Link>
-            <div className="flex items-center gap-4">
-              <Link href="/signup" className="px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-bold text-sm transition-colors">Get Started</Link>
-              <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Log In</Link>
-            </div>
-          </div>
-        </nav>
-      </header>
+      <PublicNav />
 
       <div className="max-w-4xl mx-auto px-6 py-16">
         <h1 className="text-4xl font-black mb-2">Blog</h1>
@@ -88,6 +80,7 @@ export default function BlogPage() {
           ))}
         </div>
       </div>
+      <PublicFooter />
     </main>
   )
 }

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { PublicNav } from '@/components/public-nav'
+import { PublicFooter } from '@/components/public-footer'
 
 export const metadata: Metadata = {
   title: 'What is AEO? Answer Engine Optimization Explained',
@@ -11,14 +13,7 @@ export const metadata: Metadata = {
 export default function WhatIsAEOPage() {
   return (
     <main className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
-      <header>
-        <nav className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-          <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center"><img src="/logo.png" alt="Duelly" className="h-14 w-auto" /></Link>
-            <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"><ArrowLeft className="h-3 w-3" /> All Posts</Link>
-          </div>
-        </nav>
-      </header>
+      <PublicNav />
 
       <article className="max-w-3xl mx-auto px-6 py-16">
         <div className="mb-8">
@@ -90,6 +85,7 @@ export default function WhatIsAEOPage() {
         datePublished: '2026-03-29', author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
         publisher: { '@type': 'Organization', name: 'Duelly', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
       }) }} />
+      <PublicFooter />
     </main>
   )
 }

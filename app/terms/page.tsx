@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { PublicNav } from '@/components/public-nav'
+import { PublicFooter } from '@/components/public-footer'
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
@@ -10,14 +11,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <main className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
-      <header>
-        <nav className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-          <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-            <Link href="/" className="flex items-center"><img src="/logo.png" alt="Duelly" className="h-14 w-auto" /></Link>
-            <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Log In</Link>
-          </div>
-        </nav>
-      </header>
+      <PublicNav />
       <div className="max-w-4xl mx-auto px-6 py-16">
         <h1 className="text-4xl font-black mb-2">Terms of Service</h1>
         <p className="text-sm text-muted-foreground mb-10">Last updated: March 29, 2026</p>
@@ -69,6 +63,7 @@ export default function TermsPage() {
           </section>
         </div>
       </div>
+      <PublicFooter />
     </main>
   )
 }
