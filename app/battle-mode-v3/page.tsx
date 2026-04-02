@@ -119,9 +119,9 @@ export default function BattleModeV3() {
                 url: `${siteA} vs ${siteB}`, type: 'competitive',
                 scores: { seo: c.seo?.siteA || 0, aeo: c.aeo?.siteA || 0, geo: c.geo?.siteA || 0 },
                 timestamp: new Date().toISOString(),
-            }, comparisonData)
+            }, { comparison: comparisonData.comparison || comparisonData, backlinks: backlinkData })
         }
-    }, [comparisonData, siteA, siteB])
+    }, [comparisonData, backlinkData, siteA, siteB])
 
     // Load from history
     useEffect(() => {
@@ -131,7 +131,13 @@ export default function BattleModeV3() {
             if (full) {
                 const parts = entry.url.split(' vs ')
                 if (parts.length === 2) { setSiteA(parts[0]); setSiteB(parts[1]) }
-                setComparisonData(full)
+                // full may be the comparison object or the full wrapper with comparison + backlinks
+                if (full.comparison) {
+                    setComparisonData(full.comparison)
+                    if (full.backlinks) setBacklinkData(full.backlinks)
+                } else {
+                    setComparisonData(full)
+                }
                 return
             }
         }
@@ -139,7 +145,13 @@ export default function BattleModeV3() {
         if (latest) {
             const parts = latest.entry.url.split(' vs ')
             if (parts.length === 2) { setSiteA(parts[0]); setSiteB(parts[1]) }
-            setComparisonData(latest.result)
+            const full = latest.result
+            if (full.comparison) {
+                setComparisonData(full.comparison)
+                if (full.backlinks) setBacklinkData(full.backlinks)
+            } else {
+                setComparisonData(full)
+            }
         }
     }, [])
 
