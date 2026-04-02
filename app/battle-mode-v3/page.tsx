@@ -209,7 +209,7 @@ export default function BattleModeV3() {
                                     <Swords className="h-6 w-6 text-[#00e5ff]" />
                                     Competitor Duel
                                 </h1>
-                                <p className="text-sm text-white/60 mt-1.5">Head-to-head intelligence warfare with backlink analysis. Two sites enter. One dominates.</p>
+                                <p className="text-sm text-white/60 mt-1.5">Two sites enter. One dominates.</p>
                             </div>
                         </div>
 
@@ -351,7 +351,7 @@ export default function BattleModeV3() {
                                         <div key={battle.label} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-xl p-5 relative overflow-hidden">
                                             <div className="relative z-10">
                                                 <div className="flex items-center justify-between mb-4">
-                                                    <span className="text-xs font-black uppercase tracking-widest text-white/60 flex items-center gap-1.5">{battle.icon}{battle.label}</span>
+                                                    <span className="text-sm font-black uppercase tracking-widest text-white/80 flex items-center gap-1.5">{battle.icon}{battle.label}</span>
                                                     <InfoTooltip content={battle.tooltip} />
                                                 </div>
                                                 {noData ? (
