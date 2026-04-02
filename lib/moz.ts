@@ -108,7 +108,7 @@ export async function getMozBacklinks(targetUrl: string, limit?: number): Promis
   const domain = extractDomain(targetUrl)
   const desiredCount = limit || MOZ_BACKLINK_LIMIT
   // Fetch extra rows so we still have enough after deduplicating by domain
-  const fetchLimit = desiredCount * 5
+  const fetchLimit = desiredCount * 3
   console.log(`[Moz] Fetching top ${fetchLimit} backlinks for: ${domain} (will dedupe to ${desiredCount} unique domains)`)
 
   const res = await fetch('https://lsapi.seomoz.com/v2/links', {
@@ -155,7 +155,7 @@ export async function getMozBacklinks(targetUrl: string, limit?: number): Promis
   // Deduplicate by root domain — keep the highest-DA link per domain
   const seenDomains = new Map<string, MozBacklink>()
   for (const link of allLinks) {
-    const key = link.sourceDomain.toLowerCase()
+    const key = link.sourceDomain.replace(/^www\./, '').replace(/\.$/, '').toLowerCase()
     const existing = seenDomains.get(key)
     if (!existing || link.domainAuthority > existing.domainAuthority) {
       seenDomains.set(key, link)

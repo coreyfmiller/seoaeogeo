@@ -111,10 +111,10 @@ export function LinkBuildingIntelligence({ metrics, backlinks }: LinkBuildingInt
             <div className="px-5 py-4 border-b border-green-500/10">
               <div className="flex items-center gap-2">
                 <ExternalLink className="h-5 w-5 text-green-500" />
-                <h3 className="text-base font-black">Top {backlinks.length} Backlinks</h3>
+                <h3 className="text-base font-black">Top {backlinks.length} Referring Domains</h3>
                 <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-green-500/30 text-green-500 bg-green-500/10">MOZ</Badge>
               </div>
-              <p className="text-sm text-muted-foreground mt-1">The highest-authority sites linking to your domain</p>
+              <p className="text-sm text-muted-foreground mt-1">The highest-authority domains linking to your site</p>
             </div>
             <div className="px-5 py-3 space-y-2">
               <div className="flex items-center gap-3 text-xs text-muted-foreground uppercase font-bold pb-2 border-b border-border/30">
