@@ -177,7 +177,7 @@ export async function generateAIExpertAnalysis(data: ExpertAnalysisData): Promis
     const modelName = await getGeminiModel()
     const model = genAI.getGenerativeModel({
       model: modelName,
-      generationConfig: { temperature: 0.3, topP: 0.4, maxOutputTokens: 1024, responseMimeType: 'application/json' },
+      generationConfig: { temperature: 0.3, topP: 0.4, maxOutputTokens: 1024 },
     })
 
     console.log(`[Expert Analysis] Generating for ${data.context}...`)
@@ -191,14 +191,28 @@ export async function generateAIExpertAnalysis(data: ExpertAnalysisData): Promis
     const analysisPromise = (async () => {
       const result = await model.generateContent(buildPrompt(data))
       const text = result.response.text()
-      const parsed = safeJsonParse(text)
-      const analysis = parsed?.analysis || null
-      if (!analysis) {
-        console.error('[Expert Analysis] No analysis field in response:', text.substring(0, 300))
-      } else {
-        console.log(`[Expert Analysis] Success for ${data.context} (${analysis.length} chars)`)
+
+      // Try to extract JSON, fall back to raw text
+      const jsonMatch = text.match(/\{[\s\S]*\}/)
+      if (jsonMatch) {
+        try {
+          const parsed = safeJsonParse(jsonMatch[0])
+          if (parsed?.analysis) {
+            console.log(`[Expert Analysis] Success for ${data.context} (${parsed.analysis.length} chars)`)
+            return parsed.analysis as string
+          }
+        } catch {}
       }
-      return analysis
+
+      // If JSON parsing fails, use the raw text (strip any markdown)
+      const cleaned = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').replace(/^\s*\{[\s\S]*?"analysis"\s*:\s*"/, '').replace(/"\s*\}\s*$/, '').trim()
+      if (cleaned.length > 50) {
+        console.log(`[Expert Analysis] Used raw text for ${data.context} (${cleaned.length} chars)`)
+        return cleaned
+      }
+
+      console.error('[Expert Analysis] Could not extract analysis from response:', text.substring(0, 300))
+      return null
     })()
 
     return await Promise.race([analysisPromise, timeoutPromise])
