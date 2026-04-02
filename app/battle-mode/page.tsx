@@ -117,7 +117,11 @@ export default function BattleMode() {
             if (full) {
                 const parts = entry.url.split(' vs ')
                 if (parts.length === 2) { setSiteA(parts[0]); setSiteB(parts[1]) }
-                setComparisonData(full)
+                if (full.comparison) {
+                    setComparisonData(full.comparison)
+                } else {
+                    setComparisonData(full)
+                }
                 return
             }
         }
@@ -125,7 +129,12 @@ export default function BattleMode() {
         if (latest) {
             const parts = latest.entry.url.split(' vs ')
             if (parts.length === 2) { setSiteA(parts[0]); setSiteB(parts[1]) }
-            setComparisonData(latest.result)
+            const full = latest.result
+            if (full.comparison) {
+                setComparisonData(full.comparison)
+            } else {
+                setComparisonData(full)
+            }
         }
     }, [])
 

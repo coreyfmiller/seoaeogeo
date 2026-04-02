@@ -131,7 +131,11 @@ export default function SiteVsSite() {
                     setSiteA(parts[0])
                     setSiteB(parts[1])
                 }
-                setComparisonData(full)
+                if (full.comparison) {
+                    setComparisonData(full.comparison)
+                } else {
+                    setComparisonData(full)
+                }
                 return
             }
         }
@@ -142,7 +146,12 @@ export default function SiteVsSite() {
                 setSiteA(parts[0])
                 setSiteB(parts[1])
             }
-            setComparisonData(latest.result)
+            const full = latest.result
+            if (full.comparison) {
+                setComparisonData(full.comparison)
+            } else {
+                setComparisonData(full)
+            }
         }
     }, [])
 
