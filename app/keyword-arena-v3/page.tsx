@@ -822,7 +822,7 @@ export default function KeywordArenaV3Page() {
                                   <p className={cn("text-sm font-bold truncate max-w-[500px]", isUser ? "text-[#00e5ff]" : "text-white/80")}>
                                     {site.title || site.url}
                                   </p>
-                                  <p className="text-xs text-white/60 truncate max-w-[500px]">{site.url}</p>
+                                  <a href={site.url.startsWith('http') ? site.url : `https://${site.url}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs text-white/60 truncate max-w-[500px] hover:text-[#00e5ff] hover:underline block">{site.url}</a>
                                 </div>
                                 {isUser && <Badge className="shrink-0 bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-[8px] font-black">YOU</Badge>}
                                 {!scored && (
@@ -971,7 +971,7 @@ export default function KeywordArenaV3Page() {
                       </Link>
                     )}
                     {(userSite.scores.aeo ?? 0) < 70 && (
-                      <Link href="/deep-scan" className="group rounded-xl border border-[#BC13FE]/20 bg-[#BC13FE]/[0.03] p-4 hover:border-[#BC13FE]/40 transition-all">
+                      <Link href="/deep-scan-v4" className="group rounded-xl border border-[#BC13FE]/20 bg-[#BC13FE]/[0.03] p-4 hover:border-[#BC13FE]/40 transition-all">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="h-7 w-7 rounded-lg bg-[#BC13FE]/10 flex items-center justify-center"><Bot className="h-3.5 w-3.5 text-[#BC13FE]" /></div>
                           <span className="text-xs font-bold text-[#BC13FE]">Deep Scan</span>
