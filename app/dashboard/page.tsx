@@ -276,7 +276,7 @@ export default function DashboardPage() {
                               </div>
                             )}
                             <span className="text-[10px] text-muted-foreground shrink-0">
-                              {new Date(scan.timestamp).toLocaleDateString()}
+                              {new Date(scan.timestamp).toLocaleDateString()} {new Date(scan.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
                           </button>
                         )
