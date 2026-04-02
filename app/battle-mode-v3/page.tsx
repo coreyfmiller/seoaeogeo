@@ -467,8 +467,7 @@ export default function BattleModeV3() {
                             {blA && blB && (
                                 <div className="rounded-2xl border border-green-500/20 bg-green-500/[0.02] backdrop-blur-xl p-5">
                                     <h3 className="text-sm font-black text-white flex items-center gap-2 mb-4">
-                                        <Link2 className="h-4 w-4 text-green-400" /> Backlink Profile Comparison <InfoTooltip content="Side-by-side comparison of each site's backlink authority from Moz data." />
-                                        <Badge className="bg-green-500/10 text-green-400 border-green-500/30 text-[9px]">MOZ</Badge>
+                                        <Link2 className="h-4 w-4 text-green-400" /> Backlink Profile Comparison <InfoTooltip content="Side-by-side comparison of each site's backlink authority." />
                                     </h3>
                                     <div className="grid grid-cols-3 gap-4 text-center">
                                         <div className="text-[#00e5ff]">
