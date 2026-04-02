@@ -10,8 +10,8 @@ export interface ScanHistoryEntry {
 
 const STORAGE_KEY = 'scan_history'
 const RESULT_PREFIX = 'scan_result_'
-const MAX_ENTRIES = 50
-const MAX_FULL_RESULTS = 20
+const MAX_ENTRIES = 10
+const MAX_FULL_RESULTS = 10
 
 function resultKey(entry: { url: string; type: string; timestamp: string }) {
   // Create a stable key from url+type+timestamp
@@ -37,7 +37,17 @@ export function saveScanToHistory(entry: ScanHistoryEntry, fullResult?: any) {
     }
 
     existing.unshift(entry)
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(existing.slice(0, MAX_ENTRIES)))
+    const trimmed = existing.slice(0, MAX_ENTRIES)
+
+    // Remove full results for any entries being purged
+    const purged = existing.slice(MAX_ENTRIES)
+    for (const old of purged) {
+      if (old.hasFullResult) {
+        try { localStorage.removeItem(resultKey(old)) } catch {}
+      }
+    }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed))
   } catch {}
 }
 
