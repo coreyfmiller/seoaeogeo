@@ -198,7 +198,7 @@ export default function HomePage() {
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
               Head-to-head comparison of two websites with backlink analysis powered by Moz.
-              See Domain Authority, top backlinks, link gaps, and AI-generated counter-strategies
+              See Domain Authority, top referring domains, link gaps, and AI-generated counter-strategies
               to outrank your competitor. 20 credits per duel.
             </p>
             <Link href="/battle-mode-v3" className="text-sm font-semibold text-[#fe3f8c] hover:underline flex items-center gap-1">

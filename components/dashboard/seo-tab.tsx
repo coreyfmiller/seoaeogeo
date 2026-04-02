@@ -290,7 +290,7 @@ export function SEOTab({ data }: SEOTabProps) {
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Link2 className="h-5 w-5 text-seo" />
-              Top Backlinks
+              Top Referring Domains
             </CardTitle>
           </CardHeader>
           <CardContent>

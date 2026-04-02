@@ -483,12 +483,12 @@ export default function BattleModeV3() {
                                         </div>
                                     </div>
 
-                                    {/* Top Backlinks Tables */}
+                                    {/* Top Referring Domains Tables */}
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
                                         {/* Site A Backlinks */}
                                         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
                                             <div className="px-4 py-3">
-                                                <span className="text-xs font-bold text-[#00e5ff]">Top Backlinks — {siteALabel} ({blA.backlinks.length})</span>
+                                                <span className="text-xs font-bold text-[#00e5ff]">Top Referring Domains — {siteALabel} ({blA.backlinks.length})</span>
                                             </div>
                                             <div className="px-4 pb-3 space-y-2">
                                                     <div className="flex items-center gap-2 text-[10px] text-white/30 uppercase font-bold pb-1 border-b border-white/[0.04]">
@@ -509,7 +509,7 @@ export default function BattleModeV3() {
                                         {/* Site B Backlinks */}
                                         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
                                             <div className="px-4 py-3">
-                                                <span className="text-xs font-bold text-[#fe3f8c]">Top Backlinks — {siteBLabel} ({blB.backlinks.length})</span>
+                                                <span className="text-xs font-bold text-[#fe3f8c]">Top Referring Domains — {siteBLabel} ({blB.backlinks.length})</span>
                                             </div>
                                                 <div className="px-4 pb-3 space-y-2">
                                                     <div className="flex items-center gap-2 text-[10px] text-white/30 uppercase font-bold pb-1 border-b border-white/[0.04]">
@@ -564,7 +564,7 @@ export default function BattleModeV3() {
                             {!mozEnabled && !blA && (
                                 <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 text-center">
                                     <Link2 className="h-5 w-5 text-white/20 mx-auto mb-2" />
-                                    <p className="text-xs text-white/30">Backlink analysis coming soon — Domain Authority, top backlinks, and link gap comparison.</p>
+                                    <p className="text-xs text-white/30">Backlink analysis coming soon — Domain Authority, top referring domains, and link gap comparison.</p>
                                 </div>
                             )}
 

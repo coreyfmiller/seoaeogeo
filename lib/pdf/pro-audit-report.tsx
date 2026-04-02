@@ -144,7 +144,7 @@ export function ProAuditReport({ url, date, scores, siteType, platform, overallF
               </View>
               {backlinkData.backlinks.length > 0 && (
                 <View style={{ marginTop: 8 }}>
-                  <Text style={[styles.h4, { marginBottom: 4 }]}>Top Backlinks</Text>
+                  <Text style={[styles.h4, { marginBottom: 4 }]}>Top Referring Domains</Text>
                   {backlinkData.backlinks.slice(0, 10).map((bl: any, i: number) => (
                     <View key={i} style={[styles.row, { paddingVertical: 3, borderBottom: `1 solid ${colors.border}` }]}>
                       <Text style={[styles.small, { width: 20, fontWeight: 'bold', color: bl.domainAuthority >= 40 ? colors.green : colors.muted }]}>{bl.domainAuthority}</Text>

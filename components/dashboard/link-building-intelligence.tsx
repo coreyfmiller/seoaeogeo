@@ -105,7 +105,7 @@ export function LinkBuildingIntelligence({ metrics, backlinks }: LinkBuildingInt
           ))}
         </div>
 
-        {/* Top Backlinks — always visible, prominent */}
+        {/* Top Referring Domains — always visible, prominent */}
         {backlinks.length > 0 && (
           <div className="rounded-xl border-2 border-green-500/20 bg-green-500/5 overflow-hidden">
             <div className="px-5 py-4 border-b border-green-500/10">
