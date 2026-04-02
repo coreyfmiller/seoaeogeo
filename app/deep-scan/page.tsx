@@ -525,7 +525,9 @@ export default function DeepV3Page() {
                 })()}
 
                 {/* ═══ EXPERT ANALYSIS ═══ */}
-                {result.expertAnalysis && <ExpertAnalysis analysis={result.expertAnalysis} />}
+                {(result.expertAnalysis || result.sitewideIntelligence?.domainHealthScore !== undefined) && (
+                  <ExpertAnalysis analysis={result.expertAnalysis || `Across ${result.pagesCrawled} pages, this site scores SEO ${result.scores.seo}, AEO ${result.scores.aeo}, GEO ${result.scores.geo}. Domain health: ${result.sitewideIntelligence?.domainHealthScore ?? '–'}%.`} />
+                )}
 
                 {/* Prioritized Site Improvements */}
                 {result.sitewideIntelligence?.recommendations?.length > 0 && (

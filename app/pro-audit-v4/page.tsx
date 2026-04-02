@@ -302,7 +302,9 @@ export default function ProAuditV4Page() {
               })()}
 
               {/* ═══ EXPERT ANALYSIS ═══ */}
-              {result.expertAnalysis && <ExpertAnalysis analysis={result.expertAnalysis} />}
+              {(result.expertAnalysis || result.graderResult?.overallFeedback) && (
+                <ExpertAnalysis analysis={result.expertAnalysis || result.graderResult.overallFeedback} />
+              )}
 
               {/* ═══ ROADMAP TO 100 ═══ */}
               {(result.aiAnalysis?.recommendations?.length ?? 0) > 0 && (() => {

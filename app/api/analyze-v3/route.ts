@@ -108,20 +108,25 @@ export async function POST(request: NextRequest) {
 
       // Generate AI expert analysis
       const sd = pageData.structuralData || {}
-      const expertAnalysis = await generateAIExpertAnalysis({
-        context: 'pro-audit', url,
-        scores: { seo: graderResult.seoScore, aeo: graderResult.aeoScore, geo: graderResult.geoScore },
-        siteType: siteTypeResult.primaryType, platform: pageData.platformDetection?.label,
-        wordCount: sd.wordCount, schemaCount: (pageData.schemas || []).length,
-        criticalIssues: graderResult.criticalIssues,
-        domainAuthority: backlinkData?.metrics?.domainAuthority,
-        totalBacklinks: backlinkData?.metrics?.totalBacklinks,
-        spamScore: backlinkData?.metrics?.spamScore,
-        responseTimeMs: pageData.technical?.responseTimeMs,
-        hasH1: (sd.semanticTags?.h1Count || 0) > 0,
-        altTextPct: sd.media?.totalImages > 0 ? Math.round((sd.media.imagesWithAlt / sd.media.totalImages) * 100) : 100,
-        internalLinks: sd.links?.internal, externalLinks: sd.links?.external,
-      }).catch(() => null)
+      let expertAnalysis: string | null = null
+      try {
+        expertAnalysis = await generateAIExpertAnalysis({
+          context: 'pro-audit', url,
+          scores: { seo: graderResult.seoScore, aeo: graderResult.aeoScore, geo: graderResult.geoScore },
+          siteType: siteTypeResult.primaryType, platform: pageData.platformDetection?.label,
+          wordCount: sd.wordCount, schemaCount: (pageData.schemas || []).length,
+          criticalIssues: graderResult.criticalIssues,
+          domainAuthority: backlinkData?.metrics?.domainAuthority,
+          totalBacklinks: backlinkData?.metrics?.totalBacklinks,
+          spamScore: backlinkData?.metrics?.spamScore,
+          responseTimeMs: pageData.technical?.responseTimeMs,
+          hasH1: (sd.semanticTags?.h1Count || 0) > 0,
+          altTextPct: sd.media?.totalImages > 0 ? Math.round((sd.media.imagesWithAlt / sd.media.totalImages) * 100) : 100,
+          internalLinks: sd.links?.internal, externalLinks: sd.links?.external,
+        })
+      } catch (err) {
+        console.error('[V4 API] Expert analysis failed:', err instanceof Error ? err.message : err)
+      }
 
       send({ type: 'progress', phase: 'Audit complete!', progress: 100 })
       await incrementScanCount(user.id, 'pro')

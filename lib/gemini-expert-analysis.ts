@@ -180,13 +180,19 @@ export async function generateAIExpertAnalysis(data: ExpertAnalysisData): Promis
       generationConfig: { temperature: 0.3, topP: 0.4, maxOutputTokens: 1024, responseMimeType: 'application/json' },
     })
 
+    console.log(`[Expert Analysis] Generating for ${data.context}...`)
     const result = await model.generateContent(buildPrompt(data))
     const text = result.response.text()
-    const jsonMatch = text.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) return null
 
-    const parsed = safeJsonParse(jsonMatch[0])
-    return parsed.analysis || null
+    // responseMimeType: 'application/json' means the response is already JSON
+    const parsed = safeJsonParse(text)
+    const analysis = parsed?.analysis || null
+    if (!analysis) {
+      console.error('[Expert Analysis] No analysis field in response:', text.substring(0, 200))
+    } else {
+      console.log(`[Expert Analysis] Success for ${data.context} (${analysis.length} chars)`)
+    }
+    return analysis
   } catch (err) {
     console.error('[Expert Analysis] Gemini call failed:', err instanceof Error ? err.message : err)
     return null
