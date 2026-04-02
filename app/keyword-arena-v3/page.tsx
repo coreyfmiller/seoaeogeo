@@ -9,6 +9,7 @@ import { CreditConfirmDialog } from "@/components/dashboard/credit-confirm-dialo
 import { ScanErrorDialog } from "@/components/dashboard/scan-error-dialog"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
 import { DownloadReportButton } from "@/components/dashboard/download-report-button"
+import { safeSetItem } from "@/lib/safe-storage"
 import { cn } from "@/lib/utils"
 import {
   Trophy, Search, Sparkles, Bot, Clock, Crown,
@@ -186,9 +187,9 @@ export default function KeywordArenaV3Page() {
   // Save state to sessionStorage when results change
   useEffect(() => {
     if (typeof window === "undefined") return
-    if (keyword) localStorage.setItem("arena_v3_keyword", keyword)
-    if (userSiteUrl) localStorage.setItem("arena_v3_userSite", userSiteUrl)
-    if (arenaResult) localStorage.setItem("arena_v3_result", JSON.stringify(arenaResult))
+    if (keyword) safeSetItem("arena_v3_keyword", keyword)
+    if (userSiteUrl) safeSetItem("arena_v3_userSite", userSiteUrl)
+    if (arenaResult) safeSetItem("arena_v3_result", JSON.stringify(arenaResult))
   }, [keyword, userSiteUrl, arenaResult])
 
   // Save to scan history for dashboard

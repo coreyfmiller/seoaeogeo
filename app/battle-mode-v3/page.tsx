@@ -17,6 +17,7 @@ import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { DownloadReportButton } from '@/components/dashboard/download-report-button'
+import { safeSetItem } from '@/lib/safe-storage'
 
 /* ── Glowing Radial Ring (SVG) ── */
 function BattleRing({ value, color, glowColor, size = 130 }: { value: number; color: string; glowColor: string; size?: number }) {
@@ -77,10 +78,10 @@ export default function BattleModeV3() {
 
     useEffect(() => {
         if (typeof window === "undefined") return
-        if (siteA) localStorage.setItem("battle_v3_siteA", siteA)
-        if (siteB) localStorage.setItem("battle_v3_siteB", siteB)
-        if (comparisonData) localStorage.setItem("battle_v3_data", JSON.stringify(comparisonData))
-        if (backlinkData) localStorage.setItem("battle_v3_backlinks", JSON.stringify(backlinkData))
+        if (siteA) safeSetItem("battle_v3_siteA", siteA)
+        if (siteB) safeSetItem("battle_v3_siteB", siteB)
+        if (comparisonData) safeSetItem("battle_v3_data", JSON.stringify(comparisonData))
+        if (backlinkData) safeSetItem("battle_v3_backlinks", JSON.stringify(backlinkData))
     }, [siteA, siteB, comparisonData, backlinkData])
 
     // Progress ticker
