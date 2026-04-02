@@ -19,6 +19,8 @@ import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialo
 import { Badge } from '@/components/ui/badge'
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { LinkBuildingIntelligence } from '@/components/dashboard/link-building-intelligence'
+import { ExpertAnalysis } from '@/components/dashboard/expert-analysis'
+import { generateExpertAnalysis } from '@/lib/expert-analysis'
 import { DownloadReportButton } from '@/components/dashboard/download-report-button'
 import { cn } from '@/lib/utils'
 
@@ -298,6 +300,17 @@ export default function ProAuditV4Page() {
                   </div>
                 )
               })()}
+
+              {/* ═══ EXPERT ANALYSIS ═══ */}
+              <ExpertAnalysis analysis={generateExpertAnalysis({
+                tool: 'pro-audit', url: result.url,
+                scores: { seo: result.scores.seo.score, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
+                siteType: result.siteTypeResult?.primaryType, platform: result.platformDetection?.label,
+                wordCount: result.pageData?.structuralData?.wordCount,
+                schemaCount: (result.pageData?.schemas || []).length,
+                criticalIssues: result.graderResult?.criticalIssues,
+                domainAuthority: result.backlinkData?.metrics?.domainAuthority,
+              })} />
 
               {/* ═══ ROADMAP TO 100 ═══ */}
               {(result.aiAnalysis?.recommendations?.length ?? 0) > 0 && (() => {

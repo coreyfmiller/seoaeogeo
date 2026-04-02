@@ -14,6 +14,8 @@ import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
 import { InfoTooltip } from '@/components/ui/info-tooltip'
+import { ExpertAnalysis } from '@/components/dashboard/expert-analysis'
+import { generateExpertAnalysis } from '@/lib/expert-analysis'
 import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { DownloadReportButton } from '@/components/dashboard/download-report-button'
@@ -384,21 +386,18 @@ export default function BattleModeV3() {
                                 })}
                             </div>
 
-                            {/* ── Expert Verdict (right after scores) ── */}
-                            {(comparisonData.winnerVerdict || comparisonData.comparison?.winnerVerdict) && (
-                                <div className="rounded-2xl border border-[#00e5ff]/30 bg-[#00e5ff]/[0.03] backdrop-blur-xl p-5 relative overflow-hidden">
-                                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#00e5ff]/5 rounded-full blur-[60px] pointer-events-none" />
-                                    <div className="relative z-10 flex items-start gap-3">
-                                        <div className="h-9 w-9 rounded-lg bg-[#00e5ff]/10 border border-[#00e5ff]/20 flex items-center justify-center shrink-0">
-                                            <Zap className="h-4 w-4 text-[#00e5ff]" />
-                                        </div>
-                                        <div>
-                                            <h4 className="text-xs font-black uppercase text-[#00e5ff] tracking-widest mb-1 flex items-center gap-1.5">Expert Verdict <InfoTooltip content="AI-generated analysis of which site has the competitive advantage and why." /></h4>
-                                            <p className="text-sm font-medium text-white/80 leading-relaxed">{comparisonData.winnerVerdict || comparisonData.comparison?.winnerVerdict}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+                            {/* ── Expert Analysis (right after scores) ── */}
+                            {(() => {
+                                const c = comparisonData.comparison || comparisonData
+                                const analysis = comparisonData.winnerVerdict || comparisonData.comparison?.winnerVerdict || generateExpertAnalysis({
+                                    tool: 'competitor-duel', url: siteA,
+                                    scores: { seo: c.seo?.siteA ?? 0, aeo: c.aeo?.siteA ?? 0, geo: c.geo?.siteA ?? 0 },
+                                    competitorUrl: siteB,
+                                    competitorScores: { seo: c.seo?.siteB ?? 0, aeo: c.aeo?.siteB ?? 0, geo: c.geo?.siteB ?? 0 },
+                                    domainAuthority: backlinkData?.siteA?.metrics?.domainAuthority,
+                                })
+                                return <ExpertAnalysis analysis={analysis} label="Expert Analysis" tooltip="AI-generated analysis of which site has the competitive advantage and why." />
+                            })()}
 
                             {/* ── Counter-Strategies ── */}
                             {(comparisonData.recommendations || comparisonData.comparison?.recommendations)?.length > 0 && (() => {
