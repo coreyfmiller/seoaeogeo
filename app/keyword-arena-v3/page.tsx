@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { PageShell } from "@/components/dashboard/page-shell"
-import { saveScanToHistory } from '@/lib/scan-history'
+import { saveScanToHistory, wasHistoryCleared } from '@/lib/scan-history'
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { CreditConfirmDialog } from "@/components/dashboard/credit-confirm-dialog"
@@ -171,6 +171,7 @@ export default function KeywordArenaV3Page() {
   // Restore state from sessionStorage on mount
   useEffect(() => {
     if (typeof window === "undefined") return
+    if (wasHistoryCleared()) return
     const savedKeyword = localStorage.getItem("arena_v3_keyword")
     const savedUserSite = localStorage.getItem("arena_v3_userSite")
     const savedResult = localStorage.getItem("arena_v3_result")

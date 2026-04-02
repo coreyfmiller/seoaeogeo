@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Layers, Sparkles, Zap, ShieldCheck, AlertTriangle, FileText, Search, CheckCircle2, Clock, Copy } from 'lucide-react'
-import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan } from '@/lib/scan-history'
+import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan, wasHistoryCleared } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { PageShell } from '@/components/dashboard/page-shell'
 import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
@@ -217,6 +217,7 @@ export default function DeepV3Page() {
   }, [result, currentUrl])
 
   useEffect(() => {
+    if (wasHistoryCleared()) return
     const entry = consumeLoadFromHistory()
     if (entry && entry.type === 'deep') {
       const full = getFullScanResult(entry)

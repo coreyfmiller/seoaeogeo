@@ -203,5 +203,19 @@ export function clearScanHistory() {
     for (const key of toolKeys) {
       try { localStorage.removeItem(key) } catch {}
     }
+
+    // Set flag so tool pages skip loading from scan_jobs on next mount
+    localStorage.setItem('duelly_history_cleared', 'true')
   } catch {}
+}
+
+/** Check if history was recently cleared (tool pages should skip auto-loading) */
+export function wasHistoryCleared(): boolean {
+  try {
+    if (localStorage.getItem('duelly_history_cleared') === 'true') {
+      localStorage.removeItem('duelly_history_cleared')
+      return true
+    }
+  } catch {}
+  return false
 }

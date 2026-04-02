@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Zap, Search, Sparkles, Bot, CheckCircle2, Clock, Copy, Filter, FileDown } from 'lucide-react'
-import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan } from '@/lib/scan-history'
+import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan, wasHistoryCleared } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { SearchInput } from '@/components/dashboard/search-input'
@@ -96,6 +96,7 @@ export default function ProAuditV4Page() {
   }, [result, currentUrl])
 
   useEffect(() => {
+    if (wasHistoryCleared()) return
     const entry = consumeLoadFromHistory()
     if (entry && entry.type === 'pro') { const full = getFullScanResult(entry); if (full) { setCurrentUrl(entry.url); sse.setData(full); return } }
     sse.checkPendingScan().then(({ found, url: jobUrl }) => {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { PageShell } from "@/components/dashboard/page-shell"
-import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan } from '@/lib/scan-history'
+import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan, wasHistoryCleared } from '@/lib/scan-history'
 import { DualSearchInput } from "@/components/dashboard/search-input"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -125,6 +125,7 @@ export default function BattleModeV3() {
 
     // Load from history
     useEffect(() => {
+        if (wasHistoryCleared()) return
         const entry = consumeLoadFromHistory()
         if (entry && entry.type === 'competitive') {
             const full = getFullScanResult(entry)
