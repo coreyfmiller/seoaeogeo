@@ -920,8 +920,11 @@ export default function KeywordArenaV3Page() {
               </div>
 
               {/* ═══ EXPERT ANALYSIS ═══ */}
-              {arenaResult?.expertAnalysis && (
-                <ExpertAnalysis analysis={arenaResult.expertAnalysis} tooltip="AI-powered analysis of your competitive position based on on-page optimization scores vs Google ranking, highlighting the gap between technical quality and actual search performance." />
+              {(arenaResult?.expertAnalysis || userSite) && (
+                <ExpertAnalysis
+                  analysis={arenaResult?.expertAnalysis || `You rank #${arenaResult?.userSiteRank ?? '?'} out of ${arenaResult?.totalSites ?? '?'} sites for "${arenaResult?.keyword}". ${userSite?.googleRank ? `Google has you at position #${userSite.googleRank}${(arenaResult?.userSiteRank ?? 99) < (userSite.googleRank ?? 0) ? ' — your on-page optimization is stronger than your ranking suggests. Off-page factors like domain authority and backlinks are likely holding you back.' : '.'}` : ''}`}
+                  tooltip="AI-powered analysis of your competitive position based on on-page optimization scores vs Google ranking, highlighting the gap between technical quality and actual search performance."
+                />
               )}
 
               {/* Competitive Gaps & Strengths */}
