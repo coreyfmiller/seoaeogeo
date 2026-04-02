@@ -106,8 +106,10 @@ export async function getMozBacklinks(targetUrl: string, limit?: number): Promis
   if (!isMozConfigured()) throw new Error('Moz API not configured')
 
   const domain = extractDomain(targetUrl)
-  const fetchLimit = limit || MOZ_BACKLINK_LIMIT
-  console.log(`[Moz] Fetching top ${fetchLimit} backlinks for: ${domain}`)
+  const desiredCount = limit || MOZ_BACKLINK_LIMIT
+  // Fetch extra rows so we still have enough after deduplicating by domain
+  const fetchLimit = desiredCount * 5
+  console.log(`[Moz] Fetching top ${fetchLimit} backlinks for: ${domain} (will dedupe to ${desiredCount} unique domains)`)
 
   const res = await fetch('https://lsapi.seomoz.com/v2/links', {
     method: 'POST',
@@ -134,7 +136,7 @@ export async function getMozBacklinks(targetUrl: string, limit?: number): Promis
   const data = await res.json()
   const links = data.results || []
 
-  return links.map((link: any) => {
+  const allLinks: MozBacklink[] = links.map((link: any) => {
     const src = link.source || {}
     return {
       sourceDomain: src.root_domain || src.subdomain || '',
@@ -149,6 +151,20 @@ export async function getMozBacklinks(targetUrl: string, limit?: number): Promis
       lastSeen: link.last_seen || null,
     }
   })
+
+  // Deduplicate by root domain — keep the highest-DA link per domain
+  const seenDomains = new Map<string, MozBacklink>()
+  for (const link of allLinks) {
+    const key = link.sourceDomain.toLowerCase()
+    const existing = seenDomains.get(key)
+    if (!existing || link.domainAuthority > existing.domainAuthority) {
+      seenDomains.set(key, link)
+    }
+  }
+
+  return Array.from(seenDomains.values())
+    .sort((a, b) => b.domainAuthority - a.domainAuthority)
+    .slice(0, desiredCount)
 }
 
 /**
