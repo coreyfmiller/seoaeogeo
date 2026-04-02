@@ -57,7 +57,6 @@ const proOnlyPaths = ['/pro-audit', '/pro-audit-v4', '/deep-scan', '/deep-scan-v
 const comingSoonNav: NavItem[] = []
 
 const bottomNav: NavItem[] = [
-  { name: "How We Score", icon: FileText, href: "/standards" },
   { name: "Help Center", icon: HelpCircle, href: "/help" },
   { name: "Settings", icon: Settings, href: "/settings" },
   { name: "Usage", icon: BarChart3, href: "/usage", badge: "ADMIN" },
