@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Create persistent scan job
-  try { await createScanJob(user.id, 'pro', url, 10) } catch (e) { console.error('[V3 API] Scan job create failed:', e) }
+  try { await createScanJob(user.id, 'pro', url, 10) } catch (e) { console.error('[V4 API] Scan job create failed:', e) }
 
   const stream = createSSEStream(async (send) => {
     try {
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       let enhancedPenalties: any[] = []
       try {
         enhancedPenalties = convertBreakdownToEnhancedPenalties(graderResult.breakdown.seo, graderResult.breakdown.aeo, graderResult.breakdown.geo, pageData.platformDetection?.platform)
-      } catch (e: any) { console.error('[V3 API] Penalty error:', e.message) }
+      } catch (e: any) { console.error('[V4 API] Penalty error:', e.message) }
 
       send({ type: 'progress', phase: 'Finalizing report...', progress: 95 })
       updateScanProgress(user.id, 'pro', 95, 'Finalizing report...').catch(() => {})
@@ -111,18 +111,18 @@ export async function POST(request: NextRequest) {
         url, pageData, scores, graderResult, enhancedPenalties, siteTypeResult,
         platformDetection: pageData.platformDetection,
         aiAnalysis, liveInterrogation, cwv, backlinkData,
-        analyzedAt: new Date().toISOString(), version: 'v3'
+        analyzedAt: new Date().toISOString(), version: 'v4'
       }
       // Persist result to scan_jobs so user can retrieve it if they navigated away
-      try { await completeScanJob(user.id, 'pro', resultData) } catch (e) { console.error('[V3 API] Scan job complete failed:', e) }
+      try { await completeScanJob(user.id, 'pro', resultData) } catch (e) { console.error('[V4 API] Scan job complete failed:', e) }
       // Save to persistent scan history
       saveScanToDb(user.id, 'pro', url, { seo: graderResult.seoScore, aeo: graderResult.aeoScore, geo: graderResult.geoScore }, resultData).catch(() => {})
       send({ type: 'result', success: true, data: resultData })
     } catch (error: any) {
-      console.error('[V3 API] Error:', error)
+      console.error('[V4 API] Error:', error)
       // Refund credits on failure
-      try { await refundCredits(user.id, 10) } catch (e) { console.error('[V3 API] Refund failed:', e) }
-      try { await failScanJob(user.id, 'pro') } catch (e) { console.error('[V3 API] Scan job fail update failed:', e) }
+      try { await refundCredits(user.id, 10) } catch (e) { console.error('[V4 API] Refund failed:', e) }
+      try { await failScanJob(user.id, 'pro') } catch (e) { console.error('[V4 API] Scan job fail update failed:', e) }
       send({ type: 'error', success: false, error: error.message || 'Analysis failed', creditsRefunded: 10 })
     }
   })
