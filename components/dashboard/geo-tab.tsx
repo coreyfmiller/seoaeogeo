@@ -374,9 +374,10 @@ export function GEOTab({ data, hideScoreDeductions }: GEOTabProps) {
               </div>
               <div className="rounded-lg border border-geo/20 bg-geo/10 p-4">
                 <span className="text-sm font-medium text-muted-foreground">AI Blindspot Ratio</span>
-                <p className="mt-1 text-3xl font-bold font-mono text-destructive">
-                  {struct?.media?.totalImages ? Math.round(((struct.media.totalImages - struct.media.imagesWithAlt) / struct.media.totalImages) * 100) : 0}%
-                </p>
+                {(() => {
+                  const ratio = struct?.media?.totalImages ? Math.round(((struct.media.totalImages - struct.media.imagesWithAlt) / struct.media.totalImages) * 100) : 0
+                  return <p className={`mt-1 text-3xl font-bold font-mono ${ratio <= 10 ? 'text-green-500' : ratio <= 30 ? 'text-yellow-500' : 'text-destructive'}`}>{ratio}%</p>
+                })()}
               </div>
             </div>
           </CardContent>
