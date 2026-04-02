@@ -73,16 +73,16 @@ export function LinkBuildingIntelligence({ metrics, backlinks }: LinkBuildingInt
           <p className={cn("text-sm font-bold mb-1",
             da < 20 ? "text-red-500" : da < 40 ? "text-yellow-500" : da < 60 ? "text-seo" : "text-green-500"
           )}>
-            {da < 20 && "Your site needs more quality backlinks to compete"}
-            {da >= 20 && da < 40 && "Building momentum. Keep earning quality backlinks."}
-            {da >= 40 && da < 60 && "Solid authority foundation. Continue building."}
+            {da < 20 && "Want to get ahead of your competition? You need a backlink strategy."}
+            {da >= 20 && da < 40 && "Building momentum — a focused backlink strategy will set you apart."}
+            {da >= 40 && da < 60 && "Solid authority foundation. Keep building quality links."}
             {da >= 60 && "Strong domain authority. Maintain your edge."}
           </p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            {da < 20 && "With a DA of " + da + ", your site will struggle to outrank competitors with higher authority. Focus on earning backlinks from reputable sites in your industry."}
-            {da >= 20 && da < 40 && "A DA of " + da + " puts you in the average range. Consistent link building will push you ahead of competitors who aren't actively working on this."}
-            {da >= 40 && da < 60 && "A DA of " + da + " is strong. You're competitive for most keywords. Focus on earning links from high-DA sites to break into the top tier."}
-            {da >= 60 && "A DA of " + da + " puts you in the top tier. Focus on maintaining your backlink profile and disavowing any toxic links."}
+            {da < 20 && "With a DA of " + da + ", even great on-page optimization won't be enough to outrank competitors with stronger backlink profiles. The sites ranking above you likely have more high-quality links pointing to them. A deliberate link-building strategy is the single highest-ROI activity you can invest in right now."}
+            {da >= 20 && da < 40 && "A DA of " + da + " puts you in the average range. You're competitive for lower-difficulty keywords, but to rank for anything meaningful you need to actively earn quality backlinks. Consistent link building will push you ahead of competitors who aren't working on this."}
+            {da >= 40 && da < 60 && "A DA of " + da + " is strong. You're competitive for most keywords. Focus on earning links from high-DA sites in your industry to break into the top tier."}
+            {da >= 60 && "A DA of " + da + " puts you in the top tier. Focus on maintaining your backlink profile, earning links from authoritative sources, and disavowing any toxic links."}
           </p>
         </div>
 
