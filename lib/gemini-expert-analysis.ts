@@ -181,18 +181,27 @@ export async function generateAIExpertAnalysis(data: ExpertAnalysisData): Promis
     })
 
     console.log(`[Expert Analysis] Generating for ${data.context}...`)
-    const result = await model.generateContent(buildPrompt(data))
-    const text = result.response.text()
 
-    // responseMimeType: 'application/json' means the response is already JSON
-    const parsed = safeJsonParse(text)
-    const analysis = parsed?.analysis || null
-    if (!analysis) {
-      console.error('[Expert Analysis] No analysis field in response:', text.substring(0, 200))
-    } else {
-      console.log(`[Expert Analysis] Success for ${data.context} (${analysis.length} chars)`)
-    }
-    return analysis
+    // Race against a 15s timeout to avoid blocking the response
+    const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => {
+      console.error(`[Expert Analysis] Timed out after 15s for ${data.context}`)
+      resolve(null)
+    }, 15000))
+
+    const analysisPromise = (async () => {
+      const result = await model.generateContent(buildPrompt(data))
+      const text = result.response.text()
+      const parsed = safeJsonParse(text)
+      const analysis = parsed?.analysis || null
+      if (!analysis) {
+        console.error('[Expert Analysis] No analysis field in response:', text.substring(0, 300))
+      } else {
+        console.log(`[Expert Analysis] Success for ${data.context} (${analysis.length} chars)`)
+      }
+      return analysis
+    })()
+
+    return await Promise.race([analysisPromise, timeoutPromise])
   } catch (err) {
     console.error('[Expert Analysis] Gemini call failed:', err instanceof Error ? err.message : err)
     return null

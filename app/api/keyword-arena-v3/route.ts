@@ -84,17 +84,24 @@ export async function POST(req: Request) {
     // Generate AI expert analysis for the user's site
     let expertAnalysis: string | null = null
     if (userSite && userSite.scores.seo != null) {
-      const topCompetitors = scoredSites.filter(s => !s.isUserSite).slice(0, 5).map(s => ({
-        url: s.url, scores: { seo: s.scores.seo ?? 0, aeo: s.scores.aeo ?? 0, geo: s.scores.geo ?? 0 }, googleRank: s.googleRank,
-      }))
-      expertAnalysis = await generateAIExpertAnalysis({
-        context: 'keyword-arena', keyword, userSiteUrl: userSite.url,
-        userScores: { seo: userSite.scores.seo ?? 0, aeo: userSite.scores.aeo ?? 0, geo: userSite.scores.geo ?? 0 },
-        googleRank: userSite.googleRank, arenaRank: userSiteRank, totalSites: scoredSites.length,
-        arenaAvg: arenaAvg ? { seo: arenaAvg.seo, aeo: arenaAvg.aeo, geo: arenaAvg.geo } : undefined,
-        wordCount: userSite.scanDetails?.wordCount, schemaCount: userSite.scanDetails?.hasSchema ? 1 : 0,
-        topCompetitors,
-      }).catch(() => null)
+      try {
+        const topCompetitors = scoredSites.filter(s => !s.isUserSite).slice(0, 5).map(s => ({
+          url: s.url, scores: { seo: s.scores.seo ?? 0, aeo: s.scores.aeo ?? 0, geo: s.scores.geo ?? 0 }, googleRank: s.googleRank,
+        }))
+        expertAnalysis = await generateAIExpertAnalysis({
+          context: 'keyword-arena', keyword, userSiteUrl: userSite.url,
+          userScores: { seo: userSite.scores.seo ?? 0, aeo: userSite.scores.aeo ?? 0, geo: userSite.scores.geo ?? 0 },
+          googleRank: userSite.googleRank, arenaRank: userSiteRank, totalSites: scoredSites.length,
+          arenaAvg: arenaAvg ? { seo: arenaAvg.seo, aeo: arenaAvg.aeo, geo: arenaAvg.geo } : undefined,
+          wordCount: userSite.scanDetails?.wordCount, schemaCount: userSite.scanDetails?.hasSchema ? 1 : 0,
+          topCompetitors,
+        })
+        console.log(`[Arena V3] Expert analysis: ${expertAnalysis ? `${expertAnalysis.length} chars` : 'null'}`)
+      } catch (err) {
+        console.error('[Arena V3] Expert analysis failed:', err instanceof Error ? err.message : err)
+      }
+    } else {
+      console.log(`[Arena V3] Skipping expert analysis: userSite=${!!userSite}, scores=${userSite?.scores?.seo}`)
     }
 
     const resultData = {
