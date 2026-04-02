@@ -104,6 +104,11 @@ const faqs: FAQItem[] = [
     answer: "No. Free audits are unlimited and don't use any AI credits. Only Pro Audits, Deep Scans, and Competitor Duel analyses count against your monthly quota."
   },
   {
+    category: "Keyword Arena",
+    question: "Why don't Keyword Arena rankings match what I see when I search Google?",
+    answer: "Google personalizes results for every user based on search history, location, device, and logged-in activity — so no two people see the exact same rankings. The Keyword Arena checks rankings from a neutral, standardized perspective (similar to a datacenter query) which won't match any individual's personal Google bubble. Local intent keywords are especially affected — searching 'plumber' in Halifax vs. Toronto returns completely different results. Even incognito mode isn't truly neutral since Google still uses your IP for location. Think of Arena rankings as a lab measurement: they give you a consistent, repeatable benchmark to track trends and compare competitors on a level playing field, even though the number won't match what you personally see in your browser."
+  },
+  {
     category: "Troubleshooting",
     question: "My scan is stuck or failed — what should I do?",
     answer: "First, check the API status indicator in the top header bar. If it shows 'error', our analysis service may be temporarily unavailable. Try again in a few minutes. If the URL is behind authentication or a firewall, we won't be able to access it. Make sure the URL is publicly accessible."

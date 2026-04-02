@@ -778,7 +778,9 @@ export default function KeywordArenaV3Page() {
                       <tr className="border-b border-white/[0.06]">
                         <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-widest text-white/50">Rank</th>
                         <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-widest text-white/50">Site</th>
-                        <th className="px-4 py-3 text-center text-xs font-black uppercase tracking-widest text-white/40">Google</th>
+                        <th className="px-4 py-3 text-center text-xs font-black uppercase tracking-widest text-white/40">
+                          Google <InfoTooltip content="Rankings are measured from a neutral, standardized perspective. Google personalizes results based on your location, search history, device, and account activity — so these positions may differ from what you see in your browser. This is normal. Arena rankings provide a consistent benchmark for comparing competitors on a level playing field." />
+                        </th>
                         <th className="px-4 py-3 text-center text-xs font-black uppercase tracking-widest text-[#00e5ff]/70">SEO</th>
                         <th className="px-4 py-3 text-center text-xs font-black uppercase tracking-widest text-[#BC13FE]/70">AEO</th>
                         <th className="px-4 py-3 text-center text-xs font-black uppercase tracking-widest text-[#fe3f8c]/70">GEO</th>
