@@ -4,6 +4,7 @@ import { analyzeCompetitive } from '@/lib/gemini-competitive'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
 import { isMozConfigured, type MozBacklinkData } from '@/lib/moz'
 import { fetchBacklinksWithCache } from '@/lib/backlink-fetcher'
+import { saveScanToDb } from '@/lib/scan-history-db'
 
 export const maxDuration = 300
 
@@ -68,21 +69,26 @@ export async function POST(req: Request) {
     await incrementScanCount(user.id, 'competitive')
     console.log(`[Battle V3] Done.`)
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        siteA: scanA,
-        siteB: scanB,
-        comparison: compareResult,
-        platformDetection: scanA.platformDetection,
-        backlinks: {
-          siteA: backlinksA,
-          siteB: backlinksB,
-          linkGap: computeLinkGap(backlinksA, backlinksB),
-          mozEnabled,
-        },
-      }
-    })
+    const resultData = {
+      siteA: scanA,
+      siteB: scanB,
+      comparison: compareResult,
+      platformDetection: scanA.platformDetection,
+      backlinks: {
+        siteA: backlinksA,
+        siteB: backlinksB,
+        linkGap: computeLinkGap(backlinksA, backlinksB),
+        mozEnabled,
+      },
+    }
+
+    // Save to persistent scan history
+    const c = compareResult || {} as any
+    saveScanToDb(user.id, 'competitive', `${siteAUrl} vs ${siteBUrl}`, {
+      seo: c.seo?.siteA || 0, aeo: c.aeo?.siteA || 0, geo: c.geo?.siteA || 0,
+    }, resultData).catch(() => {})
+
+    return NextResponse.json({ success: true, data: resultData })
   } catch (error: any) {
     console.error('[Battle V3] Error:', error)
     if (user) {

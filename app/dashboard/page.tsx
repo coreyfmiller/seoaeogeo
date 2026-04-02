@@ -27,26 +27,50 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    // Load local scan history for the recent scans list
-    const scans = getScanHistory()
-    setRecentScans(scans.slice(0, 20))
 
-    // Load lifetime stats from DB
     const supabase = createClient()
     ;(async () => {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-      const { data: prof } = await supabase
-        .from('profiles')
-        .select('total_pro_audits, total_deep_scans, total_competitive_intel')
-        .eq('id', user.id)
-        .single()
-      if (prof) {
-        setStats({
-          proAudits: prof.total_pro_audits || 0,
-          deepCrawls: prof.total_deep_scans || 0,
-          compIntel: prof.total_competitive_intel || 0,
-        })
+
+      if (user) {
+        // Logged in — fetch scan history from Supabase
+        try {
+          const res = await fetch('/api/scan-history')
+          if (res.ok) {
+            const { scans } = await res.json()
+            setRecentScans(scans.map((s: any) => ({
+              id: s.id,
+              url: s.url,
+              type: s.scan_type,
+              scores: s.scores,
+              timestamp: s.created_at,
+              hasFullResult: true,
+              fromDb: true,
+            })))
+          }
+        } catch {
+          // Fallback to localStorage
+          const scans = getScanHistory()
+          setRecentScans(scans.slice(0, 10))
+        }
+
+        // Load lifetime stats from DB
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('total_pro_audits, total_deep_scans, total_competitive_intel')
+          .eq('id', user.id)
+          .single()
+        if (prof) {
+          setStats({
+            proAudits: prof.total_pro_audits || 0,
+            deepCrawls: prof.total_deep_scans || 0,
+            compIntel: prof.total_competitive_intel || 0,
+          })
+        }
+      } else {
+        // Not logged in — use localStorage
+        const scans = getScanHistory()
+        setRecentScans(scans.slice(0, 10))
       }
     })()
   }, [])
@@ -165,9 +189,9 @@ export default function DashboardPage() {
                     <CardTitle className="text-base flex items-center gap-2">
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       Recent Scans
-                      <InfoTooltip content="Your scan history stored locally in your browser's localStorage. Click any row to reload that scan result. Export to back up your data, or import to restore from another device." />
+                      <InfoTooltip content="Your scan history. When logged in, results are saved to your account and accessible from any device. Click any row to reload that scan result." />
                     </CardTitle>
-                    <p className="text-xs text-muted-foreground mt-1">Stored locally in your browser</p>
+                    <p className="text-xs text-muted-foreground mt-1">Your recent audit history</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button variant="ghost" size="sm" onClick={handleExport} className="text-xs text-muted-foreground hover:text-foreground">
@@ -185,8 +209,10 @@ export default function DashboardPage() {
                       </Button>
                     ) : (
                       <div className="flex items-center gap-1">
-                        <Button variant="destructive" size="sm" onClick={() => {
+                        <Button variant="destructive" size="sm" onClick={async () => {
                           clearScanHistory()
+                          // Also clear from Supabase
+                          try { await fetch('/api/scan-history', { method: 'DELETE' }) } catch {}
                           setRecentScans([])
                           setStats({ proAudits: 0, deepCrawls: 0, compIntel: 0 })
                           setConfirmClear(false)
@@ -215,11 +241,25 @@ export default function DashboardPage() {
                         return (
                           <button
                             key={i}
-                            onClick={() => {
-                              if (scan.hasFullResult) {
-                                setLoadFromHistory(scan)
-                                router.push(getRouteForType(scan.type))
+                            onClick={async () => {
+                              if (!scan.hasFullResult) return
+                              if ((scan as any).fromDb && (scan as any).id) {
+                                // Fetch full result from Supabase
+                                try {
+                                  const res = await fetch(`/api/scan-history?id=${(scan as any).id}`)
+                                  if (res.ok) {
+                                    const { scan: fullScan } = await res.json()
+                                    // Store temporarily in sessionStorage for the target page to pick up
+                                    sessionStorage.setItem('db_scan_result', JSON.stringify(fullScan.full_result))
+                                    setLoadFromHistory({ ...scan, hasFullResult: true })
+                                    router.push(getRouteForType(scan.type))
+                                    return
+                                  }
+                                } catch {}
                               }
+                              // Fallback: localStorage-based
+                              setLoadFromHistory(scan)
+                              router.push(getRouteForType(scan.type))
                             }}
                             className={cn(
                               "flex items-center gap-3 rounded-lg border border-border/30 px-3 py-2 w-full text-left transition-colors",

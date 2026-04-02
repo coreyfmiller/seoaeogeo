@@ -62,6 +62,13 @@ export function getScanHistory(): ScanHistoryEntry[] {
 export function getFullScanResult(entry: ScanHistoryEntry): any | null {
   if (!entry.hasFullResult) return null
   try {
+    // Check for DB-fetched result first (set by dashboard when loading from Supabase)
+    const dbResult = sessionStorage.getItem('db_scan_result')
+    if (dbResult) {
+      sessionStorage.removeItem('db_scan_result')
+      return JSON.parse(dbResult)
+    }
+    // Fallback to localStorage
     const data = localStorage.getItem(resultKey(entry))
     return data ? JSON.parse(data) : null
   } catch {

@@ -4,6 +4,7 @@ import { calculateScoresFromScanResult } from '@/lib/grader-v2'
 import { detectSiteType } from '@/lib/site-type-detector'
 import { analyzeWithGeminiSingle } from '@/lib/gemini'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
+import { saveScanToDb } from '@/lib/scan-history-db'
 
 export const maxDuration = 300
 
@@ -79,15 +80,21 @@ export async function POST(req: Request) {
 
     console.log(`[Arena V3] Done. ${scoredSites.length} scored, ${sites.length - scoredSites.length} failed.`)
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        keyword, sites, userSiteRank, arenaAvg,
-        totalSites: sites.length,
-        scoredSites: scoredSites.length,
-        creditCost,
-      }
-    })
+    const resultData = {
+      keyword, sites, userSiteRank, arenaAvg,
+      totalSites: sites.length,
+      scoredSites: scoredSites.length,
+      creditCost,
+    }
+
+    // Save to persistent scan history
+    const userSiteScores = userSite?.scores
+    saveScanToDb(user.id, 'keyword-arena', `${keyword} (${sites.length} sites)`,
+      userSiteScores?.seo != null ? { seo: userSiteScores.seo, aeo: userSiteScores.aeo ?? 0, geo: userSiteScores.geo ?? 0 } : null,
+      resultData
+    ).catch(() => {})
+
+    return NextResponse.json({ success: true, data: resultData })
   } catch (error: any) {
     console.error('[Arena V3] Error:', error)
     if (user && creditCost > 0) {

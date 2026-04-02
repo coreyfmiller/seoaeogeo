@@ -11,6 +11,7 @@ import chromium from '@sparticuz/chromium'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
 import { createScanJob, completeScanJob, failScanJob, updateScanProgress } from '@/lib/scan-jobs'
 import { fetchBacklinksWithCache, buildSingleSiteBacklinkContext } from '@/lib/backlink-fetcher'
+import { saveScanToDb } from '@/lib/scan-history-db'
 
 export const maxDuration = 300
 
@@ -372,6 +373,8 @@ export async function POST(request: NextRequest) {
       }
       // Persist result to scan_jobs so user can retrieve it if they navigated away
       try { await completeScanJob(user.id, 'deep', resultData) } catch (e) { console.error('[Deep Scan] Scan job complete failed:', e) }
+      // Save to persistent scan history
+      saveScanToDb(user.id, 'deep', url, avgScores ? { seo: avgScores.seo, aeo: avgScores.aeo, geo: avgScores.geo } : null, resultData).catch(() => {})
       send({ type: 'result', success: true, data: resultData })
     } catch (error: any) {
       console.error('[Deep Scan] Error:', error)

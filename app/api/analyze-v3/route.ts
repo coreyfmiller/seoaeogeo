@@ -9,6 +9,7 @@ import { fetchPageSpeedInsights } from '@/lib/pagespeed'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
 import { createScanJob, completeScanJob, failScanJob, updateScanProgress } from '@/lib/scan-jobs'
 import { fetchBacklinksWithCache } from '@/lib/backlink-fetcher'
+import { saveScanToDb } from '@/lib/scan-history-db'
 
 export const maxDuration = 300
 
@@ -114,6 +115,8 @@ export async function POST(request: NextRequest) {
       }
       // Persist result to scan_jobs so user can retrieve it if they navigated away
       try { await completeScanJob(user.id, 'pro', resultData) } catch (e) { console.error('[V3 API] Scan job complete failed:', e) }
+      // Save to persistent scan history
+      saveScanToDb(user.id, 'pro', url, { seo: graderResult.seoScore, aeo: graderResult.aeoScore, geo: graderResult.geoScore }, resultData).catch(() => {})
       send({ type: 'result', success: true, data: resultData })
     } catch (error: any) {
       console.error('[V3 API] Error:', error)
