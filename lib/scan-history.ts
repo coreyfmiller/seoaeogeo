@@ -184,7 +184,7 @@ export function getLatestFullScan(type: ScanHistoryEntry['type']): { entry: Scan
   return { entry: latest, result }
 }
 
-/** Clear all scan history and full results from localStorage */
+/** Clear all scan history and full results from localStorage (including tool-specific caches) */
 export function clearScanHistory() {
   try {
     const entries = getScanHistory()
@@ -194,5 +194,14 @@ export function clearScanHistory() {
       }
     }
     localStorage.removeItem(STORAGE_KEY)
+
+    // Clear tool-specific localStorage caches
+    const toolKeys = [
+      'battle_v3_siteA', 'battle_v3_siteB', 'battle_v3_data', 'battle_v3_backlinks',
+      'arena_v3_keyword', 'arena_v3_userSite', 'arena_v3_result',
+    ]
+    for (const key of toolKeys) {
+      try { localStorage.removeItem(key) } catch {}
+    }
   } catch {}
 }

@@ -211,8 +211,9 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-1">
                         <Button variant="destructive" size="sm" onClick={async () => {
                           clearScanHistory()
-                          // Also clear from Supabase
+                          // Also clear from Supabase (scan_history + scan_jobs)
                           try { await fetch('/api/scan-history', { method: 'DELETE' }) } catch {}
+                          try { await fetch('/api/scan-status', { method: 'DELETE' }) } catch {}
                           setRecentScans([])
                           setStats({ proAudits: 0, deepCrawls: 0, compIntel: 0 })
                           setConfirmClear(false)

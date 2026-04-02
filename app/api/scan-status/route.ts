@@ -38,3 +38,22 @@ export async function GET(request: NextRequest) {
     }
   })
 }
+
+/**
+ * DELETE /api/scan-status
+ * Clears all scan jobs for the authenticated user.
+ */
+export async function DELETE() {
+  const user = await getAuthUser()
+  if (!user) {
+    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+  }
+
+  const { supabaseAdmin } = await import('@/lib/supabase/admin')
+  await supabaseAdmin
+    .from('scan_jobs')
+    .delete()
+    .eq('user_id', user.id)
+
+  return NextResponse.json({ ok: true })
+}
