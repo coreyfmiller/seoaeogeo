@@ -54,7 +54,7 @@ const creditCosts = [
   { action: "Pro Audit", cost: "10 credits", note: "Single page AI-powered audit" },
   { action: "Deep Scan", cost: "10 + 1/page", note: "e.g. 5 pages = 15 credits, 50 pages = 60 credits" },
   { action: "Competitor Duel", cost: "20 credits", note: "Head-to-head comparison of two sites" },
-  { action: "Free Audit", cost: "0 credits", note: "Always free, unlimited" },
+  { action: "Keyword Arena", cost: "5 credits/site", note: "Score top-ranking sites for any keyword" },
 ]
 
 export default function ProPage() {
