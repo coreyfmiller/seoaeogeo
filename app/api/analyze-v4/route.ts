@@ -4,6 +4,7 @@ import { calculateScoresFromScanResult, convertBreakdownToEnhancedPenalties } fr
 import { prepareScanForGrading } from '@/lib/scan-preparation'
 import { analyzeLiteIntelligence } from '@/lib/gemini-lite'
 import { createSSEStream, SSE_HEADERS } from '@/lib/sse-helpers'
+import { fetchBacklinksWithCache } from '@/lib/backlink-fetcher'
 
 export const maxDuration = 300
 
@@ -23,6 +24,10 @@ export async function POST(request: NextRequest) {
       // Step 1: Crawl
       send({ type: 'progress', phase: 'Crawling page and extracting content...', progress: 10 })
       const pageData = await performScan(url)
+
+      // Fetch backlinks in parallel (uses cache, non-blocking)
+      const backlinkPromise = fetchBacklinksWithCache(url, true)
+
       // Step 2: Prepare scan for grading (site type, schema quality, semantic flags)
       send({ type: 'progress', phase: 'Detecting site type and analyzing content...', progress: 30 })
       const siteTypeResult = prepareScanForGrading(pageData)
@@ -87,10 +92,11 @@ export async function POST(request: NextRequest) {
           .filter((c: any) => c.status === 'critical' || c.status === 'warning').length
 
       send({ type: 'progress', phase: 'Audit complete!', progress: 100 })
+      const backlinkData = await backlinkPromise
       send({
         type: 'result', success: true, data: {
           url, pageData, scores, graderResult, siteTypeResult,
-          robotsTxt, sitemapFound, liteAI, issueCount,
+          robotsTxt, sitemapFound, liteAI, issueCount, backlinkData,
           analyzedAt: new Date().toISOString(),
         }
       })
