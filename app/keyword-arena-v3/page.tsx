@@ -9,7 +9,6 @@ import { CreditConfirmDialog } from "@/components/dashboard/credit-confirm-dialo
 import { ScanErrorDialog } from "@/components/dashboard/scan-error-dialog"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
 import { ExpertAnalysis } from "@/components/dashboard/expert-analysis"
-import { generateExpertAnalysis } from "@/lib/expert-analysis"
 import { DownloadReportButton } from "@/components/dashboard/download-report-button"
 import { safeSetItem } from "@/lib/safe-storage"
 import { cn } from "@/lib/utils"
@@ -79,6 +78,7 @@ interface ArenaResult {
   scoredSites: number
   creditCost: number
   arenaAvg: ArenaAverages | null
+  expertAnalysis?: string | null
 }
 
 /** Normalize URL for comparison (strip protocol, www, trailing slash) */
@@ -920,17 +920,8 @@ export default function KeywordArenaV3Page() {
               </div>
 
               {/* ═══ EXPERT ANALYSIS ═══ */}
-              {userSite && (
-                <ExpertAnalysis analysis={generateExpertAnalysis({
-                  tool: 'keyword-arena', url: userSite.url,
-                  scores: { seo: userSite.scores.seo ?? 0, aeo: userSite.scores.aeo ?? 0, geo: userSite.scores.geo ?? 0 },
-                  keyword: arenaResult?.keyword,
-                  googleRank: userSite.googleRank,
-                  arenaRank: arenaResult?.userSiteRank,
-                  totalSites: arenaResult?.totalSites,
-                  arenaAvg: arenaResult?.arenaAvg ? { seo: arenaResult.arenaAvg.seo, aeo: arenaResult.arenaAvg.aeo, geo: arenaResult.arenaAvg.geo } : undefined,
-                  domainAuthority: undefined,
-                })} tooltip="Analysis of your competitive position based on on-page optimization scores vs Google ranking, highlighting the gap between technical quality and actual search performance." />
+              {arenaResult?.expertAnalysis && (
+                <ExpertAnalysis analysis={arenaResult.expertAnalysis} tooltip="AI-powered analysis of your competitive position based on on-page optimization scores vs Google ranking, highlighting the gap between technical quality and actual search performance." />
               )}
 
               {/* Competitive Gaps & Strengths */}

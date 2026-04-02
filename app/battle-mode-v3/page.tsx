@@ -15,7 +15,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
 import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { ExpertAnalysis } from '@/components/dashboard/expert-analysis'
-import { generateExpertAnalysis } from '@/lib/expert-analysis'
 import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { DownloadReportButton } from '@/components/dashboard/download-report-button'
@@ -170,7 +169,9 @@ export default function BattleModeV3() {
             const result = await res.json()
             if (typeof window !== 'undefined') window.dispatchEvent(new Event('credits-changed'))
             if (result.success) {
-                setComparisonData(result.data.comparison)
+                const comparison = result.data.comparison
+                if (result.data.expertAnalysis) comparison.expertAnalysis = result.data.expertAnalysis
+                setComparisonData(comparison)
                 setBacklinkData(result.data.backlinks)
                 setApiStatus("healthy")
             } else {
@@ -388,15 +389,8 @@ export default function BattleModeV3() {
 
                             {/* ── Expert Analysis (right after scores) ── */}
                             {(() => {
-                                const c = comparisonData.comparison || comparisonData
-                                const analysis = comparisonData.winnerVerdict || comparisonData.comparison?.winnerVerdict || generateExpertAnalysis({
-                                    tool: 'competitor-duel', url: siteA,
-                                    scores: { seo: c.seo?.siteA ?? 0, aeo: c.aeo?.siteA ?? 0, geo: c.geo?.siteA ?? 0 },
-                                    competitorUrl: siteB,
-                                    competitorScores: { seo: c.seo?.siteB ?? 0, aeo: c.aeo?.siteB ?? 0, geo: c.geo?.siteB ?? 0 },
-                                    domainAuthority: backlinkData?.siteA?.metrics?.domainAuthority,
-                                })
-                                return <ExpertAnalysis analysis={analysis} label="Expert Analysis" tooltip="AI-generated analysis of which site has the competitive advantage and why." />
+                                const analysis = comparisonData.expertAnalysis || comparisonData.winnerVerdict || comparisonData.comparison?.winnerVerdict
+                                return analysis ? <ExpertAnalysis analysis={analysis} label="Expert Analysis" tooltip="AI-generated analysis of which site has the competitive advantage and why, based on all scan data including scores, content depth, schema markup, and domain authority." /> : null
                             })()}
 
                             {/* ── Counter-Strategies ── */}

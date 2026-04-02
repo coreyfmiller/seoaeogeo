@@ -12,6 +12,7 @@ import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/li
 import { createScanJob, completeScanJob, failScanJob, updateScanProgress } from '@/lib/scan-jobs'
 import { fetchBacklinksWithCache, buildSingleSiteBacklinkContext } from '@/lib/backlink-fetcher'
 import { saveScanToDb } from '@/lib/scan-history-db'
+import { generateAIExpertAnalysis } from '@/lib/gemini-expert-analysis'
 
 export const maxDuration = 300
 
@@ -344,7 +345,25 @@ export async function POST(request: NextRequest) {
       const missingMeta = pageAnalyses.filter((a: any) => !a.hasDescription)
       if (missingMeta.length > 0) siteWideIssues.push({ type: 'missing-meta', affectedPages: missingMeta.map((a: any) => a.url), count: missingMeta.length, severity: missingMeta.length > pageAnalyses.length * 0.5 ? 'critical' : 'high', description: `${missingMeta.length} page(s) missing meta descriptions` })
 
-      send({ type: 'progress', phase: 'Saving snapshot...', progress: 97 })
+      send({ type: 'progress', phase: 'Generating expert analysis...', progress: 97 })
+
+      // Generate AI expert analysis
+      const expertAnalysis = await generateAIExpertAnalysis({
+        context: 'deep-scan', url,
+        scores: avgScores,
+        siteType: siteTypeResult.primaryType,
+        pagesCrawled: pageAnalyses.length,
+        domainAuthority: backlinkData?.metrics?.domainAuthority,
+        totalBacklinks: backlinkData?.metrics?.totalBacklinks,
+        avgResponseTime,
+        totalWords,
+        schemaCoverage: `${schemaCoverage.pagesWithSchema}/${schemaCoverage.totalPages}`,
+        duplicateTitles: duplicateTitles.length,
+        missingH1Count: missingH1.length,
+        thinContentCount: thinContent.length,
+      }).catch(() => null)
+
+      send({ type: 'progress', phase: 'Saving snapshot...', progress: 98 })
       saveScanSnapshot({
         id: `deep-v3-${Date.now()}`, url, timestamp: new Date().toISOString(),
         apiRoute: '/api/analyze-deep-v3', scores: avgScores,
@@ -370,6 +389,7 @@ export async function POST(request: NextRequest) {
         duplicateTitles,
         duplicateDescriptions,
         backlinkData,
+        expertAnalysis,
       }
       // Persist result to scan_jobs so user can retrieve it if they navigated away
       try { await completeScanJob(user.id, 'deep', resultData) } catch (e) { console.error('[Deep Scan] Scan job complete failed:', e) }

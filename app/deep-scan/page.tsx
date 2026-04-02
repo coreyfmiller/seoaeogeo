@@ -8,7 +8,6 @@ import { PageShell } from '@/components/dashboard/page-shell'
 import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
 import { LinkBuildingIntelligence } from '@/components/dashboard/link-building-intelligence'
 import { ExpertAnalysis } from '@/components/dashboard/expert-analysis'
-import { generateExpertAnalysis } from '@/lib/expert-analysis'
 import { CrawlConfig } from '@/components/dashboard/crawl-config'
 import { PageComparisonTable } from '@/components/dashboard/page-comparison-table'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
@@ -88,6 +87,7 @@ interface DeepScanResult {
       isDofollow: boolean
     }>
   } | null
+  expertAnalysis?: string | null
 }
 
 export default function DeepV3Page() {
@@ -525,14 +525,7 @@ export default function DeepV3Page() {
                 })()}
 
                 {/* ═══ EXPERT ANALYSIS ═══ */}
-                <ExpertAnalysis analysis={generateExpertAnalysis({
-                  tool: 'deep-scan', url: result.url,
-                  scores: result.scores,
-                  siteType: result.siteTypeResult?.primaryType,
-                  pagesCrawled: result.pagesCrawled,
-                  schemaCount: result.aggregateMetrics?.totalSchemas,
-                  domainAuthority: result.backlinkData?.metrics?.domainAuthority,
-                })} />
+                {result.expertAnalysis && <ExpertAnalysis analysis={result.expertAnalysis} />}
 
                 {/* Prioritized Site Improvements */}
                 {result.sitewideIntelligence?.recommendations?.length > 0 && (

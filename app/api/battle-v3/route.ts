@@ -8,6 +8,7 @@ import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/li
 import { isMozConfigured, type MozBacklinkData } from '@/lib/moz'
 import { fetchBacklinksWithCache } from '@/lib/backlink-fetcher'
 import { saveScanToDb } from '@/lib/scan-history-db'
+import { generateAIExpertAnalysis } from '@/lib/gemini-expert-analysis'
 
 export const maxDuration = 300
 
@@ -112,10 +113,24 @@ export async function POST(req: Request) {
       compareResult.geo = { ...compareResult.geo, siteA: graderA.geoScore, siteB: graderB.geoScore }
     }
 
+    // Generate AI expert analysis
+    const expertAnalysis = await generateAIExpertAnalysis({
+      context: 'competitor-duel', siteAUrl, siteBUrl,
+      scoresA: { seo: graderA.seoScore, aeo: graderA.aeoScore, geo: graderA.geoScore },
+      scoresB: { seo: graderB.seoScore, aeo: graderB.aeoScore, geo: graderB.geoScore },
+      siteTypeA: siteTypeA.primaryType, siteTypeB: siteTypeB.primaryType,
+      platformA: scanA.platformDetection?.label, platformB: scanB.platformDetection?.label,
+      daA: backlinksA?.metrics?.domainAuthority, daB: backlinksB?.metrics?.domainAuthority,
+      backlinksA: backlinksA?.metrics?.totalBacklinks, backlinksB: backlinksB?.metrics?.totalBacklinks,
+      wordCountA: scanA.structuralData?.wordCount, wordCountB: scanB.structuralData?.wordCount,
+      schemaCountA: (scanA.schemas || []).length, schemaCountB: (scanB.schemas || []).length,
+    }).catch(() => null)
+
     const resultData = {
       siteA: scanA,
       siteB: scanB,
       comparison: compareResult,
+      expertAnalysis,
       platformDetection: scanA.platformDetection,
       backlinks: {
         siteA: backlinksA,

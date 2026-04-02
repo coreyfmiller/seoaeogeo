@@ -10,6 +10,7 @@ import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/li
 import { createScanJob, completeScanJob, failScanJob, updateScanProgress } from '@/lib/scan-jobs'
 import { fetchBacklinksWithCache } from '@/lib/backlink-fetcher'
 import { saveScanToDb } from '@/lib/scan-history-db'
+import { generateAIExpertAnalysis } from '@/lib/gemini-expert-analysis'
 
 export const maxDuration = 300
 
@@ -105,12 +106,29 @@ export async function POST(request: NextRequest) {
       const cwv = await pageSpeedPromise
       const backlinkData = await backlinkPromise
 
+      // Generate AI expert analysis
+      const sd = pageData.structuralData || {}
+      const expertAnalysis = await generateAIExpertAnalysis({
+        context: 'pro-audit', url,
+        scores: { seo: graderResult.seoScore, aeo: graderResult.aeoScore, geo: graderResult.geoScore },
+        siteType: siteTypeResult.primaryType, platform: pageData.platformDetection?.label,
+        wordCount: sd.wordCount, schemaCount: (pageData.schemas || []).length,
+        criticalIssues: graderResult.criticalIssues,
+        domainAuthority: backlinkData?.metrics?.domainAuthority,
+        totalBacklinks: backlinkData?.metrics?.totalBacklinks,
+        spamScore: backlinkData?.metrics?.spamScore,
+        responseTimeMs: pageData.technical?.responseTimeMs,
+        hasH1: (sd.semanticTags?.h1Count || 0) > 0,
+        altTextPct: sd.media?.totalImages > 0 ? Math.round((sd.media.imagesWithAlt / sd.media.totalImages) * 100) : 100,
+        internalLinks: sd.links?.internal, externalLinks: sd.links?.external,
+      }).catch(() => null)
+
       send({ type: 'progress', phase: 'Audit complete!', progress: 100 })
       await incrementScanCount(user.id, 'pro')
       const resultData = {
         url, pageData, scores, graderResult, enhancedPenalties, siteTypeResult,
         platformDetection: pageData.platformDetection,
-        aiAnalysis, liveInterrogation, cwv, backlinkData,
+        aiAnalysis, liveInterrogation, cwv, backlinkData, expertAnalysis,
         analyzedAt: new Date().toISOString(), version: 'v4'
       }
       // Persist result to scan_jobs so user can retrieve it if they navigated away

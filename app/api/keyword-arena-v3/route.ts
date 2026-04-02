@@ -5,6 +5,7 @@ import { detectSiteType } from '@/lib/site-type-detector'
 import { analyzeWithGeminiSingle } from '@/lib/gemini'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
 import { saveScanToDb } from '@/lib/scan-history-db'
+import { generateAIExpertAnalysis } from '@/lib/gemini-expert-analysis'
 
 export const maxDuration = 300
 
@@ -80,8 +81,24 @@ export async function POST(req: Request) {
 
     console.log(`[Arena V3] Done. ${scoredSites.length} scored, ${sites.length - scoredSites.length} failed.`)
 
+    // Generate AI expert analysis for the user's site
+    let expertAnalysis: string | null = null
+    if (userSite && userSite.scores.seo != null) {
+      const topCompetitors = scoredSites.filter(s => !s.isUserSite).slice(0, 5).map(s => ({
+        url: s.url, scores: { seo: s.scores.seo ?? 0, aeo: s.scores.aeo ?? 0, geo: s.scores.geo ?? 0 }, googleRank: s.googleRank,
+      }))
+      expertAnalysis = await generateAIExpertAnalysis({
+        context: 'keyword-arena', keyword, userSiteUrl: userSite.url,
+        userScores: { seo: userSite.scores.seo ?? 0, aeo: userSite.scores.aeo ?? 0, geo: userSite.scores.geo ?? 0 },
+        googleRank: userSite.googleRank, arenaRank: userSiteRank, totalSites: scoredSites.length,
+        arenaAvg: arenaAvg ? { seo: arenaAvg.seo, aeo: arenaAvg.aeo, geo: arenaAvg.geo } : undefined,
+        wordCount: userSite.scanDetails?.wordCount, schemaCount: userSite.scanDetails?.hasSchema ? 1 : 0,
+        topCompetitors,
+      }).catch(() => null)
+    }
+
     const resultData = {
-      keyword, sites, userSiteRank, arenaAvg,
+      keyword, sites, userSiteRank, arenaAvg, expertAnalysis,
       totalSites: sites.length,
       scoredSites: scoredSites.length,
       creditCost,
