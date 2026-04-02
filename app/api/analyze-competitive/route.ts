@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { performScan } from '@/lib/crawler';
 import { analyzeCompetitive } from '@/lib/gemini-competitive';
+import { calculateScoresFromScanResult } from '@/lib/grader-v2';
+import { prepareScanForGrading } from '@/lib/scan-preparation';
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers';
 
 /**
@@ -34,6 +36,12 @@ export async function POST(req: Request) {
             performScan(siteBUrl, { lightweight: true })
         ]);
 
+        // Grade both sites with the same deterministic grader used by Pro Audit
+        prepareScanForGrading(scanA);
+        prepareScanForGrading(scanB);
+        const graderA = calculateScoresFromScanResult(scanA);
+        const graderB = calculateScoresFromScanResult(scanB);
+
         // 2. Comparative Gemini Analysis
         console.log(`[API] Starting Comparative Gemini analysis...`);
         const compareResult = await analyzeCompetitive(
@@ -55,6 +63,18 @@ export async function POST(req: Request) {
         );
 
         console.log(`[API] Comparison Analysis complete.`);
+
+        // Override AI-generated scores with deterministic grader scores (same as Pro Audit)
+        if (compareResult.comparison) {
+            compareResult.comparison.seo = { ...compareResult.comparison.seo, siteA: graderA.seoScore, siteB: graderB.seoScore };
+            compareResult.comparison.aeo = { ...compareResult.comparison.aeo, siteA: graderA.aeoScore, siteB: graderB.aeoScore };
+            compareResult.comparison.geo = { ...compareResult.comparison.geo, siteA: graderA.geoScore, siteB: graderB.geoScore };
+        }
+        if (compareResult.seo) {
+            compareResult.seo = { ...compareResult.seo, siteA: graderA.seoScore, siteB: graderB.seoScore };
+            compareResult.aeo = { ...compareResult.aeo, siteA: graderA.aeoScore, siteB: graderB.aeoScore };
+            compareResult.geo = { ...compareResult.geo, siteA: graderA.geoScore, siteB: graderB.geoScore };
+        }
 
         await incrementScanCount(user.id, 'competitive');
 

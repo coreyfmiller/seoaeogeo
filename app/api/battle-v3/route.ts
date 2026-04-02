@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { performScan } from '@/lib/crawler'
 import { analyzeCompetitive } from '@/lib/gemini-competitive'
+import { calculateScoresFromScanResult } from '@/lib/grader-v2'
+import { prepareScanForGrading } from '@/lib/scan-preparation'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
 import { isMozConfigured, type MozBacklinkData } from '@/lib/moz'
 import { fetchBacklinksWithCache } from '@/lib/backlink-fetcher'
@@ -43,6 +45,12 @@ export async function POST(req: Request) {
       mozEnabled ? fetchBacklinksWithCache(siteBUrl, false) : Promise.resolve(null),
     ])
 
+    // Grade both sites with the same deterministic grader used by Pro Audit
+    prepareScanForGrading(scanA)
+    prepareScanForGrading(scanB)
+    const graderA = calculateScoresFromScanResult(scanA)
+    const graderB = calculateScoresFromScanResult(scanB)
+
     // Build backlink context for Gemini prompt
     const backlinkContext = buildBacklinkContext(backlinksA, backlinksB, siteAUrl, siteBUrl)
 
@@ -68,6 +76,19 @@ export async function POST(req: Request) {
 
     await incrementScanCount(user.id, 'competitive')
     console.log(`[Battle V3] Done.`)
+
+    // Override AI-generated scores with deterministic grader scores (same as Pro Audit)
+    if (compareResult.comparison) {
+      compareResult.comparison.seo = { ...compareResult.comparison.seo, siteA: graderA.seoScore, siteB: graderB.seoScore }
+      compareResult.comparison.aeo = { ...compareResult.comparison.aeo, siteA: graderA.aeoScore, siteB: graderB.aeoScore }
+      compareResult.comparison.geo = { ...compareResult.comparison.geo, siteA: graderA.geoScore, siteB: graderB.geoScore }
+    }
+    // Also override top-level if Gemini returned flat structure
+    if (compareResult.seo) {
+      compareResult.seo = { ...compareResult.seo, siteA: graderA.seoScore, siteB: graderB.seoScore }
+      compareResult.aeo = { ...compareResult.aeo, siteA: graderA.aeoScore, siteB: graderB.aeoScore }
+      compareResult.geo = { ...compareResult.geo, siteA: graderA.geoScore, siteB: graderB.geoScore }
+    }
 
     const resultData = {
       siteA: scanA,
