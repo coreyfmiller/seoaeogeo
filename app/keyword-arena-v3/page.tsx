@@ -837,7 +837,7 @@ export default function KeywordArenaV3Page() {
                               </div>
                             </td>
                             <td className="px-4 py-3 text-center">
-                              <span className="text-xs text-white/50 tabular-nums">{site.googleRank ? `#${site.googleRank}` : '—'}</span>
+                              <span className="text-sm font-black text-white/70 tabular-nums">{site.googleRank ? `#${site.googleRank}` : '—'}</span>
                             </td>
                             <td className="px-4 py-3 text-center">
                               <span className={cn("text-sm font-black tabular-nums", scoreColor(site.scores.seo))}>{site.scores.seo ?? '—'}</span>
