@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { performScan } from '@/lib/crawler';
 import { analyzeCompetitive } from '@/lib/gemini-competitive';
+import { analyzeWithGeminiSingle } from '@/lib/gemini';
 import { calculateScoresFromScanResult } from '@/lib/grader-v2';
-import { prepareScanForGrading } from '@/lib/scan-preparation';
+import { detectSiteType } from '@/lib/site-type-detector';
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers';
 
 /**
@@ -36,9 +37,28 @@ export async function POST(req: Request) {
             performScan(siteBUrl, { lightweight: true })
         ]);
 
-        // Grade both sites with the same deterministic grader used by Pro Audit
-        prepareScanForGrading(scanA);
-        prepareScanForGrading(scanB);
+        // Grade both sites with the same AI + grader pipeline as Pro Audit
+        const [aiA, aiB] = await Promise.all([
+            analyzeWithGeminiSingle({
+                title: scanA.title, description: scanA.description,
+                thinnedText: scanA.thinnedText, schemas: scanA.schemas,
+                structuralData: scanA.structuralData,
+            }).catch(() => null),
+            analyzeWithGeminiSingle({
+                title: scanB.title, description: scanB.description,
+                thinnedText: scanB.thinnedText, schemas: scanB.schemas,
+                structuralData: scanB.structuralData,
+            }).catch(() => null),
+        ]);
+
+        const siteTypeA = detectSiteType(scanA, []);
+        scanA.siteType = siteTypeA.primaryType;
+        if (aiA) { scanA.semanticFlags = aiA.semanticFlags; scanA.schemaQuality = aiA.schemaQuality; }
+
+        const siteTypeB = detectSiteType(scanB, []);
+        scanB.siteType = siteTypeB.primaryType;
+        if (aiB) { scanB.semanticFlags = aiB.semanticFlags; scanB.schemaQuality = aiB.schemaQuality; }
+
         const graderA = calculateScoresFromScanResult(scanA);
         const graderB = calculateScoresFromScanResult(scanB);
 

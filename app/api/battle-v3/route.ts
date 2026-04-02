@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import { performScan } from '@/lib/crawler'
 import { analyzeCompetitive } from '@/lib/gemini-competitive'
+import { analyzeWithGeminiSingle } from '@/lib/gemini'
 import { calculateScoresFromScanResult } from '@/lib/grader-v2'
-import { prepareScanForGrading } from '@/lib/scan-preparation'
+import { detectSiteType } from '@/lib/site-type-detector'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
 import { isMozConfigured, type MozBacklinkData } from '@/lib/moz'
 import { fetchBacklinksWithCache } from '@/lib/backlink-fetcher'
@@ -45,9 +46,30 @@ export async function POST(req: Request) {
       mozEnabled ? fetchBacklinksWithCache(siteBUrl, false) : Promise.resolve(null),
     ])
 
-    // Grade both sites with the same deterministic grader used by Pro Audit
-    prepareScanForGrading(scanA)
-    prepareScanForGrading(scanB)
+    // Grade both sites with the same AI + grader pipeline as Pro Audit
+    // Run AI analysis on both sites in parallel (same as Pro Audit V3 / Keyword Arena V3)
+    const [aiA, aiB] = await Promise.all([
+      analyzeWithGeminiSingle({
+        title: scanA.title, description: scanA.description,
+        thinnedText: scanA.thinnedText, schemas: scanA.schemas,
+        structuralData: scanA.structuralData,
+      }).catch(() => null),
+      analyzeWithGeminiSingle({
+        title: scanB.title, description: scanB.description,
+        thinnedText: scanB.thinnedText, schemas: scanB.schemas,
+        structuralData: scanB.structuralData,
+      }).catch(() => null),
+    ])
+
+    // Feed AI-produced flags into scans (same as Pro Audit / Arena)
+    const siteTypeA = detectSiteType(scanA, [])
+    scanA.siteType = siteTypeA.primaryType
+    if (aiA) { scanA.semanticFlags = aiA.semanticFlags; scanA.schemaQuality = aiA.schemaQuality }
+
+    const siteTypeB = detectSiteType(scanB, [])
+    scanB.siteType = siteTypeB.primaryType
+    if (aiB) { scanB.semanticFlags = aiB.semanticFlags; scanB.schemaQuality = aiB.schemaQuality }
+
     const graderA = calculateScoresFromScanResult(scanA)
     const graderB = calculateScoresFromScanResult(scanB)
 
