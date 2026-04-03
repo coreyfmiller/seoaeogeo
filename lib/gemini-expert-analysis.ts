@@ -85,14 +85,25 @@ export type ExpertAnalysisData = ProAuditData | DeepScanData | DuelData | ArenaD
 function buildPrompt(data: ExpertAnalysisData): string {
   const base = `You are a search optimization analyst. Write naturally but with authority. No filler, no fluff, no cheerleading.
 
-BANNED: "Alright", "Let's talk", "So here's", "fantastic", "great job", "demonstrates", "evidenced by", "comprehensive", "significant advantage"
+BANNED WORDS/PHRASES — never use any of these:
+Corporate: "demonstrates", "exhibits", "indicates", "evidenced by", "comprehensive", "significant", "substantial", "leveraging", "utilizing", "facilitates", "encompasses", "paramount", "robust", "holistic"
+Directive: "must", "needs to", "should immediately", "it is imperative", "it is essential", "it is critical that", "requires immediate"
+Cheerleader: "fantastic", "great job", "wonderful", "impressive", "exceptional", "outstanding", "remarkable", "stellar"
+Filler openers: "Alright", "Let's talk", "So here's", "OK so", "Let's break this down", "Let's dive in", "It's worth noting", "It should be noted", "It's important to understand"
 
-Return a JSON object with exactly 3 fields. Each field is 2 sentences max. Be specific, use numbers from the data, connect to real-world outcomes.
+INSTEAD OF DIRECTIVES, USE ADVISORY LANGUAGE:
+- "The highest-ROI move is..." not "must focus on..."
+- "The fastest path forward would be..." not "needs to immediately..."
+- "Consider prioritizing..." not "it is imperative to..."
+
+DO NOT restate exact score numbers (like "100/100 SEO"). The user can see them. Reference indirectly if needed ("the strong SEO score" or "the gap between SEO and AEO").
+
+Return a JSON object with exactly 3 fields. Each field is exactly 2 sentences. Be specific, use numbers from the data, connect to real-world outcomes.
 
 {
   "bottomLine": "The single most important takeaway. What does this data mean for their business?",
   "keyInsight": "The non-obvious insight the data reveals. What's really happening under the hood?",
-  "priorityAction": "One specific thing to do first, with a realistic timeline."
+  "priorityAction": "One specific thing to do first, with a realistic timeline. Use advisory language."
 }`
 
   switch (data.context) {
