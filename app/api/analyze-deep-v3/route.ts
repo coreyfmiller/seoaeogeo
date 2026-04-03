@@ -187,7 +187,8 @@ export async function POST(request: NextRequest) {
             try {
               ;(scanResult as any).siteType = siteTypeResult.primaryType
 
-              // AI analysis — single call for 10-page scans (multi-page averaging provides stability), 2-call for 5-page
+              // AI analysis — homepage gets 2-call averaging (matches pro audit), inner pages get 1 call
+              const isHomepage = pageUrl === url
               const aiAnalysis = await analyzeWithGemini({
                 title: scanResult.title,
                 description: scanResult.description,
@@ -195,7 +196,7 @@ export async function POST(request: NextRequest) {
                 summarizedContent: scanResult.summarizedContent,
                 schemas: scanResult.schemas,
                 structuralData: scanResult.structuralData,
-              }, { singleCall: maxPages > 5 })
+              }, { singleCall: !isHomepage && maxPages > 5 })
 
               ;(scanResult as any).semanticFlags = aiAnalysis.semanticFlags
               ;(scanResult as any).schemaQuality = aiAnalysis.schemaQuality
