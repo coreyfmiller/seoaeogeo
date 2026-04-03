@@ -213,6 +213,49 @@ function extractDomain(url: string): string {
   return url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, '')
 }
 
+/** Single attempt at generating expert analysis */
+async function attemptExpertAnalysis(
+  prompt: string,
+  model: any,
+  context: string
+): Promise<string | { bottomLine: string; keyInsight: string; priorityAction: string } | null> {
+  const result = await model.generateContent(prompt)
+  const text = result.response.text()
+  console.log(`[Expert Analysis] Raw response length: ${text.length} chars`)
+
+  // Extract JSON
+  const jsonMatch = text.match(/\{[\s\S]*\}/)
+  if (jsonMatch) {
+    try {
+      const parsed = safeJsonParse(jsonMatch[0])
+
+      // Structured format: { bottomLine, keyInsight, priorityAction }
+      if (parsed?.bottomLine && parsed?.keyInsight && parsed?.priorityAction) {
+        console.log(`[Expert Analysis] Structured format success for ${context}`)
+        return parsed as { bottomLine: string; keyInsight: string; priorityAction: string }
+      }
+
+      // Legacy format: { analysis: "..." }
+      if (parsed?.analysis && typeof parsed.analysis === 'string' && parsed.analysis.length > 50) {
+        console.log(`[Expert Analysis] Legacy format for ${context} (${parsed.analysis.length} chars)`)
+        return parsed.analysis
+      }
+    } catch (e) {
+      console.log(`[Expert Analysis] JSON parse failed for ${context}`)
+    }
+  }
+
+  // Fallback: raw text — but never return raw JSON
+  const cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim()
+  if (cleaned.length > 50 && !cleaned.startsWith('{') && !cleaned.startsWith('"')) {
+    console.log(`[Expert Analysis] Raw text fallback for ${context} (${cleaned.length} chars)`)
+    return cleaned
+  }
+
+  console.error(`[Expert Analysis] Extraction failed for ${context}. Raw: ${text.substring(0, 500)}`)
+  return null
+}
+
 export async function generateAIExpertAnalysis(data: ExpertAnalysisData): Promise<string | { bottomLine: string; keyInsight: string; priorityAction: string } | null> {
   try {
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || '')
@@ -222,53 +265,34 @@ export async function generateAIExpertAnalysis(data: ExpertAnalysisData): Promis
       generationConfig: { temperature: 0.3, topP: 0.4, maxOutputTokens: 2048 },
     })
 
+    const prompt = buildPrompt(data)
     console.log(`[Expert Analysis] Generating for ${data.context}...`)
 
-    // Race against a 20s timeout to avoid blocking the response
-    const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => {
-      console.error(`[Expert Analysis] Timed out after 20s for ${data.context}`)
-      resolve(null)
-    }, 20000))
+    // Attempt 1
+    const timeoutMs = 20000
+    const attempt1 = await Promise.race([
+      attemptExpertAnalysis(prompt, model, data.context),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), timeoutMs)),
+    ])
 
-    const analysisPromise = (async () => {
-      const result = await model.generateContent(buildPrompt(data))
-      const text = result.response.text()
-      console.log(`[Expert Analysis] Raw response length: ${text.length} chars`)
+    if (attempt1) return attempt1
 
-      // Extract JSON
-      const jsonMatch = text.match(/\{[\s\S]*\}/)
-      if (jsonMatch) {
-        try {
-          const parsed = safeJsonParse(jsonMatch[0])
+    // Attempt 2 — retry after 2s delay
+    console.log(`[Expert Analysis] Attempt 1 failed for ${data.context}, retrying in 2s...`)
+    await new Promise(resolve => setTimeout(resolve, 2000))
 
-          // New structured format: { bottomLine, keyInsight, priorityAction }
-          if (parsed?.bottomLine && parsed?.keyInsight && parsed?.priorityAction) {
-            console.log(`[Expert Analysis] Structured format success for ${data.context}`)
-            return parsed as { bottomLine: string; keyInsight: string; priorityAction: string }
-          }
+    const attempt2 = await Promise.race([
+      attemptExpertAnalysis(prompt, model, data.context),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), timeoutMs)),
+    ])
 
-          // Legacy format: { analysis: "..." }
-          if (parsed?.analysis && typeof parsed.analysis === 'string' && parsed.analysis.length > 50) {
-            console.log(`[Expert Analysis] Legacy format for ${data.context} (${parsed.analysis.length} chars)`)
-            return parsed.analysis
-          }
-        } catch (e) {
-          console.log(`[Expert Analysis] JSON parse failed for ${data.context}`)
-        }
-      }
+    if (attempt2) {
+      console.log(`[Expert Analysis] Retry succeeded for ${data.context}`)
+      return attempt2
+    }
 
-      // Fallback: raw text — but never return raw JSON
-      const cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim()
-      if (cleaned.length > 50 && !cleaned.startsWith('{') && !cleaned.startsWith('"')) {
-        console.log(`[Expert Analysis] Raw text fallback for ${data.context} (${cleaned.length} chars)`)
-        return cleaned
-      }
-
-      console.error(`[Expert Analysis] All extraction failed. Raw: ${text.substring(0, 500)}`)
-      return null
-    })()
-
-    return await Promise.race([analysisPromise, timeoutPromise])
+    console.error(`[Expert Analysis] Both attempts failed for ${data.context}`)
+    return null
   } catch (err) {
     console.error('[Expert Analysis] Gemini call failed:', err instanceof Error ? err.message : err)
     return null
