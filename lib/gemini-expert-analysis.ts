@@ -83,45 +83,48 @@ interface ArenaData {
 export type ExpertAnalysisData = ProAuditData | DeepScanData | DuelData | ArenaData
 
 function buildPrompt(data: ExpertAnalysisData): string {
-  const base = `You are a supportive SEO/AEO/GEO strategist writing an expert analysis for a client. Your tone is warm, encouraging, and solution-oriented — like a trusted advisor who genuinely wants to help them succeed. Be specific and insightful, but always frame things positively.
+  const base = `You are a search optimization analyst producing an expert assessment. Write like a professional consultant — factual, insightful, and direct. No cheerleading, no fluff, no exclamation marks. Respect the reader's intelligence.
+
+VOICE: Professional analyst. Think Moz or Ahrefs audit reports. Informative, measured, and genuinely useful.
 
 RULES:
-- Focus on the USER'S site — what they're doing well, where they can improve, and specific next steps
-- Don't talk about competitors unless it directly helps the user understand their position
-- Don't repeat scores — the client can see them. Explain what they MEAN for their business
-- Always lead with strengths before addressing gaps
-- Frame weaknesses as opportunities, not failures
-- Give specific, actionable advice they can act on today
-- If domain authority or backlinks are low, explain why that matters and how to improve it
-- Be conversational but authoritative — like a knowledgeable friend, not a cold report
+- Do NOT repeat scores — the client can already see them. Explain what the data MEANS.
+- Do NOT use phrases like "fantastic", "great job", "it's wonderful to see", or any cheerleader language.
+- Explain cause and effect: why scores are what they are, and what the real-world impact is.
+- Identify the single biggest bottleneck and explain why it matters most.
+- If domain authority is low, explain how off-page signals limit ranking potential regardless of on-page quality.
+- If there's a gap between SEO and AEO/GEO, explain what that indicates about the site's optimization maturity.
+- End with a clear priority recommendation — what to address first and why.
+- Write 2-3 paragraphs. Plain text, no markdown.
 
-Write 2-3 paragraphs of genuine expert analysis.
-
-IMPORTANT: Return ONLY a JSON object: { "analysis": "your analysis text here" }
-Do NOT use markdown formatting in the analysis text. Use plain text only.`
+IMPORTANT: Return ONLY a JSON object: { "analysis": "your analysis text here" }`
 
   switch (data.context) {
     case 'pro-audit':
       return `${base}
 
-CONTEXT: Single-page Pro Audit
+CONTEXT: Single-page Pro Audit for a ${data.siteType || 'website'}.
 URL: ${data.url}
 Scores: SEO ${data.scores.seo}/100, AEO ${data.scores.aeo}/100, GEO ${data.scores.geo}/100
-Site Type: ${data.siteType || 'Unknown'}
 Platform: ${data.platform || 'Unknown'}
 Word Count: ${data.wordCount ?? 'Unknown'}
 Schema Count: ${data.schemaCount ?? 0}
 Domain Authority: ${data.domainAuthority ?? 'Not available'}
 Total Backlinks: ${data.totalBacklinks ?? 'Not available'}
-Spam Score: ${data.spamScore ?? 'Not available'}
+Spam Score: ${data.spamScore ?? 'Not available'}%
 Response Time: ${data.responseTimeMs ?? 'Unknown'}ms
 Has H1: ${data.hasH1 ?? 'Unknown'}
 Alt Text Coverage: ${data.altTextPct ?? 'Unknown'}%
 Internal Links: ${data.internalLinks ?? 'Unknown'}
 External Links: ${data.externalLinks ?? 'Unknown'}
-Critical Issues: ${data.criticalIssues?.length ?? 0} found${data.criticalIssues?.length ? ': ' + data.criticalIssues.slice(0, 5).join('; ') : ''}
+Critical Issues: ${data.criticalIssues?.length ?? 0}${data.criticalIssues?.length ? ': ' + data.criticalIssues.slice(0, 5).join('; ') : ''}
 
-Analyze what these scores mean for this ${data.siteType || 'site'}. If there's a big gap between SEO and AEO/GEO, explain why and what it means for AI-driven discovery. If domain authority is low, explain how that limits ranking potential regardless of on-page quality. Be specific about what to prioritize.`
+ANALYZE:
+- What the score spread reveals about optimization maturity (high SEO + low AEO = traditional optimization without AI readiness)
+- The relationship between on-page quality and off-page authority — what this means for actual ranking potential
+- The single biggest bottleneck holding this site back
+- What content depth, schema implementation, and technical signals indicate about competitive readiness
+- Clear priority: what to fix first and why`
 
     case 'deep-scan':
       return `${base}
@@ -138,53 +141,68 @@ Total Words (all pages): ${data.totalWords ?? 'Unknown'}
 Schema Coverage: ${data.schemaCoverage ?? 'Unknown'}
 Duplicate Titles: ${data.duplicateTitles ?? 0}
 Pages Missing H1: ${data.missingH1Count ?? 0}
-Thin Content Pages: ${data.thinContentCount ?? 0}
+Thin Content Pages (<300 words): ${data.thinContentCount ?? 0}
 
-Analyze the site-wide health. Focus on patterns across pages — are there systemic issues? How does the site perform as a whole vs individual page quality? What site-wide improvements would have the biggest compound effect?`
+ANALYZE:
+- Site-wide patterns: are issues systemic or isolated to specific pages?
+- How the weakest pages drag down the site-wide average
+- Schema coverage gaps and what that means for rich results and AI citations
+- Whether this is primarily a content depth problem or a technical problem
+- The compound effect of fixing site-wide issues vs page-level issues
+- Clear priority: the single highest-impact improvement`
 
     case 'competitor-duel':
       return `${base}
 
-CONTEXT: Competitor Duel (head-to-head comparison)
-Site A: ${data.siteAUrl}
+CONTEXT: Head-to-head competitive comparison. Use actual domain names throughout.
+
+${extractDomain(data.siteAUrl)}:
   Scores: SEO ${data.scoresA.seo}/100, AEO ${data.scoresA.aeo}/100, GEO ${data.scoresA.geo}/100
   Site Type: ${data.siteTypeA || 'Unknown'}, Platform: ${data.platformA || 'Unknown'}
-  Domain Authority: ${data.daA ?? 'Not available'}, Backlinks: ${data.backlinksA ?? 'Not available'}
+  Domain Authority: ${data.daA ?? 'N/A'}, Backlinks: ${data.backlinksA ?? 'N/A'}
   Word Count: ${data.wordCountA ?? 'Unknown'}, Schemas: ${data.schemaCountA ?? 0}
 
-Site B: ${data.siteBUrl}
+${extractDomain(data.siteBUrl)}:
   Scores: SEO ${data.scoresB.seo}/100, AEO ${data.scoresB.aeo}/100, GEO ${data.scoresB.geo}/100
   Site Type: ${data.siteTypeB || 'Unknown'}, Platform: ${data.platformB || 'Unknown'}
-  Domain Authority: ${data.daB ?? 'Not available'}, Backlinks: ${data.backlinksB ?? 'Not available'}
+  Domain Authority: ${data.daB ?? 'N/A'}, Backlinks: ${data.backlinksB ?? 'N/A'}
   Word Count: ${data.wordCountB ?? 'Unknown'}, Schemas: ${data.schemaCountB ?? 0}
 
-Provide a thorough competitive analysis. Don't just say who wins — explain WHY. If one site has better on-page scores but lower domain authority, explain how that plays out in real search results. Identify the specific areas where each site has an advantage and what the weaker site needs to do to close the gap. Use the actual domain names, not "Site A" and "Site B".`
+ANALYZE:
+- Where each site has a genuine technical or content advantage, and why
+- How domain authority and backlink profiles affect real-world ranking regardless of on-page scores
+- Whether the on-page score difference translates to actual ranking difference, or if off-page factors dominate
+- The specific, realistic areas where the weaker site can close the gap
+- What each site should prioritize to gain competitive ground`
 
     case 'keyword-arena':
       return `${base}
 
-CONTEXT: Keyword Arena — the user searched "${data.keyword}" and we scored their site against ${data.totalSites ?? '?'} competitors.
+CONTEXT: Keyword Arena — competitive ranking analysis for "${data.keyword}"
 
-YOUR SITE: ${data.userSiteUrl}
+User's Site: ${data.userSiteUrl}
   Scores: SEO ${data.userScores.seo}/100, AEO ${data.userScores.aeo}/100, GEO ${data.userScores.geo}/100
-  Google Rank: ${data.googleRank ?? 'Not available'}
-  Arena Rank (by on-page optimization): ${data.arenaRank ?? 'Not available'} out of ${data.totalSites ?? '?'} sites
-  Domain Authority: ${data.domainAuthority ?? 'Not available'}
+  Google Rank: #${data.googleRank ?? 'N/A'}
+  Arena Rank (by on-page optimization): #${data.arenaRank ?? 'N/A'} out of ${data.totalSites ?? '?'}
+  Domain Authority: ${data.domainAuthority ?? 'N/A'}
   Word Count: ${data.wordCount ?? 'Unknown'}
   Schemas: ${data.schemaCount ?? 0}
 
 Arena Averages: SEO ${data.arenaAvg?.seo ?? '?'}, AEO ${data.arenaAvg?.aeo ?? '?'}, GEO ${data.arenaAvg?.geo ?? '?'}
 
-${data.topCompetitors?.length ? 'Top Competitors (for context only):\n' + data.topCompetitors.slice(0, 5).map(c => `  ${c.url} — SEO ${c.scores.seo}, AEO ${c.scores.aeo}, GEO ${c.scores.geo}, Google #${c.googleRank ?? '?'}`).join('\n') : ''}
+${data.topCompetitors?.length ? 'Top Competitors:\n' + data.topCompetitors.slice(0, 5).map(c => `  ${c.url} — SEO ${c.scores.seo}, AEO ${c.scores.aeo}, GEO ${c.scores.geo}, Google #${c.googleRank ?? '?'}`).join('\n') : ''}
 
-FOCUS YOUR ANALYSIS ON THE USER'S SITE:
-- Start by acknowledging what they're doing well relative to competitors
-- If their on-page scores are strong but Google rank is lower, explain that this is normal — Google weighs off-page factors (domain authority, backlinks, brand recognition, site age) heavily. Frame this as an opportunity: their content is already competitive, and investing in link building will unlock ranking gains
-- If content is thin (low word count), suggest specific content improvements
-- If schema is missing, explain how adding it would help them stand out in both Google and AI search results
-- Give them 2-3 specific, actionable things they can do to climb the rankings for this keyword
-- Be encouraging — they're already taking the right step by analyzing their competition`
+ANALYZE (focused on the user's site):
+- The disconnect or alignment between optimization rank and Google rank, and what drives it (off-page authority, backlinks, brand signals, site age)
+- How the user's site compares to the arena average and the top 3 competitors
+- Whether the gap to higher rankings is on-page (fixable with content/schema changes) or off-page (requires link building strategy)
+- The single most impactful action to move up for this specific keyword
+- If content is thin or schema is missing, explain the specific competitive disadvantage that creates`
   }
+}
+
+function extractDomain(url: string): string {
+  return url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, '')
 }
 
 export async function generateAIExpertAnalysis(data: ExpertAnalysisData): Promise<string | null> {
