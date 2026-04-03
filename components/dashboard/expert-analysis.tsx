@@ -24,6 +24,9 @@ export function ExpertAnalysis({ analysis, label = "Expert Analysis", tooltip = 
 
   // Handle legacy single-string format
   if (typeof analysis === 'string') {
+    // Never render raw JSON — if it looks like JSON, don't show it
+    if (analysis.trim().startsWith('{') || analysis.trim().startsWith('"bottomLine"')) return null
+
     return (
       <div className="rounded-2xl border border-[#00e5ff]/30 bg-[#00e5ff]/[0.03] backdrop-blur-xl p-5 relative overflow-hidden">
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#00e5ff]/5 rounded-full blur-[60px] pointer-events-none" />

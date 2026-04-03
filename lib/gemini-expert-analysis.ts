@@ -224,11 +224,11 @@ export async function generateAIExpertAnalysis(data: ExpertAnalysisData): Promis
 
     console.log(`[Expert Analysis] Generating for ${data.context}...`)
 
-    // Race against a 15s timeout to avoid blocking the response
+    // Race against a 20s timeout to avoid blocking the response
     const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => {
-      console.error(`[Expert Analysis] Timed out after 15s for ${data.context}`)
+      console.error(`[Expert Analysis] Timed out after 20s for ${data.context}`)
       resolve(null)
-    }, 15000))
+    }, 20000))
 
     const analysisPromise = (async () => {
       const result = await model.generateContent(buildPrompt(data))
@@ -257,9 +257,9 @@ export async function generateAIExpertAnalysis(data: ExpertAnalysisData): Promis
         }
       }
 
-      // Fallback: raw text
+      // Fallback: raw text — but never return raw JSON
       const cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim()
-      if (cleaned.length > 50) {
+      if (cleaned.length > 50 && !cleaned.startsWith('{') && !cleaned.startsWith('"')) {
         console.log(`[Expert Analysis] Raw text fallback for ${data.context} (${cleaned.length} chars)`)
         return cleaned
       }
