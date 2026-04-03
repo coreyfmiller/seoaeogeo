@@ -5,7 +5,7 @@
 
 const EVICTABLE_PREFIXES = [
   'arena_v3_', 'battle_v3_', 'arena_v2_', 'battle_v2_',
-  'scan_result_', 'deep_scan_',
+  'scan_result_', 'deep_scan_', 'duelly_latest_',
 ]
 
 function evictStaleData() {
