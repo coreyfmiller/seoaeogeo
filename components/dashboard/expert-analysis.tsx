@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Zap, Target, Lightbulb, Loader2, RefreshCw } from "lucide-react"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
 
@@ -16,6 +16,8 @@ interface ExpertAnalysisProps {
   tooltip?: string
   /** Data to send to /api/expert-analysis for on-demand generation */
   generateData?: Record<string, any>
+  /** Auto-generate on mount when analysis is null */
+  autoGenerate?: boolean
 }
 
 function isStructured(a: string | StructuredAnalysis): a is StructuredAnalysis {
@@ -27,15 +29,18 @@ export function ExpertAnalysis({
   label = "Expert Analysis",
   tooltip = "AI-powered analysis synthesizing your scores, site data, and competitive position into actionable insights.",
   generateData,
+  autoGenerate = false,
 }: ExpertAnalysisProps) {
   const [analysis, setAnalysis] = useState<string | StructuredAnalysis | null | undefined>(initialAnalysis)
   const [isGenerating, setIsGenerating] = useState(false)
   const [failed, setFailed] = useState(false)
+  const autoFired = useRef(false)
 
   // Sync with prop changes (new scan results)
   if (initialAnalysis && initialAnalysis !== analysis) {
     setAnalysis(initialAnalysis)
     setFailed(false)
+    autoFired.current = false
   }
 
   const handleGenerate = async () => {
@@ -60,6 +65,14 @@ export function ExpertAnalysis({
       setIsGenerating(false)
     }
   }
+
+  // Auto-generate on mount when analysis is null and generateData is available
+  useEffect(() => {
+    if (autoGenerate && !initialAnalysis && generateData && !autoFired.current && !isGenerating) {
+      autoFired.current = true
+      handleGenerate()
+    }
+  }, [autoGenerate, initialAnalysis, generateData]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Empty state — show generate button
   if (!analysis || (typeof analysis === 'string' && (analysis.trim().startsWith('{') || analysis.trim().startsWith('"bottomLine"')))) {
