@@ -8,7 +8,6 @@ import {
   FileText,
   Settings,
   Sparkles,
-  Globe,
   Bot,
   Layers,
   Home,
@@ -20,7 +19,6 @@ import {
   X,
   Swords,
   Trophy,
-  ChevronDown,
   HelpCircle,
   MessageSquare,
 } from "lucide-react"
@@ -44,16 +42,7 @@ const mainNav: NavItem[] = [
   { name: "Dashboard", icon: Home, href: "/dashboard" },
 ]
 
-const eolNav: NavItem[] = [
-  { name: "Pro Audit (OLD)", icon: Bot, href: "/pro-audit" },
-  { name: "Deep Scan (OLD)", icon: Layers, href: "/deep-scan" },
-  { name: "Competitive Intel (OLD)", icon: Globe, href: "/competitive-intel" },
-  { name: "Battle Mode (OLD)", icon: Swords, href: "/battle-mode" },
-  { name: "Keyword Arena (OLD)", icon: Trophy, href: "/keyword-arena" },
-  { name: "Keyword Arena 2 (OLD)", icon: Trophy, href: "/keyword-arena-v2" },
-]
-
-const proOnlyPaths = ['/pro-audit', '/pro-audit-v4', '/deep-scan', '/deep-scan-v4', '/competitive-intel', '/battle-mode', '/battle-mode-v3', '/keyword-arena', '/keyword-arena-v2', '/keyword-arena-v3', '/dashboard']
+const proOnlyPaths = ['/pro-audit-v4', '/deep-scan-v4', '/battle-mode-v3', '/keyword-arena-v3', '/dashboard']
 
 const comingSoonNav: NavItem[] = []
 
@@ -74,7 +63,6 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
   const [referralOpen, setReferralOpen] = useState(false)
   const [referralCode, setReferralCode] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
-  const [eolOpen, setEolOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<{ full_name: string | null; plan: string; is_admin?: boolean; credits?: number } | null>(null)
 
@@ -316,38 +304,6 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
             </li>
           ))}
         </ul>
-
-        {/* EOL Section — collapsible, admin only */}
-        {isAdmin && eolNav.length > 0 && (
-          <div className="mt-2">
-            <button onClick={() => setEolOpen(!eolOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 w-full text-left text-xs font-medium text-muted-foreground/40 uppercase tracking-wider hover:text-muted-foreground/60 transition-colors">
-              <ChevronDown className={cn("h-3 w-3 transition-transform", eolOpen && "rotate-180")} />
-              EOL
-              <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-[#BC13FE]/10 text-[#BC13FE] border border-[#BC13FE]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
-                ADMIN
-              </span>
-            </button>
-            {eolOpen && (
-              <ul className="space-y-1 mt-1">
-                {eolNav.map((item) => (
-                  <li key={item.name}>
-                    <Link href={item.href}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-1.5 rounded-lg text-xs transition-colors",
-                        pathname === item.href
-                          ? "bg-seo/10 text-seo font-medium"
-                          : "text-muted-foreground/30 hover:text-muted-foreground/50 hover:bg-muted/20"
-                      )}>
-                      <item.icon className="h-3.5 w-3.5 opacity-40" />
-                      <span className="flex-1 opacity-50">{item.name}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
 
       </div>
 
