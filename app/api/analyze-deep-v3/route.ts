@@ -3,14 +3,13 @@ import { performScan, type ScanResult } from '@/lib/crawler'
 import { detectSiteType } from '@/lib/site-type-detector'
 import { analyzeWithGemini } from '@/lib/gemini'
 import { calculateScoresFromScanResult, convertBreakdownToEnhancedPenalties } from '@/lib/grader-v2'
-import { analyzeSitewideIntelligence } from '@/lib/gemini-sitewide'
 import { saveScanSnapshot } from '@/lib/scan-snapshots'
 import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers'
 import { chromium as playwright, type Browser } from 'playwright-core'
 import chromium from '@sparticuz/chromium'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
 import { createScanJob, completeScanJob, failScanJob, updateScanProgress } from '@/lib/scan-jobs'
-import { fetchBacklinksWithCache, buildSingleSiteBacklinkContext } from '@/lib/backlink-fetcher'
+import { fetchBacklinksWithCache } from '@/lib/backlink-fetcher'
 import { saveScanToDb } from '@/lib/scan-history-db'
 
 export const maxDuration = 300
@@ -335,31 +334,10 @@ export async function POST(request: NextRequest) {
       const missingMeta = pageAnalyses.filter((a: any) => !a.hasDescription)
       if (missingMeta.length > 0) siteWideIssues.push({ type: 'missing-meta', affectedPages: missingMeta.map((a: any) => a.url), count: missingMeta.length, severity: missingMeta.length > pageAnalyses.length * 0.5 ? 'critical' : 'high', description: `${missingMeta.length} page(s) missing meta descriptions` })
 
-      // Step 6: Sitewide intelligence (expert analysis is on-demand via Generate button)
-      const t6 = Date.now()
-      console.log(`[Deep Scan] Step 6: Sitewide intelligence (${Math.round((t6 - tStart) / 1000)}s elapsed)`)
-      send({ type: 'progress', phase: 'Running sitewide AI analysis...', progress: 95 })
-      updateScanProgress(user.id, 'deep', 95, 'Running sitewide AI analysis...').catch(() => {})
-
-      const sitewideIntelligence = await analyzeSitewideIntelligence({
-        domain: parsedUrl.hostname,
-        pages: scanResults.map(({ scanResult: sr }) => ({
-          url: sr.url, title: sr.title || '', description: sr.description || '',
-          schemas: sr.schemas || [], wordCount: sr.structuralData.wordCount,
-          internalLinks: sr.structuralData.links.internal,
-          hasH1: sr.structuralData.semanticTags.h1Count > 0,
-          isHttps: sr.technical.isHttps, responseTimeMs: sr.technical.responseTimeMs,
-          h2Count: sr.structuralData.semanticTags.h2Count, h3Count: sr.structuralData.semanticTags.h3Count,
-          imgTotal: sr.structuralData.media.totalImages, imgWithAlt: sr.structuralData.media.imagesWithAlt,
-        })),
-        siteType: siteTypeResult.primaryType as any,
-        platform: scanResults[0]?.scanResult?.platformDetection?.label,
-        currentScores: avgScores,
-        backlinkContext: buildSingleSiteBacklinkContext(backlinkData, url),
-      }).catch((err) => { console.error('[Deep Scan] Sitewide intelligence failed:', err instanceof Error ? err.message : err); return null })
-
+      // Step 6: Skip to save — sitewide intelligence and expert analysis are generated on-demand after page loads
+      const sitewideIntelligence = null // Generated on-demand via frontend
       const expertAnalysis = null // Generated on-demand via frontend button
-      console.log(`[Deep Scan] Step 6 done (${Math.round((Date.now() - t6) / 1000)}s). Sitewide: ${sitewideIntelligence ? 'yes' : 'null'}`)
+      console.log(`[Deep Scan] Step 6: Skipped sitewide intel (on-demand). (${Math.round((Date.now() - tStart) / 1000)}s elapsed)`)
 
       // Step 7: Save and return
       send({ type: 'progress', phase: 'Saving results...', progress: 98 })
