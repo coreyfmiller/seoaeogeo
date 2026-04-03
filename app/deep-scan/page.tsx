@@ -87,7 +87,7 @@ interface DeepScanResult {
       isDofollow: boolean
     }>
   } | null
-  expertAnalysis?: string | null
+  expertAnalysis?: string | { bottomLine: string; keyInsight: string; priorityAction: string } | null
 }
 
 export default function DeepV3Page() {

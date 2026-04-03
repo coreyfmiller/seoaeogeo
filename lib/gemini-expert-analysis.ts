@@ -83,25 +83,17 @@ interface ArenaData {
 export type ExpertAnalysisData = ProAuditData | DeepScanData | DuelData | ArenaData
 
 function buildPrompt(data: ExpertAnalysisData): string {
-  const base = `You are a search optimization analyst writing an expert assessment. Write naturally but with authority — like a knowledgeable consultant who respects the reader's intelligence.
+  const base = `You are a search optimization analyst. Write naturally but with authority. No filler, no fluff, no cheerleading.
 
-VOICE: Natural, direct, knowledgeable. Not corporate, not casual. No filler phrases.
+BANNED: "Alright", "Let's talk", "So here's", "fantastic", "great job", "demonstrates", "evidenced by", "comprehensive", "significant advantage"
 
-BANNED OPENERS — never start with: "Alright", "Let's talk about", "So here's the thing", "OK so", "Let's break this down", "Here's what's going on", "Let's dive in"
-BANNED LANGUAGE: "fantastic", "great job", "wonderful", "demonstrates", "evidenced by", "comprehensive optimization", "significant advantage"
+Return a JSON object with exactly 3 fields. Each field is 2 sentences max. Be specific, use numbers from the data, connect to real-world outcomes.
 
-RULES:
-- Start directly with the most important insight. No preamble.
-- Do NOT repeat scores — they can see them. Explain what the data MEANS for their business.
-- Use specific numbers from the data to make points concrete.
-- Connect every insight to a real-world outcome: rankings, traffic, clicks, AI citations.
-- If domain authority is low, explain it concretely: "Google sees X websites linking to your competitor but only Y linking to you."
-- Give one specific, actionable recommendation they can act on this week.
-- Include a realistic timeline: on-page fixes show results in 2-4 weeks, link building takes 3-6 months.
-- Write 3-4 substantial paragraphs. Minimum 200 words. Plain text, no markdown, no bullet points.
-
-IMPORTANT: Return ONLY a JSON object: { "analysis": "your full analysis text here" }
-The analysis value MUST be a single string with no line breaks. Use spaces between sentences.`
+{
+  "bottomLine": "The single most important takeaway. What does this data mean for their business?",
+  "keyInsight": "The non-obvious insight the data reveals. What's really happening under the hood?",
+  "priorityAction": "One specific thing to do first, with a realistic timeline."
+}`
 
   switch (data.context) {
     case 'pro-audit':
@@ -210,7 +202,7 @@ function extractDomain(url: string): string {
   return url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*$/, '')
 }
 
-export async function generateAIExpertAnalysis(data: ExpertAnalysisData): Promise<string | null> {
+export async function generateAIExpertAnalysis(data: ExpertAnalysisData): Promise<string | { bottomLine: string; keyInsight: string; priorityAction: string } | null> {
   try {
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || '')
     const modelName = await getGeminiModel()
@@ -232,44 +224,36 @@ export async function generateAIExpertAnalysis(data: ExpertAnalysisData): Promis
       const text = result.response.text()
       console.log(`[Expert Analysis] Raw response length: ${text.length} chars`)
 
-      // Strategy 1: Parse as JSON and extract "analysis" field
+      // Extract JSON
       const jsonMatch = text.match(/\{[\s\S]*\}/)
       if (jsonMatch) {
         try {
           const parsed = safeJsonParse(jsonMatch[0])
+
+          // New structured format: { bottomLine, keyInsight, priorityAction }
+          if (parsed?.bottomLine && parsed?.keyInsight && parsed?.priorityAction) {
+            console.log(`[Expert Analysis] Structured format success for ${data.context}`)
+            return parsed as { bottomLine: string; keyInsight: string; priorityAction: string }
+          }
+
+          // Legacy format: { analysis: "..." }
           if (parsed?.analysis && typeof parsed.analysis === 'string' && parsed.analysis.length > 50) {
-            console.log(`[Expert Analysis] JSON parse success for ${data.context} (${parsed.analysis.length} chars)`)
+            console.log(`[Expert Analysis] Legacy format for ${data.context} (${parsed.analysis.length} chars)`)
             return parsed.analysis
           }
         } catch (e) {
-          console.log(`[Expert Analysis] JSON parse failed, trying manual extraction`)
+          console.log(`[Expert Analysis] JSON parse failed for ${data.context}`)
         }
       }
 
-      // Strategy 2: Manual extraction — find "analysis": "..." and extract the value
-      const analysisMatch = text.match(/"analysis"\s*:\s*"((?:[^"\\]|\\.)*)"/s)
-      if (analysisMatch && analysisMatch[1] && analysisMatch[1].length > 50) {
-        const extracted = analysisMatch[1]
-          .replace(/\\n/g, '\n')
-          .replace(/\\"/g, '"')
-          .replace(/\\\\/g, '\\')
-        console.log(`[Expert Analysis] Manual extraction success for ${data.context} (${extracted.length} chars)`)
-        return extracted
-      }
-
-      // Strategy 3: If no JSON at all, use the raw text (strip markdown fences)
-      const cleaned = text
-        .replace(/```json\s*/gi, '')
-        .replace(/```\s*/g, '')
-        .replace(/^\s*\{?\s*"analysis"\s*:\s*"?/i, '')
-        .replace(/"?\s*\}?\s*$/, '')
-        .trim()
+      // Fallback: raw text
+      const cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim()
       if (cleaned.length > 50) {
         console.log(`[Expert Analysis] Raw text fallback for ${data.context} (${cleaned.length} chars)`)
         return cleaned
       }
 
-      console.error(`[Expert Analysis] All extraction strategies failed. Raw text (first 500): ${text.substring(0, 500)}`)
+      console.error(`[Expert Analysis] All extraction failed. Raw: ${text.substring(0, 500)}`)
       return null
     })()
 

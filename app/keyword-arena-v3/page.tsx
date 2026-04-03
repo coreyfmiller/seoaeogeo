@@ -78,7 +78,7 @@ interface ArenaResult {
   scoredSites: number
   creditCost: number
   arenaAvg: ArenaAverages | null
-  expertAnalysis?: string | null
+  expertAnalysis?: string | { bottomLine: string; keyInsight: string; priorityAction: string } | null
 }
 
 /** Normalize URL for comparison (strip protocol, www, trailing slash) */

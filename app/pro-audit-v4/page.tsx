@@ -43,7 +43,7 @@ interface AnalysisResult {
   backlinkData?: { metrics: any; backlinks: any[] } | null
   platformDetection?: any
   liveInterrogation?: any
-  expertAnalysis?: string | null
+  expertAnalysis?: string | { bottomLine: string; keyInsight: string; priorityAction: string } | null
   analyzedAt: string
 }
 
