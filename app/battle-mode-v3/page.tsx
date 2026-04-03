@@ -388,10 +388,9 @@ export default function BattleModeV3() {
                             </div>
 
                             {/* ── Expert Analysis (right after scores) ── */}
-                            {(() => {
-                                const analysis = comparisonData.expertAnalysis || comparisonData.winnerVerdict || comparisonData.comparison?.winnerVerdict
-                                return analysis ? <ExpertAnalysis analysis={analysis} label="Expert Analysis" tooltip="AI-generated analysis of which site has the competitive advantage and why, based on all scan data including scores, content depth, schema markup, and domain authority." /> : null
-                            })()}
+                            {comparisonData.expertAnalysis && (
+                                <ExpertAnalysis analysis={comparisonData.expertAnalysis} label="Expert Analysis" tooltip="AI-generated analysis of your competitive position, including strengths, opportunities, and specific next steps based on all scan data." />
+                            )}
 
                             {/* ── Counter-Strategies ── */}
                             {(comparisonData.recommendations || comparisonData.comparison?.recommendations)?.length > 0 && (() => {

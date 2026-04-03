@@ -33,6 +33,8 @@ export async function analyzeCompetitive(siteA: {
   const prompt = `
     Perform a Detailed Competitive Search Intelligence Analysis between two websites using MODERN 2026 STANDARDS.
     
+    TONE: Be supportive, encouraging, and solution-oriented. You are a trusted advisor helping Site A improve. Lead with what Site A does well before addressing gaps. Frame weaknesses as opportunities. Never be aggressive, dismissive, or harsh. Use the actual domain names, not "Site A" and "Site B".
+    
     MODERN EVALUATION STANDARDS:
     - JSON-LD arrays and @graph structures are VALID (don't penalize)
     - Evaluate schema quality, not just presence
@@ -53,7 +55,7 @@ export async function analyzeCompetitive(siteA: {
     Compare them across SEO, AEO (Answer Engine Optimization), and GEO (Generative Engine Optimization).
     Identify specific "Stolen Opportunities" where Site B is outperforming Site A in LLM citations or Answer Box presence.
     ${options?.backlinkContext || ''}
-    IMPORTANT FOR VERDICT: Use the actual site URLs (${siteA.url} and ${siteB.url}) in your winnerVerdict instead of generic terms like "Site A" or "Site B". Make it personal and specific.
+    IMPORTANT FOR VERDICT: Write a supportive, insightful analysis using the actual site URLs (${siteA.url} and ${siteB.url}). Acknowledge Site A's strengths first, then explain where they can improve relative to the competitor. If domain authority differs significantly, explain how that affects real-world rankings regardless of on-page scores. Always end with encouragement and specific next steps.
 ${options?.platform ? `
     DETECTED PLATFORM FOR SITE A: ${options.platform}
     All fix instructions and recommendations for Site A MUST be tailored to ${options.platform}. Reference specific ${options.platform} admin paths, plugins/apps/extensions, template files, and platform-specific approaches.
@@ -75,7 +77,7 @@ ${options?.platform ? `
       "winnerVerdict": string,
       "recommendations": Array<{
         "rank": number (1-10),
-        "title": string (RUTHLESS ACTION - e.g. "Clone Competitor's FAQ Structure"),
+        "title": string (CLEAR ACTION - e.g. "Add FAQ Schema to Match Competitor's Structure"),
         "description": string (THE WHY/IMPACT REASONING),
         "howToFix": string (STEP-BY-STEP fix instructions, platform-specific if platform detected. Be thorough.),
         "codeSnippet": string (Before/after code example if applicable, or empty string),
