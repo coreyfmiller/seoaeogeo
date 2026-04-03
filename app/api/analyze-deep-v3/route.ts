@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
 
   const stream = createSSEStream(async (send) => {
     let browser: Browser | null = null
+    const tStart = Date.now()
     try {
       // Step 1: Launch browser and discover internal URLs
       send({ type: 'progress', phase: 'Launching browser...', progress: 5 })
