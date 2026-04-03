@@ -37,10 +37,10 @@ interface NavItem {
 
 const mainNav: NavItem[] = [
   { name: "Free Audit", icon: Sparkles, href: "/free-audit" },
-  { name: "Pro Audit", icon: Bot, href: "/pro-audit-v4", badge: "PRO" },
-  { name: "Deep Scan", icon: Layers, href: "/deep-scan-v4", badge: "PRO" },
-  { name: "Competitor Duel", icon: Swords, href: "/battle-mode-v3", badge: "PRO" },
-  { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena-v3", badge: "PRO" },
+  { name: "Pro Audit", icon: Bot, href: "/pro-audit-v4" },
+  { name: "Deep Scan", icon: Layers, href: "/deep-scan-v4" },
+  { name: "Competitor Duel", icon: Swords, href: "/battle-mode-v3" },
+  { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena-v3" },
   { name: "Dashboard", icon: Home, href: "/dashboard" },
 ]
 
@@ -59,7 +59,7 @@ const comingSoonNav: NavItem[] = []
 
 const bottomNav: NavItem[] = [
   { name: "Help Center", icon: HelpCircle, href: "/help" },
-  { name: "Feedback", icon: MessageSquare, href: "/feedback" },
+  { name: "Feedback", icon: MessageSquare, href: "/contact" },
   { name: "Settings", icon: Settings, href: "/settings" },
   { name: "Usage", icon: BarChart3, href: "/usage", badge: "ADMIN" },
 ]

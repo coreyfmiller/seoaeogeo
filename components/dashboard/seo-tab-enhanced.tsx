@@ -398,7 +398,7 @@ export function SEOTabEnhanced({ data, hideScoreDeductions }: SEOTabProps) {
           </CardContent>
         </Card>
 
-        <Card className="border-seo/20 bg-seo/5 min-w-0 overflow-hidden">
+        <Card className="border-seo/20 bg-seo/5 min-w-0">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Sparkles className="h-5 w-5 text-seo" />
@@ -406,10 +406,10 @@ export function SEOTabEnhanced({ data, hideScoreDeductions }: SEOTabProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-wrap gap-2 overflow-hidden">
+            <div className="flex flex-wrap gap-2">
               {aiSeo ? (
                 aiSeo.keywordOpportunities.map((kw: string, i: number) => (
-                  <Badge key={i} variant="outline" className="border-seo/30 text-seo bg-seo/5 px-3 py-1.5 text-sm">
+                  <Badge key={i} variant="outline" className="border-seo/30 text-seo bg-seo/5 px-3 py-1.5 text-sm whitespace-normal text-left break-words">
                     {kw}
                   </Badge>
                 ))
