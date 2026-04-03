@@ -800,18 +800,18 @@ export default function DeepV3Page() {
                               </div>
                               {data.issues?.length > 0 && (
                                 <ul className="text-xs text-muted-foreground space-y-0.5 mt-1">
-                                  {data.issues.slice(0, 3).map((issue: string, i: number) => (
+                                  {data.issues.slice(0, 3).map((issue: any, i: number) => (
                                     <li key={i} className="flex items-start gap-1">
-                                      <span className="text-yellow-600 mt-0.5">⚠</span> {issue}
+                                      <span className="text-yellow-600 mt-0.5">⚠</span> {typeof issue === 'string' ? issue : JSON.stringify(issue)}
                                     </li>
                                   ))}
                                 </ul>
                               )}
                               {data.recommendations?.length > 0 && (
                                 <ul className="text-xs space-y-0.5 mt-2">
-                                  {data.recommendations.slice(0, 3).map((rec: string, i: number) => (
+                                  {data.recommendations.slice(0, 3).map((rec: any, i: number) => (
                                     <li key={i} className="flex items-start gap-1 text-[#00e5ff]">
-                                      <Zap className="h-3 w-3 shrink-0 mt-0.5" /> <span className="text-foreground/80">{rec}</span>
+                                      <Zap className="h-3 w-3 shrink-0 mt-0.5" /> <span className="text-foreground/80">{typeof rec === 'string' ? rec : JSON.stringify(rec)}</span>
                                     </li>
                                   ))}
                                 </ul>
