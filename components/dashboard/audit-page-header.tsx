@@ -1,6 +1,6 @@
 "use client"
 
-import { RefreshCw, Search, Activity, Sparkles, HelpCircle, Zap } from "lucide-react"
+import { RefreshCw, Search, Activity, Sparkles, HelpCircle, Zap, Copy, Check, FileDown, Loader2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { SiteTypeBadge } from "@/components/dashboard/site-type-badge"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
@@ -47,6 +47,11 @@ interface AuditPageHeaderProps {
   onPlatformChange?: (selectedPlatform: string) => void
   cwv?: CWVData
   proLocked?: boolean
+  onCopyReport?: () => void
+  downloadReport?: {
+    filename: string
+    generatePdf: () => Promise<Blob>
+  }
 }
 
 export function AuditPageHeader({
@@ -68,8 +73,12 @@ export function AuditPageHeader({
   proLocked = false,
   platformDetection,
   onPlatformChange,
+  onCopyReport,
+  downloadReport,
 }: AuditPageHeaderProps) {
   const [platformOverride, setPlatformOverride] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
 
   const platformOptions = [
     { value: 'wordpress', label: 'WordPress' },
@@ -123,7 +132,7 @@ export function AuditPageHeader({
             )}
           </div>
           {hasResults && (
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={onNewAudit}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#00e5ff] text-black text-xs font-bold hover:bg-[#00e5ff]/90 transition-colors"
@@ -131,6 +140,37 @@ export function AuditPageHeader({
                 <RefreshCw className="h-3.5 w-3.5" />
                 New Audit
               </button>
+              {onCopyReport && (
+                <button
+                  onClick={() => { onCopyReport(); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#00e5ff] text-black text-xs font-bold hover:bg-[#00e5ff]/90 transition-colors"
+                >
+                  {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copied ? 'Copied' : 'Copy Report'}
+                </button>
+              )}
+              {downloadReport && (
+                <button
+                  onClick={async () => {
+                    setIsGeneratingPdf(true)
+                    try {
+                      const blob = await downloadReport.generatePdf()
+                      const url = URL.createObjectURL(blob)
+                      const a = document.createElement('a')
+                      a.href = url
+                      a.download = downloadReport.filename
+                      a.click()
+                      URL.revokeObjectURL(url)
+                    } catch (err) { console.error('PDF generation failed:', err) }
+                    finally { setIsGeneratingPdf(false) }
+                  }}
+                  disabled={isGeneratingPdf}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#00e5ff] text-black text-xs font-bold hover:bg-[#00e5ff]/90 transition-colors disabled:opacity-50"
+                >
+                  {isGeneratingPdf ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileDown className="h-3.5 w-3.5" />}
+                  {isGeneratingPdf ? 'Generating...' : 'Download Report'}
+                </button>
+              )}
             </div>
           )}
           {!hasResults && !isAnalyzing && (

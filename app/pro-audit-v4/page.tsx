@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Zap, Search, Sparkles, Bot, CheckCircle2, Clock, Copy, Check, Filter, FileDown } from 'lucide-react'
+import { Zap, Search, Sparkles, Bot, CheckCircle2, Clock, Copy, Filter } from 'lucide-react'
 import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan, wasHistoryCleared } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -20,7 +20,6 @@ import { Badge } from '@/components/ui/badge'
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { LinkBuildingIntelligence } from '@/components/dashboard/link-building-intelligence'
 import { ExpertAnalysis } from '@/components/dashboard/expert-analysis'
-import { DownloadReportButton } from '@/components/dashboard/download-report-button'
 import { cn } from '@/lib/utils'
 
 interface AnalysisResult {
@@ -54,7 +53,6 @@ export default function ProAuditV4Page() {
   const [pendingUrl, setPendingUrl] = useState('')
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [priorityFilter, setPriorityFilter] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM'>('ALL')
-  const [copied, setCopied] = useState(false)
   const sse = useSSEAnalysis<AnalysisResult>('/api/analyze-v3')
 
   const handleAnalyze = async (submittedUrl: string) => { setPendingUrl(submittedUrl); setCreditDialogOpen(true) }
@@ -129,7 +127,46 @@ export default function ProAuditV4Page() {
           <AuditPageHeader title="Pro Audit" description="AI-powered scoring with site-type-specific analysis for 95% accuracy." currentUrl={currentUrl} hasResults={!!result} isAnalyzing={isAnalyzing}
             onNewAudit={() => { sse.reset(); setCurrentUrl("") }} onRefreshAnalysis={() => handleAnalyze(currentUrl)} analysisData={result} pageCount={1}
             siteType={result?.siteTypeResult ? { primaryType: result.siteTypeResult.primaryType, confidence: result.siteTypeResult.confidence } : undefined}
-            platformDetection={result?.platformDetection} onSiteTypeConfirm={handleSiteTypeChange} onSiteTypeChange={handleSiteTypeChange} onPlatformChange={handlePlatformChange} />
+            platformDetection={result?.platformDetection} onSiteTypeConfirm={handleSiteTypeChange} onSiteTypeChange={handleSiteTypeChange} onPlatformChange={handlePlatformChange}
+            onCopyReport={result ? () => {
+              const scores = result.scores || {} as any
+              const seo = scores.seo?.score ?? 'N/A'
+              const aeo = scores.aeo?.score ?? 'N/A'
+              const geo = scores.geo?.score ?? 'N/A'
+              const penalties = (result.enhancedPenalties || [])
+                .map((p: any) => `[${p.severity?.toUpperCase()}] ${p.category} — ${p.component}\n  ${p.explanation}\n  Fix: ${p.fix}`)
+                .join('\n\n')
+              const text = `DUELLY AUDIT REPORT\n${'='.repeat(50)}\nURL: ${currentUrl}\nDate: ${new Date().toLocaleString()}\nSite Type: ${result.siteTypeResult?.primaryType || 'Unknown'}\n\nSCORES\n  SEO: ${seo}/100\n  AEO: ${aeo}/100\n  GEO: ${geo}/100\n\nISSUES FOUND\n${penalties || '  No issues detected.'}`
+              navigator.clipboard.writeText(text)
+            } : undefined}
+            downloadReport={result ? {
+              filename: `duelly-pro-audit-${currentUrl.replace(/^https?:\/\//, '').replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().slice(0, 10)}.pdf`,
+              generatePdf: async () => {
+                const { generatePdfBlob } = await import('@/lib/pdf/generate')
+                const { ProAuditReport } = await import('@/lib/pdf/pro-audit-report')
+                const React = (await import('react')).default
+                const sd = result.pageData?.structuralData || {} as any
+                const tech = result.pageData?.technical || {} as any
+                const schemas = (result.pageData as any)?.schemas || []
+                return generatePdfBlob(React.createElement(ProAuditReport, {
+                  url: currentUrl, date: new Date().toLocaleDateString(),
+                  scores: { seo: result.scores.seo.score, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
+                  siteType: result.siteTypeResult?.primaryType, platform: result.platformDetection?.label,
+                  overallFeedback: result.graderResult?.overallFeedback,
+                  recommendations: result.aiAnalysis?.recommendations,
+                  metrics: [
+                    { label: 'Schema', value: schemas.length > 0 ? `${schemas.length} found` : 'None' },
+                    { label: 'HTTPS', value: tech.isHttps ? 'Secure' : 'Not Secure' },
+                    { label: 'Response', value: `${tech.responseTimeMs || 0}ms` },
+                    { label: 'Words', value: `${(sd.wordCount || 0).toLocaleString()}` },
+                    { label: 'Int. Links', value: `${sd.links?.internal || 0}` },
+                    { label: 'Alt Text', value: `${sd.media?.totalImages > 0 ? Math.round((sd.media.imagesWithAlt / sd.media.totalImages) * 100) : 100}%` },
+                  ],
+                  backlinkData: result.backlinkData, cwv: result.cwv?.performanceScore > 0 ? result.cwv : null,
+                }))
+              },
+            } : undefined}
+          />
 
           {/* Loading Overlay */}
           {isAnalyzing && (
@@ -210,56 +247,6 @@ export default function ProAuditV4Page() {
           {/* Results Display */}
           {result && (
             <div className="space-y-6">
-              {/* Download & Copy Report */}
-              <div className="flex justify-end gap-2">
-                <button
-                  onClick={() => {
-                    if (!result) return
-                    const scores = result.scores || {} as any
-                    const seo = scores.seo?.score ?? 'N/A'
-                    const aeo = scores.aeo?.score ?? 'N/A'
-                    const geo = scores.geo?.score ?? 'N/A'
-                    const penalties = (result.enhancedPenalties || [])
-                      .map((p: any) => `[${p.severity?.toUpperCase()}] ${p.category} — ${p.component}\n  ${p.explanation}\n  Fix: ${p.fix}`)
-                      .join('\n\n')
-                    const text = `DUELLY AUDIT REPORT\n${'='.repeat(50)}\nURL: ${currentUrl}\nDate: ${new Date().toLocaleString()}\nSite Type: ${result.siteTypeResult?.primaryType || 'Unknown'}\n\nSCORES\n  SEO: ${seo}/100\n  AEO: ${aeo}/100\n  GEO: ${geo}/100\n\nISSUES FOUND\n${penalties || '  No issues detected.'}`
-                    navigator.clipboard.writeText(text)
-                    setCopied(true)
-                    setTimeout(() => setCopied(false), 2000)
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black"
-                >
-                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                  {copied ? 'Copied' : 'Copy Report'}
-                </button>
-                <DownloadReportButton
-                  filename={`duelly-pro-audit-${currentUrl.replace(/^https?:\/\//, '').replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().slice(0, 10)}.pdf`}
-                  generatePdf={async () => {
-                    const { generatePdfBlob } = await import('@/lib/pdf/generate')
-                    const { ProAuditReport } = await import('@/lib/pdf/pro-audit-report')
-                    const React = (await import('react')).default
-                    const sd = result.pageData?.structuralData || {} as any
-                    const tech = result.pageData?.technical || {} as any
-                    const schemas = (result.pageData as any)?.schemas || []
-                    return generatePdfBlob(React.createElement(ProAuditReport, {
-                      url: currentUrl, date: new Date().toLocaleDateString(),
-                      scores: { seo: result.scores.seo.score, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
-                      siteType: result.siteTypeResult?.primaryType, platform: result.platformDetection?.label,
-                      overallFeedback: result.graderResult?.overallFeedback,
-                      recommendations: result.aiAnalysis?.recommendations,
-                      metrics: [
-                        { label: 'Schema', value: schemas.length > 0 ? `${schemas.length} found` : 'None' },
-                        { label: 'HTTPS', value: tech.isHttps ? 'Secure' : 'Not Secure' },
-                        { label: 'Response', value: `${tech.responseTimeMs || 0}ms` },
-                        { label: 'Words', value: `${(sd.wordCount || 0).toLocaleString()}` },
-                        { label: 'Int. Links', value: `${sd.links?.internal || 0}` },
-                        { label: 'Alt Text', value: `${sd.media?.totalImages > 0 ? Math.round((sd.media.imagesWithAlt / sd.media.totalImages) * 100) : 100}%` },
-                      ],
-                      backlinkData: result.backlinkData, cwv: result.cwv?.performanceScore > 0 ? result.cwv : null,
-                    }))
-                  }}
-                />
-              </div>
               {/* Score Cards */}
               <div className="grid gap-6 md:grid-cols-3">
                 <Card className="flex items-center justify-center p-6">
