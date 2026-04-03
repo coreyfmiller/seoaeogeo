@@ -238,74 +238,28 @@ export async function POST(request: NextRequest) {
         return
       }
 
-      // Step 5: Robots.txt & Sitemap check
+      // Step 5: Robots.txt, Sitemap, Backlinks — all in parallel
       const t5 = Date.now()
-      console.log(`[Deep Scan] Step 5: Robots.txt & sitemap check (${Math.round((t5 - tStart) / 1000)}s elapsed)`)
-      send({ type: 'progress', phase: 'Checking robots.txt and sitemap...', progress: 91 })
+      console.log(`[Deep Scan] Step 5: Robots/sitemap/backlinks (${Math.round((t5 - tStart) / 1000)}s elapsed)`)
+      send({ type: 'progress', phase: 'Checking robots.txt, sitemap, and backlinks...', progress: 91 })
+
       let robotsTxt: string | null = null
       let sitemapFound = false
-      try {
-        const parsedUrl = new URL(url)
-        const robotsRes = await fetch(`${parsedUrl.origin}/robots.txt`, { signal: AbortSignal.timeout(5000) })
-        if (robotsRes.ok) robotsTxt = await robotsRes.text()
-      } catch (e) { }
-      try {
-        const parsedUrl = new URL(url)
-        const sitemapRes = await fetch(`${parsedUrl.origin}/sitemap.xml`, { signal: AbortSignal.timeout(5000) })
-        if (sitemapRes.ok) {
-          const sitemapText = await sitemapRes.text()
-          sitemapFound = sitemapText.includes('<urlset') || sitemapText.includes('<sitemapindex')
-        }
-      } catch (e) { }
+      const parsedUrl = new URL(url)
+
+      const [robotsResult, sitemapResult, backlinkData] = await Promise.all([
+        fetch(`${parsedUrl.origin}/robots.txt`, { signal: AbortSignal.timeout(5000) })
+          .then(r => r.ok ? r.text() : null).catch(() => null),
+        fetch(`${parsedUrl.origin}/sitemap.xml`, { signal: AbortSignal.timeout(5000) })
+          .then(r => r.ok ? r.text() : null).catch(() => null),
+        backlinkPromise,
+      ])
+      robotsTxt = robotsResult
+      sitemapFound = sitemapResult ? (sitemapResult.includes('<urlset') || sitemapResult.includes('<sitemapindex')) : false
       console.log(`[Deep Scan] Step 5 done (${Math.round((Date.now() - t5) / 1000)}s)`)
 
-      // Step 6: Sitewide AI Intelligence + resolve backlinks
-      const t6 = Date.now()
-      console.log(`[Deep Scan] Step 6: Sitewide intelligence (${Math.round((Date.now() - tStart) / 1000)}s elapsed)`)
-      send({ type: 'progress', phase: 'Running sitewide intelligence analysis...', progress: 93 })
-      updateScanProgress(user.id, 'deep', 93, 'Running sitewide intelligence...').catch(() => {})
-      let sitewideIntelligence: any = null
-      const backlinkData = await backlinkPromise
-
-      // Pre-calculate avg scores so we can pass them to the AI for score-gap-aware recommendations
-      const preAvgScores = {
-        seo: Math.round(pageAnalyses.reduce((s: number, a: any) => s + a.scores.seo.score, 0) / pageAnalyses.length),
-        aeo: Math.round(pageAnalyses.reduce((s: number, a: any) => s + a.scores.aeo.score, 0) / pageAnalyses.length),
-        geo: Math.round(pageAnalyses.reduce((s: number, a: any) => s + a.scores.geo.score, 0) / pageAnalyses.length),
-      }
-
-      try {
-        const parsedUrl = new URL(url)
-        sitewideIntelligence = await analyzeSitewideIntelligence({
-          domain: parsedUrl.hostname,
-          pages: scanResults.map(({ scanResult: sr }) => ({
-            url: sr.url,
-            title: sr.title || '',
-            description: sr.description || '',
-            schemas: sr.schemas || [],
-            wordCount: sr.structuralData.wordCount,
-            internalLinks: sr.structuralData.links.internal,
-            hasH1: sr.structuralData.semanticTags.h1Count > 0,
-            isHttps: sr.technical.isHttps,
-            responseTimeMs: sr.technical.responseTimeMs,
-            h2Count: sr.structuralData.semanticTags.h2Count,
-            h3Count: sr.structuralData.semanticTags.h3Count,
-            imgTotal: sr.structuralData.media.totalImages,
-            imgWithAlt: sr.structuralData.media.imagesWithAlt,
-          })),
-          siteType: siteTypeResult.primaryType as any,
-          platform: scanResults[0]?.scanResult?.platformDetection?.label,
-          currentScores: preAvgScores,
-          backlinkContext: buildSingleSiteBacklinkContext(backlinkData, url),
-        })
-      } catch (err) {
-        console.error('[Deep Scan] Sitewide intelligence failed:', err instanceof Error ? err.message : err)
-      }
-
-      send({ type: 'progress', phase: 'Calculating aggregate scores...', progress: 95 })
-      updateScanProgress(user.id, 'deep', 95, 'Calculating aggregate scores...').catch(() => {})
-
-      // Aggregate scores
+      // Pre-calculate scores and aggregates (fast, no I/O)
+      send({ type: 'progress', phase: 'Calculating scores...', progress: 93 })
       const avgScores = {
         seo: Math.round(pageAnalyses.reduce((s: number, a: any) => s + a.scores.seo.score, 0) / pageAnalyses.length),
         aeo: Math.round(pageAnalyses.reduce((s: number, a: any) => s + a.scores.aeo.score, 0) / pageAnalyses.length),
@@ -315,8 +269,6 @@ export async function POST(request: NextRequest) {
         totalPages: pageAnalyses.length,
         pagesWithSchema: pageAnalyses.filter((a: any) => a.schemaCount > 0).length,
       }
-
-      // Aggregate metrics from scan results
       const totalWords = scanResults.reduce((s, { scanResult: sr }) => s + (sr.structuralData.wordCount || 0), 0)
       const totalSchemas = scanResults.reduce((s, { scanResult: sr }) => s + (sr.schemas?.length || 0), 0)
       const avgResponseTime = scanResults.length > 0
@@ -329,21 +281,12 @@ export async function POST(request: NextRequest) {
       const titleMap = new Map<string, string[]>()
       const descMap = new Map<string, string[]>()
       scanResults.forEach(({ scanResult: sr }) => {
-        if (sr.title) {
-          const t = sr.title.trim().toLowerCase()
-          if (!titleMap.has(t)) titleMap.set(t, [])
-          titleMap.get(t)!.push(sr.url)
-        }
-        if (sr.description) {
-          const d = sr.description.trim().toLowerCase()
-          if (!descMap.has(d)) descMap.set(d, [])
-          descMap.get(d)!.push(sr.url)
-        }
+        if (sr.title) { const t = sr.title.trim().toLowerCase(); if (!titleMap.has(t)) titleMap.set(t, []); titleMap.get(t)!.push(sr.url) }
+        if (sr.description) { const d = sr.description.trim().toLowerCase(); if (!descMap.has(d)) descMap.set(d, []); descMap.get(d)!.push(sr.url) }
       })
       const duplicateTitles = Array.from(titleMap.entries()).filter(([, urls]) => urls.length > 1).map(([title, urls]) => ({ title, urls }))
       const duplicateDescriptions = Array.from(descMap.entries()).filter(([, urls]) => urls.length > 1).map(([description, urls]) => ({ description, urls }))
 
-      // Orphan / duplicate / site-wide issues (simplified since we don't have outboundLinks from performScan)
       const siteWideIssues: any[] = []
       const missingH1 = pageAnalyses.filter((a: any) => !a.hasH1)
       if (missingH1.length > 0) siteWideIssues.push({ type: 'missing-h1', affectedPages: missingH1.map((a: any) => a.url), count: missingH1.length, severity: missingH1.length > pageAnalyses.length * 0.5 ? 'critical' : 'high', description: `${missingH1.length} page(s) missing H1 tags` })
@@ -352,25 +295,48 @@ export async function POST(request: NextRequest) {
       const missingMeta = pageAnalyses.filter((a: any) => !a.hasDescription)
       if (missingMeta.length > 0) siteWideIssues.push({ type: 'missing-meta', affectedPages: missingMeta.map((a: any) => a.url), count: missingMeta.length, severity: missingMeta.length > pageAnalyses.length * 0.5 ? 'critical' : 'high', description: `${missingMeta.length} page(s) missing meta descriptions` })
 
-      send({ type: 'progress', phase: 'Generating expert analysis...', progress: 97 })
+      // Step 6: Sitewide intelligence + Expert analysis — IN PARALLEL (both are Gemini calls)
+      const t6 = Date.now()
+      console.log(`[Deep Scan] Step 6: Sitewide intel + expert analysis in parallel (${Math.round((t6 - tStart) / 1000)}s elapsed)`)
+      send({ type: 'progress', phase: 'Running AI analysis...', progress: 95 })
+      updateScanProgress(user.id, 'deep', 95, 'Running AI analysis...').catch(() => {})
 
-      // Generate AI expert analysis
-      const expertAnalysis = await generateAIExpertAnalysis({
-        context: 'deep-scan', url,
-        scores: avgScores,
-        siteType: siteTypeResult.primaryType,
-        pagesCrawled: pageAnalyses.length,
-        domainAuthority: backlinkData?.metrics?.domainAuthority,
-        totalBacklinks: backlinkData?.metrics?.totalBacklinks,
-        avgResponseTime,
-        totalWords,
-        schemaCoverage: `${schemaCoverage.pagesWithSchema}/${schemaCoverage.totalPages}`,
-        duplicateTitles: duplicateTitles.length,
-        missingH1Count: missingH1.length,
-        thinContentCount: thinContent.length,
-      }).catch(() => null)
+      const [sitewideIntelligence, expertAnalysis] = await Promise.all([
+        analyzeSitewideIntelligence({
+          domain: parsedUrl.hostname,
+          pages: scanResults.map(({ scanResult: sr }) => ({
+            url: sr.url, title: sr.title || '', description: sr.description || '',
+            schemas: sr.schemas || [], wordCount: sr.structuralData.wordCount,
+            internalLinks: sr.structuralData.links.internal,
+            hasH1: sr.structuralData.semanticTags.h1Count > 0,
+            isHttps: sr.technical.isHttps, responseTimeMs: sr.technical.responseTimeMs,
+            h2Count: sr.structuralData.semanticTags.h2Count, h3Count: sr.structuralData.semanticTags.h3Count,
+            imgTotal: sr.structuralData.media.totalImages, imgWithAlt: sr.structuralData.media.imagesWithAlt,
+          })),
+          siteType: siteTypeResult.primaryType as any,
+          platform: scanResults[0]?.scanResult?.platformDetection?.label,
+          currentScores: avgScores,
+          backlinkContext: buildSingleSiteBacklinkContext(backlinkData, url),
+        }).catch((err) => { console.error('[Deep Scan] Sitewide intelligence failed:', err instanceof Error ? err.message : err); return null }),
 
-      send({ type: 'progress', phase: 'Saving snapshot...', progress: 98 })
+        Promise.race([
+          generateAIExpertAnalysis({
+            context: 'deep-scan', url, scores: avgScores,
+            siteType: siteTypeResult.primaryType, pagesCrawled: pageAnalyses.length,
+            domainAuthority: backlinkData?.metrics?.domainAuthority,
+            totalBacklinks: backlinkData?.metrics?.totalBacklinks,
+            avgResponseTime, totalWords,
+            schemaCoverage: `${schemaCoverage.pagesWithSchema}/${schemaCoverage.totalPages}`,
+            duplicateTitles: duplicateTitles.length,
+            missingH1Count: missingH1.length, thinContentCount: thinContent.length,
+          }),
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), 15000)),
+        ]).catch(() => null),
+      ])
+      console.log(`[Deep Scan] Step 6 done (${Math.round((Date.now() - t6) / 1000)}s). Sitewide: ${sitewideIntelligence ? 'yes' : 'null'}, Expert: ${expertAnalysis ? 'yes' : 'null'}`)
+
+      // Step 7: Save and return
+      send({ type: 'progress', phase: 'Saving results...', progress: 98 })
       saveScanSnapshot({
         id: `deep-v3-${Date.now()}`, url, timestamp: new Date().toISOString(),
         apiRoute: '/api/analyze-deep-v3', scores: avgScores,
@@ -381,6 +347,7 @@ export async function POST(request: NextRequest) {
       })
 
       send({ type: 'progress', phase: 'Deep scan complete!', progress: 100 })
+      console.log(`[Deep Scan] Complete! Total time: ${Math.round((Date.now() - tStart) / 1000)}s`)
       await incrementScanCount(user.id, 'deep')
       const resultData = {
         url, analyzedAt: new Date().toISOString(), siteTypeResult,
@@ -398,9 +365,7 @@ export async function POST(request: NextRequest) {
         backlinkData,
         expertAnalysis,
       }
-      // Persist result to scan_jobs so user can retrieve it if they navigated away
       try { await completeScanJob(user.id, 'deep', resultData) } catch (e) { console.error('[Deep Scan] Scan job complete failed:', e) }
-      // Save to persistent scan history
       saveScanToDb(user.id, 'deep', url, avgScores ? { seo: avgScores.seo, aeo: avgScores.aeo, geo: avgScores.geo } : null, resultData).catch(() => {})
       send({ type: 'result', success: true, data: resultData })
     } catch (error: any) {
