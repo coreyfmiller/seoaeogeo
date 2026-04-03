@@ -96,7 +96,7 @@ const faqs: FAQItem[] = [
   {
     category: "Plans & Limits",
     question: "What are the plan limits?",
-    answer: "Pro ($20): 20 audits, 10 deep scans (50 pages each), 10 duels. Pro Plus ($50): 60 audits, 60 deep scans (50 pages each), 25 duels. Agency ($100): 150 audits, 150 deep scans (50 pages each), 50 duels. Credits are one-time purchases — buy more when you need them. Free audits don't count against your credits."
+    answer: "Credits are one-time purchases — buy more when you need them. Pro Audit costs 10 credits. Deep Scan costs 25 credits (5 pages) or 50 credits (10 pages). Competitor Duel costs 20 credits. Keyword Arena costs 5 credits per site. Free audits don't count against your credits."
   },
   {
     category: "Plans & Limits",

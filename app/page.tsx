@@ -267,11 +267,11 @@ export default function HomePage() {
             },
             {
               q: 'Is there a free tier?',
-              a: 'Yes. Every new account gets 20 free credits on signup, no credit card required. That gives you 2 Pro Audits or 1 Deep Scan to try the platform. After that, credit packs start at $20 for 200 credits.',
+              a: 'Yes. Every new account gets 20 free credits on signup, no credit card required. That gives you 2 Pro Audits to try the platform. After that, credit packs start at $20 for 200 credits.',
             },
             {
               q: 'How many credits does each scan cost?',
-              a: 'Pro Audit costs 10 credits per scan. Deep Scan costs 10 credits plus 1 credit per page crawled. Competitor Duel costs 20 credits per comparison. Keyword Arena costs 5 credits per site analyzed.',
+              a: 'Pro Audit costs 10 credits per scan. Deep Scan costs 25 credits (5 pages) or 50 credits (10 pages). Competitor Duel costs 20 credits per comparison. Keyword Arena costs 5 credits per site analyzed.',
             },
             {
               q: 'What platforms does Duelly detect?',
@@ -297,8 +297,8 @@ export default function HomePage() {
               { '@type': 'Question', name: 'What is AEO (Answer Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'AEO is the practice of optimizing your content so that AI-powered answer engines like ChatGPT, Perplexity, and Google AI Overviews cite your website as a source.' } },
               { '@type': 'Question', name: 'What is GEO (Generative Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'GEO measures how well your content performs in AI-generated search results, evaluating expertise signals, factual density, tone objectivity, and citation likelihood.' } },
               { '@type': 'Question', name: 'How does Duelly calculate scores?', acceptedAnswer: { '@type': 'Answer', text: 'Duelly uses a headless browser crawl plus dual Gemini AI analysis with site-type-specific scoring weights for consistent, accurate results.' } },
-              { '@type': 'Question', name: 'Is there a free tier?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Every new account gets 20 free credits on signup. That gives you 2 Pro Audits or 1 Deep Scan. Credit packs start at $20 for 200 credits.' } },
-              { '@type': 'Question', name: 'How many credits does each scan cost?', acceptedAnswer: { '@type': 'Answer', text: 'Pro Audit: 10 credits. Deep Scan: 10 + 1 per page. Competitor Duel: 20 credits. Keyword Arena: 5 credits per site.' } },
+              { '@type': 'Question', name: 'Is there a free tier?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Every new account gets 20 free credits on signup. That gives you 2 Pro Audits. Credit packs start at $20 for 200 credits.' } },
+              { '@type': 'Question', name: 'How many credits does each scan cost?', acceptedAnswer: { '@type': 'Answer', text: 'Pro Audit: 10 credits. Deep Scan: 25 credits (5 pages) or 50 credits (10 pages). Competitor Duel: 20 credits. Keyword Arena: 5 credits per site.' } },
               { '@type': 'Question', name: 'What platforms does Duelly detect?', acceptedAnswer: { '@type': 'Answer', text: 'WordPress, Shopify, Wix, Squarespace, Webflow, Next.js, Gatsby, Hugo, and more. Fix instructions are tailored to the detected platform.' } },
             ],
           }),

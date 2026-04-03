@@ -24,7 +24,7 @@ const creditPacks = [
     price: "$20",
     credits: 200,
     perCredit: "$0.10",
-    examples: ["20 Pro Audits", "or 13 Deep Scans (5 pages)", "or 10 Duels", "or a mix of all three"],
+    examples: ["20 Pro Audits", "or 8 Deep Scans (5 pages)", "or 10 Duels", "or a mix of all three"],
     cta: "Buy 200 Credits",
     popular: false,
   },
@@ -34,7 +34,7 @@ const creditPacks = [
     price: "$50",
     credits: 600,
     perCredit: "$0.083",
-    examples: ["60 Pro Audits", "or 40 Deep Scans (5 pages)", "or 30 Duels", "or a mix of all three"],
+    examples: ["60 Pro Audits", "or 24 Deep Scans (5 pages)", "or 30 Duels", "or a mix of all three"],
     cta: "Buy 600 Credits",
     popular: true,
   },
@@ -44,7 +44,7 @@ const creditPacks = [
     price: "$100",
     credits: 1500,
     perCredit: "$0.067",
-    examples: ["150 Pro Audits", "or 100 Deep Scans (5 pages)", "or 75 Duels", "or a mix of all three"],
+    examples: ["150 Pro Audits", "or 60 Deep Scans (5 pages)", "or 75 Duels", "or a mix of all three"],
     cta: "Buy 1,500 Credits",
     popular: false,
   },
@@ -52,7 +52,7 @@ const creditPacks = [
 
 const creditCosts = [
   { action: "Pro Audit", cost: "10 credits", note: "Single page AI-powered audit" },
-  { action: "Deep Scan", cost: "10 + 1/page", note: "e.g. 5 pages = 15 credits, 50 pages = 60 credits" },
+  { action: "Deep Scan", cost: "25 or 50 credits", note: "5 pages = 25 credits, 10 pages = 50 credits" },
   { action: "Competitor Duel", cost: "20 credits", note: "Head-to-head comparison of two sites" },
   { action: "Keyword Arena", cost: "5 credits/site", note: "Score top-ranking sites for any keyword" },
 ]

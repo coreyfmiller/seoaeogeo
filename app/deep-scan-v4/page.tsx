@@ -482,9 +482,9 @@ export default function DeepV3Page() {
               open={creditDialogOpen}
               onConfirm={handleConfirmAnalyze}
               onCancel={() => setCreditDialogOpen(false)}
-              creditCost={10 + pendingMaxPages}
+              creditCost={pendingMaxPages <= 5 ? 25 : 50}
               scanType="Deep Scan"
-              costBreakdown={`10 base + ${pendingMaxPages} pages × 1 credit = ${10 + pendingMaxPages} credits`}
+              costBreakdown={`${pendingMaxPages} pages — ${pendingMaxPages <= 5 ? 25 : 50} credits`}
               showPageSelector
               defaultPageCount={pendingMaxPages}
             />

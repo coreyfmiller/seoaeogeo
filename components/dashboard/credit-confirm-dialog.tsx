@@ -66,9 +66,9 @@ export function CreditConfirmDialog({
 
   if (!open) return null
 
-  const effectiveCost = showPageSelector ? 10 + selectedPages : creditCost
+  const effectiveCost = showPageSelector ? (selectedPages <= 5 ? 25 : 50) : creditCost
   const effectiveBreakdown = showPageSelector
-    ? `10 base + ${selectedPages} pages × 1 credit = ${effectiveCost} credits`
+    ? `${selectedPages} pages — ${effectiveCost} credits`
     : costBreakdown
   const hasEnough = balance !== null && balance >= effectiveCost
   const remaining = balance !== null ? balance - effectiveCost : 0

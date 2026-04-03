@@ -639,6 +639,7 @@ export default function KeywordArenaV3Page() {
                         </div>
                         <div>
                           <h3 className="text-sm font-black text-white">Your Position: &ldquo;{arenaResult.keyword}&rdquo;</h3>
+                          <p className="text-xs text-white/50 truncate">{userSiteUrl}</p>
                           <p className="text-xs text-white/70">
                             {arenaResult.scoredSites}/{arenaResult.totalSites} sites scored • {arenaResult.creditCost} credits used
                           </p>
