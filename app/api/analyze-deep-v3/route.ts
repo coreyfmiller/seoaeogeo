@@ -197,7 +197,7 @@ export async function POST(request: NextRequest) {
                 summarizedContent: scanResult.summarizedContent,
                 schemas: scanResult.schemas,
                 structuralData: scanResult.structuralData,
-              }, { singleCall: !isHomepage })
+              }, { singleCall: !isHomepage, skipRecommendations: true })
 
               ;(scanResult as any).semanticFlags = aiAnalysis.semanticFlags
               ;(scanResult as any).schemaQuality = aiAnalysis.schemaQuality

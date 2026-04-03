@@ -15,7 +15,7 @@ export async function analyzeWithGemini(context: {
   schemas: any[];
   structuralData?: any;
   platform?: string;
-}, options?: { singleCall?: boolean }) {
+}, options?: { singleCall?: boolean; skipRecommendations?: boolean }) {
 
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
   const modelName = await getGeminiModel();
@@ -106,7 +106,7 @@ ${context.platform ? `
         "citationLikelihood": number (0-100),
         "llmContextClarity": number (0-100),
         "visibilityGaps": string[]
-      },
+      }${options?.skipRecommendations ? '' : `,
       "recommendations": Array of up to 15 objects: {
         "rank": number (1-15),
         "title": string (RUTHLESS ACTION - e.g. "Fix H1 Tag Hierarchy"),
@@ -119,14 +119,14 @@ ${context.platform ? `
         "domain": "SEO" | "AEO" | "GEO" (which score domain this recommendation primarily improves. SEO = traditional search ranking factors like meta tags, content, internal linking, technical SEO. AEO = AI engine optimization like schema markup, structured data, FAQ content, entity clarity. GEO = generative engine optimization like brand authority, trust signals, social proof, citations, E-E-A-T signals.),
         "impact": "High" | "Medium",
         "impactedScores": string (comma-separated list of specific scores and metrics this fix improves, e.g. "SEO Score, AEO Score, Rich Results, Brand Authority, Long-Tail Traffic")
-      }
+      }`}
     }
     
     IMPORTANT: 
-    - You MUST generate up to 15 recommendations, prioritized by impact. Include every actionable issue you find — do not artificially limit.
-    - Aim for at least 3 CRITICAL, at least 3 HIGH, and at least 3 MEDIUM priority recommendations. Don't force a priority level if it's not warranted, but try hard to find issues at each level.
     - Evaluate schema using modern 2026 standards (arrays and @graph are valid)
-    - Only flag real problems, not implementation style choices
+    - Only flag real problems, not implementation style choices${options?.skipRecommendations ? '\n    - Do NOT include a recommendations array. Only return scoring data.' : `
+    - You MUST generate up to 15 recommendations, prioritized by impact. Include every actionable issue you find — do not artificially limit.
+    - Aim for at least 3 CRITICAL, at least 3 HIGH, and at least 3 MEDIUM priority recommendations. Don't force a priority level if it's not warranted, but try hard to find issues at each level.`}
   `;
 
 
