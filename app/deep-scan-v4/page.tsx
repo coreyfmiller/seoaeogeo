@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Layers, Sparkles, Zap, ShieldCheck, AlertTriangle, FileText, Search, CheckCircle2, Clock, Filter } from 'lucide-react'
+import { Layers, Sparkles, Zap, ShieldCheck, AlertTriangle, FileText, Search, CheckCircle2, Clock, Copy, Filter } from 'lucide-react'
 import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan, wasHistoryCleared } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { PageShell } from '@/components/dashboard/page-shell'
