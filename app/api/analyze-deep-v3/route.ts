@@ -176,9 +176,11 @@ export async function POST(request: NextRequest) {
       const pageAnalyses: any[] = []
       let aiCompleted = 0
 
-      // Start a slow ticker that creeps from 35 to 60 during AI analysis
-      // AI now finishes in ~30-40s (no recommendations), so 1% every 2s = ~50s to reach 60
-      const aiTicker = createProgressTicker(send, 'Running AI analysis on all pages...', 35, 60, 1, 2000)
+      // Start a slow ticker that creeps during AI analysis
+      // 5 pages: AI ~30-40s, ticker 1%/2s reaches 60 in 50s
+      // 10 pages: AI ~80-100s, ticker 1%/4s reaches 60 in 100s
+      const tickerInterval = maxPages > 5 ? 4000 : 2000
+      const aiTicker = createProgressTicker(send, 'Running AI analysis on all pages...', 35, 60, 1, tickerInterval)
 
       for (let i = 0; i < scanResults.length; i += BATCH_SIZE) {
         const batch = scanResults.slice(i, i + BATCH_SIZE)
