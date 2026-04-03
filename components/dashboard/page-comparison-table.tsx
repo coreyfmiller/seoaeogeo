@@ -143,6 +143,20 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
             {pages.length} Pages
           </Badge>
         </div>
+        {/* Issues summary */}
+        {(() => {
+          const totalIssues = pages.reduce((s, p) => s + p.issueCount, 0)
+          const highIssues = pages.reduce((s, p) => s + p.issues.filter(i => i.severity === 'high').length, 0)
+          const medIssues = pages.reduce((s, p) => s + p.issues.filter(i => i.severity === 'medium').length, 0)
+          if (totalIssues === 0) return null
+          return (
+            <div className="flex items-center gap-3 mt-2 text-xs">
+              <span className="text-muted-foreground">{totalIssues} issues across {pages.filter(p => p.issueCount > 0).length} pages</span>
+              {highIssues > 0 && <Badge variant="outline" className="border-destructive/30 text-destructive bg-destructive/5 text-[10px]">{highIssues} High</Badge>}
+              {medIssues > 0 && <Badge variant="outline" className="border-yellow-500/30 text-yellow-600 bg-yellow-500/5 text-[10px]">{medIssues} Medium</Badge>}
+            </div>
+          )
+        })()}
       </CardHeader>
       <CardContent>
         <div className="rounded-lg border border-border/50 overflow-hidden">
@@ -206,7 +220,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                     </button>
                   </th>
                   <th className="text-center p-3 text-xs font-bold uppercase tracking-wider">
-                    Actions
+                    View Actions
                   </th>
                 </tr>
               </thead>
@@ -305,7 +319,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                               variant="ghost"
                               onClick={() => toggleRow(page.url)}
                               className="h-8 px-2"
-                              title={isExpanded ? "Hide issues" : "Show issues"}
+                              title={isExpanded ? "Hide actions" : "View actions"}
                             >
                               {isExpanded ? (
                                 <ChevronUp className="h-3.5 w-3.5" />
