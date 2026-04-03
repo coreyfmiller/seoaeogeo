@@ -128,8 +128,8 @@ export async function POST(request: NextRequest) {
       send({ type: 'progress', phase: `Found ${totalPages} pages. Starting scans...`, progress: 12 })
 
       // Step 2: Scan each page using the EXACT same performScan as Pro Audit
-      // Process in batches of 3 (each launches its own browser, same as Pro Audit)
-      const BATCH_SIZE = 3
+      // Process in batches of 5 for faster throughput
+      const BATCH_SIZE = 5
       const scanResults: { url: string; scanResult: ScanResult }[] = []
       let completed = 0
 
@@ -187,7 +187,8 @@ export async function POST(request: NextRequest) {
             try {
               ;(scanResult as any).siteType = siteTypeResult.primaryType
 
-              // Same AI call as Pro Audit
+              // AI analysis — homepage gets 2-call averaging (matches pro audit), inner pages get 1-call
+              const isHomepage = pageUrl === url
               const aiAnalysis = await analyzeWithGemini({
                 title: scanResult.title,
                 description: scanResult.description,
@@ -195,7 +196,7 @@ export async function POST(request: NextRequest) {
                 summarizedContent: scanResult.summarizedContent,
                 schemas: scanResult.schemas,
                 structuralData: scanResult.structuralData,
-              })
+              }, { singleCall: !isHomepage })
 
               ;(scanResult as any).semanticFlags = aiAnalysis.semanticFlags
               ;(scanResult as any).schemaQuality = aiAnalysis.schemaQuality
