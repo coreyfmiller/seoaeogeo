@@ -82,11 +82,16 @@ export async function POST(req: Request) {
     console.log(`[Arena V3] Done. ${scoredSites.length} scored, ${sites.length - scoredSites.length} failed.`)
 
     // Generate AI expert analysis for the user's site
-    let expertAnalysis: string | null = null
+    let expertAnalysis: string | { bottomLine: string; keyInsight: string; priorityAction: string } | null = null
     if (userSite && userSite.scores.seo != null) {
       try {
         const topCompetitors = scoredSites.filter(s => !s.isUserSite).slice(0, 5).map(s => ({
-          url: s.url, scores: { seo: s.scores.seo ?? 0, aeo: s.scores.aeo ?? 0, geo: s.scores.geo ?? 0 }, googleRank: s.googleRank,
+          url: s.url,
+          scores: { seo: s.scores.seo ?? 0, aeo: s.scores.aeo ?? 0, geo: s.scores.geo ?? 0 },
+          googleRank: s.googleRank,
+          wordCount: s.scanDetails?.wordCount,
+          hasSchema: s.scanDetails?.hasSchema,
+          schemaTypes: s.scanDetails?.schemaTypes,
         }))
         expertAnalysis = await generateAIExpertAnalysis({
           context: 'keyword-arena', keyword, userSiteUrl: userSite.url,
@@ -96,7 +101,7 @@ export async function POST(req: Request) {
           wordCount: userSite.scanDetails?.wordCount, schemaCount: userSite.scanDetails?.hasSchema ? 1 : 0,
           topCompetitors,
         })
-        console.log(`[Arena V3] Expert analysis: ${expertAnalysis ? `${expertAnalysis.length} chars` : 'null'}`)
+        console.log(`[Arena V3] Expert analysis: ${expertAnalysis ? (typeof expertAnalysis === 'string' ? `${expertAnalysis.length} chars` : 'structured') : 'null'}`)
       } catch (err) {
         console.error('[Arena V3] Expert analysis failed:', err instanceof Error ? err.message : err)
       }

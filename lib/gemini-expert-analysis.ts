@@ -77,7 +77,7 @@ interface ArenaData {
   domainAuthority?: number
   wordCount?: number
   schemaCount?: number
-  topCompetitors?: Array<{ url: string; scores: { seo: number; aeo: number; geo: number }; googleRank?: number | null }>
+  topCompetitors?: Array<{ url: string; scores: { seo: number; aeo: number; geo: number }; googleRank?: number | null; wordCount?: number; hasSchema?: boolean; schemaTypes?: string[] }>
 }
 
 export type ExpertAnalysisData = ProAuditData | DeepScanData | DuelData | ArenaData
@@ -197,7 +197,7 @@ User's Site: ${data.userSiteUrl}
 
 Arena Averages: SEO ${data.arenaAvg?.seo ?? '?'}, AEO ${data.arenaAvg?.aeo ?? '?'}, GEO ${data.arenaAvg?.geo ?? '?'}
 
-${data.topCompetitors?.length ? 'Top Competitors:\n' + data.topCompetitors.slice(0, 5).map(c => `  ${c.url} — SEO ${c.scores.seo}, AEO ${c.scores.aeo}, GEO ${c.scores.geo}, Google #${c.googleRank ?? '?'}`).join('\n') : ''}
+${data.topCompetitors?.length ? 'Top Competitors:\n' + data.topCompetitors.slice(0, 5).map((c: any) => `  ${c.url} — SEO ${c.scores.seo}, AEO ${c.scores.aeo}, GEO ${c.scores.geo}, Google #${c.googleRank ?? '?'}, Words: ${c.wordCount ?? '?'}, Schema: ${c.hasSchema ? 'Yes' : 'No'}`).join('\n') : ''}
 
 WRITE ABOUT (focused on the user's site):
 - If arena rank is better than Google rank: this is the key insight. Explain that their content is technically better than their ranking suggests. The gap is almost certainly off-page — domain authority, backlinks, brand recognition. "You're doing the on-page work right, but Google needs to see other websites vouching for you before it'll rank you higher."
