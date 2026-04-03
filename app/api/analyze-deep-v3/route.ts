@@ -12,7 +12,6 @@ import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/li
 import { createScanJob, completeScanJob, failScanJob, updateScanProgress } from '@/lib/scan-jobs'
 import { fetchBacklinksWithCache, buildSingleSiteBacklinkContext } from '@/lib/backlink-fetcher'
 import { saveScanToDb } from '@/lib/scan-history-db'
-import { generateAIExpertAnalysis } from '@/lib/gemini-expert-analysis'
 
 export const maxDuration = 300
 
@@ -314,45 +313,31 @@ export async function POST(request: NextRequest) {
       const missingMeta = pageAnalyses.filter((a: any) => !a.hasDescription)
       if (missingMeta.length > 0) siteWideIssues.push({ type: 'missing-meta', affectedPages: missingMeta.map((a: any) => a.url), count: missingMeta.length, severity: missingMeta.length > pageAnalyses.length * 0.5 ? 'critical' : 'high', description: `${missingMeta.length} page(s) missing meta descriptions` })
 
-      // Step 6: Sitewide intelligence + Expert analysis — IN PARALLEL (both are Gemini calls)
+      // Step 6: Sitewide intelligence (expert analysis is on-demand via Generate button)
       const t6 = Date.now()
-      console.log(`[Deep Scan] Step 6: Sitewide intel + expert analysis in parallel (${Math.round((t6 - tStart) / 1000)}s elapsed)`)
-      send({ type: 'progress', phase: 'Running AI analysis...', progress: 95 })
-      updateScanProgress(user.id, 'deep', 95, 'Running AI analysis...').catch(() => {})
+      console.log(`[Deep Scan] Step 6: Sitewide intelligence (${Math.round((t6 - tStart) / 1000)}s elapsed)`)
+      send({ type: 'progress', phase: 'Running sitewide AI analysis...', progress: 95 })
+      updateScanProgress(user.id, 'deep', 95, 'Running sitewide AI analysis...').catch(() => {})
 
-      const [sitewideIntelligence, expertAnalysis] = await Promise.all([
-        analyzeSitewideIntelligence({
-          domain: parsedUrl.hostname,
-          pages: scanResults.map(({ scanResult: sr }) => ({
-            url: sr.url, title: sr.title || '', description: sr.description || '',
-            schemas: sr.schemas || [], wordCount: sr.structuralData.wordCount,
-            internalLinks: sr.structuralData.links.internal,
-            hasH1: sr.structuralData.semanticTags.h1Count > 0,
-            isHttps: sr.technical.isHttps, responseTimeMs: sr.technical.responseTimeMs,
-            h2Count: sr.structuralData.semanticTags.h2Count, h3Count: sr.structuralData.semanticTags.h3Count,
-            imgTotal: sr.structuralData.media.totalImages, imgWithAlt: sr.structuralData.media.imagesWithAlt,
-          })),
-          siteType: siteTypeResult.primaryType as any,
-          platform: scanResults[0]?.scanResult?.platformDetection?.label,
-          currentScores: avgScores,
-          backlinkContext: buildSingleSiteBacklinkContext(backlinkData, url),
-        }).catch((err) => { console.error('[Deep Scan] Sitewide intelligence failed:', err instanceof Error ? err.message : err); return null }),
+      const sitewideIntelligence = await analyzeSitewideIntelligence({
+        domain: parsedUrl.hostname,
+        pages: scanResults.map(({ scanResult: sr }) => ({
+          url: sr.url, title: sr.title || '', description: sr.description || '',
+          schemas: sr.schemas || [], wordCount: sr.structuralData.wordCount,
+          internalLinks: sr.structuralData.links.internal,
+          hasH1: sr.structuralData.semanticTags.h1Count > 0,
+          isHttps: sr.technical.isHttps, responseTimeMs: sr.technical.responseTimeMs,
+          h2Count: sr.structuralData.semanticTags.h2Count, h3Count: sr.structuralData.semanticTags.h3Count,
+          imgTotal: sr.structuralData.media.totalImages, imgWithAlt: sr.structuralData.media.imagesWithAlt,
+        })),
+        siteType: siteTypeResult.primaryType as any,
+        platform: scanResults[0]?.scanResult?.platformDetection?.label,
+        currentScores: avgScores,
+        backlinkContext: buildSingleSiteBacklinkContext(backlinkData, url),
+      }).catch((err) => { console.error('[Deep Scan] Sitewide intelligence failed:', err instanceof Error ? err.message : err); return null })
 
-        Promise.race([
-          generateAIExpertAnalysis({
-            context: 'deep-scan', url, scores: avgScores,
-            siteType: siteTypeResult.primaryType, pagesCrawled: pageAnalyses.length,
-            domainAuthority: backlinkData?.metrics?.domainAuthority,
-            totalBacklinks: backlinkData?.metrics?.totalBacklinks,
-            avgResponseTime, totalWords,
-            schemaCoverage: `${schemaCoverage.pagesWithSchema}/${schemaCoverage.totalPages}`,
-            duplicateTitles: duplicateTitles.length,
-            missingH1Count: missingH1.length, thinContentCount: thinContent.length,
-          }),
-          new Promise<null>((resolve) => setTimeout(() => resolve(null), 15000)),
-        ]).catch(() => null),
-      ])
-      console.log(`[Deep Scan] Step 6 done (${Math.round((Date.now() - t6) / 1000)}s). Sitewide: ${sitewideIntelligence ? 'yes' : 'null'}, Expert: ${expertAnalysis ? 'yes' : 'null'}`)
+      const expertAnalysis = null // Generated on-demand via frontend button
+      console.log(`[Deep Scan] Step 6 done (${Math.round((Date.now() - t6) / 1000)}s). Sitewide: ${sitewideIntelligence ? 'yes' : 'null'}`)
 
       // Step 7: Save and return
       send({ type: 'progress', phase: 'Saving results...', progress: 98 })
