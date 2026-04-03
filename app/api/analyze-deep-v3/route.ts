@@ -18,7 +18,7 @@ export const maxDuration = 300
 
 export async function POST(request: NextRequest) {
   const { url: rawUrl, maxPages: requestedPages = 10 } = await request.json()
-  const maxPages = Math.min(requestedPages, 20)
+  const maxPages = Math.min(requestedPages, 10)
 
   if (!rawUrl) {
     return new Response(JSON.stringify({ error: 'URL is required' }), {

@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client"
 import { Coins, AlertTriangle, Loader2, Layers } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-const DEEP_SCAN_PAGE_OPTIONS = [5, 10, 20] as const
+const DEEP_SCAN_PAGE_OPTIONS = [5, 10] as const
 
 interface CreditConfirmDialogProps {
   open: boolean
