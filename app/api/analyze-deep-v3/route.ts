@@ -238,24 +238,29 @@ export async function POST(request: NextRequest) {
       }
 
       // Step 5: Robots.txt & Sitemap check
+      const t5 = Date.now()
+      console.log(`[Deep Scan] Step 5: Robots.txt & sitemap check (${Math.round((t5 - tStart) / 1000)}s elapsed)`)
       send({ type: 'progress', phase: 'Checking robots.txt and sitemap...', progress: 91 })
       let robotsTxt: string | null = null
       let sitemapFound = false
       try {
         const parsedUrl = new URL(url)
-        const robotsRes = await fetch(`${parsedUrl.origin}/robots.txt`, { signal: AbortSignal.timeout(8000) })
+        const robotsRes = await fetch(`${parsedUrl.origin}/robots.txt`, { signal: AbortSignal.timeout(5000) })
         if (robotsRes.ok) robotsTxt = await robotsRes.text()
       } catch (e) { }
       try {
         const parsedUrl = new URL(url)
-        const sitemapRes = await fetch(`${parsedUrl.origin}/sitemap.xml`, { signal: AbortSignal.timeout(8000) })
+        const sitemapRes = await fetch(`${parsedUrl.origin}/sitemap.xml`, { signal: AbortSignal.timeout(5000) })
         if (sitemapRes.ok) {
           const sitemapText = await sitemapRes.text()
           sitemapFound = sitemapText.includes('<urlset') || sitemapText.includes('<sitemapindex')
         }
       } catch (e) { }
+      console.log(`[Deep Scan] Step 5 done (${Math.round((Date.now() - t5) / 1000)}s)`)
 
       // Step 6: Sitewide AI Intelligence + resolve backlinks
+      const t6 = Date.now()
+      console.log(`[Deep Scan] Step 6: Sitewide intelligence (${Math.round((Date.now() - tStart) / 1000)}s elapsed)`)
       send({ type: 'progress', phase: 'Running sitewide intelligence analysis...', progress: 93 })
       updateScanProgress(user.id, 'deep', 93, 'Running sitewide intelligence...').catch(() => {})
       let sitewideIntelligence: any = null
