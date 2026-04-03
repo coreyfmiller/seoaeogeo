@@ -83,26 +83,25 @@ interface ArenaData {
 export type ExpertAnalysisData = ProAuditData | DeepScanData | DuelData | ArenaData
 
 function buildPrompt(data: ExpertAnalysisData): string {
-  const base = `You are a sharp, experienced search consultant talking directly to a business owner. Write like a real person who knows their stuff — not a corporate report, not a cheerleader. Think of how a smart SEO consultant would explain things over coffee.
+  const base = `You are a search optimization analyst writing an expert assessment. Write naturally but with authority — like a knowledgeable consultant who respects the reader's intelligence.
 
-VOICE EXAMPLES (match this tone):
-- "Your on-page work is solid, but here's the thing — with a DA of 14, Google doesn't trust you yet. The sites ranking above you have 10x more backlinks. Your content is better, but they have more credibility in Google's eyes."
-- "At 37 words, Google literally can't figure out what your page is about. Neither can ChatGPT or Perplexity. There's just not enough substance for any search engine — traditional or AI — to work with."
-- "You have schema markup, which puts you ahead of most competitors. But the AEO gap tells me the content itself isn't structured as answers. Schema gets you in the door; the actual page content needs to answer questions directly."
+VOICE: Natural, direct, knowledgeable. Not corporate, not casual. No filler phrases.
+
+BANNED OPENERS — never start with: "Alright", "Let's talk about", "So here's the thing", "OK so", "Let's break this down", "Here's what's going on", "Let's dive in"
+BANNED LANGUAGE: "fantastic", "great job", "wonderful", "demonstrates", "evidenced by", "comprehensive optimization", "significant advantage"
 
 RULES:
+- Start directly with the most important insight. No preamble.
 - Do NOT repeat scores — they can see them. Explain what the data MEANS for their business.
-- Do NOT use corporate language like "demonstrates", "evidenced by", "comprehensive optimization". Talk like a person.
-- Do NOT use cheerleader language like "fantastic", "great job", "wonderful". Be real.
-- Connect every insight to a real-world outcome: rankings, traffic, clicks, AI citations, or money.
-- Use specific numbers from the data (word count, DA, backlink count) to make points concrete.
-- If domain authority is low, explain it like this: "Google sees X other websites vouching for your competitor but only Y vouching for you."
-- If there's a score gap between SEO and AEO/GEO, explain what that means in practice for AI search.
-- Give one specific, actionable thing they can do this week. If platform is known, make it platform-specific.
+- Use specific numbers from the data to make points concrete.
+- Connect every insight to a real-world outcome: rankings, traffic, clicks, AI citations.
+- If domain authority is low, explain it concretely: "Google sees X websites linking to your competitor but only Y linking to you."
+- Give one specific, actionable recommendation they can act on this week.
 - Include a realistic timeline: on-page fixes show results in 2-4 weeks, link building takes 3-6 months.
-- Write 3-4 paragraphs. Plain text, no markdown, no bullet points.
+- Write 3-4 substantial paragraphs. Minimum 200 words. Plain text, no markdown, no bullet points.
 
-IMPORTANT: Return ONLY a JSON object: { "analysis": "your analysis text here" }`
+IMPORTANT: Return ONLY a JSON object: { "analysis": "your full analysis text here" }
+The analysis value MUST be a single string with no line breaks. Use spaces between sentences.`
 
   switch (data.context) {
     case 'pro-audit':
@@ -231,27 +230,46 @@ export async function generateAIExpertAnalysis(data: ExpertAnalysisData): Promis
     const analysisPromise = (async () => {
       const result = await model.generateContent(buildPrompt(data))
       const text = result.response.text()
+      console.log(`[Expert Analysis] Raw response length: ${text.length} chars`)
 
-      // Try to extract JSON, fall back to raw text
+      // Strategy 1: Parse as JSON and extract "analysis" field
       const jsonMatch = text.match(/\{[\s\S]*\}/)
       if (jsonMatch) {
         try {
           const parsed = safeJsonParse(jsonMatch[0])
-          if (parsed?.analysis) {
-            console.log(`[Expert Analysis] Success for ${data.context} (${parsed.analysis.length} chars)`)
-            return parsed.analysis as string
+          if (parsed?.analysis && typeof parsed.analysis === 'string' && parsed.analysis.length > 50) {
+            console.log(`[Expert Analysis] JSON parse success for ${data.context} (${parsed.analysis.length} chars)`)
+            return parsed.analysis
           }
-        } catch {}
+        } catch (e) {
+          console.log(`[Expert Analysis] JSON parse failed, trying manual extraction`)
+        }
       }
 
-      // If JSON parsing fails, use the raw text (strip any markdown)
-      const cleaned = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').replace(/^\s*\{[\s\S]*?"analysis"\s*:\s*"/, '').replace(/"\s*\}\s*$/, '').trim()
+      // Strategy 2: Manual extraction — find "analysis": "..." and extract the value
+      const analysisMatch = text.match(/"analysis"\s*:\s*"((?:[^"\\]|\\.)*)"/s)
+      if (analysisMatch && analysisMatch[1] && analysisMatch[1].length > 50) {
+        const extracted = analysisMatch[1]
+          .replace(/\\n/g, '\n')
+          .replace(/\\"/g, '"')
+          .replace(/\\\\/g, '\\')
+        console.log(`[Expert Analysis] Manual extraction success for ${data.context} (${extracted.length} chars)`)
+        return extracted
+      }
+
+      // Strategy 3: If no JSON at all, use the raw text (strip markdown fences)
+      const cleaned = text
+        .replace(/```json\s*/gi, '')
+        .replace(/```\s*/g, '')
+        .replace(/^\s*\{?\s*"analysis"\s*:\s*"?/i, '')
+        .replace(/"?\s*\}?\s*$/, '')
+        .trim()
       if (cleaned.length > 50) {
-        console.log(`[Expert Analysis] Used raw text for ${data.context} (${cleaned.length} chars)`)
+        console.log(`[Expert Analysis] Raw text fallback for ${data.context} (${cleaned.length} chars)`)
         return cleaned
       }
 
-      console.error('[Expert Analysis] Could not extract analysis from response:', text.substring(0, 300))
+      console.error(`[Expert Analysis] All extraction strategies failed. Raw text (first 500): ${text.substring(0, 500)}`)
       return null
     })()
 
