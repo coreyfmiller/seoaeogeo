@@ -525,9 +525,16 @@ export default function DeepV3Page() {
                 })()}
 
                 {/* ═══ EXPERT ANALYSIS ═══ */}
-                {(result.expertAnalysis || result.sitewideIntelligence?.domainHealthScore !== undefined) && (
-                  <ExpertAnalysis analysis={result.expertAnalysis || `Across ${result.pagesCrawled} pages, this site scores SEO ${result.scores.seo}, AEO ${result.scores.aeo}, GEO ${result.scores.geo}. Domain health: ${result.sitewideIntelligence?.domainHealthScore ?? '–'}%.`} />
-                )}
+                <ExpertAnalysis
+                  analysis={result.expertAnalysis}
+                  generateData={{
+                    context: 'deep-scan', url: result.url,
+                    scores: result.scores, siteType: result.siteTypeResult?.primaryType,
+                    pagesCrawled: result.pagesCrawled,
+                    domainAuthority: result.backlinkData?.metrics?.domainAuthority,
+                    totalBacklinks: result.backlinkData?.metrics?.totalBacklinks,
+                  }}
+                />
 
                 {/* Prioritized Site Improvements */}
                 {result.sitewideIntelligence?.recommendations?.length > 0 && (

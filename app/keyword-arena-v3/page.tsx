@@ -722,12 +722,18 @@ export default function KeywordArenaV3Page() {
               )}
 
               {/* ═══ EXPERT ANALYSIS ═══ */}
-              {(arenaResult?.expertAnalysis || userSite) && (
-                <ExpertAnalysis
-                  analysis={arenaResult?.expertAnalysis || `You rank #${arenaResult?.userSiteRank ?? '?'} out of ${arenaResult?.totalSites ?? '?'} sites for "${arenaResult?.keyword}". ${userSite?.googleRank ? `Google has you at position #${userSite.googleRank}${(arenaResult?.userSiteRank ?? 99) < (userSite.googleRank ?? 0) ? ' — your on-page optimization is stronger than your ranking suggests. Off-page factors like domain authority and backlinks are likely holding you back.' : '.'}` : ''}`}
-                  tooltip="AI-powered analysis of your competitive position for this keyword, including what's working, what to improve, and specific next steps to climb the rankings."
-                />
-              )}
+              <ExpertAnalysis
+                analysis={arenaResult?.expertAnalysis}
+                tooltip="AI-powered analysis of your competitive position for this keyword, including what's working, what to improve, and specific next steps to climb the rankings."
+                generateData={userSite ? {
+                  context: 'keyword-arena', keyword: arenaResult?.keyword,
+                  userSiteUrl: userSite.url,
+                  userScores: { seo: userSite.scores.seo ?? 0, aeo: userSite.scores.aeo ?? 0, geo: userSite.scores.geo ?? 0 },
+                  googleRank: userSite.googleRank, arenaRank: arenaResult?.userSiteRank,
+                  totalSites: arenaResult?.totalSites,
+                  arenaAvg: arenaResult?.arenaAvg ? { seo: arenaResult.arenaAvg.seo, aeo: arenaResult.arenaAvg.aeo, geo: arenaResult.arenaAvg.geo } : undefined,
+                } : undefined}
+              />
 
               {/* Leaderboard header */}
               <h3 className="text-sm font-black text-white flex items-center gap-2">

@@ -302,9 +302,19 @@ export default function ProAuditV4Page() {
               })()}
 
               {/* ═══ EXPERT ANALYSIS ═══ */}
-              {(result.expertAnalysis || result.graderResult?.overallFeedback) && (
-                <ExpertAnalysis analysis={result.expertAnalysis || result.graderResult.overallFeedback} />
-              )}
+              <ExpertAnalysis
+                analysis={result.expertAnalysis}
+                generateData={{
+                  context: 'pro-audit', url: result.url,
+                  scores: { seo: result.scores.seo.score, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
+                  siteType: result.siteTypeResult?.primaryType, platform: result.platformDetection?.label,
+                  wordCount: result.pageData?.structuralData?.wordCount,
+                  schemaCount: (result.pageData?.schemas || []).length,
+                  criticalIssues: result.graderResult?.criticalIssues,
+                  domainAuthority: result.backlinkData?.metrics?.domainAuthority,
+                  totalBacklinks: result.backlinkData?.metrics?.totalBacklinks,
+                }}
+              />
 
               {/* ═══ ROADMAP TO 100 ═══ */}
               {(result.aiAnalysis?.recommendations?.length ?? 0) > 0 && (() => {

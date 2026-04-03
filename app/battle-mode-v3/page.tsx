@@ -388,9 +388,23 @@ export default function BattleModeV3() {
                             </div>
 
                             {/* ── Expert Analysis (right after scores) ── */}
-                            {comparisonData.expertAnalysis && (
-                                <ExpertAnalysis analysis={comparisonData.expertAnalysis} label="Expert Analysis" tooltip="AI-generated analysis of your competitive position, including strengths, opportunities, and specific next steps based on all scan data." />
-                            )}
+                            {(() => {
+                                const c = comparisonData.comparison || comparisonData
+                                return <ExpertAnalysis
+                                    analysis={comparisonData.expertAnalysis}
+                                    label="Expert Analysis"
+                                    tooltip="AI-generated analysis of your competitive position, including strengths, opportunities, and specific next steps based on all scan data."
+                                    generateData={{
+                                        context: 'competitor-duel', siteAUrl: siteA, siteBUrl: siteB,
+                                        scoresA: { seo: c.seo?.siteA ?? 0, aeo: c.aeo?.siteA ?? 0, geo: c.geo?.siteA ?? 0 },
+                                        scoresB: { seo: c.seo?.siteB ?? 0, aeo: c.aeo?.siteB ?? 0, geo: c.geo?.siteB ?? 0 },
+                                        daA: backlinkData?.siteA?.metrics?.domainAuthority,
+                                        daB: backlinkData?.siteB?.metrics?.domainAuthority,
+                                        backlinksA: backlinkData?.siteA?.metrics?.totalBacklinks,
+                                        backlinksB: backlinkData?.siteB?.metrics?.totalBacklinks,
+                                    }}
+                                />
+                            })()}
 
                             {/* ── Counter-Strategies ── */}
                             {(comparisonData.recommendations || comparisonData.comparison?.recommendations)?.length > 0 && (() => {

@@ -1,6 +1,7 @@
 "use client"
 
-import { Zap, Target, Lightbulb } from "lucide-react"
+import { useState } from "react"
+import { Zap, Target, Lightbulb, Loader2, RefreshCw } from "lucide-react"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
 
 interface StructuredAnalysis {
@@ -10,23 +11,94 @@ interface StructuredAnalysis {
 }
 
 interface ExpertAnalysisProps {
-  analysis: string | StructuredAnalysis
+  analysis?: string | StructuredAnalysis | null
   label?: string
   tooltip?: string
+  /** Data to send to /api/expert-analysis for on-demand generation */
+  generateData?: Record<string, any>
 }
 
 function isStructured(a: string | StructuredAnalysis): a is StructuredAnalysis {
   return typeof a === 'object' && a !== null && 'bottomLine' in a
 }
 
-export function ExpertAnalysis({ analysis, label = "Expert Analysis", tooltip = "AI-powered analysis synthesizing your scores, site data, and competitive position into actionable insights." }: ExpertAnalysisProps) {
-  if (!analysis) return null
+export function ExpertAnalysis({
+  analysis: initialAnalysis,
+  label = "Expert Analysis",
+  tooltip = "AI-powered analysis synthesizing your scores, site data, and competitive position into actionable insights.",
+  generateData,
+}: ExpertAnalysisProps) {
+  const [analysis, setAnalysis] = useState<string | StructuredAnalysis | null | undefined>(initialAnalysis)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [failed, setFailed] = useState(false)
+
+  // Sync with prop changes (new scan results)
+  if (initialAnalysis && initialAnalysis !== analysis) {
+    setAnalysis(initialAnalysis)
+    setFailed(false)
+  }
+
+  const handleGenerate = async () => {
+    if (!generateData || isGenerating) return
+    setIsGenerating(true)
+    setFailed(false)
+    try {
+      const res = await fetch('/api/expert-analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(generateData),
+      })
+      const data = await res.json()
+      if (data.success && data.analysis) {
+        setAnalysis(data.analysis)
+      } else {
+        setFailed(true)
+      }
+    } catch {
+      setFailed(true)
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  // Empty state — show generate button
+  if (!analysis || (typeof analysis === 'string' && (analysis.trim().startsWith('{') || analysis.trim().startsWith('"bottomLine"')))) {
+    if (!generateData) return null
+
+    return (
+      <div className="rounded-2xl border border-[#00e5ff]/20 bg-[#00e5ff]/[0.02] backdrop-blur-xl p-5 relative overflow-hidden">
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-lg bg-[#00e5ff]/10 border border-[#00e5ff]/20 flex items-center justify-center shrink-0">
+              <Zap className="h-4 w-4 text-[#00e5ff]" />
+            </div>
+            <div>
+              <h4 className="text-xs font-black uppercase text-[#00e5ff] tracking-widest flex items-center gap-1.5">
+                {label} <InfoTooltip content={tooltip} />
+              </h4>
+              <p className="text-xs text-white/40 mt-0.5">
+                {failed ? 'Analysis generation failed. Try again.' : 'AI analysis not yet generated for this scan.'}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleGenerate}
+            disabled={isGenerating}
+            className="px-4 py-2 bg-[#00e5ff]/10 hover:bg-[#00e5ff]/20 border border-[#00e5ff]/30 text-[#00e5ff] text-xs font-bold rounded-lg transition-all disabled:opacity-50 flex items-center gap-1.5"
+          >
+            {isGenerating ? (
+              <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Generating...</>
+            ) : (
+              <><RefreshCw className="h-3.5 w-3.5" /> Generate Analysis</>
+            )}
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   // Handle legacy single-string format
   if (typeof analysis === 'string') {
-    // Never render raw JSON — if it looks like JSON, don't show it
-    if (analysis.trim().startsWith('{') || analysis.trim().startsWith('"bottomLine"')) return null
-
     return (
       <div className="rounded-2xl border border-[#00e5ff]/30 bg-[#00e5ff]/[0.03] backdrop-blur-xl p-5 relative overflow-hidden">
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#00e5ff]/5 rounded-full blur-[60px] pointer-events-none" />
