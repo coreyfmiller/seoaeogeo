@@ -49,7 +49,7 @@ interface DeepScanResult {
     failed: number
   }
   // New sitewide data
-  sitewideIntelligence: any
+  sitewideIntelligence?: any
   robotsTxt: boolean
   sitemapFound: boolean
   aggregateMetrics: {
@@ -558,6 +558,7 @@ export default function DeepV3Page() {
                 {/* ═══ EXPERT ANALYSIS ═══ */}
                 <ExpertAnalysis
                   analysis={result.expertAnalysis}
+                  autoGenerate
                   generateData={{
                     context: 'deep-scan', url: result.url,
                     scores: result.scores, siteType: result.siteTypeResult?.primaryType,
