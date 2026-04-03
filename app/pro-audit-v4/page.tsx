@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Zap, Search, Sparkles, Bot, CheckCircle2, Clock, Copy, Filter, FileDown } from 'lucide-react'
+import { Zap, Search, Sparkles, Bot, CheckCircle2, Clock, Copy, Check, Filter, FileDown } from 'lucide-react'
 import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan, wasHistoryCleared } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -54,6 +54,7 @@ export default function ProAuditV4Page() {
   const [pendingUrl, setPendingUrl] = useState('')
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [priorityFilter, setPriorityFilter] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM'>('ALL')
+  const [copied, setCopied] = useState(false)
   const sse = useSSEAnalysis<AnalysisResult>('/api/analyze-v3')
 
   const handleAnalyze = async (submittedUrl: string) => { setPendingUrl(submittedUrl); setCreditDialogOpen(true) }
@@ -209,8 +210,28 @@ export default function ProAuditV4Page() {
           {/* Results Display */}
           {result && (
             <div className="space-y-6">
-              {/* Download Full Report */}
-              <div className="flex justify-end">
+              {/* Download & Copy Report */}
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => {
+                    if (!result) return
+                    const scores = result.scores || {} as any
+                    const seo = scores.seo?.score ?? 'N/A'
+                    const aeo = scores.aeo?.score ?? 'N/A'
+                    const geo = scores.geo?.score ?? 'N/A'
+                    const penalties = (result.enhancedPenalties || [])
+                      .map((p: any) => `[${p.severity?.toUpperCase()}] ${p.category} — ${p.component}\n  ${p.explanation}\n  Fix: ${p.fix}`)
+                      .join('\n\n')
+                    const text = `DUELLY AUDIT REPORT\n${'='.repeat(50)}\nURL: ${currentUrl}\nDate: ${new Date().toLocaleString()}\nSite Type: ${result.siteTypeResult?.primaryType || 'Unknown'}\n\nSCORES\n  SEO: ${seo}/100\n  AEO: ${aeo}/100\n  GEO: ${geo}/100\n\nISSUES FOUND\n${penalties || '  No issues detected.'}`
+                    navigator.clipboard.writeText(text)
+                    setCopied(true)
+                    setTimeout(() => setCopied(false), 2000)
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black"
+                >
+                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  {copied ? 'Copied' : 'Copy Report'}
+                </button>
                 <DownloadReportButton
                   filename={`duelly-pro-audit-${currentUrl.replace(/^https?:\/\//, '').replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().slice(0, 10)}.pdf`}
                   generatePdf={async () => {

@@ -22,6 +22,7 @@ import {
   Trophy,
   ChevronDown,
   HelpCircle,
+  MessageSquare,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
@@ -58,6 +59,7 @@ const comingSoonNav: NavItem[] = []
 
 const bottomNav: NavItem[] = [
   { name: "Help Center", icon: HelpCircle, href: "/help" },
+  { name: "Feedback", icon: MessageSquare, href: "/feedback" },
   { name: "Settings", icon: Settings, href: "/settings" },
   { name: "Usage", icon: BarChart3, href: "/usage", badge: "ADMIN" },
 ]
@@ -322,6 +324,9 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
               className="flex items-center gap-2 px-3 py-1.5 w-full text-left text-xs font-medium text-muted-foreground/40 uppercase tracking-wider hover:text-muted-foreground/60 transition-colors">
               <ChevronDown className={cn("h-3 w-3 transition-transform", eolOpen && "rotate-180")} />
               EOL
+              <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-[#BC13FE]/10 text-[#BC13FE] border border-[#BC13FE]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+                ADMIN
+              </span>
             </button>
             {eolOpen && (
               <ul className="space-y-1 mt-1">

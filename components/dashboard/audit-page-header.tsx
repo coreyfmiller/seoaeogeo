@@ -1,6 +1,6 @@
 "use client"
 
-import { RefreshCw, Search, Clock, Activity, Sparkles, HelpCircle, Zap, FileDown, Copy, Check } from "lucide-react"
+import { RefreshCw, Search, Activity, Sparkles, HelpCircle, Zap } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { SiteTypeBadge } from "@/components/dashboard/site-type-badge"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
@@ -70,7 +70,6 @@ export function AuditPageHeader({
   onPlatformChange,
 }: AuditPageHeaderProps) {
   const [platformOverride, setPlatformOverride] = useState<string | null>(null)
-  const [copied, setCopied] = useState(false)
 
   const platformOptions = [
     { value: 'wordpress', label: 'WordPress' },
@@ -116,11 +115,7 @@ export function AuditPageHeader({
             </span>
             {hasResults && (
               <>
-                <Badge variant="outline" className="border-[#fe3f8c]/50 text-[#fe3f8c]">
-                  <Clock className="h-3 w-3 mr-1" />
-                  Analysis Live
-                </Badge>
-                <Badge variant="outline" className="border-[#fe3f8c]/50 text-[#fe3f8c] bg-[#fe3f8c]/5">
+                <Badge variant="outline" className="border-[#00e5ff]/50 text-[#00e5ff] bg-[#00e5ff]/5">
                   <Activity className="h-3 w-3 mr-1.5" />
                   {pageCount} Page{pageCount !== 1 ? 's' : ''} Scanned
                 </Badge>
@@ -130,28 +125,8 @@ export function AuditPageHeader({
           {hasResults && (
             <div className="flex items-center gap-2">
               <button
-                onClick={() => {
-                  if (!analysisData) return
-                  const scores = analysisData.scores || {}
-                  const seo = scores.seo?.score ?? 'N/A'
-                  const aeo = scores.aeo?.score ?? 'N/A'
-                  const geo = scores.geo?.score ?? 'N/A'
-                  const penalties = (analysisData.enhancedPenalties || [])
-                    .map((p: any) => `[${p.severity?.toUpperCase()}] ${p.category} — ${p.component}\n  ${p.explanation}\n  Fix: ${p.fix}`)
-                    .join('\n\n')
-                  const text = `DUELLY AUDIT REPORT\n${'='.repeat(50)}\nURL: ${currentUrl}\nDate: ${new Date().toLocaleString()}\nSite Type: ${siteType?.primaryType || 'Unknown'}\n\nSCORES\n  SEO: ${seo}/100\n  AEO: ${aeo}/100\n  GEO: ${geo}/100\n\nISSUES FOUND\n${penalties || '  No issues detected.'}`
-                  navigator.clipboard.writeText(text)
-                  setCopied(true)
-                  setTimeout(() => setCopied(false), 2000)
-                }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-aeo/50 transition-colors"
-              >
-                {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
-                {copied ? 'Copied' : 'Copy Report'}
-              </button>
-              <button
                 onClick={onNewAudit}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-seo/50 transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#00e5ff] text-black text-xs font-bold hover:bg-[#00e5ff]/90 transition-colors"
               >
                 <RefreshCw className="h-3.5 w-3.5" />
                 New Audit

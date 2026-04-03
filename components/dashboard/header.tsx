@@ -31,6 +31,7 @@ interface HeaderProps {
 export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle", hideSearch = false, placeholder, buttonLabel, onMenuToggle }: HeaderProps) {
   const [url, setUrl] = useState(currentUrl || "")
   const [credits, setCredits] = useState<number | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
@@ -44,6 +45,7 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
         .single()
       if (prof) {
         setCredits(prof.credits || 0)
+        setIsAdmin(prof.is_admin === true)
       }
     }
     fetchCredits()
@@ -109,7 +111,8 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
 
       {/* Right side — always pinned far right */}
       <div className="ml-auto flex items-center gap-2 sm:gap-3 shrink-0">
-        {/* API Status — hide on mobile */}
+        {/* API Status — admin only */}
+        {isAdmin && (
         <div className={cn(
           "hidden sm:flex items-center gap-2 px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-wider",
           apiStatus === "healthy" && "border-geo/30 bg-geo/10 text-geo",
@@ -119,6 +122,7 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
           {apiStatus === "healthy" ? <Activity className="h-3 w-3" /> : <ShieldAlert className="h-3 w-3" />}
           API {apiStatus}
         </div>
+        )}
 
         {/* Credit Balance */}
         {credits !== null && (
