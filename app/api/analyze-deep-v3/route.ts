@@ -176,8 +176,9 @@ export async function POST(request: NextRequest) {
       const pageAnalyses: any[] = []
       let aiCompleted = 0
 
-      // Start a slow ticker that creeps from 35 to 90 during AI analysis
-      const aiTicker = createProgressTicker(send, 'Running AI analysis on all pages...', 35, 90, 2, 4000)
+      // Start a slow ticker that creeps from 35 to 85 during AI analysis
+      // For 10 pages this takes ~200s, so increment 1% every 4s = ~200s to go from 35→85
+      const aiTicker = createProgressTicker(send, 'Running AI analysis on all pages...', 35, 85, 1, 4000)
 
       for (let i = 0; i < scanResults.length; i += BATCH_SIZE) {
         const batch = scanResults.slice(i, i + BATCH_SIZE)

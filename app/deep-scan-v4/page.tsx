@@ -567,6 +567,30 @@ export default function DeepV3Page() {
                   }}
                 />
 
+                {/* Page Comparison Table */}
+                {result.pages.length > 1 && (
+                  <PageComparisonTable
+                    pages={result.pages.map((p: any) => ({
+                      url: p.url,
+                      title: p.title || 'Untitled',
+                      seoScore: p.scores.seo.score,
+                      aeoScore: p.scores.aeo.score,
+                      geoScore: p.scores.geo.score,
+                      wordCount: p.wordCount || 0,
+                      issueCount: p.enhancedPenalties?.length || 0,
+                      issues: (p.enhancedPenalties || []).slice(0, 3).map((pen: any) => ({
+                        type: pen.component,
+                        severity: pen.severity === 'critical' ? 'high' : pen.severity === 'warning' ? 'medium' : 'low',
+                        fix: pen.fix
+                      })),
+                      hasH1: p.hasH1 === true,
+                      hasMetaDescription: p.hasDescription === true,
+                      schemaCount: p.schemaCount || 0,
+                      responseTimeMs: p.responseTimeMs || 0,
+                    }))}
+                  />
+                )}
+
                 {/* Roadmap to 100 - Prioritized Site Improvements */}
                 {result.sitewideIntelligence?.recommendations?.length > 0 && (() => {
                   const recs = result.sitewideIntelligence.recommendations
@@ -649,30 +673,6 @@ export default function DeepV3Page() {
                   <LinkBuildingIntelligence
                     metrics={result.backlinkData.metrics}
                     backlinks={result.backlinkData.backlinks}
-                  />
-                )}
-
-                {/* Page Comparison Table */}
-                {result.pages.length > 1 && (
-                  <PageComparisonTable
-                    pages={result.pages.map((p: any) => ({
-                      url: p.url,
-                      title: p.title || 'Untitled',
-                      seoScore: p.scores.seo.score,
-                      aeoScore: p.scores.aeo.score,
-                      geoScore: p.scores.geo.score,
-                      wordCount: p.wordCount || 0,
-                      issueCount: p.enhancedPenalties?.length || 0,
-                      issues: (p.enhancedPenalties || []).slice(0, 3).map((pen: any) => ({
-                        type: pen.component,
-                        severity: pen.severity === 'critical' ? 'high' : pen.severity === 'warning' ? 'medium' : 'low',
-                        fix: pen.fix
-                      })),
-                      hasH1: p.hasH1 === true,
-                      hasMetaDescription: p.hasDescription === true,
-                      schemaCount: p.schemaCount || 0,
-                      responseTimeMs: p.responseTimeMs || 0,
-                    }))}
                   />
                 )}
 
