@@ -10,12 +10,12 @@ import { getGeminiModel } from "./gemini-model-resolver";
 export async function analyzeWithGemini(context: {
   title: string;
   description: string;
-  thinnedText: string;
-  summarizedContent?: string;
+  thinnedText: string; // Deprecated but kept for compatibility
+  summarizedContent?: string; // NEW: Optimized content
   schemas: any[];
   structuralData?: any;
   platform?: string;
-}, options?: { singleCall?: boolean }) {
+}) {
 
   const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || "");
   const modelName = await getGeminiModel();
@@ -131,25 +131,7 @@ ${context.platform ? `
 
 
   try {
-    // Single call mode — used by deep scan (10 pages) where multi-page averaging provides stability
-    if (options?.singleCall) {
-      const result = await model.generateContent(prompt);
-      const responseText = result.response.text();
-      if (result.response.usageMetadata) {
-        logUsage({
-          model: modelName,
-          type: "Single Page Audit (1-call)",
-          inputTokens: result.response.usageMetadata.promptTokenCount || 0,
-          outputTokens: result.response.usageMetadata.candidatesTokenCount || 0,
-          url: context.title
-        });
-      }
-      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error("Could not parse AI response as JSON");
-      return safeJsonParse(jsonMatch[0]);
-    }
-
-    // Default: Run 2 parallel Gemini calls and average semanticFlags for scoring stability
+    // Run 2 parallel Gemini calls and average semanticFlags for scoring stability
     const [result1, result2] = await Promise.all([
       model.generateContent(prompt),
       model.generateContent(prompt),

@@ -3,14 +3,16 @@ import { performScan, type ScanResult } from '@/lib/crawler'
 import { detectSiteType } from '@/lib/site-type-detector'
 import { analyzeWithGemini } from '@/lib/gemini'
 import { calculateScoresFromScanResult, convertBreakdownToEnhancedPenalties } from '@/lib/grader-v2'
+import { analyzeSitewideIntelligence } from '@/lib/gemini-sitewide'
 import { saveScanSnapshot } from '@/lib/scan-snapshots'
 import { createSSEStream, createProgressTicker, SSE_HEADERS } from '@/lib/sse-helpers'
 import { chromium as playwright, type Browser } from 'playwright-core'
 import chromium from '@sparticuz/chromium'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
 import { createScanJob, completeScanJob, failScanJob, updateScanProgress } from '@/lib/scan-jobs'
-import { fetchBacklinksWithCache } from '@/lib/backlink-fetcher'
+import { fetchBacklinksWithCache, buildSingleSiteBacklinkContext } from '@/lib/backlink-fetcher'
 import { saveScanToDb } from '@/lib/scan-history-db'
+import { generateAIExpertAnalysis } from '@/lib/gemini-expert-analysis'
 
 export const maxDuration = 300
 
@@ -50,55 +52,36 @@ export async function POST(request: NextRequest) {
     let browser: Browser | null = null
     const tStart = Date.now()
     try {
-      // Step 1: Discover internal URLs via lightweight HTML fetch (no browser needed)
-      send({ type: 'progress', phase: 'Discovering site pages...', progress: 5 })
-      updateScanProgress(user.id, 'deep', 5, 'Discovering site pages...').catch(() => {})
-      console.log(`[Deep Scan] Step 1: Page discovery (${Math.round((Date.now() - tStart) / 1000)}s elapsed)`)
+      // Step 1: Launch browser and discover internal URLs
+      send({ type: 'progress', phase: 'Launching browser...', progress: 5 })
+      updateScanProgress(user.id, 'deep', 5, 'Launching browser...').catch(() => {})
 
-      // Fetch backlinks in parallel with page discovery
+      const isLocal = process.env.NODE_ENV === 'development'
+      browser = await playwright.launch({
+        args: isLocal ? [] : chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath: isLocal ? undefined : await chromium.executablePath(),
+        headless: isLocal ? true : chromium.headless,
+        channel: isLocal ? 'chrome' : undefined,
+      })
+
+      send({ type: 'progress', phase: 'Discovering site pages...', progress: 8 })
+      const discoveryPage = await browser.newPage()
+      await discoveryPage.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
+
+      // Fetch backlinks in parallel with page discovery (uses cache, zero extra time if cached)
       const backlinkPromise = fetchBacklinksWithCache(url, true)
 
-      // Lightweight HTML fetch for link extraction — no browser launch needed
+      // Extract internal links for crawling
       const domain = new URL(url).hostname
-      let rawLinks: string[] = []
-      try {
-        const res = await fetch(url, {
-          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DuellyBot/1.0)' },
-          signal: AbortSignal.timeout(15000),
-          redirect: 'follow',
-        })
-        if (res.ok) {
-          const html = await res.text()
-          // Extract href values from <a> tags only (not <link>, <script>, etc.)
-          const anchorHrefRegex = /<a\s[^>]*href=["']([^"']+)["']/gi
-          let match
-          while ((match = anchorHrefRegex.exec(html)) !== null) {
-            rawLinks.push(match[1])
-          }
-        }
-      } catch (e) {
-        console.error('[Deep Scan] Lightweight discovery failed, falling back to browser:', e)
-        // Fallback: use browser if fetch fails (e.g., JS-rendered sites)
-        const isLocal = process.env.NODE_ENV === 'development'
-        browser = await playwright.launch({
-          args: isLocal ? [] : chromium.args,
-          defaultViewport: chromium.defaultViewport,
-          executablePath: isLocal ? undefined : await chromium.executablePath(),
-          headless: isLocal ? true : chromium.headless,
-          channel: isLocal ? 'chrome' : undefined,
-        })
-        const discoveryPage = await browser.newPage()
-        await discoveryPage.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
-        rawLinks = await discoveryPage.evaluate(() => {
-          return Array.from(document.querySelectorAll('a[href]'))
-            .map(a => (a as HTMLAnchorElement).href)
-            .filter(href => href.startsWith(window.location.origin) || href.startsWith('/'))
-        })
-        await discoveryPage.close()
-        await browser.close()
-        browser = null
-      }
-      console.log(`[Deep Scan] Discovery found ${rawLinks.length} raw links (${Math.round((Date.now() - tStart) / 1000)}s elapsed)`)
+      const rawLinks = await discoveryPage.evaluate(() => {
+        return Array.from(document.querySelectorAll('a[href]'))
+          .map(a => (a as HTMLAnchorElement).href)
+          .filter(href => href.startsWith(window.location.origin) || href.startsWith('/'))
+      })
+      await discoveryPage.close()
+      await browser.close()
+      browser = null
 
       // Deduplicate and clean links
       const seen = new Set<string>()
@@ -109,36 +92,16 @@ export async function POST(request: NextRequest) {
 
       for (const link of rawLinks) {
         try {
-          const fullLink = new URL(link, url).href.split('#')[0].split('?')[0].replace(/\/$/, '')
+          const fullLink = new URL(link, url).href.split('#')[0].replace(/\/$/, '')
           const normalized = normalizeForDedup(fullLink)
-          const pathLower = fullLink.toLowerCase()
-
-          // Skip if already seen
-          if (seen.has(normalized)) continue
-
-          // Must be same domain
-          if (!fullLink.includes(domain.replace(/^www\./, ''))) continue
-
-          // Block asset file extensions (strip query strings first)
-          if (/\.(css|js|json|xml|rss|atom|txt|map|woff|woff2|ttf|eot|otf|svg|ico|png|jpg|jpeg|gif|webp|avif|bmp|tiff|mp3|mp4|avi|mov|wmv|flv|webm|ogg|wav|pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|gz|tar|7z|dmg|exe|msi|deb|rpm)$/i.test(fullLink)) continue
-
-          // Block CDN / asset / build paths
-          if (/\/(cdn|assets|static|_next|__next|wp-content\/(uploads|plugins|themes)|wp-includes|wp-json|wp-admin|node_modules|vendor|dist|build|bundles|chunks|fonts|images|img|media|uploads|downloads|files)\//i.test(pathLower)) continue
-
-          // Block Shopify CDN patterns
-          if (/\/cdn\/shop\//i.test(pathLower)) continue
-
-          // Block common non-page paths
-          if (/\/(feed|rss|sitemap|robots\.txt|favicon|apple-touch-icon|manifest\.json|sw\.js|service-worker)/i.test(pathLower)) continue
-
-          // Block mailto, tel, javascript links
-          if (/^(mailto:|tel:|javascript:|data:|blob:)/i.test(link)) continue
-
-          // Block login/auth/admin paths (usually not useful for SEO audit)
-          if (/\/(wp-login|wp-admin|admin|login|logout|signin|signout|register|cart|checkout|account|my-account)\b/i.test(pathLower)) continue
-
-          seen.add(normalized)
-          targetUrls.push(fullLink)
+          if (
+            fullLink.includes(domain.replace(/^www\./, '')) &&
+            !seen.has(normalized) &&
+            !fullLink.match(/\.(jpg|jpeg|png|gif|pdf|zip|css|js)$/i)
+          ) {
+            seen.add(normalized)
+            targetUrls.push(fullLink)
+          }
         } catch (e) { }
       }
 
@@ -195,9 +158,8 @@ export async function POST(request: NextRequest) {
       const pageAnalyses: any[] = []
       let aiCompleted = 0
 
-      // Start a slow ticker that creeps from 35 to 85 during AI analysis
-      // For 10 pages this takes ~200s, so increment 1% every 4s = ~200s to go from 35→85
-      const aiTicker = createProgressTicker(send, 'Running AI analysis on all pages...', 35, 85, 1, 4000)
+      // Start a slow ticker that creeps from 35 to 90 during AI analysis
+      const aiTicker = createProgressTicker(send, 'Running AI analysis on all pages...', 35, 90, 2, 4000)
 
       for (let i = 0; i < scanResults.length; i += BATCH_SIZE) {
         const batch = scanResults.slice(i, i + BATCH_SIZE)
@@ -207,8 +169,7 @@ export async function POST(request: NextRequest) {
             try {
               ;(scanResult as any).siteType = siteTypeResult.primaryType
 
-              // AI analysis — homepage gets 2-call averaging (matches pro audit), inner pages get 1 call
-              const isHomepage = pageUrl === url
+              // Same AI call as Pro Audit
               const aiAnalysis = await analyzeWithGemini({
                 title: scanResult.title,
                 description: scanResult.description,
@@ -216,7 +177,7 @@ export async function POST(request: NextRequest) {
                 summarizedContent: scanResult.summarizedContent,
                 schemas: scanResult.schemas,
                 structuralData: scanResult.structuralData,
-              }, { singleCall: !isHomepage && maxPages > 5 })
+              })
 
               ;(scanResult as any).semanticFlags = aiAnalysis.semanticFlags
               ;(scanResult as any).schemaQuality = aiAnalysis.schemaQuality
@@ -334,10 +295,45 @@ export async function POST(request: NextRequest) {
       const missingMeta = pageAnalyses.filter((a: any) => !a.hasDescription)
       if (missingMeta.length > 0) siteWideIssues.push({ type: 'missing-meta', affectedPages: missingMeta.map((a: any) => a.url), count: missingMeta.length, severity: missingMeta.length > pageAnalyses.length * 0.5 ? 'critical' : 'high', description: `${missingMeta.length} page(s) missing meta descriptions` })
 
-      // Step 6: Skip to save — sitewide intelligence and expert analysis are generated on-demand after page loads
-      const sitewideIntelligence = null // Generated on-demand via frontend
-      const expertAnalysis = null // Generated on-demand via frontend button
-      console.log(`[Deep Scan] Step 6: Skipped sitewide intel (on-demand). (${Math.round((Date.now() - tStart) / 1000)}s elapsed)`)
+      // Step 6: Sitewide intelligence + Expert analysis — IN PARALLEL (both are Gemini calls)
+      const t6 = Date.now()
+      console.log(`[Deep Scan] Step 6: Sitewide intel + expert analysis in parallel (${Math.round((t6 - tStart) / 1000)}s elapsed)`)
+      send({ type: 'progress', phase: 'Running AI analysis...', progress: 95 })
+      updateScanProgress(user.id, 'deep', 95, 'Running AI analysis...').catch(() => {})
+
+      const [sitewideIntelligence, expertAnalysis] = await Promise.all([
+        analyzeSitewideIntelligence({
+          domain: parsedUrl.hostname,
+          pages: scanResults.map(({ scanResult: sr }) => ({
+            url: sr.url, title: sr.title || '', description: sr.description || '',
+            schemas: sr.schemas || [], wordCount: sr.structuralData.wordCount,
+            internalLinks: sr.structuralData.links.internal,
+            hasH1: sr.structuralData.semanticTags.h1Count > 0,
+            isHttps: sr.technical.isHttps, responseTimeMs: sr.technical.responseTimeMs,
+            h2Count: sr.structuralData.semanticTags.h2Count, h3Count: sr.structuralData.semanticTags.h3Count,
+            imgTotal: sr.structuralData.media.totalImages, imgWithAlt: sr.structuralData.media.imagesWithAlt,
+          })),
+          siteType: siteTypeResult.primaryType as any,
+          platform: scanResults[0]?.scanResult?.platformDetection?.label,
+          currentScores: avgScores,
+          backlinkContext: buildSingleSiteBacklinkContext(backlinkData, url),
+        }).catch((err) => { console.error('[Deep Scan] Sitewide intelligence failed:', err instanceof Error ? err.message : err); return null }),
+
+        Promise.race([
+          generateAIExpertAnalysis({
+            context: 'deep-scan', url, scores: avgScores,
+            siteType: siteTypeResult.primaryType, pagesCrawled: pageAnalyses.length,
+            domainAuthority: backlinkData?.metrics?.domainAuthority,
+            totalBacklinks: backlinkData?.metrics?.totalBacklinks,
+            avgResponseTime, totalWords,
+            schemaCoverage: `${schemaCoverage.pagesWithSchema}/${schemaCoverage.totalPages}`,
+            duplicateTitles: duplicateTitles.length,
+            missingH1Count: missingH1.length, thinContentCount: thinContent.length,
+          }),
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), 15000)),
+        ]).catch(() => null),
+      ])
+      console.log(`[Deep Scan] Step 6 done (${Math.round((Date.now() - t6) / 1000)}s). Sitewide: ${sitewideIntelligence ? 'yes' : 'null'}, Expert: ${expertAnalysis ? 'yes' : 'null'}`)
 
       // Step 7: Save and return
       send({ type: 'progress', phase: 'Saving results...', progress: 98 })
@@ -379,7 +375,7 @@ export async function POST(request: NextRequest) {
       try { await failScanJob(user.id, 'deep') } catch (e) { console.error('[Deep Scan] Scan job fail update failed:', e) }
       send({ type: 'error', success: false, error: error.message || 'Analysis failed', creditsRefunded: creditCost })
     } finally {
-      if (browser) await (browser as Browser).close()
+      if (browser) await browser.close()
     }
   })
 

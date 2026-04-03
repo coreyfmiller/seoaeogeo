@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Layers, Sparkles, Zap, ShieldCheck, AlertTriangle, FileText, Search, CheckCircle2, Clock, Copy, Filter } from 'lucide-react'
 import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan, wasHistoryCleared } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -49,7 +49,7 @@ interface DeepScanResult {
     failed: number
   }
   // New sitewide data
-  sitewideIntelligence?: any
+  sitewideIntelligence: any
   robotsTxt: boolean
   sitemapFound: boolean
   aggregateMetrics: {
@@ -101,9 +101,6 @@ export default function DeepV3Page() {
   const [pendingMaxPages, setPendingMaxPages] = useState(5)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [priorityFilter, setPriorityFilter] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM'>('ALL')
-  const [sitewideData, setSitewideData] = useState<any>(null)
-  const [sitewideLoading, setSitewideLoading] = useState(false)
-  const sitewideAutoFired = useRef(false)
 
   const handleAnalyze = async (submittedUrl: string, maxPages?: number) => {
     setPendingUrl(submittedUrl)
@@ -129,56 +126,6 @@ export default function DeepV3Page() {
     const interval = setInterval(() => setElapsedSeconds(s => s + 1), 1000)
     return () => clearInterval(interval)
   }, [isAnalyzing])
-
-  // Auto-fire sitewide intelligence when results arrive without it
-  useEffect(() => {
-    if (!result || renderResult.sitewideIntelligence || sitewideData || sitewideLoading || sitewideAutoFired.current) return
-    sitewideAutoFired.current = true
-    setSitewideLoading(true)
-
-    const pages = (result.pages || []).map((p: any) => ({
-      url: p.url, title: p.title || '', description: '',
-      schemas: p.scanData?.schemas || [], wordCount: p.wordCount || 0,
-      internalLinks: p.scanData?.structuralData?.links?.internal || 0,
-      hasH1: p.hasH1 === true, isHttps: p.isHttps === true,
-      responseTimeMs: p.responseTimeMs || 0,
-      h2Count: p.scanData?.structuralData?.semanticTags?.h2Count || 0,
-      h3Count: p.scanData?.structuralData?.semanticTags?.h3Count || 0,
-      imgTotal: p.scanData?.structuralData?.media?.totalImages || 0,
-      imgWithAlt: p.scanData?.structuralData?.media?.imagesWithAlt || 0,
-    }))
-
-    const parsedDomain = (() => { try { return new URL(result.url || currentUrl).hostname } catch { return currentUrl } })()
-
-    fetch('/api/sitewide-intelligence', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        domain: parsedDomain,
-        pages,
-        siteType: result.siteTypeResult?.primaryType,
-        platform: result.platformDetection?.label,
-        currentScores: result.scores,
-        backlinkData: result.backlinkData,
-        url: result.url || currentUrl,
-      }),
-    })
-      .then(r => r.json())
-      .then(data => { if (data.success && data.data) setSitewideData(data.data) })
-      .catch(err => console.error('[Deep Scan] Sitewide intelligence auto-fire failed:', err))
-      .finally(() => setSitewideLoading(false))
-  }, [result]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Reset sitewide state on new scan
-  useEffect(() => {
-    if (isAnalyzing) { setSitewideData(null); sitewideAutoFired.current = false }
-  }, [isAnalyzing])
-
-  // Merge sitewide data into result for rendering
-  const effectiveResult = result ? {
-    ...result,
-    sitewideIntelligence: renderResult.sitewideIntelligence || sitewideData,
-  } : null
 
   const handleSiteTypeChange = async (newType: string) => {
     if (!result) return
@@ -297,9 +244,6 @@ export default function DeepV3Page() {
     })
   }, [])
 
-  // Use effectiveResult in render — merges on-demand sitewide data with scan result
-  const renderResult = effectiveResult
-
   return (
     <PageShell
       onAnalyze={handleAnalyze}
@@ -352,12 +296,12 @@ export default function DeepV3Page() {
                     url: currentUrl, date: new Date().toLocaleDateString(),
                     scores: { seo: result.scores.seo, aeo: result.scores.aeo, geo: result.scores.geo },
                     siteType: result.siteTypeResult?.primaryType, platform: result.platformDetection?.label,
-                    overallFeedback: renderResult.sitewideIntelligence?.domainHealthScore ? `Domain Health: ${renderResult.sitewideIntelligence.domainHealthScore}%. ${result.pagesCrawled} pages analyzed.` : undefined,
-                    recommendations: renderResult.sitewideIntelligence?.recommendations,
+                    overallFeedback: result.sitewideIntelligence?.domainHealthScore ? `Domain Health: ${result.sitewideIntelligence.domainHealthScore}%. ${result.pagesCrawled} pages analyzed.` : undefined,
+                    recommendations: result.sitewideIntelligence?.recommendations,
                     metrics: [
                       { label: 'Pages Crawled', value: `${result.pagesCrawled}` },
-                      { label: 'Domain Health', value: `${renderResult.sitewideIntelligence?.domainHealthScore ?? '–'}%` },
-                      { label: 'Schema Coverage', value: `${renderResult.sitewideIntelligence?.authorityMetrics?.schemaCoverage ?? '–'}%` },
+                      { label: 'Domain Health', value: `${result.sitewideIntelligence?.domainHealthScore ?? '–'}%` },
+                      { label: 'Schema Coverage', value: `${result.sitewideIntelligence?.authorityMetrics?.schemaCoverage ?? '–'}%` },
                       { label: 'Avg Response', value: `${result.aggregateMetrics.avgResponseTime}ms` },
                       { label: 'Robots.txt', value: result.robotsTxt ? 'Found' : 'Missing' },
                       { label: 'Sitemap', value: result.sitemapFound ? 'Found' : 'Missing' },
@@ -574,7 +518,7 @@ export default function DeepV3Page() {
 
                 {/* Key Metrics — unified strip */}
                 {(() => {
-                  const ai = renderResult.sitewideIntelligence
+                  const ai = result.sitewideIntelligence
                   const pages = result.pages || []
                   const imgAltPct = result.aggregateMetrics.totalImages > 0
                     ? Math.round((result.aggregateMetrics.totalImagesWithAlt / result.aggregateMetrics.totalImages) * 100)
@@ -614,7 +558,6 @@ export default function DeepV3Page() {
                 {/* ═══ EXPERT ANALYSIS ═══ */}
                 <ExpertAnalysis
                   analysis={result.expertAnalysis}
-                  autoGenerate
                   generateData={{
                     context: 'deep-scan', url: result.url,
                     scores: result.scores, siteType: result.siteTypeResult?.primaryType,
@@ -624,43 +567,9 @@ export default function DeepV3Page() {
                   }}
                 />
 
-                {/* Page Comparison Table */}
-                {result.pages.length > 1 && (
-                  <PageComparisonTable
-                    pages={result.pages.map((p: any) => ({
-                      url: p.url,
-                      title: p.title || 'Untitled',
-                      seoScore: p.scores.seo.score,
-                      aeoScore: p.scores.aeo.score,
-                      geoScore: p.scores.geo.score,
-                      wordCount: p.wordCount || 0,
-                      issueCount: p.enhancedPenalties?.length || 0,
-                      issues: (p.enhancedPenalties || []).slice(0, 3).map((pen: any) => ({
-                        type: pen.component,
-                        severity: pen.severity === 'critical' ? 'high' : pen.severity === 'warning' ? 'medium' : 'low',
-                        fix: pen.fix
-                      })),
-                      hasH1: p.hasH1 === true,
-                      hasMetaDescription: p.hasDescription === true,
-                      schemaCount: p.schemaCount || 0,
-                      responseTimeMs: p.responseTimeMs || 0,
-                    }))}
-                  />
-                )}
-
-                {/* Sitewide Intelligence Loading */}
-                {sitewideLoading && !renderResult.sitewideIntelligence && (
-                  <Card className="border-[#00e5ff]/20 bg-[#00e5ff]/5 p-6">
-                    <div className="flex items-center gap-3">
-                      <div className="h-5 w-5 border-2 border-t-transparent border-[#00e5ff] rounded-full animate-spin" />
-                      <p className="text-sm font-medium text-[#00e5ff]">Generating sitewide intelligence analysis...</p>
-                    </div>
-                  </Card>
-                )}
-
                 {/* Roadmap to 100 - Prioritized Site Improvements */}
-                {renderResult.sitewideIntelligence?.recommendations?.length > 0 && (() => {
-                  const recs = renderResult.sitewideIntelligence.recommendations
+                {result.sitewideIntelligence?.recommendations?.length > 0 && (() => {
+                  const recs = result.sitewideIntelligence.recommendations
                   const normPriority = (r: any) => r.priority === 'STEADY' ? 'MEDIUM' : (r.priority || 'MEDIUM')
                   const normDomain = (r: any) => (r.domain || 'SEO').toLowerCase()
                   const criticalCount = recs.filter((r: any) => normPriority(r) === 'CRITICAL').length
@@ -743,25 +652,49 @@ export default function DeepV3Page() {
                   />
                 )}
 
+                {/* Page Comparison Table */}
+                {result.pages.length > 1 && (
+                  <PageComparisonTable
+                    pages={result.pages.map((p: any) => ({
+                      url: p.url,
+                      title: p.title || 'Untitled',
+                      seoScore: p.scores.seo.score,
+                      aeoScore: p.scores.aeo.score,
+                      geoScore: p.scores.geo.score,
+                      wordCount: p.wordCount || 0,
+                      issueCount: p.enhancedPenalties?.length || 0,
+                      issues: (p.enhancedPenalties || []).slice(0, 3).map((pen: any) => ({
+                        type: pen.component,
+                        severity: pen.severity === 'critical' ? 'high' : pen.severity === 'warning' ? 'medium' : 'low',
+                        fix: pen.fix
+                      })),
+                      hasH1: p.hasH1 === true,
+                      hasMetaDescription: p.hasDescription === true,
+                      schemaCount: p.schemaCount || 0,
+                      responseTimeMs: p.responseTimeMs || 0,
+                    }))}
+                  />
+                )}
+
                 {/* Domain Health Breakdown */}
-                {renderResult.sitewideIntelligence?.domainHealthBreakdown && (
+                {result.sitewideIntelligence?.domainHealthBreakdown && (
                   <Card className="border-[#00e5ff]/20 bg-[#00e5ff]/5">
                     <CardHeader>
                       <div className="flex items-center gap-2">
                         <ShieldCheck className="h-5 w-5 text-[#00e5ff]" />
                         <CardTitle className="text-foreground">Domain Health Breakdown</CardTitle>
                         <InfoTooltip content="Aggregate domain quality across 5 key areas: content, schema, metadata, technical performance, and architecture." />
-                        <Badge className="ml-auto bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-xs font-black">{renderResult.sitewideIntelligence.domainHealthScore ?? '–'} / 100</Badge>
+                        <Badge className="ml-auto bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-xs font-black">{result.sitewideIntelligence.domainHealthScore ?? '–'} / 100</Badge>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 pb-4 border-b border-border/50 mb-4">
                         {[
-                          { label: "Content", value: renderResult.sitewideIntelligence.domainHealthBreakdown.contentQuality },
-                          { label: "Schema", value: renderResult.sitewideIntelligence.domainHealthBreakdown.schemaQuality },
-                          { label: "Metadata", value: renderResult.sitewideIntelligence.domainHealthBreakdown.metadataQuality },
-                          { label: "Technical", value: renderResult.sitewideIntelligence.domainHealthBreakdown.technicalHealth },
-                          { label: "Architecture", value: renderResult.sitewideIntelligence.domainHealthBreakdown.architectureHealth },
+                          { label: "Content", value: result.sitewideIntelligence.domainHealthBreakdown.contentQuality },
+                          { label: "Schema", value: result.sitewideIntelligence.domainHealthBreakdown.schemaQuality },
+                          { label: "Metadata", value: result.sitewideIntelligence.domainHealthBreakdown.metadataQuality },
+                          { label: "Technical", value: result.sitewideIntelligence.domainHealthBreakdown.technicalHealth },
+                          { label: "Architecture", value: result.sitewideIntelligence.domainHealthBreakdown.architectureHealth },
                         ].map(item => {
                           const v = item.value ?? 0
                           const scoreColor = v >= 75 ? "text-green-500" : v >= 50 ? "text-yellow-500" : "text-red-500"
@@ -774,9 +707,9 @@ export default function DeepV3Page() {
                         })}
                       </div>
                       {/* Health explanations */}
-                      {renderResult.sitewideIntelligence.domainHealthExplanations && (
+                      {result.sitewideIntelligence.domainHealthExplanations && (
                         <div className="space-y-3">
-                          {Object.entries(renderResult.sitewideIntelligence.domainHealthExplanations).map(([key, data]: [string, any]) => (
+                          {Object.entries(result.sitewideIntelligence.domainHealthExplanations).map(([key, data]: [string, any]) => (
                             <div key={key} className="p-3 border rounded-lg">
                               <div className="flex items-center justify-between mb-1">
                                 <span className="text-sm font-semibold capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
@@ -809,7 +742,7 @@ export default function DeepV3Page() {
                 )}
 
                 {/* Schema Health Audit */}
-                {renderResult.sitewideIntelligence?.schemaHealthAudit && (
+                {result.sitewideIntelligence?.schemaHealthAudit && (
                   <Card>
                     <CardHeader>
                       <div className="flex items-center gap-2">
@@ -817,16 +750,16 @@ export default function DeepV3Page() {
                         <CardTitle>Schema Health Audit</CardTitle>
                         <InfoTooltip content="Deterministic validation of structured data quality, coverage, and diversity across all crawled pages." />
                         <Badge className="ml-auto bg-seo/10 text-seo border-seo/30 text-xs font-black">
-                          {renderResult.sitewideIntelligence.schemaHealthAudit.overallScore}/100
+                          {result.sitewideIntelligence.schemaHealthAudit.overallScore}/100
                         </Badge>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-border/50">
                         {[
-                          { label: "Coverage", value: renderResult.sitewideIntelligence.schemaHealthAudit.breakdown?.coverage ?? 0 },
-                          { label: "Quality", value: renderResult.sitewideIntelligence.schemaHealthAudit.breakdown?.quality ?? 0 },
-                          { label: "Diversity", value: renderResult.sitewideIntelligence.schemaHealthAudit.breakdown?.diversity ?? 0 },
+                          { label: "Coverage", value: result.sitewideIntelligence.schemaHealthAudit.breakdown?.coverage ?? 0 },
+                          { label: "Quality", value: result.sitewideIntelligence.schemaHealthAudit.breakdown?.quality ?? 0 },
+                          { label: "Diversity", value: result.sitewideIntelligence.schemaHealthAudit.breakdown?.diversity ?? 0 },
                         ].map(item => {
                           const v = typeof item.value === 'number' ? item.value : 0
                           const color = v >= 75 ? "text-green-500" : v >= 50 ? "text-yellow-500" : "text-red-500"
@@ -838,9 +771,9 @@ export default function DeepV3Page() {
                           )
                         })}
                       </div>
-                      {renderResult.sitewideIntelligence.schemaHealthAudit.issues?.length > 0 && (
+                      {result.sitewideIntelligence.schemaHealthAudit.issues?.length > 0 && (
                         <div className="space-y-2">
-                          {renderResult.sitewideIntelligence.schemaHealthAudit.issues.slice(0, 5).map((issue: any, i: number) => (
+                          {result.sitewideIntelligence.schemaHealthAudit.issues.slice(0, 5).map((issue: any, i: number) => (
                             <div key={i} className="p-3 border rounded-lg">
                               <div className="flex items-center gap-2 mb-1">
                                 <span className={`text-xs px-1.5 py-0.5 rounded font-bold ${
@@ -907,7 +840,7 @@ export default function DeepV3Page() {
                 )}
 
                 {/* AEO Readiness */}
-                {renderResult.sitewideIntelligence?.aeoReadiness && (
+                {result.sitewideIntelligence?.aeoReadiness && (
                   <Card className="border-[#BC13FE]/20 bg-[#BC13FE]/5">
                     <CardHeader>
                       <div className="flex items-center gap-2">
@@ -915,14 +848,14 @@ export default function DeepV3Page() {
                         <CardTitle>AEO Readiness</CardTitle>
                         <InfoTooltip content="How ready your domain is to be cited by AI assistants like ChatGPT, Perplexity, and Gemini." />
                         <Badge className="ml-auto bg-[#BC13FE]/10 text-[#BC13FE] border-[#BC13FE]/30 text-xs font-black">
-                          {renderResult.sitewideIntelligence.aeoReadiness.score}/100
+                          {result.sitewideIntelligence.aeoReadiness.score}/100
                         </Badge>
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-muted-foreground mb-3">{renderResult.sitewideIntelligence.aeoReadiness.verdict}</p>
+                      <p className="text-sm text-muted-foreground mb-3">{result.sitewideIntelligence.aeoReadiness.verdict}</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {Object.entries(renderResult.sitewideIntelligence.aeoReadiness.signals || {}).map(([key, val]) => {
+                        {Object.entries(result.sitewideIntelligence.aeoReadiness.signals || {}).map(([key, val]) => {
                           const label = key.replace(/^has/, '').replace(/([A-Z])/g, ' $1').trim()
                           const fixes: Record<string, string> = {
                             'AboutPage': 'Create a detailed About page with team bios, company history, and expertise signals.',
