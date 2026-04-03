@@ -83,9 +83,19 @@ interface ArenaData {
 export type ExpertAnalysisData = ProAuditData | DeepScanData | DuelData | ArenaData
 
 function buildPrompt(data: ExpertAnalysisData): string {
-  const base = `You are a senior SEO/AEO/GEO strategist writing an expert analysis for a client. Be direct, specific, and insightful. Don't repeat scores — the client can see them. Instead, explain what the scores MEAN for their business, what's really happening under the hood, and what they should prioritize.
+  const base = `You are a supportive SEO/AEO/GEO strategist writing an expert analysis for a client. Your tone is warm, encouraging, and solution-oriented — like a trusted advisor who genuinely wants to help them succeed. Be specific and insightful, but always frame things positively.
 
-Write 2-3 paragraphs of genuine expert analysis. Be conversational but authoritative. Reference specific data points. Explain cause and effect. If there's a disconnect between on-page quality and real-world ranking, explain why (domain authority, backlinks, site age, brand recognition). Give them the "so what" — not just what's wrong, but why it matters and what to do about it.
+RULES:
+- Focus on the USER'S site — what they're doing well, where they can improve, and specific next steps
+- Don't talk about competitors unless it directly helps the user understand their position
+- Don't repeat scores — the client can see them. Explain what they MEAN for their business
+- Always lead with strengths before addressing gaps
+- Frame weaknesses as opportunities, not failures
+- Give specific, actionable advice they can act on today
+- If domain authority or backlinks are low, explain why that matters and how to improve it
+- Be conversational but authoritative — like a knowledgeable friend, not a cold report
+
+Write 2-3 paragraphs of genuine expert analysis.
 
 IMPORTANT: Return ONLY a JSON object: { "analysis": "your analysis text here" }
 Do NOT use markdown formatting in the analysis text. Use plain text only.`
@@ -153,21 +163,27 @@ Provide a thorough competitive analysis. Don't just say who wins — explain WHY
     case 'keyword-arena':
       return `${base}
 
-CONTEXT: Keyword Arena (multi-competitor ranking analysis)
-Keyword: "${data.keyword}"
-User Site: ${data.userSiteUrl}
+CONTEXT: Keyword Arena — the user searched "${data.keyword}" and we scored their site against ${data.totalSites ?? '?'} competitors.
+
+YOUR SITE: ${data.userSiteUrl}
   Scores: SEO ${data.userScores.seo}/100, AEO ${data.userScores.aeo}/100, GEO ${data.userScores.geo}/100
   Google Rank: ${data.googleRank ?? 'Not available'}
-  Arena Rank (by optimization): ${data.arenaRank ?? 'Not available'} out of ${data.totalSites ?? '?'} sites
+  Arena Rank (by on-page optimization): ${data.arenaRank ?? 'Not available'} out of ${data.totalSites ?? '?'} sites
   Domain Authority: ${data.domainAuthority ?? 'Not available'}
   Word Count: ${data.wordCount ?? 'Unknown'}
   Schemas: ${data.schemaCount ?? 0}
 
 Arena Averages: SEO ${data.arenaAvg?.seo ?? '?'}, AEO ${data.arenaAvg?.aeo ?? '?'}, GEO ${data.arenaAvg?.geo ?? '?'}
 
-${data.topCompetitors?.length ? 'Top Competitors:\n' + data.topCompetitors.slice(0, 5).map(c => `  ${c.url} — SEO ${c.scores.seo}, AEO ${c.scores.aeo}, GEO ${c.scores.geo}, Google #${c.googleRank ?? '?'}`).join('\n') : ''}
+${data.topCompetitors?.length ? 'Top Competitors (for context only):\n' + data.topCompetitors.slice(0, 5).map(c => `  ${c.url} — SEO ${c.scores.seo}, AEO ${c.scores.aeo}, GEO ${c.scores.geo}, Google #${c.googleRank ?? '?'}`).join('\n') : ''}
 
-CRITICAL: If the user's optimization rank is much better than their Google rank, explain this disconnect in detail. This is usually caused by off-page factors (domain authority, backlinks, brand recognition, site age). Be specific about what they need to do to close the gap between their technical quality and their actual search position.`
+FOCUS YOUR ANALYSIS ON THE USER'S SITE:
+- Start by acknowledging what they're doing well relative to competitors
+- If their on-page scores are strong but Google rank is lower, explain that this is normal — Google weighs off-page factors (domain authority, backlinks, brand recognition, site age) heavily. Frame this as an opportunity: their content is already competitive, and investing in link building will unlock ranking gains
+- If content is thin (low word count), suggest specific content improvements
+- If schema is missing, explain how adding it would help them stand out in both Google and AI search results
+- Give them 2-3 specific, actionable things they can do to climb the rankings for this keyword
+- Be encouraging — they're already taking the right step by analyzing their competition`
   }
 }
 

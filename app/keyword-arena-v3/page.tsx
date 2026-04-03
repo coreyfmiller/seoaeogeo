@@ -721,6 +721,14 @@ export default function KeywordArenaV3Page() {
                 </div>
               )}
 
+              {/* ═══ EXPERT ANALYSIS ═══ */}
+              {(arenaResult?.expertAnalysis || userSite) && (
+                <ExpertAnalysis
+                  analysis={arenaResult?.expertAnalysis || `You rank #${arenaResult?.userSiteRank ?? '?'} out of ${arenaResult?.totalSites ?? '?'} sites for "${arenaResult?.keyword}". ${userSite?.googleRank ? `Google has you at position #${userSite.googleRank}${(arenaResult?.userSiteRank ?? 99) < (userSite.googleRank ?? 0) ? ' — your on-page optimization is stronger than your ranking suggests. Off-page factors like domain authority and backlinks are likely holding you back.' : '.'}` : ''}`}
+                  tooltip="AI-powered analysis of your competitive position for this keyword, including what's working, what to improve, and specific next steps to climb the rankings."
+                />
+              )}
+
               {/* Leaderboard header */}
               <h3 className="text-sm font-black text-white flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-[#00e5ff]" /> Leaderboard
@@ -918,14 +926,6 @@ export default function KeywordArenaV3Page() {
                   )
                 })()}
               </div>
-
-              {/* ═══ EXPERT ANALYSIS ═══ */}
-              {(arenaResult?.expertAnalysis || userSite) && (
-                <ExpertAnalysis
-                  analysis={arenaResult?.expertAnalysis || `You rank #${arenaResult?.userSiteRank ?? '?'} out of ${arenaResult?.totalSites ?? '?'} sites for "${arenaResult?.keyword}". ${userSite?.googleRank ? `Google has you at position #${userSite.googleRank}${(arenaResult?.userSiteRank ?? 99) < (userSite.googleRank ?? 0) ? ' — your on-page optimization is stronger than your ranking suggests. Off-page factors like domain authority and backlinks are likely holding you back.' : '.'}` : ''}`}
-                  tooltip="AI-powered analysis of your competitive position based on on-page optimization scores vs Google ranking, highlighting the gap between technical quality and actual search performance."
-                />
-              )}
 
               {/* Competitive Gaps & Strengths */}
               {insights.length > 0 && (
