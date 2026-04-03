@@ -83,19 +83,24 @@ interface ArenaData {
 export type ExpertAnalysisData = ProAuditData | DeepScanData | DuelData | ArenaData
 
 function buildPrompt(data: ExpertAnalysisData): string {
-  const base = `You are a search optimization analyst producing an expert assessment. Write like a professional consultant — factual, insightful, and direct. No cheerleading, no fluff, no exclamation marks. Respect the reader's intelligence.
+  const base = `You are a sharp, experienced search consultant talking directly to a business owner. Write like a real person who knows their stuff — not a corporate report, not a cheerleader. Think of how a smart SEO consultant would explain things over coffee.
 
-VOICE: Professional analyst. Think Moz or Ahrefs audit reports. Informative, measured, and genuinely useful.
+VOICE EXAMPLES (match this tone):
+- "Your on-page work is solid, but here's the thing — with a DA of 14, Google doesn't trust you yet. The sites ranking above you have 10x more backlinks. Your content is better, but they have more credibility in Google's eyes."
+- "At 37 words, Google literally can't figure out what your page is about. Neither can ChatGPT or Perplexity. There's just not enough substance for any search engine — traditional or AI — to work with."
+- "You have schema markup, which puts you ahead of most competitors. But the AEO gap tells me the content itself isn't structured as answers. Schema gets you in the door; the actual page content needs to answer questions directly."
 
 RULES:
-- Do NOT repeat scores — the client can already see them. Explain what the data MEANS.
-- Do NOT use phrases like "fantastic", "great job", "it's wonderful to see", or any cheerleader language.
-- Explain cause and effect: why scores are what they are, and what the real-world impact is.
-- Identify the single biggest bottleneck and explain why it matters most.
-- If domain authority is low, explain how off-page signals limit ranking potential regardless of on-page quality.
-- If there's a gap between SEO and AEO/GEO, explain what that indicates about the site's optimization maturity.
-- End with a clear priority recommendation — what to address first and why.
-- Write 2-3 paragraphs. Plain text, no markdown.
+- Do NOT repeat scores — they can see them. Explain what the data MEANS for their business.
+- Do NOT use corporate language like "demonstrates", "evidenced by", "comprehensive optimization". Talk like a person.
+- Do NOT use cheerleader language like "fantastic", "great job", "wonderful". Be real.
+- Connect every insight to a real-world outcome: rankings, traffic, clicks, AI citations, or money.
+- Use specific numbers from the data (word count, DA, backlink count) to make points concrete.
+- If domain authority is low, explain it like this: "Google sees X other websites vouching for your competitor but only Y vouching for you."
+- If there's a score gap between SEO and AEO/GEO, explain what that means in practice for AI search.
+- Give one specific, actionable thing they can do this week. If platform is known, make it platform-specific.
+- Include a realistic timeline: on-page fixes show results in 2-4 weeks, link building takes 3-6 months.
+- Write 3-4 paragraphs. Plain text, no markdown, no bullet points.
 
 IMPORTANT: Return ONLY a JSON object: { "analysis": "your analysis text here" }`
 
@@ -119,42 +124,42 @@ Internal Links: ${data.internalLinks ?? 'Unknown'}
 External Links: ${data.externalLinks ?? 'Unknown'}
 Critical Issues: ${data.criticalIssues?.length ?? 0}${data.criticalIssues?.length ? ': ' + data.criticalIssues.slice(0, 5).join('; ') : ''}
 
-ANALYZE:
-- What the score spread reveals about optimization maturity (high SEO + low AEO = traditional optimization without AI readiness)
-- The relationship between on-page quality and off-page authority — what this means for actual ranking potential
-- The single biggest bottleneck holding this site back
-- What content depth, schema implementation, and technical signals indicate about competitive readiness
-- Clear priority: what to fix first and why`
+WRITE ABOUT (pick the most relevant based on the data):
+- The hidden story: what the gap between SEO and AEO/GEO scores reveals. If SEO is high but AEO is low, the site is built for Google's old crawler but invisible to AI assistants like ChatGPT and Perplexity.
+- If word count is under 300: explain that search engines and AI literally can't understand what the page is about — there's not enough content to work with.
+- If DA is low: explain it in human terms — "Google sees X websites vouching for your competitors but only Y vouching for you. Even perfect on-page optimization can't overcome that trust gap."
+- If schema is missing: explain what they're leaving on the table — rich results, FAQ dropdowns, star ratings that take up more screen real estate and get more clicks.
+- If response time is over 1000ms: explain this is directly hurting Core Web Vitals and rankings, and suggest a quick fix based on their platform.
+- End with ONE specific thing they can do this week, tailored to their platform if known.`
 
     case 'deep-scan':
       return `${base}
 
-CONTEXT: Multi-page Deep Scan
+CONTEXT: Multi-page Deep Scan across ${data.pagesCrawled ?? '?'} pages.
 URL: ${data.url}
-Pages Crawled: ${data.pagesCrawled ?? 'Unknown'}
 Average Scores: SEO ${data.scores.seo}/100, AEO ${data.scores.aeo}/100, GEO ${data.scores.geo}/100
 Site Type: ${data.siteType || 'Unknown'}
 Domain Authority: ${data.domainAuthority ?? 'Not available'}
 Total Backlinks: ${data.totalBacklinks ?? 'Not available'}
 Avg Response Time: ${data.avgResponseTime ?? 'Unknown'}ms
 Total Words (all pages): ${data.totalWords ?? 'Unknown'}
-Schema Coverage: ${data.schemaCoverage ?? 'Unknown'}
+Schema Coverage: ${data.schemaCoverage ?? 'Unknown'} pages with schema
 Duplicate Titles: ${data.duplicateTitles ?? 0}
 Pages Missing H1: ${data.missingH1Count ?? 0}
 Thin Content Pages (<300 words): ${data.thinContentCount ?? 0}
 
-ANALYZE:
-- Site-wide patterns: are issues systemic or isolated to specific pages?
-- How the weakest pages drag down the site-wide average
-- Schema coverage gaps and what that means for rich results and AI citations
-- Whether this is primarily a content depth problem or a technical problem
-- The compound effect of fixing site-wide issues vs page-level issues
-- Clear priority: the single highest-impact improvement`
+WRITE ABOUT (pick the most relevant):
+- Are the issues systemic (affecting most pages) or isolated? Systemic issues like missing schema across all pages are higher priority than one page with thin content.
+- If there are thin content pages: explain that these pages drag down the entire site's average and make the whole domain look less authoritative to Google.
+- If schema coverage is low: explain what this means for rich results and AI citations across the whole site — every page without schema is a missed opportunity.
+- If duplicate titles exist: explain that Google sees these as competing pages and may not rank either one well.
+- The compound effect: fixing one systemic issue (like adding schema to all pages) has a multiplied impact vs fixing one page at a time.
+- End with the single highest-impact action and a realistic timeline for seeing results.`
 
     case 'competitor-duel':
       return `${base}
 
-CONTEXT: Head-to-head competitive comparison. Use actual domain names throughout.
+CONTEXT: Head-to-head comparison. Use actual domain names, never "Site A" or "Site B".
 
 ${extractDomain(data.siteAUrl)}:
   Scores: SEO ${data.scoresA.seo}/100, AEO ${data.scoresA.aeo}/100, GEO ${data.scoresA.geo}/100
@@ -168,17 +173,17 @@ ${extractDomain(data.siteBUrl)}:
   Domain Authority: ${data.daB ?? 'N/A'}, Backlinks: ${data.backlinksB ?? 'N/A'}
   Word Count: ${data.wordCountB ?? 'Unknown'}, Schemas: ${data.schemaCountB ?? 0}
 
-ANALYZE:
-- Where each site has a genuine technical or content advantage, and why
-- How domain authority and backlink profiles affect real-world ranking regardless of on-page scores
-- Whether the on-page score difference translates to actual ranking difference, or if off-page factors dominate
-- The specific, realistic areas where the weaker site can close the gap
-- What each site should prioritize to gain competitive ground`
+WRITE ABOUT (pick the most relevant):
+- If one site has better scores but lower DA: explain that on-page quality and real-world ranking are different things. "Site A is technically better optimized, but Site B has X backlinks from Y domains — Google trusts them more. In a head-to-head for competitive keywords, DA often wins."
+- If there's a big content depth difference: explain what that means practically — the site with more content gives Google and AI engines more to work with.
+- If one site has schema and the other doesn't: explain the concrete advantage — rich results, FAQ dropdowns, higher click-through rates.
+- What the weaker site should focus on first to close the gap — be specific and realistic.
+- If both sites have low DA: note that this is a competitive opportunity — neither has strong off-page authority, so on-page improvements will have outsized impact.`
 
     case 'keyword-arena':
       return `${base}
 
-CONTEXT: Keyword Arena — competitive ranking analysis for "${data.keyword}"
+CONTEXT: Keyword Arena for "${data.keyword}" — user's site scored against ${data.totalSites ?? '?'} competitors.
 
 User's Site: ${data.userSiteUrl}
   Scores: SEO ${data.userScores.seo}/100, AEO ${data.userScores.aeo}/100, GEO ${data.userScores.geo}/100
@@ -192,12 +197,13 @@ Arena Averages: SEO ${data.arenaAvg?.seo ?? '?'}, AEO ${data.arenaAvg?.aeo ?? '?
 
 ${data.topCompetitors?.length ? 'Top Competitors:\n' + data.topCompetitors.slice(0, 5).map(c => `  ${c.url} — SEO ${c.scores.seo}, AEO ${c.scores.aeo}, GEO ${c.scores.geo}, Google #${c.googleRank ?? '?'}`).join('\n') : ''}
 
-ANALYZE (focused on the user's site):
-- The disconnect or alignment between optimization rank and Google rank, and what drives it (off-page authority, backlinks, brand signals, site age)
-- How the user's site compares to the arena average and the top 3 competitors
-- Whether the gap to higher rankings is on-page (fixable with content/schema changes) or off-page (requires link building strategy)
-- The single most impactful action to move up for this specific keyword
-- If content is thin or schema is missing, explain the specific competitive disadvantage that creates`
+WRITE ABOUT (focused on the user's site):
+- If arena rank is better than Google rank: this is the key insight. Explain that their content is technically better than their ranking suggests. The gap is almost certainly off-page — domain authority, backlinks, brand recognition. "You're doing the on-page work right, but Google needs to see other websites vouching for you before it'll rank you higher."
+- If arena rank is worse than Google rank: explain that their brand/authority is carrying them, but competitors with better on-page optimization could overtake them.
+- If content is thin compared to top competitors: use specific numbers. "The top 3 sites average X words. Your page has Y. Google and AI engines both need substance to rank confidently."
+- If schema is missing but competitors have it: explain the specific disadvantage — they're missing rich results that competitors are getting.
+- End with the single most impactful action to move up for this specific keyword, with a realistic timeline.
+- For local businesses: mention Google Business Profile optimization as a parallel priority since Maps results often dominate local searches.`
   }
 }
 
