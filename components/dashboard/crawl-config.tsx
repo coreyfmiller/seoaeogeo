@@ -25,7 +25,7 @@ interface CrawlConfigProps {
 
 export interface CrawlConfiguration {
   url: string
-  pageCount: 5 | 10 | 20 | 30 | 40 | 50
+  pageCount: 5 | 10 | 20
   competitorUrls: string[]
   respectRobotsTxt: boolean
 }
@@ -43,7 +43,7 @@ function InfoTooltip({ text }: { text: string }) {
 
 export function CrawlConfig({ onStartCrawl, isAnalyzing }: CrawlConfigProps) {
   const [url, setUrl] = useState("")
-  const [pageCount, setPageCount] = useState<5 | 10 | 20 | 30 | 40 | 50>(5)
+  const [pageCount, setPageCount] = useState<5 | 10 | 20>(5)
   const [respectRobotsTxt, setRespectRobotsTxt] = useState(true)
   const [urlError, setUrlError] = useState("")
 
@@ -80,9 +80,6 @@ export function CrawlConfig({ onStartCrawl, isAnalyzing }: CrawlConfigProps) {
     { value: 5, label: "5 Pages" },
     { value: 10, label: "10 Pages" },
     { value: 20, label: "20 Pages" },
-    { value: 30, label: "30 Pages" },
-    { value: 40, label: "40 Pages" },
-    { value: 50, label: "50 Pages" }
   ] as const
 
   return (
