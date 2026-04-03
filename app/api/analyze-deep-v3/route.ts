@@ -92,16 +92,34 @@ export async function POST(request: NextRequest) {
 
       for (const link of rawLinks) {
         try {
-          const fullLink = new URL(link, url).href.split('#')[0].replace(/\/$/, '')
+          const fullLink = new URL(link, url).href.split('#')[0].split('?')[0].replace(/\/$/, '')
           const normalized = normalizeForDedup(fullLink)
-          if (
-            fullLink.includes(domain.replace(/^www\./, '')) &&
-            !seen.has(normalized) &&
-            !fullLink.match(/\.(jpg|jpeg|png|gif|pdf|zip|css|js)$/i)
-          ) {
-            seen.add(normalized)
-            targetUrls.push(fullLink)
-          }
+          const pathLower = fullLink.toLowerCase()
+
+          // Skip if already seen or different domain
+          if (seen.has(normalized)) continue
+          if (!fullLink.includes(domain.replace(/^www\./, ''))) continue
+
+          // Block asset file extensions (query strings already stripped)
+          if (/\.(css|js|json|xml|rss|atom|txt|map|woff|woff2|ttf|eot|otf|svg|ico|png|jpg|jpeg|gif|webp|avif|bmp|tiff|mp3|mp4|avi|mov|wmv|flv|webm|ogg|wav|pdf|doc|docx|xls|xlsx|ppt|pptx|zip|rar|gz|tar|7z|dmg|exe|msi|deb|rpm)$/i.test(fullLink)) continue
+
+          // Block CDN / asset / build paths
+          if (/\/(cdn|assets|static|_next|__next|wp-content\/(uploads|plugins|themes)|wp-includes|wp-json|wp-admin|node_modules|vendor|dist|build|bundles|chunks|fonts|images|img|media|uploads|downloads|files)\//i.test(pathLower)) continue
+
+          // Block Shopify CDN patterns
+          if (/\/cdn\/shop\//i.test(pathLower)) continue
+
+          // Block common non-page paths
+          if (/\/(feed|rss|sitemap|robots\.txt|favicon|apple-touch-icon|manifest\.json|sw\.js|service-worker)/i.test(pathLower)) continue
+
+          // Block mailto, tel, javascript links
+          if (/^(mailto:|tel:|javascript:|data:|blob:)/i.test(link)) continue
+
+          // Block login/auth/admin/cart paths
+          if (/\/(wp-login|wp-admin|admin|login|logout|signin|signout|register|cart|checkout|account|my-account)\b/i.test(pathLower)) continue
+
+          seen.add(normalized)
+          targetUrls.push(fullLink)
         } catch (e) { }
       }
 
