@@ -309,7 +309,7 @@ export default function DeepV3Page() {
             {/* Page Header with Actions */}
             <AuditPageHeader
               title="Deep Scan"
-              description="Crawls 5 key pages to score your site across SEO, AEO, and GEO with AI-powered analysis."
+              description="Crawls your homepage and key inner pages to score your site across SEO, AEO, and GEO with AI-powered analysis."
               currentUrl={currentUrl}
               hasResults={!!result}
               isAnalyzing={isAnalyzing}
@@ -445,7 +445,7 @@ export default function DeepV3Page() {
                       Deep Scan
                     </CardTitle>
                     <CardDescription className="text-base max-w-2xl mx-auto">
-                      Crawls your homepage and 4 key inner pages to surface patterns across your site&apos;s SEO, AEO, and GEO health. Averaged scores reveal systemic issues that single-page audits miss.
+                      Crawls your homepage and key inner pages to surface patterns across your site&apos;s SEO, AEO, and GEO health. Averaged scores reveal systemic issues that single-page audits miss.
                     </CardDescription>
                   </div>
                 </CardHeader>
@@ -484,7 +484,7 @@ export default function DeepV3Page() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground">
-                      Crawls 5 key pages — your homepage plus top internal pages — for schema coverage, content depth, and structural analysis.
+                      Crawls key pages — your homepage plus top internal pages — for schema coverage, content depth, and structural analysis.
                     </p>
                   </CardContent>
                 </Card>
