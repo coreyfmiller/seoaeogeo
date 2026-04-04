@@ -907,10 +907,46 @@ export default function DeepV3Page() {
                   </Card>
                 )}
 
+                {/* GEO Readiness */}
+                {effectiveSitewide?.geoReadiness && (
+                  <Card className="border-[#22c55e]/20 bg-[#22c55e]/5">
+                    <CardHeader>
+                      <div className="flex items-center gap-2">
+                        <Zap className="h-5 w-5 text-[#22c55e]" />
+                        <CardTitle>GEO Readiness</CardTitle>
+                        <InfoTooltip content="How ready your domain is to appear in AI-generated search results like Google SGE and Bing Copilot." />
+                        <Badge className="ml-auto bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/30 text-xs font-black">
+                          {effectiveSitewide.geoReadiness.score}/100
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-3">{effectiveSitewide.geoReadiness.verdict}</p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        {Object.entries(effectiveSitewide.geoReadiness.signals || {}).map(([key, val]) => {
+                          const label = key.replace(/^has/, '').replace(/([A-Z])/g, ' $1').trim()
+                          const fixes: Record<string, string> = {
+                            'SocialProof': 'Add testimonials, case studies, client logos, or review schema to build trust signals.',
+                            'AuthoritySignals': 'Highlight certifications, awards, partnerships, or media mentions on your site.',
+                            'FactualDensity': 'Include specific statistics, data points, and numbers in your content.',
+                            'ObjectiveTone': 'Balance promotional content with informative, neutral writing that AI engines prefer.',
+                            'CitableContent': 'Create original research, unique data, or expert analysis that others would reference.',
+                            'BrandClarity': 'Ensure consistent brand messaging, clear value proposition, and unified identity across pages.',
+                            'TopicalDepth': 'Create comprehensive, in-depth content on your core topics rather than surface-level pages.',
+                          }
+                          const fixKey = key.replace(/^has/, '')
+                          return (
+                            <div key={key} className={`p-2 rounded border text-xs ${val ? 'border-green-500/30 bg-green-500/5 text-green-600' : 'border-red-500/30 bg-red-500/5 text-red-600'}`}>
+                              <p>{val ? '✓' : '✗'} {label}</p>
+                              {!val && fixes[fixKey] && (
+                                <p className="text-[10px] text-foreground/60 mt-1">💡 {fixes[fixKey]}</p>
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
               </div>
-            )}
-          </div>
-        </main>
-    </PageShell>
-  )
-}

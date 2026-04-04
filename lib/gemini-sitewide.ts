@@ -273,19 +273,6 @@ ${context.currentScores ? `
         "description": string,
         "impact": "critical" | "high" | "medium"
       },
-      "contentGapAnalysis": Array of up to 4 objects: {
-        "missingPage": string (e.g. "FAQ Page", "Case Studies", "Pricing"),
-        "reason": string (why it matters for SEO/AEO)
-      },
-      "cannibalizationRisks": Array of up to 3 objects: {
-        "pageA": string (URL),
-        "pageB": string (URL),
-        "conflictingTopic": string
-      },
-      "internalLinkLeaders": Array of up to 5 URLs that receive the most internal links (estimate from available data),
-      "orphanPageRisks": Array of up to 3 URLs that appear to have low internal link equity,
-      "navigationAnalysis": string (2-3 sentence summary of site architecture quality),
-      "brandClarityVerdict": string (2-3 sentence expert brand verdict),
       "aeoReadiness": {
         "score": number (0-100, how ready this domain is to be cited by ChatGPT, Perplexity, Gemini),
         "signals": {
@@ -299,16 +286,18 @@ ${context.currentScores ? `
         },
         "verdict": string (2-3 sentences on AEO citation readiness)
       },
-      "socialProofSignals": {
-        "found": Array of strings (e.g. "Testimonials section", "ReviewSchema on homepage", "Case Studies page"),
-        "missing": Array of strings (e.g. "Author bio pages", "Star rating schema", "Client logos"),
-        "verdict": string (1-2 sentence trust signal summary)
-      },
-      "topicalClusters": Array of strings (up to 4 key semantic niches found, e.g. "Local SEO", "AI Integration", "Cloud Consulting"),
-      "inventoryEvidence": {
-        "totalImagesFound": number,
-        "totalLinksFound": number,
-        "contentDepthVerdict": string
+      "geoReadiness": {
+        "score": number (0-100, how ready this domain is to appear in AI-generated search results like Google SGE, Bing Copilot),
+        "signals": {
+          "hasSocialProof": boolean (testimonials, reviews, case studies, client logos),
+          "hasAuthoritySignals": boolean (certifications, awards, partnerships, media mentions),
+          "hasFactualDensity": boolean (statistics, data points, specific numbers in content),
+          "hasObjectiveTone": boolean (neutral, informative writing vs pure promotional),
+          "hasCitableContent": boolean (unique research, original data, expert opinions),
+          "hasBrandClarity": boolean (consistent brand identity, clear value proposition),
+          "hasTopicalDepth": boolean (comprehensive coverage of core topics, not surface-level)
+        },
+        "verdict": string (2-3 sentences on GEO readiness for generative search)
       },
       "recommendations": Array of up to 15 objects: {
         "rank": number (1 through 15),
