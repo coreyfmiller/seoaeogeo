@@ -87,7 +87,7 @@ ${context.platform ? `
         "schemaTypes": string[] (types found, e.g. ["Organization", "LocalBusiness"]),
         "issues": string[] (specific problems found, e.g. "Missing required 'address' property in LocalBusiness"),
         "strengths": string[] (what's implemented well)
-      },
+      }${options?.skipRecommendations ? '' : `,
       "seoAnalysis": {
         "onPageIssues": string[],
         "keywordOpportunities": string[],
@@ -106,7 +106,7 @@ ${context.platform ? `
         "citationLikelihood": number (0-100),
         "llmContextClarity": number (0-100),
         "visibilityGaps": string[]
-      }${options?.skipRecommendations ? '' : `,
+      }`}${options?.skipRecommendations ? '' : `,
       "recommendations": Array of up to 15 objects: {
         "rank": number (1-15),
         "title": string (RUTHLESS ACTION - e.g. "Fix H1 Tag Hierarchy"),
@@ -124,7 +124,7 @@ ${context.platform ? `
     
     IMPORTANT: 
     - Evaluate schema using modern 2026 standards (arrays and @graph are valid)
-    - Only flag real problems, not implementation style choices${options?.skipRecommendations ? '\n    - Do NOT include a recommendations array. Only return scoring data.' : `
+    - Only flag real problems, not implementation style choices${options?.skipRecommendations ? '\n    - Do NOT include recommendations, seoAnalysis, aeoAnalysis, or geoAnalysis. Only return semanticFlags and schemaQuality.' : `
     - You MUST generate up to 15 recommendations, prioritized by impact. Include every actionable issue you find — do not artificially limit.
     - Aim for at least 3 CRITICAL, at least 3 HIGH, and at least 3 MEDIUM priority recommendations. Don't force a priority level if it's not warranted, but try hard to find issues at each level.`}
   `;

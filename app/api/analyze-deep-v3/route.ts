@@ -52,36 +52,50 @@ export async function POST(request: NextRequest) {
     let browser: Browser | null = null
     const tStart = Date.now()
     try {
-      // Step 1: Launch browser and discover internal URLs
-      send({ type: 'progress', phase: 'Launching browser...', progress: 5 })
-      updateScanProgress(user.id, 'deep', 5, 'Launching browser...').catch(() => {})
+      // Step 1: Discover internal URLs via lightweight HTTP fetch (no browser needed)
+      send({ type: 'progress', phase: 'Discovering site pages...', progress: 5 })
+      updateScanProgress(user.id, 'deep', 5, 'Discovering site pages...').catch(() => {})
 
-      const isLocal = process.env.NODE_ENV === 'development'
-      browser = await playwright.launch({
-        args: isLocal ? [] : chromium.args,
-        defaultViewport: chromium.defaultViewport,
-        executablePath: isLocal ? undefined : await chromium.executablePath(),
-        headless: isLocal ? true : chromium.headless,
-        channel: isLocal ? 'chrome' : undefined,
-      })
-
-      send({ type: 'progress', phase: 'Discovering site pages...', progress: 8 })
-      const discoveryPage = await browser.newPage()
-      await discoveryPage.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
-
-      // Fetch backlinks in parallel with page discovery (uses cache, zero extra time if cached)
+      // Fetch backlinks in parallel with page discovery
       const backlinkPromise = fetchBacklinksWithCache(url, true)
 
-      // Extract internal links for crawling
       const domain = new URL(url).hostname
-      const rawLinks = await discoveryPage.evaluate(() => {
-        return Array.from(document.querySelectorAll('a[href]'))
-          .map(a => (a as HTMLAnchorElement).href)
-          .filter(href => href.startsWith(window.location.origin) || href.startsWith('/'))
-      })
-      await discoveryPage.close()
-      await browser.close()
-      browser = null
+      let rawLinks: string[] = []
+      try {
+        const res = await fetch(url, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; DuellyBot/1.0)' },
+          signal: AbortSignal.timeout(15000),
+          redirect: 'follow',
+        })
+        if (res.ok) {
+          const html = await res.text()
+          const anchorHrefRegex = /<a\s[^>]*href=["']([^"']+)["']/gi
+          let match
+          while ((match = anchorHrefRegex.exec(html)) !== null) {
+            rawLinks.push(match[1])
+          }
+        }
+      } catch (e) {
+        console.error('[Deep Scan] Lightweight discovery failed, falling back to browser:', e)
+        const isLocal = process.env.NODE_ENV === 'development'
+        browser = await playwright.launch({
+          args: isLocal ? [] : chromium.args,
+          defaultViewport: chromium.defaultViewport,
+          executablePath: isLocal ? undefined : await chromium.executablePath(),
+          headless: isLocal ? true : chromium.headless,
+          channel: isLocal ? 'chrome' : undefined,
+        })
+        const discoveryPage = await browser.newPage()
+        await discoveryPage.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 })
+        rawLinks = await discoveryPage.evaluate(() => {
+          return Array.from(document.querySelectorAll('a[href]'))
+            .map(a => (a as HTMLAnchorElement).href)
+            .filter(href => href.startsWith(window.location.origin) || href.startsWith('/'))
+        })
+        await discoveryPage.close()
+        await browser.close()
+        browser = null
+      }
 
       // Deduplicate and clean links
       const seen = new Set<string>()
@@ -397,7 +411,7 @@ export async function POST(request: NextRequest) {
       try { await failScanJob(user.id, 'deep') } catch (e) { console.error('[Deep Scan] Scan job fail update failed:', e) }
       send({ type: 'error', success: false, error: error.message || 'Analysis failed', creditsRefunded: creditCost })
     } finally {
-      if (browser) await browser.close()
+      if (browser) await (browser as Browser).close()
     }
   })
 
