@@ -70,9 +70,9 @@ export function CrawlConfig({ onStartCrawl, isAnalyzing }: CrawlConfigProps) {
     setUrlError("")
     onStartCrawl({
       url: url.startsWith('http') ? url : `https://${url}`,
-      pageCount,
+      pageCount: 5,
       competitorUrls: [],
-      respectRobotsTxt
+      respectRobotsTxt: true
     })
   }
 
@@ -108,52 +108,10 @@ export function CrawlConfig({ onStartCrawl, isAnalyzing }: CrawlConfigProps) {
         )}
       </div>
 
-      {/* Page Count Selector - Compact Pills */}
-      <div className="space-y-3">
-        <Label className="text-sm text-muted-foreground flex items-center gap-2">
-          <Clock className="h-4 w-4" />
-          Pages to Crawl
-        </Label>
-        <div className="flex flex-wrap gap-2">
-          {pageOptions.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => setPageCount(option.value)}
-              disabled={isAnalyzing}
-              className={cn(
-                "px-4 py-2 rounded-lg border transition-all text-sm font-medium",
-                "hover:border-seo/50 hover:bg-seo/5",
-                "disabled:opacity-50 disabled:cursor-not-allowed",
-                pageCount === option.value
-                  ? "border-seo bg-seo/10 text-seo"
-                  : "border-border/50 bg-background text-muted-foreground"
-              )}
-            >
-              <span className="font-bold">{option.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Robots.txt Toggle - Minimal */}
-      <div className="flex items-center gap-3 text-sm">
-        <input
-          type="checkbox"
-          id="respectRobotsTxt"
-          checked={respectRobotsTxt}
-          onChange={(e) => setRespectRobotsTxt(e.target.checked)}
-          disabled={isAnalyzing}
-          className="h-4 w-4 rounded border-border/50 text-seo focus:ring-seo/20"
-        />
-        <Label 
-          htmlFor="respectRobotsTxt" 
-          className="flex items-center gap-2 cursor-pointer text-muted-foreground"
-        >
-          <Shield className="h-4 w-4" />
-          Respect robots.txt
-        </Label>
-      </div>
+      {/* Info about what gets scanned */}
+      <p className="text-xs text-muted-foreground text-center">
+        Scans your homepage + 4 key inner pages • 25 credits • ~90 seconds
+      </p>
 
       {/* Submit Button - Matching style */}
       <button

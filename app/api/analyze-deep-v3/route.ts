@@ -17,8 +17,8 @@ import { generateAIExpertAnalysis } from '@/lib/gemini-expert-analysis'
 export const maxDuration = 300
 
 export async function POST(request: NextRequest) {
-  const { url: rawUrl, maxPages: requestedPages = 10 } = await request.json()
-  const maxPages = Math.min(requestedPages, 10)
+  const { url: rawUrl } = await request.json()
+  const maxPages = 5
 
   if (!rawUrl) {
     return new Response(JSON.stringify({ error: 'URL is required' }), {
@@ -34,10 +34,10 @@ export async function POST(request: NextRequest) {
     })
   }
 
-  const cost = maxPages <= 5 ? 25 : 50
+  const cost = 25
   const { allowed } = await useCredits(user.id, cost)
   if (!allowed) {
-    return new Response(JSON.stringify({ error: `Insufficient credits. Deep Scan (${maxPages} pages) costs ${cost} credits.` }), {
+    return new Response(JSON.stringify({ error: `Insufficient credits. Deep Scan costs 25 credits.` }), {
       status: 402, headers: { 'Content-Type': 'application/json' },
     })
   }

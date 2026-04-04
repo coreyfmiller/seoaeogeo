@@ -98,7 +98,6 @@ export default function DeepV3Page() {
   })
   const [creditDialogOpen, setCreditDialogOpen] = useState(false)
   const [pendingUrl, setPendingUrl] = useState('')
-  const [pendingMaxPages, setPendingMaxPages] = useState(5)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [priorityFilter, setPriorityFilter] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM'>('ALL')
   const [sitewideData, setSitewideData] = useState<any>(null)
@@ -147,18 +146,16 @@ export default function DeepV3Page() {
     }
   }
 
-  const handleAnalyze = async (submittedUrl: string, maxPages?: number) => {
+  const handleAnalyze = async (submittedUrl: string) => {
     setPendingUrl(submittedUrl)
-    if (maxPages) setPendingMaxPages(maxPages)
     setCreditDialogOpen(true)
   }
 
-  const handleConfirmAnalyze = async (pageCount?: number) => {
+  const handleConfirmAnalyze = async () => {
     setCreditDialogOpen(false)
-    const pages = pageCount || pendingMaxPages
-    setCrawlConfig(prev => ({ ...prev, maxPages: pages }))
+    setCrawlConfig(prev => ({ ...prev, maxPages: 5 }))
     setCurrentUrl(pendingUrl)
-    await sse.startAnalysis(pendingUrl, { maxPages: pages })
+    await sse.startAnalysis(pendingUrl, { maxPages: 5 })
   }
 
   const result = sse.data
@@ -312,7 +309,7 @@ export default function DeepV3Page() {
             {/* Page Header with Actions */}
             <AuditPageHeader
               title="Deep Scan"
-              description="AI-powered multi-page analysis with site intelligence and comprehensive site audit."
+              description="Crawls 5 key pages to score your site across SEO, AEO, and GEO with AI-powered analysis."
               currentUrl={currentUrl}
               hasResults={!!result}
               isAnalyzing={isAnalyzing}
@@ -445,17 +442,16 @@ export default function DeepV3Page() {
                   </div>
                   <div>
                     <CardTitle className="text-3xl mb-2">
-                      The Ultimate SEO Audit
+                      Multi-Page Deep Scan
                     </CardTitle>
                     <CardDescription className="text-base max-w-2xl mx-auto">
-                      Combines AI-powered intelligence with multi-page deep crawling. 
-                      Get site intelligence, actionable fixes, and comprehensive site analysis.
+                      Crawls your homepage and 4 key inner pages to build a complete picture of your site&apos;s SEO, AEO, and GEO health. Scores are averaged across all pages to reveal systemic issues, not just single-page problems.
                     </CardDescription>
                   </div>
                 </CardHeader>
                 <CardContent className="max-w-4xl mx-auto space-y-6">
                   <CrawlConfig
-                    onStartCrawl={(config) => handleAnalyze(config.url, config.pageCount)}
+                    onStartCrawl={(config) => handleAnalyze(config.url)}
                     isAnalyzing={isAnalyzing}
                   />
                 </CardContent>
@@ -488,7 +484,7 @@ export default function DeepV3Page() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground">
-                      Crawl up to 20 pages with schema coverage, content gaps, and internal link analysis.
+                      Crawls 5 key pages — your homepage plus top internal pages — for schema coverage, content depth, and structural analysis.
                     </p>
                   </CardContent>
                 </Card>
@@ -606,11 +602,9 @@ export default function DeepV3Page() {
               open={creditDialogOpen}
               onConfirm={handleConfirmAnalyze}
               onCancel={() => setCreditDialogOpen(false)}
-              creditCost={pendingMaxPages <= 5 ? 25 : 50}
+              creditCost={25}
               scanType="Deep Scan"
-              costBreakdown={`${pendingMaxPages} pages — ${pendingMaxPages <= 5 ? 25 : 50} credits`}
-              showPageSelector
-              defaultPageCount={pendingMaxPages}
+              costBreakdown="5 pages — 25 credits"
             />
 
             <ScanErrorDialog error={error} onClose={() => sse.reset()} onRetry={() => handleAnalyze(currentUrl)} creditsRefunded={sse.creditsRefunded} />
