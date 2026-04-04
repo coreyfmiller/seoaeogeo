@@ -191,10 +191,10 @@ export async function POST(request: NextRequest) {
       let aiCompleted = 0
 
       // Start a slow ticker that creeps during AI analysis
-      // 5 pages: AI ~30-40s, ticker 1%/2s reaches 60 in 50s
-      // 10 pages: AI ~80-100s, ticker 1%/4s reaches 60 in 100s
-      const tickerInterval = maxPages > 5 ? 4000 : 2000
-      const aiTicker = createProgressTicker(send, 'Running AI analysis on all pages...', 35, 60, 1, tickerInterval)
+      // 5 pages (~90s total): AI ~25s, ticker 1%/3s reaches 50 in 45s
+      // 10 pages (~160s total): AI ~60s, ticker 1%/5s reaches 50 in 75s
+      const tickerInterval = maxPages > 5 ? 5000 : 3000
+      const aiTicker = createProgressTicker(send, 'Running AI analysis on all pages...', 35, 50, 1, tickerInterval)
 
       for (let i = 0; i < scanResults.length; i += BATCH_SIZE) {
         const batch = scanResults.slice(i, i + BATCH_SIZE)
@@ -277,7 +277,7 @@ export async function POST(request: NextRequest) {
       // Step 5: Robots.txt, Sitemap, Backlinks — all in parallel
       const t5 = Date.now()
       console.log(`[Deep Scan] Step 5: Robots/sitemap/backlinks (${Math.round((t5 - tStart) / 1000)}s elapsed)`)
-      send({ type: 'progress', phase: 'Checking robots.txt, sitemap, and backlinks...', progress: 65 })
+      send({ type: 'progress', phase: 'Checking robots.txt, sitemap, and backlinks...', progress: 52 })
 
       let robotsTxt: string | null = null
       let sitemapFound = false
@@ -295,7 +295,7 @@ export async function POST(request: NextRequest) {
       console.log(`[Deep Scan] Step 5 done (${Math.round((Date.now() - t5) / 1000)}s)`)
 
       // Pre-calculate scores and aggregates (fast, no I/O)
-      send({ type: 'progress', phase: 'Calculating scores...', progress: 70 })
+      send({ type: 'progress', phase: 'Calculating scores...', progress: 55 })
       const avgScores = {
         seo: Math.round(pageAnalyses.reduce((s: number, a: any) => s + a.scores.seo.score, 0) / pageAnalyses.length),
         aeo: Math.round(pageAnalyses.reduce((s: number, a: any) => s + a.scores.aeo.score, 0) / pageAnalyses.length),
@@ -334,8 +334,8 @@ export async function POST(request: NextRequest) {
       // Step 6: Sitewide intelligence + Expert analysis — IN PARALLEL (both are Gemini calls)
       const t6 = Date.now()
       console.log(`[Deep Scan] Step 6: Sitewide intel + expert analysis in parallel (${Math.round((t6 - tStart) / 1000)}s elapsed)`)
-      send({ type: 'progress', phase: 'Generating sitewide intelligence and expert analysis...', progress: 75 })
-      updateScanProgress(user.id, 'deep', 75, 'Generating sitewide intelligence...').catch(() => {})
+      send({ type: 'progress', phase: 'Generating sitewide intelligence and expert analysis...', progress: 58 })
+      updateScanProgress(user.id, 'deep', 58, 'Generating sitewide intelligence...').catch(() => {})
 
       const [sitewideIntelligence, expertAnalysis] = await Promise.all([
         analyzeSitewideIntelligence({
@@ -372,7 +372,7 @@ export async function POST(request: NextRequest) {
       console.log(`[Deep Scan] Step 6 done (${Math.round((Date.now() - t6) / 1000)}s). Sitewide: ${sitewideIntelligence ? 'yes' : 'null'}, Expert: ${expertAnalysis ? 'yes' : 'null'}`)
 
       // Step 7: Save and return
-      send({ type: 'progress', phase: 'Saving results...', progress: 95 })
+      send({ type: 'progress', phase: 'Saving results...', progress: 92 })
       saveScanSnapshot({
         id: `deep-v3-${Date.now()}`, url, timestamp: new Date().toISOString(),
         apiRoute: '/api/analyze-deep-v3', scores: avgScores,
