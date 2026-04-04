@@ -333,11 +333,82 @@ export default function DeepV3Page() {
               onPlatformChange={handlePlatformChange}
               cwv={result?.cwv}
               onCopyReport={result ? () => {
-                const penalties = (result.pages || []).flatMap((p: any) =>
-                  (p.enhancedPenalties || []).map((pen: any) => `[${pen.severity?.toUpperCase()}] ${pen.category} — ${pen.component}\n  ${pen.explanation}\n  Fix: ${pen.fix}`)
-                ).join('\n\n')
-                const text = `DUELLY DEEP SCAN REPORT\n${'='.repeat(50)}\nURL: ${currentUrl}\nDate: ${new Date().toLocaleString()}\nPages Crawled: ${result.pagesCrawled}\nSite Type: ${result.siteTypeResult?.primaryType || 'Unknown'}\n\nAVERAGE SCORES\n  SEO: ${result.scores.seo}/100\n  AEO: ${result.scores.aeo}/100\n  GEO: ${result.scores.geo}/100\n\nISSUES FOUND\n${penalties || '  No issues detected.'}`
-                navigator.clipboard.writeText(text)
+                const sep = '─'.repeat(60)
+                const sw = effectiveSitewide
+                const sections: string[] = []
+
+                // Header
+                sections.push(`DUELLY DEEP SCAN REPORT\n${'='.repeat(60)}\nURL: ${currentUrl}\nDate: ${new Date().toLocaleString()}\nPages Crawled: ${result.pagesCrawled}\nSite Type: ${result.siteTypeResult?.primaryType || 'Unknown'}\nPlatform: ${result.platformDetection?.label || 'Unknown'}`)
+
+                // Average Scores
+                sections.push(`\nAVERAGE SCORES\n${sep}\n  SEO: ${result.scores.seo}/100\n  AEO: ${result.scores.aeo}/100\n  GEO: ${result.scores.geo}/100`)
+
+                // Key Metrics
+                const am = result.aggregateMetrics
+                const imgAlt = am.totalImages > 0 ? Math.round((am.totalImagesWithAlt / am.totalImages) * 100) : 100
+                sections.push(`\nKEY METRICS\n${sep}\n  Domain Health: ${sw?.domainHealthScore ?? '–'}/100\n  Brand Consistency: ${sw?.consistencyScore ?? '–'}/100\n  Schema Coverage: ${sw?.authorityMetrics?.schemaCoverage ?? '–'}%\n  Metadata: ${sw?.authorityMetrics?.metadataOptimization ?? '–'}%\n  Avg Response: ${am.avgResponseTime}ms\n  Robots.txt: ${result.robotsTxt ? 'Found' : 'Missing'}\n  Sitemap: ${result.sitemapFound ? 'Found' : 'Missing'}\n  Alt Text: ${imgAlt}%`)
+
+                // Expert Analysis
+                if (result.expertAnalysis) {
+                  const ea = result.expertAnalysis
+                  if (typeof ea === 'object' && ea.bottomLine) {
+                    sections.push(`\nEXPERT ANALYSIS\n${sep}\n  Bottom Line: ${ea.bottomLine}\n  Key Insight: ${ea.keyInsight}\n  Priority Action: ${ea.priorityAction}`)
+                  } else if (typeof ea === 'string') {
+                    sections.push(`\nEXPERT ANALYSIS\n${sep}\n  ${ea}`)
+                  }
+                }
+
+                // Page-by-Page Comparison
+                if (result.pages?.length > 0) {
+                  sections.push(`\nPAGE-BY-PAGE COMPARISON\n${sep}`)
+                  result.pages.forEach((p: any) => {
+                    const issues = (p.enhancedPenalties || []).slice(0, 5).map((pen: any) => `    [${pen.severity?.toUpperCase()}] ${pen.component}: ${pen.fix}`).join('\n')
+                    sections.push(`  ${p.url}\n    SEO: ${p.scores?.seo?.score ?? '–'} | AEO: ${p.scores?.aeo?.score ?? '–'} | GEO: ${p.scores?.geo?.score ?? '–'} | Words: ${p.wordCount || 0}\n${issues || '    No issues'}`)
+                  })
+                }
+
+                // Roadmap to 100
+                if (sw?.recommendations?.length > 0) {
+                  sections.push(`\nROADMAP TO 100 (${sw.recommendations.length} recommendations)\n${sep}`)
+                  sw.recommendations.forEach((r: any, i: number) => {
+                    const p = r.priority === 'STEADY' ? 'MEDIUM' : (r.priority || 'MEDIUM')
+                    sections.push(`  ${i + 1}. [${p}] [${(r.domain || 'SEO').toUpperCase()}] ${r.title}\n     Why: ${r.description || '–'}\n     Fix: ${r.howToFix || '–'}`)
+                  })
+                }
+
+                // Domain Health
+                if (sw?.domainHealthBreakdown) {
+                  const dh = sw.domainHealthBreakdown
+                  sections.push(`\nDOMAIN HEALTH BREAKDOWN\n${sep}\n  Content: ${dh.contentQuality ?? '–'}/100\n  Schema: ${dh.schemaQuality ?? '–'}/100\n  Metadata: ${dh.metadataQuality ?? '–'}/100\n  Technical: ${dh.technicalHealth ?? '–'}/100\n  Architecture: ${dh.architectureHealth ?? '–'}/100`)
+                }
+
+                // AEO Readiness
+                if (sw?.aeoReadiness) {
+                  const aeo = sw.aeoReadiness
+                  const signals = Object.entries(aeo.signals || {}).map(([k, v]) => `    ${v ? '✓' : '✗'} ${k.replace(/^has/, '').replace(/([A-Z])/g, ' $1').trim()}`).join('\n')
+                  sections.push(`\nAEO READINESS: ${aeo.score}/100\n${sep}\n  ${aeo.verdict}\n${signals}`)
+                }
+
+                // GEO Readiness
+                if (sw?.geoReadiness) {
+                  const geo = sw.geoReadiness
+                  const signals = Object.entries(geo.signals || {}).map(([k, v]) => `    ${v ? '✓' : '✗'} ${k.replace(/^has/, '').replace(/([A-Z])/g, ' $1').trim()}`).join('\n')
+                  sections.push(`\nGEO READINESS: ${geo.score}/100\n${sep}\n  ${geo.verdict}\n${signals}`)
+                }
+
+                // Backlinks
+                if (result.backlinkData?.metrics) {
+                  const bl = result.backlinkData.metrics
+                  sections.push(`\nBACKLINK DATA\n${sep}\n  Domain Authority: ${bl.domainAuthority ?? '–'}\n  Total Backlinks: ${bl.totalBacklinks ?? '–'}\n  Referring Domains: ${bl.referringDomains ?? '–'}\n  Spam Score: ${bl.spamScore ?? '–'}%`)
+                }
+
+                // Duplicates
+                if (result.duplicateTitles?.length > 0) {
+                  sections.push(`\nDUPLICATE TITLES\n${sep}`)
+                  result.duplicateTitles.forEach((d: any) => sections.push(`  "${d.title}" — ${d.urls.length} pages`))
+                }
+
+                navigator.clipboard.writeText(sections.join('\n'))
               } : undefined}
               downloadReport={result ? {
                 filename: `duelly-deep-scan-${currentUrl.replace(/^https?:\/\//, '').replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().slice(0, 10)}.pdf`,
