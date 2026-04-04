@@ -442,10 +442,10 @@ export default function DeepV3Page() {
                   </div>
                   <div>
                     <CardTitle className="text-3xl mb-2">
-                      Multi-Page Deep Scan
+                      Deep Scan
                     </CardTitle>
                     <CardDescription className="text-base max-w-2xl mx-auto">
-                      Crawls your homepage and 4 key inner pages to build a complete picture of your site&apos;s SEO, AEO, and GEO health. Scores are averaged across all pages to reveal systemic issues, not just single-page problems.
+                      Crawls your homepage and 4 key inner pages to surface patterns across your site&apos;s SEO, AEO, and GEO health. Averaged scores reveal systemic issues that single-page audits miss.
                     </CardDescription>
                   </div>
                 </CardHeader>
