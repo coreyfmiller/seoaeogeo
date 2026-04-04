@@ -141,131 +141,109 @@ export async function POST(request: NextRequest) {
       const totalPages = pagesToScan.length
       send({ type: 'progress', phase: `Found ${totalPages} pages. Starting scans...`, progress: 12 })
 
-      // Step 2: Scan each page using the EXACT same performScan as Pro Audit
-      // Process in batches of 5 for faster throughput
+      // Steps 2-4: Pipeline crawl + AI analysis — crawl and analyze pages concurrently
+      // As each page finishes crawling, its AI analysis starts immediately
       const BATCH_SIZE = 5
       const scanResults: { url: string; scanResult: ScanResult }[] = []
-      let completed = 0
+      const pageAnalyses: any[] = []
 
-      for (let i = 0; i < pagesToScan.length; i += BATCH_SIZE) {
-        const batch = pagesToScan.slice(i, i + BATCH_SIZE)
-        const batchNum = Math.floor(i / BATCH_SIZE) + 1
-        const totalBatches = Math.ceil(pagesToScan.length / BATCH_SIZE)
-        send({ type: 'progress', phase: `Crawling batch ${batchNum}/${totalBatches} (${completed}/${totalPages} pages done)...`, progress: Math.round(12 + (completed / totalPages) * 18) })
-
-        const batchResults = await Promise.all(
-          batch.map(async (pageUrl) => {
-            try {
-              // Identical to Pro Audit — same function, same browser launch, same extraction
-              const scanResult = await performScan(pageUrl)
-              return { url: pageUrl, scanResult }
-            } catch (error) {
-              console.error(`[Deep Scan] Failed to scan ${pageUrl}:`, error)
-              return null
-            }
-          })
-        )
-
-        batchResults.forEach(r => { if (r) scanResults.push(r) })
-        completed += batch.length
-        // Update DB progress during crawl so polling clients see movement
-        const crawlProgress = Math.round(12 + (completed / totalPages) * 18)
-        updateScanProgress(user.id, 'deep', crawlProgress, `Crawling ${completed}/${totalPages} pages...`).catch(() => {})
-      }
-
-      if (scanResults.length === 0) {
-        send({ type: 'error', success: false, error: 'Failed to crawl any pages' })
+      // First, detect site type from the first page (need it before AI analysis)
+      send({ type: 'progress', phase: 'Crawling first page for site detection...', progress: 14 })
+      let siteTypeResult: any = null
+      try {
+        const firstScan = await performScan(pagesToScan[0])
+        scanResults.push({ url: pagesToScan[0], scanResult: firstScan })
+        siteTypeResult = detectSiteType(firstScan as any, [])
+        send({ type: 'progress', phase: `Site type: ${siteTypeResult.primaryType}. Scanning remaining pages...`, progress: 18 })
+      } catch (error) {
+        console.error(`[Deep Scan] Failed to scan first page ${pagesToScan[0]}:`, error)
+        send({ type: 'error', success: false, error: 'Failed to crawl the primary page' })
         return
       }
 
-      send({ type: 'progress', phase: `Crawled ${scanResults.length} pages. Detecting site type...`, progress: 32 })
-      updateScanProgress(user.id, 'deep', 32, `Crawled ${scanResults.length} pages`).catch(() => {})
-
-      // Step 3: Site type detection (using first page, same as before)
-      const siteTypeResult = detectSiteType(scanResults[0].scanResult as any, [])
-      send({ type: 'progress', phase: `Site type: ${siteTypeResult.primaryType}. Starting AI analysis...`, progress: 35 })
-      updateScanProgress(user.id, 'deep', 35, `Site type: ${siteTypeResult.primaryType}. Starting AI...`).catch(() => {})
-
-      // Step 4: AI analysis + grading for each page — identical pipeline to Pro Audit
-      const pageAnalyses: any[] = []
-      let aiCompleted = 0
-
-      // Start a slow ticker that creeps during AI analysis
-      // 5 pages (~90s total): AI ~25s, ticker 1%/3s reaches 50 in 45s
-      // 10 pages (~160s total): AI ~60s, ticker 1%/5s reaches 50 in 75s
+      // Start a slow ticker during the pipeline phase
       const tickerInterval = maxPages > 5 ? 5000 : 3000
-      const aiTicker = createProgressTicker(send, 'Running AI analysis on all pages...', 35, 50, 1, tickerInterval)
+      const aiTicker = createProgressTicker(send, 'Crawling and analyzing pages...', 20, 50, 1, tickerInterval)
 
-      for (let i = 0; i < scanResults.length; i += BATCH_SIZE) {
-        const batch = scanResults.slice(i, i + BATCH_SIZE)
+      // Pipeline: crawl remaining pages and AI-analyze all pages concurrently
+      // Start AI on the first page immediately while crawling the rest
+      const analyzeOnePage = async (pageUrl: string, scanResult: ScanResult) => {
+        try {
+          ;(scanResult as any).siteType = siteTypeResult.primaryType
+          const isHomepage = pageUrl === url
+          const aiAnalysis = await analyzeWithGemini({
+            title: scanResult.title,
+            description: scanResult.description,
+            thinnedText: scanResult.thinnedText,
+            summarizedContent: scanResult.summarizedContent,
+            schemas: scanResult.schemas,
+            structuralData: scanResult.structuralData,
+          }, { singleCall: !isHomepage, skipRecommendations: true })
 
-        const batchResults = await Promise.all(
-          batch.map(async ({ url: pageUrl, scanResult }) => {
-            try {
-              ;(scanResult as any).siteType = siteTypeResult.primaryType
+          ;(scanResult as any).semanticFlags = aiAnalysis.semanticFlags
+          ;(scanResult as any).schemaQuality = aiAnalysis.schemaQuality
 
-              // AI analysis — homepage gets 2-call averaging (matches pro audit), inner pages get 1-call
-              const isHomepage = pageUrl === url
-              const aiAnalysis = await analyzeWithGemini({
-                title: scanResult.title,
-                description: scanResult.description,
-                thinnedText: scanResult.thinnedText,
-                summarizedContent: scanResult.summarizedContent,
-                schemas: scanResult.schemas,
-                structuralData: scanResult.structuralData,
-              }, { singleCall: !isHomepage, skipRecommendations: true })
+          const graderResult = calculateScoresFromScanResult(scanResult)
+          const enhancedPenalties = convertBreakdownToEnhancedPenalties(
+            graderResult.breakdown.seo, graderResult.breakdown.aeo, graderResult.breakdown.geo,
+            scanResult.platformDetection?.platform
+          )
 
-              ;(scanResult as any).semanticFlags = aiAnalysis.semanticFlags
-              ;(scanResult as any).schemaQuality = aiAnalysis.schemaQuality
+          return {
+            url: pageUrl, title: scanResult.title,
+            scores: { seo: { score: graderResult.seoScore }, aeo: { score: graderResult.aeoScore }, geo: { score: graderResult.geoScore } },
+            graderResult, enhancedPenalties,
+            wordCount: scanResult.structuralData.wordCount,
+            hasH1: scanResult.structuralData.semanticTags.h1Count > 0,
+            isHttps: scanResult.technical.isHttps,
+            hasDescription: !!scanResult.description,
+            schemaCount: (scanResult.schemas || []).length,
+            responseTimeMs: scanResult.technical.responseTimeMs,
+            scanData: {
+              structuralData: scanResult.structuralData, schemas: scanResult.schemas,
+              semanticFlags: (scanResult as any).semanticFlags, schemaQuality: (scanResult as any).schemaQuality,
+              title: scanResult.title, description: scanResult.description,
+              url: scanResult.url, technical: scanResult.technical,
+            },
+          }
+        } catch (error) {
+          console.error(`[Deep Scan] AI analysis failed for ${pageUrl}:`, error)
+          return null
+        }
+      }
 
-              // Same grader call as Pro Audit
-              const graderResult = calculateScoresFromScanResult(scanResult)
-              const enhancedPenalties = convertBreakdownToEnhancedPenalties(
-                graderResult.breakdown.seo, graderResult.breakdown.aeo, graderResult.breakdown.geo,
-                scanResult.platformDetection?.platform
-              )
+      // Start AI for first page + crawl remaining pages in parallel
+      const aiPromises: Promise<any>[] = [analyzeOnePage(pagesToScan[0], scanResults[0].scanResult)]
+      const remainingPages = pagesToScan.slice(1)
 
-              return {
-                url: pageUrl,
-                title: scanResult.title,
-                scores: {
-                  seo: { score: graderResult.seoScore },
-                  aeo: { score: graderResult.aeoScore },
-                  geo: { score: graderResult.geoScore },
-                },
-                graderResult,
-                enhancedPenalties,
-                wordCount: scanResult.structuralData.wordCount,
-                hasH1: scanResult.structuralData.semanticTags.h1Count > 0,
-                isHttps: scanResult.technical.isHttps,
-                hasDescription: !!scanResult.description,
-                schemaCount: (scanResult.schemas || []).length,
-                responseTimeMs: scanResult.technical.responseTimeMs,
-                // Stash scan data for client-side recalculation on site type change
-                scanData: {
-                  structuralData: scanResult.structuralData,
-                  schemas: scanResult.schemas,
-                  semanticFlags: (scanResult as any).semanticFlags,
-                  schemaQuality: (scanResult as any).schemaQuality,
-                  title: scanResult.title,
-                  description: scanResult.description,
-                  url: scanResult.url,
-                  technical: scanResult.technical,
-                },
+      if (remainingPages.length > 0) {
+        // Crawl remaining pages in batches, start AI as each finishes
+        for (let i = 0; i < remainingPages.length; i += BATCH_SIZE) {
+          const batch = remainingPages.slice(i, i + BATCH_SIZE)
+          const crawlResults = await Promise.all(
+            batch.map(async (pageUrl) => {
+              try {
+                const scanResult = await performScan(pageUrl)
+                return { url: pageUrl, scanResult }
+              } catch (error) {
+                console.error(`[Deep Scan] Failed to scan ${pageUrl}:`, error)
+                return null
               }
-            } catch (error) {
-              console.error(`[Deep Scan] AI analysis failed for ${pageUrl}:`, error)
-              return null
+            })
+          )
+          // Start AI analysis for each crawled page immediately
+          crawlResults.forEach(r => {
+            if (r) {
+              scanResults.push(r)
+              aiPromises.push(analyzeOnePage(r.url, r.scanResult))
             }
           })
-        )
-
-        batchResults.forEach(r => { if (r) pageAnalyses.push(r) })
-        aiCompleted += batch.length
-        // Update DB progress during AI analysis so polling clients see movement
-        const aiProgress = Math.round(35 + (aiCompleted / scanResults.length) * 55)
-        updateScanProgress(user.id, 'deep', aiProgress, `AI analyzed ${aiCompleted}/${scanResults.length} pages...`).catch(() => {})
+        }
       }
+
+      // Wait for all AI analyses to complete
+      const aiResults = await Promise.all(aiPromises)
+      aiResults.forEach(r => { if (r) pageAnalyses.push(r) })
 
       aiTicker.stop()
 
@@ -273,6 +251,8 @@ export async function POST(request: NextRequest) {
         send({ type: 'error', success: false, error: 'Failed to analyze any pages' })
         return
       }
+
+      updateScanProgress(user.id, 'deep', 50, `Analyzed ${pageAnalyses.length} pages`).catch(() => {})
 
       // Step 5: Robots.txt, Sitemap, Backlinks — all in parallel
       const t5 = Date.now()
