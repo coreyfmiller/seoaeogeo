@@ -220,7 +220,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                     </button>
                   </th>
                   <th className="text-center p-3 text-xs font-bold uppercase tracking-wider">
-                    View Actions
+                    View Recommendations
                   </th>
                 </tr>
               </thead>
@@ -319,7 +319,7 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                               variant="ghost"
                               onClick={() => toggleRow(page.url)}
                               className="h-8 px-2"
-                              title={isExpanded ? "Hide actions" : "View actions"}
+                              title={isExpanded ? "Hide recommendations" : "View recommendations"}
                             >
                               {isExpanded ? (
                                 <ChevronUp className="h-3.5 w-3.5" />
