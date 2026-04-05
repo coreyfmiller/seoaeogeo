@@ -25,6 +25,22 @@ export interface KnowledgeEntry {
 
 const KNOWLEDGE_BASE: KnowledgeEntry[] = [
 
+  {
+    id: 'duelly-rank',
+    term: 'Duelly Rank',
+    category: 'seo',
+    shortDesc: 'Your position based on combined SEO, AEO, and GEO scores — how you stack up against competitors on site quality.',
+    fullDesc: 'Duelly Rank orders competitors by their combined SEO, AEO, and GEO scores (the "Overall" column). This is different from Google Rank, which is heavily influenced by backlinks, domain age, brand recognition, and user behavior signals that aren\'t visible on the page itself. Duelly Rank focuses purely on what you can control: on-page optimization, content quality, schema markup, AI readiness, and technical health.',
+    whyItMatters: 'Google Rank tells you where you are today. Duelly Rank tells you where you should be based on your site quality. If your Duelly Rank is higher than your Google Rank, your content is strong but you need more authority (backlinks). If it\'s lower, competitors with weaker content are outranking you because of stronger domain authority — meaning your on-page work has the most room for improvement.',
+    tips: [
+      'If Duelly Rank > Google Rank: your site quality is ahead of your authority. Focus on link building to match your content quality.',
+      'If Duelly Rank < Google Rank: your authority is carrying you. Invest in content, schema, and AI readiness before competitors catch up.',
+      'If they match: you\'re well-balanced. Maintain both content quality and authority building.',
+      'Use the SEO, AEO, and GEO columns to identify which specific pillar is dragging your overall score down.',
+    ],
+    benchmarks: { good: 'Duelly Rank matches or beats Google Rank', average: 'Within 2-3 positions of Google Rank', poor: 'More than 3 positions behind Google Rank (site quality gap)' },
+  },
+
   // ═══════════════════════════════════════════════════════════════
   // SCORES & OVERVIEW
   // ═══════════════════════════════════════════════════════════════

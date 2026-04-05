@@ -894,13 +894,17 @@ export default function KeywordArenaV3Page() {
               })()}
 
               {/* Google Rank Disclaimer */}
-              <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/[0.04] p-4">
+              <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/[0.04] p-4 space-y-2">
                 <p className="text-sm text-yellow-200/90 leading-relaxed">
                   <span className="font-bold">Seeing a mismatch with what you see on Google?</span>{' '}
                   Google personalizes results for every user based on location, search history, device, and account activity.
                   Duelly checks rankings from a neutral, standardized perspective — like a fresh browser with no history.
                   This gives you a consistent benchmark for comparing competitors on a level playing field.
                   <LearnMore term="google-rank-vs-ai-rank" />
+                </p>
+                <p className="text-sm text-yellow-200/60 leading-relaxed">
+                  <span className="font-bold text-yellow-200/80">Missing some results?</span>{' '}
+                  Social media pages (Facebook, Instagram), directories (Yelp, TripAdvisor), and other aggregator platforms are automatically filtered out. Duelly only compares independent websites where businesses control their own SEO — giving you the competitive analysis that actually matters.
                 </p>
               </div>
 
@@ -910,7 +914,7 @@ export default function KeywordArenaV3Page() {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-white/[0.06]">
-                        <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-widest text-white/50">Rank</th>
+                        <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-widest text-white/50">Rank <LearnMore term="duelly-rank" /></th>
                         <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-widest text-white/50">Site</th>
                         <th className="px-4 py-3 text-center text-xs font-black uppercase tracking-widest text-white/40">
                           Google <LearnMore term="google-rank-vs-ai-rank" />

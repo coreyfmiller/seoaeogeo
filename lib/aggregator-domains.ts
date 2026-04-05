@@ -8,8 +8,10 @@
  * Filtering these from Keyword Arena results gives users meaningful competitive
  * analysis against actual business competitors.
  *
- * NOTE: Facebook and Instagram are intentionally NOT on this list because many
- * small businesses use them as their primary web presence.
+ * NOTE: Facebook and Instagram are on this list because their Domain Authority (96+)
+ * is inherited from the platform, not the business, making DA comparisons meaningless.
+ * Businesses using Facebook/Instagram as their web presence are real competitors,
+ * but their SEO metrics can't be meaningfully compared to independent websites.
  *
  * To add a domain: add the root domain (no www, no subdomains).
  * The matcher checks if the URL's hostname ends with any of these.
@@ -81,6 +83,8 @@ const AGGREGATOR_DOMAINS: string[] = [
   'x.com',
   'tiktok.com',
   'youtube.com',
+  'facebook.com',
+  'instagram.com',
 
   // Generic aggregators
   'manta.com',
