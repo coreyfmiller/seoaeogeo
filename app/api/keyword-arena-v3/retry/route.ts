@@ -86,9 +86,25 @@ export async function POST(req: Request) {
     })
   } catch (error: any) {
     console.error('[Arena V3 Retry] Error:', error)
+    const msg = error.message || 'Retry failed'
+    // Classify the error for better user messaging
+    let userMessage = msg
+    if (msg.includes('timeout') || msg.includes('TIMEOUT') || msg.includes('timed out')) {
+      userMessage = 'This site took too long to respond. It may be blocking automated crawlers or have a very slow server.'
+    } else if (msg.includes('403') || msg.includes('Forbidden') || msg.includes('blocked')) {
+      userMessage = 'This site is blocking our crawler. Some sites use security tools (like Cloudflare) that prevent automated access.'
+    } else if (msg.includes('404') || msg.includes('Not Found')) {
+      userMessage = 'This page could not be found. The URL may be incorrect or the page may have been removed.'
+    } else if (msg.includes('ECONNREFUSED') || msg.includes('ENOTFOUND') || msg.includes('DNS')) {
+      userMessage = 'Could not connect to this site. The domain may be down or the URL may be incorrect.'
+    } else if (msg.includes('SSL') || msg.includes('certificate')) {
+      userMessage = 'This site has an SSL certificate issue that prevented our crawler from connecting securely.'
+    } else if (msg.includes('Navigation') || msg.includes('net::')) {
+      userMessage = 'This site failed to load in our browser. It may use heavy JavaScript that prevents crawling, or it may be blocking automated access.'
+    }
     return NextResponse.json({
       success: false,
-      error: error.message || 'Retry failed',
-    }, { status: 502 })
+      error: userMessage,
+    }, { status: 500 })
   }
 }

@@ -414,8 +414,23 @@ export default function KeywordArenaV3Page() {
           const rank = userSiteUrl ? (() => { const idx = scored.findIndex(s => s.isUserSite); return idx >= 0 ? idx + 1 : null })() : null
           return { ...prev, sites: updated, userSiteRank: rank, scoredSites: scored.length }
         })
-      } else { setError(data.error || 'Retry failed') }
-    } catch { setError('Retry connection failed') }
+      } else {
+        // Update the site's error message inline instead of showing a dialog
+        const errorMsg = data.error || 'Retry failed'
+        setArenaResult(prev => {
+          if (!prev) return prev
+          const updated = prev.sites.map(s => s.url === url ? { ...s, error: errorMsg } : s)
+          return { ...prev, sites: updated }
+        })
+      }
+    } catch {
+      // Network/502 error — update inline
+      setArenaResult(prev => {
+        if (!prev) return prev
+        const updated = prev.sites.map(s => s.url === url ? { ...s, error: 'This site could not be reached. It may be blocking automated crawlers or experiencing downtime.' } : s)
+        return { ...prev, sites: updated }
+      })
+    }
     finally { setRetryingUrl(null) }
   }
 
@@ -927,10 +942,15 @@ export default function KeywordArenaV3Page() {
                                 </div>
                                 {isUser && <Badge className="shrink-0 bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-[8px] font-black">YOU</Badge>}
                                 {!scored && (
-                                  <button onClick={() => handleRetry(site.url)} disabled={!!isRetrying}
-                                    className="shrink-0 flex items-center gap-1 px-2 py-1 rounded-md bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 text-xs font-bold hover:bg-yellow-500/20 transition-all disabled:opacity-50">
-                                    {isRetrying ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />} Retry
-                                  </button>
+                                  <div className="flex items-center gap-2 shrink-0">
+                                    <button onClick={() => handleRetry(site.url)} disabled={!!isRetrying}
+                                      className="flex items-center gap-1 px-2 py-1 rounded-md bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 text-xs font-bold hover:bg-yellow-500/20 transition-all disabled:opacity-50">
+                                      {isRetrying ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />} Retry
+                                    </button>
+                                    {site.error && (
+                                      <InfoTooltip content={site.error} className="[&_svg]:h-3.5 [&_svg]:w-3.5 [&_svg]:text-yellow-400" />
+                                    )}
+                                  </div>
                                 )}
                               </div>
                             </td>
