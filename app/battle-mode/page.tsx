@@ -392,6 +392,7 @@ export default function BattleModeV3() {
                                 const c = comparisonData.comparison || comparisonData
                                 return <ExpertAnalysis
                                     analysis={comparisonData.expertAnalysis}
+                                    autoGenerate
                                     label="Expert Analysis"
                                     tooltip="AI-generated analysis of your competitive position, including strengths, opportunities, and specific next steps based on all scan data."
                                     generateData={{

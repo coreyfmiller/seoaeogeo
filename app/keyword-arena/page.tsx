@@ -828,6 +828,7 @@ export default function KeywordArenaV3Page() {
               {/* ═══ EXPERT ANALYSIS ═══ */}
               <ExpertAnalysis
                 analysis={arenaResult?.expertAnalysis}
+                autoGenerate
                 tooltip="AI-powered analysis of your competitive position for this keyword, including what's working, what to improve, and specific next steps to climb the rankings."
                 generateData={userSite ? {
                   context: 'keyword-arena', keyword: arenaResult?.keyword,

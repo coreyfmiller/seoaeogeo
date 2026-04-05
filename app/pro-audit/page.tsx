@@ -312,6 +312,7 @@ export default function ProAuditV4Page() {
               {/* ═══ EXPERT ANALYSIS ═══ */}
               <ExpertAnalysis
                 analysis={result.expertAnalysis}
+                autoGenerate
                 generateData={{
                   context: 'pro-audit', url: result.url,
                   scores: { seo: result.scores.seo.score, aeo: result.scores.aeo.score, geo: result.scores.geo.score },
