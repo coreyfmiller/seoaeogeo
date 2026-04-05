@@ -897,7 +897,7 @@ export default function KeywordArenaV3Page() {
               <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/[0.04] p-4">
                 <p className="text-sm text-yellow-200/90 leading-relaxed">
                   <span className="font-bold">Results may differ from what you see on Google.</span>{' '}
-                  Google personalizes results based on your location, history, and device. Duelly uses a neutral, unpersonalized perspective for a fair comparison. Social media pages, directories, and aggregator platforms are filtered out — only independent websites are compared.
+                  Google personalizes results based on your location, history, and device. Duelly uses a neutral, unpersonalized perspective and only compares independent websites where businesses control their own SEO — giving you the competitive analysis that actually matters.
                   <LearnMore term="google-rank-vs-ai-rank" />
                 </p>
               </div>
