@@ -6,13 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PublicNav } from '@/components/public-nav'
 import { PublicFooter } from '@/components/public-footer'
 
-const features = [
-  { icon: Bot, title: "AI-Powered Analysis", desc: "Gemini AI evaluates your content the same way ChatGPT and Perplexity decide whether to cite you" },
-  { icon: FileText, title: "Step-by-Step Fixes", desc: "Platform-specific instructions for WordPress, Shopify, Wix, and more — not generic advice" },
-  { icon: Code, title: "Schema Generation", desc: "Auto-generated JSON-LD markup tailored to your site type, ready to paste" },
-  { icon: Layers, title: "Multi-Page Deep Scan", desc: "Crawl up to 50 pages, find duplicate titles, missing schemas, and sitewide issues" },
-  { icon: Sparkles, title: "Competitor Intelligence", desc: "Head-to-head duels with backlink analysis, gap detection, and counter-strategies" },
-  { icon: BarChart3, title: "Priority Scoring", desc: "Every fix ranked by impact so you know what to tackle first" },
+const includedFeatures = [
+  { icon: Bot, title: "AI-Powered Audits", desc: "Your site is evaluated by the same Gemini AI that powers AI search. Not a checklist — an actual AI reading your content and deciding if it's worth citing." },
+  { icon: BarChart3, title: "Real Site Speed Scores", desc: "Performance data pulled directly from Google PageSpeed Insights — the same speed metrics Google uses to rank your site." },
+  { icon: Code, title: "Platform-Specific Fix Instructions", desc: "Duelly detects your platform — WordPress, Shopify, Wix, Squarespace, and more — then gives you step-by-step fixes tailored to how your site actually works." },
+  { icon: FileText, title: "Downloadable PDF Reports", desc: "Every scan generates a shareable PDF. Send it to your web developer, share it with a client, or keep it for your records." },
+  { icon: Layers, title: "Backlink Intelligence", desc: "See who's linking to you and your competitors, powered by Moz. Find the gaps and build a stronger link profile." },
+  { icon: Shield, title: "Priority-Ranked Fixes", desc: "Every issue is scored by impact so you always know what to fix first for the biggest improvement." },
+  { icon: Sparkles, title: "Auto-Generated Schema Markup", desc: "Structured data generated for your specific site type — ready to copy and paste into your site." },
+  { icon: Zap, title: "Competitor Gap Analysis", desc: "Run head-to-head comparisons and see exactly where competitors are beating you, with strategies to close the gap." },
 ]
 
 const tiers = [
@@ -218,15 +220,30 @@ export default function PricingPage() {
               </CardContent>
             </Card>
 
-            {/* Feature Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {features.map(f => (
-                <div key={f.title} className="rounded-xl border border-border/50 bg-card/50 p-4 space-y-2">
-                  <f.icon className="h-5 w-5 text-[#00e5ff]" />
-                  <p className="text-sm font-bold">{f.title}</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
-                </div>
-              ))}
+            {/* What Every Credit Pack Includes */}
+            <div className="space-y-6">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold">What Every Credit Pack Includes</h2>
+                <p className="text-sm text-muted-foreground mt-2">No feature gates. No tier restrictions. Every tool, every feature, from day one.</p>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {includedFeatures.map(f => (
+                  <div key={f.title} className="rounded-xl border border-border/50 bg-card/50 p-4 space-y-2">
+                    <f.icon className="h-5 w-5 text-[#00e5ff]" />
+                    <p className="text-sm font-bold">{f.title}</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Value Statement */}
+            <div className="text-center max-w-2xl mx-auto py-4">
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Most SEO tools charge $100 to $500 per month and audit for search crawlers.
+                Duelly audits for AI engines — the systems increasingly deciding which businesses get recommended.
+                One-time purchase. No subscriptions. Credits never expire.
+              </p>
             </div>
 
           </div>
