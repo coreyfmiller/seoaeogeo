@@ -90,7 +90,7 @@ function normalizeUrl(url: string): string {
 }
 
 /** Generate gap insights comparing user site vs arena */
-function generateInsights(userSite: ArenaSite, allSites: ArenaSite[], avg: ArenaAverages) {
+function generateInsights(userSite: ArenaSite, allSites: ArenaSite[], avg: ArenaAverages, backlinkData?: any, competitorDA?: any) {
   const insights: { type: 'gap' | 'strength'; metric: string; detail: string; severity: 'critical' | 'warning' | 'good' }[] = []
   const ud = userSite.scanDetails
   if (!ud) return insights
@@ -99,24 +99,74 @@ function generateInsights(userSite: ArenaSite, allSites: ArenaSite[], avg: Arena
   const top3 = competitors.slice(0, 3)
   const top3Details = top3.map(s => s.scanDetails!).filter(Boolean)
 
+  // Domain Authority gap (most impactful — show first)
+  if (backlinkData?.metrics?.domainAuthority != null && competitorDA?.domainAuthority != null) {
+    const userDA = backlinkData.metrics.domainAuthority
+    const compDA = competitorDA.domainAuthority
+    const gap = compDA - userDA
+    if (gap > 20) {
+      insights.push({ type: 'gap', metric: 'Domain Authority', detail: `Your DA is ${userDA} — top competitor has ${compDA}. This ${gap}-point gap is the biggest factor holding you back in rankings.`, severity: 'critical' })
+    } else if (gap > 5) {
+      insights.push({ type: 'gap', metric: 'Domain Authority', detail: `Your DA (${userDA}) is ${gap} points behind the top competitor (${compDA}). Targeted link building can close this gap.`, severity: 'warning' })
+    } else if (gap <= 0) {
+      insights.push({ type: 'strength', metric: 'Domain Authority', detail: `Your DA (${userDA}) is competitive with or ahead of the top competitor (${compDA}).`, severity: 'good' })
+    }
+  }
+
+  // SEO score vs arena average
+  const us = userSite.scores
+  if (us.seo !== null && avg.seo > 0 && us.seo < avg.seo - 10) {
+    insights.push({ type: 'gap', metric: 'SEO Score', detail: `Your SEO score (${us.seo}) is ${avg.seo - us.seo} points below the arena average (${avg.seo})`, severity: us.seo < avg.seo - 20 ? 'critical' : 'warning' })
+  } else if (us.seo !== null && us.seo >= avg.seo) {
+    insights.push({ type: 'strength', metric: 'SEO Score', detail: `Your SEO score (${us.seo}) is at or above the arena average (${avg.seo})`, severity: 'good' })
+  }
+
   // Word count comparison
   const avgWords = top3Details.length > 0 ? Math.round(top3Details.reduce((a, d) => a + d.wordCount, 0) / top3Details.length) : avg.wordCount
   if (ud.wordCount < avgWords * 0.5) {
-    insights.push({ type: 'gap', metric: 'Content Depth', detail: `Your page has ${ud.wordCount} words — top 3 competitors average ${avgWords}`, severity: 'critical' })
+    insights.push({ type: 'gap', metric: 'Content Depth', detail: `Your page has ${ud.wordCount} words — top 3 competitors average ${avgWords}. You're in the bottom tier for content depth.`, severity: 'critical' })
   } else if (ud.wordCount < avgWords * 0.8) {
     insights.push({ type: 'gap', metric: 'Content Depth', detail: `${ud.wordCount} words vs top 3 average of ${avgWords}`, severity: 'warning' })
   } else if (ud.wordCount >= avgWords) {
     insights.push({ type: 'strength', metric: 'Content Depth', detail: `${ud.wordCount} words — more than the top 3 average (${avgWords})`, severity: 'good' })
   }
 
-  // Schema comparison
+  // Heading structure
+  const avgH2 = top3Details.length > 0 ? Math.round(top3Details.reduce((a, d) => a + d.h2Count, 0) / top3Details.length) : 0
+  if (ud.h2Count === 0 && avgH2 > 0) {
+    insights.push({ type: 'gap', metric: 'Heading Structure', detail: `You have no H2 headings. Top 3 competitors average ${avgH2}. Headings help search engines and AI understand your content structure.`, severity: 'critical' })
+  } else if (ud.h2Count < avgH2 * 0.5 && avgH2 >= 3) {
+    insights.push({ type: 'gap', metric: 'Heading Structure', detail: `You have ${ud.h2Count} H2 headings — top 3 average ${avgH2}. More headings = better content organization for search engines.`, severity: 'warning' })
+  }
+
+  // Schema comparison with type details
   const competitorsWithSchema = competitors.filter(s => s.scanDetails?.hasSchema).length
   if (!ud.hasSchema && competitorsWithSchema > 0) {
-    insights.push({ type: 'gap', metric: 'Schema Markup', detail: `${competitorsWithSchema}/${competitors.length} competitors have structured data — you don't`, severity: 'critical' })
+    const compSchemaTypes = competitors.filter(s => s.scanDetails?.hasSchema).flatMap(s => s.scanDetails?.schemaTypes || [])
+    const uniqueTypes = [...new Set(compSchemaTypes)].slice(0, 5)
+    insights.push({ type: 'gap', metric: 'Schema Markup', detail: `${competitorsWithSchema}/${competitors.length} competitors have structured data (${uniqueTypes.join(', ') || 'various types'}) — you have none. This means they get rich results in Google and you don't.`, severity: 'critical' })
   } else if (ud.hasSchema && competitorsWithSchema === 0) {
-    insights.push({ type: 'strength', metric: 'Schema Markup', detail: `You have schema markup — none of your competitors do`, severity: 'good' })
+    insights.push({ type: 'strength', metric: 'Schema Markup', detail: `You have schema markup (${ud.schemaTypes.join(', ')}) — none of your competitors do. You're ahead on rich results.`, severity: 'good' })
   } else if (ud.hasSchema && ud.schemaScore < avg.avgSchemaScore) {
     insights.push({ type: 'gap', metric: 'Schema Quality', detail: `Your schema score (${ud.schemaScore}) is below the arena average (${avg.avgSchemaScore})`, severity: 'warning' })
+  }
+
+  // Response time / site speed
+  const avgResponseTime = top3Details.length > 0 ? Math.round(top3Details.reduce((a, d) => a + d.responseTimeMs, 0) / top3Details.length) : 0
+  if (ud.responseTimeMs > 3000 && avgResponseTime < 2000) {
+    insights.push({ type: 'gap', metric: 'Site Speed', detail: `Your site loads in ${(ud.responseTimeMs / 1000).toFixed(1)}s — top 3 competitors average ${(avgResponseTime / 1000).toFixed(1)}s. Google penalizes slow sites.`, severity: 'critical' })
+  } else if (ud.responseTimeMs > 2000 && avgResponseTime < ud.responseTimeMs * 0.7) {
+    insights.push({ type: 'gap', metric: 'Site Speed', detail: `Your site loads in ${(ud.responseTimeMs / 1000).toFixed(1)}s — competitors are faster at ${(avgResponseTime / 1000).toFixed(1)}s average`, severity: 'warning' })
+  } else if (ud.responseTimeMs < avgResponseTime && ud.responseTimeMs < 2000) {
+    insights.push({ type: 'strength', metric: 'Site Speed', detail: `Your site loads in ${(ud.responseTimeMs / 1000).toFixed(1)}s — faster than the top 3 average (${(avgResponseTime / 1000).toFixed(1)}s)`, severity: 'good' })
+  }
+
+  // HTTPS
+  if (!ud.isHttps) {
+    const competitorsWithHttps = competitors.filter(s => s.scanDetails?.isHttps).length
+    if (competitorsWithHttps > 0) {
+      insights.push({ type: 'gap', metric: 'HTTPS Security', detail: `Your site doesn't use HTTPS. ${competitorsWithHttps}/${competitors.length} competitors do. Google marks non-HTTPS sites as "Not Secure".`, severity: 'critical' })
+    }
   }
 
   // Open Graph
@@ -130,19 +180,27 @@ function generateInsights(userSite: ArenaSite, allSites: ArenaSite[], avg: Arena
   if (ud.totalImages > 0) {
     const altPct = Math.round((ud.imagesWithAlt / ud.totalImages) * 100)
     if (altPct < 50) {
-      insights.push({ type: 'gap', metric: 'Image Alt Text', detail: `Only ${altPct}% of images have alt text (${ud.imagesWithAlt}/${ud.totalImages})`, severity: 'critical' })
+      insights.push({ type: 'gap', metric: 'Image Alt Text', detail: `Only ${altPct}% of images have alt text (${ud.imagesWithAlt}/${ud.totalImages}). Search engines can't understand your images.`, severity: 'critical' })
     } else if (altPct < 90) {
       insights.push({ type: 'gap', metric: 'Image Alt Text', detail: `${altPct}% alt text coverage — aim for 100%`, severity: 'warning' })
     }
   }
 
-  // Score comparisons
-  const us = userSite.scores
+  // AEO/GEO score comparisons
   if (us.aeo !== null && avg.aeo > 0 && us.aeo < avg.aeo - 10) {
-    insights.push({ type: 'gap', metric: 'AEO Score', detail: `Your AEO score (${us.aeo}) is ${avg.aeo - us.aeo} points below the arena average (${avg.aeo})`, severity: us.aeo < avg.aeo - 20 ? 'critical' : 'warning' })
+    insights.push({ type: 'gap', metric: 'AEO Score', detail: `Your AEO score (${us.aeo}) is ${avg.aeo - us.aeo} points below the arena average (${avg.aeo}). AI engines are less likely to cite your content.`, severity: us.aeo < avg.aeo - 20 ? 'critical' : 'warning' })
   }
   if (us.geo !== null && avg.geo > 0 && us.geo < avg.geo - 10) {
-    insights.push({ type: 'gap', metric: 'GEO Score', detail: `Your GEO score (${us.geo}) is ${avg.geo - us.geo} points below the arena average (${avg.geo})`, severity: us.geo < avg.geo - 20 ? 'critical' : 'warning' })
+    insights.push({ type: 'gap', metric: 'GEO Score', detail: `Your GEO score (${us.geo}) is ${avg.geo - us.geo} points below the arena average (${avg.geo}). You're less visible in AI-generated search results.`, severity: us.geo < avg.geo - 20 ? 'critical' : 'warning' })
+  }
+
+  // Platform comparison
+  if (ud.platform) {
+    const competitorPlatforms = competitors.filter(s => s.scanDetails?.platform).map(s => s.scanDetails!.platform!)
+    const uniquePlatforms = [...new Set(competitorPlatforms)]
+    if (uniquePlatforms.length > 0 && !uniquePlatforms.includes(ud.platform)) {
+      insights.push({ type: 'gap', metric: 'Platform', detail: `You're on ${ud.platform}. Competitors use ${uniquePlatforms.slice(0, 3).join(', ')}. Make sure your platform has equivalent SEO capabilities.`, severity: 'warning' })
+    }
   }
 
   return insights
@@ -377,7 +435,7 @@ export default function KeywordArenaV3Page() {
 
   // Derived data for results
   const userSite = arenaResult?.sites.find(s => s.isUserSite) || null
-  const insights = userSite && arenaResult?.arenaAvg ? generateInsights(userSite, arenaResult.sites, arenaResult.arenaAvg) : []
+  const insights = userSite && arenaResult?.arenaAvg ? generateInsights(userSite, arenaResult.sites, arenaResult.arenaAvg, arenaResult.backlinkData, arenaResult.competitorDA) : []
   const gaps = insights.filter(i => i.type === 'gap')
   const strengths = insights.filter(i => i.type === 'strength')
 
