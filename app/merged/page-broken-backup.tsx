@@ -392,7 +392,7 @@ export default function MergedDashboard() {
                                       title={fix.title}
                                       category={fix.category || 'Medium Priority'}
                                       priority={fix.priority || fix.roi || 'MEDIUM'}
-                                      steps={fix.steps || [{ step: 1, title: fix.title, description: fix.description }]}
+                                      steps={fix.steps || [{ step: 1, title: 'How To Fix', description: fix.howToFix || fix.fix || fix.description }]}
                                       code={fix.code}
                                       platform={fix.platform || 'general'}
                                       estimatedTime={fix.estimatedTime || '30 minutes'}

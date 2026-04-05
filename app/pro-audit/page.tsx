@@ -610,7 +610,7 @@ export default function V3Page() {
                       title={rec.title}
                       domain={normDomain(rec) as any}
                       priority={normPriority(rec)}
-                      steps={rec.steps || [{ step: 1, title: 'Implementation', description: rec.description }]}
+                      steps={rec.steps || [{ step: 1, title: 'How To Fix', description: rec.howToFix || rec.fix || rec.description }]}
                       code={rec.code || rec.codeSnippet}
                       platform={rec.platform || 'Any'}
                       estimatedTime={rec.estimatedTime || `${rec.effort || 1}h`}

@@ -374,7 +374,7 @@ export default function BattleMode() {
                                                                     title={rec.title}
                                                                     domain={normDomain(rec) as any}
                                                                     priority={normPriority(rec)}
-                                                                    steps={rec.howToFix ? [{ step: 1, title: 'How To Fix', description: rec.howToFix }] : [{ step: 1, title: rec.title, description: rec.description }]}
+                                                                    steps={rec.steps || [{ step: 1, title: 'How To Fix', description: rec.howToFix || rec.fix || rec.description }]}
                                                                     code={rec.codeSnippet}
                                                                     platform={rec.platform || 'Any'}
                                                                     estimatedTime={`${rec.effort || 1}h`}

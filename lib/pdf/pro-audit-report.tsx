@@ -58,7 +58,7 @@ function RecommendationCard({ rec, index }: { rec: any; index: number }) {
 
       <View style={styles.fixBox}>
         <Text style={[styles.h4, { color: colors.seo, marginBottom: 4 }]}>How To Fix</Text>
-        {(rec.steps || [{ step: 1, title: 'Implementation', description: rec.description }]).map((step: any, i: number) => (
+        {(rec.steps || [{ step: 1, title: 'How To Fix', description: rec.howToFix || rec.fix || rec.description }]).map((step: any, i: number) => (
           <View key={i} style={{ marginBottom: 6 }}>
             <Text style={[styles.body, { fontWeight: 'bold', color: colors.text }]}>Step {step.step}: {step.title}</Text>
             <Text style={styles.body}>{step.description}</Text>

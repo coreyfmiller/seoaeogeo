@@ -498,7 +498,7 @@ export default function MergedDashboard() {
                                     title={fix.title}
                                     domain={fix.domain ? fix.domain.toLowerCase() as any : 'seo'}
                                     priority={normPriority(fix)}
-                                    steps={fix.steps || [{ step: 1, title: fix.title, description: fix.description }]}
+                                    steps={fix.steps || [{ step: 1, title: 'How To Fix', description: fix.howToFix || fix.fix || fix.description }]}
                                     code={fix.code || fix.codeSnippet}
                                     platform={fix.platform || 'general'}
                                     estimatedTime={fix.estimatedTime || '30 minutes'}
