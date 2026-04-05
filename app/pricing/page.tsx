@@ -129,8 +129,9 @@ export default function PricingPage() {
               </div>
               <h1 className="text-4xl font-bold">AI Search Is Here. Is Your Site Ready?</h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                When AI or Google cites a competitor instead of you, it's not random. Their site had better structure, clearer content, stronger signals.
-                Pick a pack and start optimizing today.
+                Most SEO tools charge $100 to $500 per month and audit for search crawlers.
+                Duelly audits for AI engines — the systems increasingly deciding which businesses get recommended.
+                One-time purchase. No subscriptions. Credits never expire.
               </p>
               <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5"><Infinity className="h-4 w-4 text-[#00e5ff]" /> Credits never expire</span>

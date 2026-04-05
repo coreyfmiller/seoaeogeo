@@ -66,10 +66,10 @@ export default function HomePage() {
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/free-audit"
+            href="/signup"
             className="px-8 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-lg transition-colors flex items-center gap-2"
           >
-            Run a Free Audit <ArrowRight className="h-5 w-5" />
+            Get Started <ArrowRight className="h-5 w-5" />
           </Link>
           <Link
             href="/pricing"
@@ -78,7 +78,7 @@ export default function HomePage() {
             View Pricing
           </Link>
         </div>
-        <p className="text-sm text-muted-foreground mt-3">No account required. See your scores in 60 seconds.</p>
+        <p className="text-sm text-muted-foreground mt-3">No credit card required.</p>
       </section>
 
       {/* Three Pillars — compact */}
@@ -287,7 +287,7 @@ export default function HomePage() {
             href="/free-audit"
             className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-lg transition-colors"
           >
-            Run Free Audit <ArrowRight className="h-5 w-5" />
+            Get Started <ArrowRight className="h-5 w-5" />
           </Link>
           <Link
             href="/pricing"
