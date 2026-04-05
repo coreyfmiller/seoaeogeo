@@ -226,6 +226,7 @@ export default function KeywordArenaV3Page() {
   const [creditDialogOpen, setCreditDialogOpen] = useState(false)
   const [pendingUrls, setPendingUrls] = useState<string[]>([])
   const [pendingGoogleRanks, setPendingGoogleRanks] = useState<Record<string, number>>({})
+  const [pendingGoogleTitles, setPendingGoogleTitles] = useState<Record<string, string>>({})
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [loadingPhase, setLoadingPhase] = useState("")
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
@@ -352,7 +353,8 @@ export default function KeywordArenaV3Page() {
     // Build URL list: user's site + search results (drop last result if user site is not from results)
     let urls = searchResults.map(r => r.url)
     const googleRanks: Record<string, number> = {}
-    searchResults.forEach(r => { googleRanks[r.url] = r.rank })
+    const googleTitles: Record<string, string> = {}
+    searchResults.forEach(r => { googleRanks[r.url] = r.rank; googleTitles[r.url] = r.title })
 
     if (selectedFromResults !== null) {
       // User selected from results — all results stay, their site is tagged
@@ -366,6 +368,7 @@ export default function KeywordArenaV3Page() {
 
     setPendingUrls(urls)
     setPendingGoogleRanks(googleRanks)
+    setPendingGoogleTitles(googleTitles)
     setCreditDialogOpen(true)
   }
 
@@ -383,6 +386,7 @@ export default function KeywordArenaV3Page() {
           keyword: keyword.trim(),
           userSiteUrl: userSiteUrl || undefined,
           googleRanks: pendingGoogleRanks,
+          googleTitles: pendingGoogleTitles,
         }),
       })
       const data = await res.json()
@@ -975,6 +979,15 @@ export default function KeywordArenaV3Page() {
                     </tbody>
                   </table>
                 </div>
+
+                {/* Filtered results note — only show when fewer than requested */}
+                {arenaResult.totalSites < resultCount && (
+                  <div className="px-4 py-3 border-t border-white/[0.04] text-center">
+                    <p className="text-xs text-white/40">
+                      Only {arenaResult.totalSites} independent websites found for this keyword. Social media pages and directory listings were filtered out.
+                    </p>
+                  </div>
+                )}
 
                 {/* Expanded site details panel */}
                 {expandedSite && (() => {

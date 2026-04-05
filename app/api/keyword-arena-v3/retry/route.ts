@@ -27,11 +27,16 @@ export async function POST(req: Request) {
 
     const scan = await performScan(url)
 
-    // Detect bot protection
-    if (scan.botProtection?.detected) {
+    // Detect bot protection — check both structured field and title fallback
+    const isBotProtected = scan.botProtection?.detected ||
+      scan.title?.toLowerCase().includes('just a moment') ||
+      scan.title?.toLowerCase().includes('attention required') ||
+      scan.title?.toLowerCase() === 'robot or human?'
+
+    if (isBotProtected) {
       return NextResponse.json({
         success: false,
-        error: `This site has ${scan.botProtection.type} bot protection enabled. Our crawler received a challenge page instead of the actual content. Scores cannot be calculated.`,
+        error: `This site has ${scan.botProtection?.type || 'Cloudflare'} bot protection enabled. Our crawler received a challenge page instead of the actual content. Scores cannot be calculated.`,
       }, { status: 200 })
     }
 
@@ -50,6 +55,12 @@ export async function POST(req: Request) {
 
     scan.semanticFlags = aiAnalysis.semanticFlags
     scan.schemaQuality = aiAnalysis.schemaQuality
+
+    // Override heuristic site type with AI-detected type if available
+    if (aiAnalysis.detectedSiteType && aiAnalysis.detectedSiteType !== 'general') {
+      siteType.primaryType = aiAnalysis.detectedSiteType
+      scan.siteType = aiAnalysis.detectedSiteType
+    }
 
     const graded = calculateScoresFromScanResult(scan)
 

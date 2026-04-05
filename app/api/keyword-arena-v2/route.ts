@@ -126,6 +126,12 @@ async function scoreSite(url: string, userSiteUrl?: string) {
     scan.semanticFlags = aiAnalysis.semanticFlags
     scan.schemaQuality = aiAnalysis.schemaQuality
 
+    // Override heuristic site type with AI-detected type if available
+    if (aiAnalysis.detectedSiteType && aiAnalysis.detectedSiteType !== 'general') {
+      siteType.primaryType = aiAnalysis.detectedSiteType
+      scan.siteType = aiAnalysis.detectedSiteType
+    }
+
     // Step 5: Grade with grader-v2 (now using AI-produced inputs)
     const graded = calculateScoresFromScanResult(scan)
 

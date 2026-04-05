@@ -171,7 +171,7 @@ export function LearnMore({ term, className, inline, label }: LearnMoreProps) {
             "text-[9px] font-black leading-none transition-colors shrink-0",
             className
           )}
-          title={entry.shortDesc}
+          title={`${entry.shortDesc} Click for more detail.`}
         >
           ?
         </button>

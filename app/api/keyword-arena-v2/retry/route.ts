@@ -42,6 +42,12 @@ export async function POST(req: Request) {
     scan.semanticFlags = aiAnalysis.semanticFlags
     scan.schemaQuality = aiAnalysis.schemaQuality
 
+    // Override heuristic site type with AI-detected type if available
+    if (aiAnalysis.detectedSiteType && aiAnalysis.detectedSiteType !== 'general') {
+      siteType.primaryType = aiAnalysis.detectedSiteType
+      scan.siteType = aiAnalysis.detectedSiteType
+    }
+
     const graded = calculateScoresFromScanResult(scan)
 
     return NextResponse.json({

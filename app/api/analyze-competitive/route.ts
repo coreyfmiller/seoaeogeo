@@ -53,11 +53,21 @@ export async function POST(req: Request) {
 
         const siteTypeA = detectSiteType(scanA, []);
         scanA.siteType = siteTypeA.primaryType;
-        if (aiA) { scanA.semanticFlags = aiA.semanticFlags; scanA.schemaQuality = aiA.schemaQuality; }
+        if (aiA) {
+            scanA.semanticFlags = aiA.semanticFlags; scanA.schemaQuality = aiA.schemaQuality;
+            if (aiA.detectedSiteType && aiA.detectedSiteType !== 'general') {
+                siteTypeA.primaryType = aiA.detectedSiteType; scanA.siteType = aiA.detectedSiteType;
+            }
+        }
 
         const siteTypeB = detectSiteType(scanB, []);
         scanB.siteType = siteTypeB.primaryType;
-        if (aiB) { scanB.semanticFlags = aiB.semanticFlags; scanB.schemaQuality = aiB.schemaQuality; }
+        if (aiB) {
+            scanB.semanticFlags = aiB.semanticFlags; scanB.schemaQuality = aiB.schemaQuality;
+            if (aiB.detectedSiteType && aiB.detectedSiteType !== 'general') {
+                siteTypeB.primaryType = aiB.detectedSiteType; scanB.siteType = aiB.detectedSiteType;
+            }
+        }
 
         const graderA = calculateScoresFromScanResult(scanA);
         const graderB = calculateScoresFromScanResult(scanB);

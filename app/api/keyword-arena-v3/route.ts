@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
-    const { urls, keyword, userSiteUrl, googleRanks } = await req.json()
+    const { urls, keyword, userSiteUrl, googleRanks, googleTitles } = await req.json()
 
     if (!urls || !Array.isArray(urls) || urls.length === 0) {
       return NextResponse.json({ error: 'At least one URL is required' }, { status: 400 })
@@ -34,6 +34,8 @@ export async function POST(req: Request) {
 
     // googleRanks is a map of url -> google position (1-based) sent from the frontend
     const rankMap: Record<string, number | null> = googleRanks || {}
+    // googleTitles is a map of url -> title from Google search results (fallback for bot-protected sites)
+    const titleMap: Record<string, string> = googleTitles || {}
 
     const allUrls: string[] = [...urls]
     if (userSiteUrl && !allUrls.includes(userSiteUrl)) {
@@ -57,7 +59,7 @@ export async function POST(req: Request) {
     for (let i = 0; i < finalUrls.length; i += BATCH_SIZE) {
       const batch = finalUrls.slice(i, i + BATCH_SIZE)
       console.log(`[Arena V3] Batch ${Math.floor(i / BATCH_SIZE) + 1}: ${batch.join(', ')}`)
-      const results = await Promise.all(batch.map(url => scoreSite(url, userSiteUrl, rankMap[url] ?? null)))
+      const results = await Promise.all(batch.map(url => scoreSite(url, userSiteUrl, rankMap[url] ?? null, titleMap[url])))
       sites.push(...results)
     }
 
@@ -197,23 +199,33 @@ export async function POST(req: Request) {
 /**
  * Score a single site — returns richer data than V2 for insights.
  */
-async function scoreSite(url: string, userSiteUrl?: string, googleRank?: number | null) {
+async function scoreSite(url: string, userSiteUrl?: string, googleRank?: number | null, googleTitle?: string) {
   try {
     const scan = await performScan(url)
 
     // Detect bot protection (Cloudflare, Sucuri, etc.) — mark as blocked instead of scoring garbage
-    if (scan.botProtection?.detected) {
-      console.log(`[Arena V3] Bot protection detected on ${url}: ${scan.botProtection.type}`)
+    // Check both the structured field (from updated crawler) and title-based fallback (for older worker)
+    const isBotProtected = scan.botProtection?.detected ||
+      scan.title?.toLowerCase().includes('just a moment') ||
+      scan.title?.toLowerCase().includes('attention required') ||
+      scan.title?.toLowerCase() === 'robot or human?' ||
+      scan.title?.toLowerCase().includes('access denied')
+
+    if (isBotProtected) {
+      const protectionType = scan.botProtection?.type || 'Cloudflare'
+      console.log(`[Arena V3] Bot protection detected on ${url}: ${protectionType}`)
+      // Use Google's title as fallback, or clean domain name
+      const fallbackTitle = googleTitle || url.replace(/^https?:\/\//, '').replace(/\/$/, '')
       return {
         url,
-        title: url,
+        title: fallbackTitle,
         description: '',
         siteType: 'general',
         scores: { seo: null, aeo: null, geo: null, overall: null },
         googleRank: googleRank ?? null,
         aiStatus: 'failed' as const,
         isUserSite: url === userSiteUrl,
-        error: `This site has ${scan.botProtection.type} bot protection enabled. Our crawler received a challenge page instead of the actual content. Scores cannot be calculated.`,
+        error: `This site has ${protectionType} bot protection enabled. Our crawler received a challenge page instead of the actual content. Scores cannot be calculated.`,
         scanDetails: null,
       }
     }
@@ -234,11 +246,27 @@ async function scoreSite(url: string, userSiteUrl?: string, googleRank?: number 
     scan.semanticFlags = aiAnalysis.semanticFlags
     scan.schemaQuality = aiAnalysis.schemaQuality
 
+    // Override heuristic site type with AI-detected type if available
+    if (aiAnalysis.detectedSiteType && aiAnalysis.detectedSiteType !== 'general') {
+      siteType.primaryType = aiAnalysis.detectedSiteType
+      scan.siteType = aiAnalysis.detectedSiteType
+    }
+
     const graded = calculateScoresFromScanResult(scan)
+
+    // Use crawled title, but fall back to Google's title if crawled title looks like garbage
+    const crawledTitle = scan.title || ''
+    const isGarbageTitle = !crawledTitle ||
+      crawledTitle.toLowerCase().includes('just a moment') ||
+      crawledTitle.toLowerCase().includes('attention required') ||
+      crawledTitle.toLowerCase().includes('access denied') ||
+      crawledTitle.toLowerCase() === 'robot or human?' ||
+      crawledTitle.length < 3
+    const displayTitle = isGarbageTitle && googleTitle ? googleTitle : (crawledTitle || url)
 
     return {
       url,
-      title: scan.title || url,
+      title: displayTitle,
       description: scan.description || '',
       siteType: siteType.primaryType,
       scores: {

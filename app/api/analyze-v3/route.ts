@@ -48,9 +48,15 @@ export async function POST(request: NextRequest) {
       updateScanProgress(user.id, 'pro', 10, 'Crawling page...').catch(() => {})
       const pageData = await performScan(url)
 
-      // Check for bot protection (Cloudflare, Sucuri, etc.)
-      if (pageData.botProtection?.detected) {
-        send({ type: 'error', error: `This site has ${pageData.botProtection.type} bot protection enabled. Our crawler received a challenge page instead of the actual website content. Please try disabling bot protection temporarily, or contact your hosting provider to whitelist our crawler.` })
+      // Check for bot protection (Cloudflare, Sucuri, etc.) — both structured and title fallback
+      const isBotProtected = pageData.botProtection?.detected ||
+        pageData.title?.toLowerCase().includes('just a moment') ||
+        pageData.title?.toLowerCase().includes('attention required') ||
+        pageData.title?.toLowerCase() === 'robot or human?'
+
+      if (isBotProtected) {
+        const protectionType = pageData.botProtection?.type || 'Cloudflare'
+        send({ type: 'error', error: `This site has ${protectionType} bot protection enabled. Our crawler received a challenge page instead of the actual website content. Please try disabling bot protection temporarily, or contact your hosting provider to whitelist our crawler.` })
         if (user) { try { await refundCredits(user.id, creditCost) } catch {} }
         return
       }
@@ -92,6 +98,16 @@ export async function POST(request: NextRequest) {
       pageData.semanticFlags = aiAnalysis.semanticFlags
       pageData.schemaQuality = aiAnalysis.schemaQuality
       pageData.aiAnalysis = aiAnalysis
+
+      // Override heuristic site type with AI-detected type if available
+      if (aiAnalysis.detectedSiteType && aiAnalysis.detectedSiteType !== 'general') {
+        const aiSiteType = aiAnalysis.detectedSiteType
+        if (aiSiteType !== siteTypeResult.primaryType) {
+          console.log(`[V3 API] AI site type override: ${siteTypeResult.primaryType} → ${aiSiteType}`)
+          siteTypeResult.primaryType = aiSiteType
+          pageData.siteType = aiSiteType
+        }
+      }
       pageData.liveInterrogation = liveInterrogation
       send({ type: 'progress', phase: 'AI complete. Calculating scores...', progress: 78 })
       updateScanProgress(user.id, 'pro', 78, 'Calculating scores...').catch(() => {})

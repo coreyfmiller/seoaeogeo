@@ -87,7 +87,8 @@ ${context.platform ? `
         "schemaTypes": string[] (types found, e.g. ["Organization", "LocalBusiness"]),
         "issues": string[] (specific problems found, e.g. "Missing required 'address' property in LocalBusiness"),
         "strengths": string[] (what's implemented well)
-      }${options?.skipRecommendations ? '' : `,
+      },
+      "detectedSiteType": string (classify this website into ONE of these categories based on the content, schema, and purpose: "restaurant" | "local-business" | "e-commerce" | "saas" | "blog" | "contractor" | "professional-services" | "portfolio" | "news-media" | "educational" | "general". Choose the MOST SPECIFIC type that fits. A pizza shop is "restaurant", not "local-business". A plumber is "contractor", not "local-business". Only use "general" if nothing else fits.)${options?.skipRecommendations ? '' : `,
       "seoAnalysis": {
         "onPageIssues": string[],
         "keywordOpportunities": string[],
@@ -308,10 +309,11 @@ ${context.platform ? `
         "schemaTypes": string[],
         "issues": string[],
         "strengths": string[]
-      }
+      },
+      "detectedSiteType": string (classify into ONE of: "restaurant" | "local-business" | "e-commerce" | "saas" | "blog" | "contractor" | "professional-services" | "portfolio" | "news-media" | "educational" | "general". Be specific — a pizza shop is "restaurant", a plumber is "contractor".)
     }
     
-    IMPORTANT: Return ONLY semanticFlags and schemaQuality. No recommendations, no analysis sections.
+    IMPORTANT: Return ONLY semanticFlags, schemaQuality, and detectedSiteType. No recommendations, no analysis sections.
   `;
 
   try {

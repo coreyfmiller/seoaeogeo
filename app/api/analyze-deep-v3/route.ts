@@ -183,6 +183,12 @@ export async function POST(request: NextRequest) {
           ;(scanResult as any).semanticFlags = aiAnalysis.semanticFlags
           ;(scanResult as any).schemaQuality = aiAnalysis.schemaQuality
 
+          // Override heuristic site type with AI-detected type if available (first page sets it for all)
+          if (aiAnalysis.detectedSiteType && aiAnalysis.detectedSiteType !== 'general' && pageUrl === url) {
+            siteTypeResult.primaryType = aiAnalysis.detectedSiteType
+            ;(scanResult as any).siteType = aiAnalysis.detectedSiteType
+          }
+
           const graderResult = calculateScoresFromScanResult(scanResult)
           const enhancedPenalties = convertBreakdownToEnhancedPenalties(
             graderResult.breakdown.seo, graderResult.breakdown.aeo, graderResult.breakdown.geo,
