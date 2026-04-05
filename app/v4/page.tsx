@@ -9,7 +9,7 @@ import { SearchInput } from '@/components/dashboard/search-input'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
 import { PageShell } from '@/components/dashboard/page-shell'
 import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
-import { InfoTooltip } from '@/components/ui/info-tooltip'
+import { LearnMore } from '@/components/ui/learn-more'
 import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
 import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
 
@@ -277,17 +277,17 @@ export default function V4Page() {
                   const domainHealth = result.liteAI?.domainHealthScore ?? '–'
                   const brand = result.liteAI?.brandConsistency ?? '–'
                   const metrics = [
-                    { label: "Domain Health", value: `${domainHealth}%`, color: "text-geo", tip: "AI-powered domain quality score combining content quality, schema implementation, metadata completeness, technical performance, and site architecture. This is a holistic measure of how well your domain is optimized across all ranking factors." },
-                    { label: "Brand", value: `${brand}%`, color: "text-aeo", tip: "Measures brand consistency and messaging clarity across your page. Strong brand signals help AI engines identify and recommend your content. Single-page analysis defaults to 100% — multi-page deep scans measure cross-page consistency." },
-                    { label: "Schema", value: hasSchema ? `${schemas.length} found` : "0%", color: hasSchema ? "text-seo" : "text-red-600", tip: "Structured data (JSON-LD) schemas found on the page. Schema markup helps search engines understand your content and enables rich snippets — like star ratings, FAQs, and product prices. Missing schema means you're invisible to rich result features." },
-                    { label: "Metadata", value: hasMeta ? "100%" : "0%", color: hasMeta ? "text-geo" : "text-yellow-600", tip: "Whether the page has both a title tag and meta description. These are the first things users see in search results. Missing metadata means Google will auto-generate your snippet, which is almost always worse than a crafted one." },
-                    { label: "H1 Tag", value: hasH1 ? "100%" : "0%", color: hasH1 ? "text-geo" : "text-red-600", tip: "Whether the page has an H1 heading tag. The H1 is the primary heading that tells search engines and users what the page is about. Every page should have exactly one H1." },
-                    { label: "HTTPS", value: isHttps ? "100%" : "0%", color: isHttps ? "text-geo" : "text-red-600", tip: "Whether the page is served over HTTPS. Google uses HTTPS as a ranking signal. Non-HTTPS sites show 'Not Secure' warnings in browsers, destroying user trust." },
-                    { label: "Response", value: `${responseTime}ms`, color: responseTime < 500 ? "text-geo" : "text-yellow-600", tip: "Server response time (Time to First Byte). Under 200ms is excellent, under 500ms is acceptable. Slow response times directly impact Core Web Vitals and user experience." },
-                    { label: "Robots.txt", value: result.robotsTxt ? "Found" : "Missing", color: result.robotsTxt ? "text-green-600" : "text-red-600", tip: "Whether a robots.txt file exists at the domain root. This file tells search engine crawlers which pages to index and which to skip. Without it, crawlers may waste budget on unimportant pages." },
-                    { label: "Sitemap", value: result.sitemapFound ? "Found" : "Missing", color: result.sitemapFound ? "text-green-600" : "text-red-600", tip: "Whether an XML sitemap was found. Sitemaps help search engines discover all your pages efficiently, especially new or deeply nested content." },
-                    { label: "Alt Text", value: `${altPct}%`, color: altPct >= 80 ? "text-green-600" : "text-yellow-600", tip: "Percentage of images with descriptive alt text. Alt text is critical for accessibility (screen readers) and image search rankings. Google Images drives significant traffic — missing alt text means lost opportunities." },
-                    { label: "Word Count", value: `${wordCount.toLocaleString()}`, color: wordCount < 300 ? "text-red-600" : wordCount < 800 ? "text-yellow-600" : "text-green-600", tip: wordCount < 300 ? "Thin content — under 300 words. Pages with very little content struggle to rank because search engines can't determine topical relevance." : wordCount < 800 ? "Moderate content depth. Pages with 800+ words tend to rank better for competitive queries." : "Good content depth. Comprehensive content tends to rank better and earn more backlinks." },
+                    { label: "Domain Health", value: `${domainHealth}%`, color: "text-geo", knowledgeId: "domain-health" },
+                    { label: "Brand", value: `${brand}%`, color: "text-aeo", knowledgeId: "brand-visibility" },
+                    { label: "Schema", value: hasSchema ? `${schemas.length} found` : "0%", color: hasSchema ? "text-seo" : "text-red-600", knowledgeId: "schema-markup" },
+                    { label: "Metadata", value: hasMeta ? "100%" : "0%", color: hasMeta ? "text-geo" : "text-yellow-600", knowledgeId: "metadata" },
+                    { label: "H1 Tag", value: hasH1 ? "100%" : "0%", color: hasH1 ? "text-geo" : "text-red-600", knowledgeId: "h1-tag" },
+                    { label: "HTTPS", value: isHttps ? "100%" : "0%", color: isHttps ? "text-geo" : "text-red-600", knowledgeId: "https" },
+                    { label: "Response", value: `${responseTime}ms`, color: responseTime < 500 ? "text-geo" : "text-yellow-600", knowledgeId: "response-time" },
+                    { label: "Robots.txt", value: result.robotsTxt ? "Found" : "Missing", color: result.robotsTxt ? "text-green-600" : "text-red-600", knowledgeId: "robots-txt" },
+                    { label: "Sitemap", value: result.sitemapFound ? "Found" : "Missing", color: result.sitemapFound ? "text-green-600" : "text-red-600", knowledgeId: "xml-sitemap" },
+                    { label: "Alt Text", value: `${altPct}%`, color: altPct >= 80 ? "text-green-600" : "text-yellow-600", knowledgeId: "alt-text" },
+                    { label: "Word Count", value: `${wordCount.toLocaleString()}`, color: wordCount < 300 ? "text-red-600" : wordCount < 800 ? "text-yellow-600" : "text-green-600", knowledgeId: "word-count" },
                   ]
                   return (
                     <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-11 gap-2">
@@ -295,7 +295,7 @@ export default function V4Page() {
                         <div key={m.label} className="rounded-lg border border-border/50 bg-card/50 px-2.5 py-2">
                           <div className="flex items-center gap-0.5 mb-0.5">
                             <p className="text-[8px] uppercase tracking-wider text-muted-foreground font-bold leading-tight truncate">{m.label}</p>
-                            <InfoTooltip content={m.tip} className="shrink-0 [&_svg]:h-2.5 [&_svg]:w-2.5" />
+                            <LearnMore term={m.knowledgeId} className="h-3 w-3 text-[7px]" />
                           </div>
                           <p className={`text-sm font-black ${m.color} truncate`}>{m.value}</p>
                         </div>

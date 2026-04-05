@@ -26,7 +26,6 @@ import {
     LayoutDashboard,
     AlertTriangle,
     Map,
-    Info,
     Code2,
     RefreshCw,
     Copy,
@@ -42,31 +41,7 @@ import { CrawlProgress } from "@/components/dashboard/crawl-progress"
 import { ProLockScreen } from "@/components/dashboard/pro-lock-screen"
 import { AuditPageHeader } from "@/components/dashboard/audit-page-header"
 import { validateAnalysisData } from "@/lib/data-validator"
-
-// Enhanced tooltip component with better visibility
-function InfoTooltip({ text, title }: { text: string; title?: string }) {
-    return (
-        <div className="group relative inline-flex">
-            <Info className="h-3.5 w-3.5 text-muted-foreground/60 hover:text-aeo cursor-help transition-colors" />
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 px-3 py-2 bg-popover border border-border rounded-lg text-xs shadow-2xl z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150 ring-1 ring-border/50">
-                {title && <p className="font-bold text-foreground mb-1">{title}</p>}
-                <p className="text-muted-foreground leading-relaxed">{text}</p>
-            </div>
-        </div>
-    )
-}
-
-// Simple tooltip component (kept for backward compatibility)
-function StatTooltip({ text }: { text: string }) {
-    return (
-        <div className="group relative inline-flex">
-            <Info className="h-3 w-3 text-muted-foreground/50 hover:text-muted-foreground cursor-help transition-colors" />
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 px-3 py-2 bg-popover border border-border rounded-lg text-xs text-muted-foreground shadow-2xl z-50 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150 leading-relaxed ring-1 ring-border/50">
-                {text}
-            </div>
-        </div>
-    )
-}
+import { LearnMore } from "@/components/ui/learn-more"
 
 // Schema Issue Component
 function SchemaIssueCard({ issue, index }: { issue: any; index: number }) {
@@ -565,15 +540,15 @@ export default function SiteAnalysis() {
                                             const httpsPct = pages.length > 0 ? Math.round((pages.filter((p: any) => p.isHttps).length / pages.length) * 100) : 0
                                             const schemaScore = ai?.schemaHealthAudit?.overallScore ?? 0
                                             const statCards = [
-                                                { label: "Pages Scanned", value: analysisData.pagesCrawled, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", tip: "Unique pages crawled during session." },
-                                                { label: "Domain Health", value: `${ai?.domainHealthScore ?? 0}%`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", tip: "Aggregate domain authority score." },
-                                                { label: "Brand Consistency", value: `${ai?.consistencyScore ?? 0}%`, color: "text-aeo", border: "border-aeo/30", bg: "bg-aeo/5", tip: "Brand cohesion across all crawled pages." },
-                                                { label: "Schema Coverage", value: `${ai?.authorityMetrics?.schemaCoverage ?? 0}%`, color: "text-seo", border: "border-seo/30", bg: "bg-seo/5", tip: "Percentage of pages with structured data present." },
-                                                { label: "Schema Quality", value: `${schemaScore}%`, color: schemaScore >= 70 ? "text-geo" : schemaScore >= 40 ? "text-yellow-600" : "text-destructive", border: schemaScore >= 70 ? "border-geo/30" : schemaScore >= 40 ? "border-yellow-500/30" : "border-destructive/30", bg: schemaScore >= 70 ? "bg-geo/5" : schemaScore >= 40 ? "bg-yellow-500/5" : "bg-destructive/5", tip: "Quality and completeness of structured data implementation." },
-                                                { label: "Metadata Health", value: `${ai?.authorityMetrics?.metadataOptimization ?? 0}%`, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", tip: "Description and Title tag completeness." },
-                                                { label: "H1 Coverage", value: `${h1Pct}%`, color: h1Pct >= 90 ? "text-geo" : "text-destructive", border: h1Pct >= 90 ? "border-geo/20" : "border-destructive/20", bg: h1Pct >= 90 ? "bg-geo/5" : "bg-destructive/5", tip: "Percentage of pages with a valid H1 tag." },
-                                                { label: "HTTPS", value: `${httpsPct}%`, color: httpsPct === 100 ? "text-geo" : "text-destructive", border: httpsPct === 100 ? "border-geo/20" : "border-destructive/20", bg: httpsPct === 100 ? "bg-geo/5" : "bg-destructive/5", tip: "Security coverage across domain." },
-                                                { label: "Avg Response", value: `${Math.round(analysisData.avgResponseTime ?? 0)}ms`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", tip: "Avg response time across all pages." },
+                                                { label: "Pages Scanned", value: analysisData.pagesCrawled, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", knowledgeId: "" },
+                                                { label: "Domain Health", value: `${ai?.domainHealthScore ?? 0}%`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", knowledgeId: "domain-health" },
+                                                { label: "Brand Consistency", value: `${ai?.consistencyScore ?? 0}%`, color: "text-aeo", border: "border-aeo/30", bg: "bg-aeo/5", knowledgeId: "brand-visibility" },
+                                                { label: "Schema Coverage", value: `${ai?.authorityMetrics?.schemaCoverage ?? 0}%`, color: "text-seo", border: "border-seo/30", bg: "bg-seo/5", knowledgeId: "schema-markup" },
+                                                { label: "Schema Quality", value: `${schemaScore}%`, color: schemaScore >= 70 ? "text-geo" : schemaScore >= 40 ? "text-yellow-600" : "text-destructive", border: schemaScore >= 70 ? "border-geo/30" : schemaScore >= 40 ? "border-yellow-500/30" : "border-destructive/30", bg: schemaScore >= 70 ? "bg-geo/5" : schemaScore >= 40 ? "bg-yellow-500/5" : "bg-destructive/5", knowledgeId: "schema-quality" },
+                                                { label: "Metadata Health", value: `${ai?.authorityMetrics?.metadataOptimization ?? 0}%`, color: "text-foreground", border: "border-border/50", bg: "bg-muted/30", knowledgeId: "metadata" },
+                                                { label: "H1 Coverage", value: `${h1Pct}%`, color: h1Pct >= 90 ? "text-geo" : "text-destructive", border: h1Pct >= 90 ? "border-geo/20" : "border-destructive/20", bg: h1Pct >= 90 ? "bg-geo/5" : "bg-destructive/5", knowledgeId: "h1-tag" },
+                                                { label: "HTTPS", value: `${httpsPct}%`, color: httpsPct === 100 ? "text-geo" : "text-destructive", border: httpsPct === 100 ? "border-geo/20" : "border-destructive/20", bg: httpsPct === 100 ? "bg-geo/5" : "bg-destructive/5", knowledgeId: "https" },
+                                                { label: "Avg Response", value: `${Math.round(analysisData.avgResponseTime ?? 0)}ms`, color: "text-geo", border: "border-geo/30", bg: "bg-geo/5", knowledgeId: "response-time" },
                                             ]
                                             return (
                                                 <div className="space-y-6">
@@ -583,7 +558,7 @@ export default function SiteAnalysis() {
                                                                 <CardHeader className="pb-3 pt-4 px-4 flex-1 flex flex-col justify-between">
                                                                     <CardDescription className="text-[10px] font-bold uppercase tracking-tighter leading-tight flex items-center gap-1 h-8 mb-1">
                                                                         <span className="line-clamp-2">{stat.label}</span>
-                                                                        <StatTooltip text={stat.tip} />
+                                                                        {stat.knowledgeId && <LearnMore term={stat.knowledgeId} className="h-3 w-3 text-[7px]" />}
                                                                     </CardDescription>
                                                                     <CardTitle className={cn("text-2xl font-black leading-none", stat.color)}>{stat.value}</CardTitle>
                                                                 </CardHeader>
@@ -786,10 +761,7 @@ export default function SiteAnalysis() {
                                                 <CardTitle className="flex items-center gap-2 text-geo">
                                                     <ShieldCheck className="h-5 w-5" />
                                                     Domain Health Breakdown
-                                                    <InfoTooltip 
-                                                        title="What is Domain Health?"
-                                                        text="Aggregate score measuring overall site quality across 5 key areas: content depth, schema implementation, metadata optimization, technical performance, and site architecture. This is the foundation of your SEO authority."
-                                                    />
+                                                    <LearnMore term="domain-health" />
                                                     <Badge className="ml-auto bg-geo/10 text-geo border-geo/30 text-xs font-black">{ai?.domainHealthScore ?? "–"} / 100</Badge>
                                                 </CardTitle>
                                                 <CardDescription>Detailed breakdown of what's affecting your domain authority score</CardDescription>
@@ -799,23 +771,23 @@ export default function SiteAnalysis() {
                                                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3 pb-4 border-b border-border/50">
                                                     <div className="text-center">
                                                         <p className="text-2xl font-black text-geo">{ai?.domainHealthBreakdown?.contentQuality ?? 0}</p>
-                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Content</p>
+                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold flex items-center justify-center gap-0.5">Content <LearnMore term="content-quality" className="h-3 w-3 text-[7px]" /></p>
                                                     </div>
                                                     <div className="text-center">
                                                         <p className="text-2xl font-black text-seo">{ai?.domainHealthBreakdown?.schemaQuality ?? 0}</p>
-                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Schema</p>
+                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold flex items-center justify-center gap-0.5">Schema <LearnMore term="schema-quality" className="h-3 w-3 text-[7px]" /></p>
                                                     </div>
                                                     <div className="text-center">
                                                         <p className="text-2xl font-black text-aeo">{ai?.domainHealthBreakdown?.metadataQuality ?? 0}</p>
-                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Metadata</p>
+                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold flex items-center justify-center gap-0.5">Metadata <LearnMore term="metadata" className="h-3 w-3 text-[7px]" /></p>
                                                     </div>
                                                     <div className="text-center">
                                                         <p className="text-2xl font-black text-[#BC13FE]">{ai?.domainHealthBreakdown?.technicalHealth ?? 0}</p>
-                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Technical</p>
+                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold flex items-center justify-center gap-0.5">Technical <LearnMore term="core-web-vitals" className="h-3 w-3 text-[7px]" /></p>
                                                     </div>
                                                     <div className="text-center">
                                                         <p className="text-2xl font-black text-blue-500">{ai?.domainHealthBreakdown?.architectureHealth ?? 0}</p>
-                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Architecture</p>
+                                                        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold flex items-center justify-center gap-0.5">Architecture <LearnMore term="semantic-html" className="h-3 w-3 text-[7px]" /></p>
                                                     </div>
                                                 </div>
                                                 
@@ -940,10 +912,7 @@ export default function SiteAnalysis() {
                                                         <div className="flex items-center gap-2">
                                                             <Code2 className="h-5 w-5 text-seo" />
                                                             <CardTitle className="text-seo">Schema Health Audit</CardTitle>
-                                                            <InfoTooltip 
-                                                                title="What is Schema Health?"
-                                                                text="Schema markup (JSON-LD) helps search engines understand your content. This score measures completeness, correctness, and quality of your structured data implementation. Higher scores improve rich result eligibility and AI citation likelihood."
-                                                            />
+                                                            <LearnMore term="schema-quality" />
                                                             <Badge className="bg-seo/10 text-seo border-seo/30 text-xs font-black">
                                                                 {ai.schemaHealthAudit.overallScore ?? ai.authorityMetrics?.schemaCoverage ?? 0} / 100
                                                             </Badge>
@@ -1000,21 +969,21 @@ export default function SiteAnalysis() {
                                                         <div className="text-center">
                                                             <div className="flex items-center justify-center gap-1 mb-1">
                                                                 <p className="text-[10px] font-bold uppercase text-muted-foreground">Coverage</p>
-                                                                <InfoTooltip text="Percentage of pages with schema markup present. Higher coverage = more pages eligible for rich results." />
+                                                                <LearnMore term="schema-markup" className="h-3 w-3 text-[7px]" />
                                                             </div>
                                                             <p className="text-lg font-black text-seo">{ai.schemaHealthAudit.breakdown?.coverage ?? 0}%</p>
                                                         </div>
                                                         <div className="text-center border-l border-border/40">
                                                             <div className="flex items-center justify-center gap-1 mb-1">
                                                                 <p className="text-[10px] font-bold uppercase text-muted-foreground">Quality</p>
-                                                                <InfoTooltip text="Completeness and correctness of schema implementation. Checks for required properties, placeholder data, and validation errors." />
+                                                                <LearnMore term="schema-quality" className="h-3 w-3 text-[7px]" />
                                                             </div>
                                                             <p className="text-lg font-black text-seo">{ai.schemaHealthAudit.breakdown?.quality ?? 0}%</p>
                                                         </div>
                                                         <div className="text-center border-l border-border/40">
                                                             <div className="flex items-center justify-center gap-1 mb-1">
                                                                 <p className="text-[10px] font-bold uppercase text-muted-foreground">Diversity</p>
-                                                                <InfoTooltip text="Variety of schema types used (Organization, FAQPage, HowTo, etc.). More types = better coverage of different content types." />
+                                                                <LearnMore term="schema-markup" className="h-3 w-3 text-[7px]" />
                                                             </div>
                                                             <p className="text-lg font-black text-seo">{ai.schemaHealthAudit.breakdown?.diversity ?? 0}%</p>
                                                         </div>
@@ -1143,10 +1112,7 @@ export default function SiteAnalysis() {
                                                         <div className="flex items-center gap-2">
                                                             <Sparkles className="h-5 w-5 text-aeo" />
                                                             <CardTitle className="text-aeo">Brand Consistency Audit</CardTitle>
-                                                            <InfoTooltip 
-                                                                title="What is Brand Consistency?"
-                                                                text="Measures how consistently your brand identity appears across all pages. Includes schema names (40%), title terms (30%), and description consistency (30%). Higher scores improve brand recognition and search engine trust."
-                                                            />
+                                                            <LearnMore term="brand-visibility" />
                                                             <Badge className="bg-aeo/10 text-aeo border-aeo/30 text-xs font-black">
                                                                 {ai.consistencyScore ?? 0} / 100
                                                             </Badge>
@@ -1190,21 +1156,21 @@ export default function SiteAnalysis() {
                                                         <div className="text-center">
                                                             <div className="flex items-center justify-center gap-1 mb-1">
                                                                 <p className="text-[10px] font-bold uppercase text-muted-foreground">Schema Names</p>
-                                                                <InfoTooltip text="Consistency of brand names in Organization/LocalBusiness schema across all pages. 100% = same name everywhere." />
+                                                                <LearnMore term="schema-markup" className="h-3 w-3 text-[7px]" />
                                                             </div>
                                                             <p className="text-lg font-black text-aeo">{ai.brandConsistencyBreakdown.schemaNameConsistency.score}%</p>
                                                         </div>
                                                         <div className="text-center border-l border-border/40">
                                                             <div className="flex items-center justify-center gap-1 mb-1">
                                                                 <p className="text-[10px] font-bold uppercase text-muted-foreground">Title Terms</p>
-                                                                <InfoTooltip text="Common brand terms appearing in 50%+ of page titles. More consistent terms = stronger brand recognition." />
+                                                                <LearnMore term="title-tag" className="h-3 w-3 text-[7px]" />
                                                             </div>
                                                             <p className="text-lg font-black text-aeo">{ai.brandConsistencyBreakdown.titleConsistency.score}%</p>
                                                         </div>
                                                         <div className="text-center border-l border-border/40">
                                                             <div className="flex items-center justify-center gap-1 mb-1">
                                                                 <p className="text-[10px] font-bold uppercase text-muted-foreground">Descriptions</p>
-                                                                <InfoTooltip text="Consistency of meta description lengths across pages. Lower variance = more professional appearance in search results." />
+                                                                <LearnMore term="meta-description" className="h-3 w-3 text-[7px]" />
                                                             </div>
                                                             <p className="text-lg font-black text-aeo">{ai.brandConsistencyBreakdown.descriptionConsistency.score}%</p>
                                                         </div>
@@ -1357,6 +1323,7 @@ export default function SiteAnalysis() {
                                                     <CardTitle className="flex items-center gap-2">
                                                         <FileText className="h-5 w-5 text-aeo" />
                                                         Content Gap Analysis
+                                                        <LearnMore term="competitive-gap" />
                                                     </CardTitle>
                                                     <CardDescription>Missing pages that are weakening your domain authority</CardDescription>
                                                 </CardHeader>
@@ -1401,6 +1368,7 @@ export default function SiteAnalysis() {
                                                     <CardTitle className="flex items-center gap-2 text-destructive">
                                                         <AlertTriangle className="h-5 w-5" />
                                                         Keyword Cannibalization Risks
+                                                        <LearnMore term="duplicate-content" />
                                                     </CardTitle>
                                                     <CardDescription>Pages competing against each other for the same topic</CardDescription>
                                                 </CardHeader>
@@ -1440,6 +1408,7 @@ export default function SiteAnalysis() {
                                                         <CardTitle className="flex items-center gap-2">
                                                             <Link2 className="h-5 w-5 text-seo" />
                                                             Internal Link Leaders
+                                                            <LearnMore term="internal-linking" />
                                                         </CardTitle>
                                                         <CardDescription>Pages receiving the most internal equity</CardDescription>
                                                     </CardHeader>
@@ -1487,6 +1456,7 @@ export default function SiteAnalysis() {
                                                     <CardTitle className="flex items-center gap-2">
                                                         <AlarmClock className="h-5 w-5 text-aeo" />
                                                         Page Speed Breakdown
+                                                        <LearnMore term="site-speed" />
                                                     </CardTitle>
                                                     <CardDescription>Response times across all crawled pages</CardDescription>
                                                 </CardHeader>
@@ -1774,10 +1744,7 @@ export default function SiteAnalysis() {
                                                     <CardTitle className="flex items-center gap-2 text-aeo">
                                                         <Sparkles className="h-5 w-5" />
                                                         AEO Citation Readiness Score
-                                                        <InfoTooltip 
-                                                            title="What is AEO?"
-                                                            text="Answer Engine Optimization - how ready your site is to be cited by AI assistants like ChatGPT, Perplexity, and Gemini. Measures presence of FAQ content, structured Q&A, expert signals, and clear topic focus."
-                                                        />
+                                                        <LearnMore term="aeo" />
                                                         <Badge className="ml-auto bg-aeo/10 text-aeo border-aeo/30 text-xs font-black">{ai.aeoReadiness.score} / 100</Badge>
                                                     </CardTitle>
                                                     <CardDescription>How ready this domain is to be cited by ChatGPT, Perplexity, and Gemini</CardDescription>

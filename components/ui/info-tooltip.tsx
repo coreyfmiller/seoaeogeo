@@ -1,4 +1,5 @@
-import { HelpCircle } from "lucide-react"
+"use client"
+
 import {
   Tooltip,
   TooltipContent,
@@ -16,10 +17,10 @@ export function InfoTooltip({ content, className }: InfoTooltipProps) {
       <TooltipTrigger asChild>
         <button
           type="button"
-          className={`inline-flex items-center justify-center rounded-full hover:bg-muted/50 transition-colors ${className || ''}`}
+          className={`inline-flex items-center justify-center h-4 w-4 rounded-full bg-[#00e5ff]/20 text-[#00e5ff] hover:bg-[#00e5ff]/30 text-[9px] font-black leading-none transition-colors shrink-0 ${className || ''}`}
           onClick={(e) => e.preventDefault()}
         >
-          <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+          ?
           <span className="sr-only">More information</span>
         </button>
       </TooltipTrigger>

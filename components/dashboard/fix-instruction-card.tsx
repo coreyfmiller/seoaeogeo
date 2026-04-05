@@ -17,6 +17,7 @@ import {
   Target
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { FormattedFixText } from "@/components/ui/formatted-fix-text"
 
 interface InstructionStep {
   step: number
@@ -258,7 +259,7 @@ export function FixInstructionCard({
                   </div>
                   <div className="flex-1">
                     <h5 className="font-bold text-sm mb-1">{step.title}</h5>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
+                    <FormattedFixText text={step.description} />
                     {step.code && (
                       <pre className="mt-2 p-3 bg-background/50 rounded-lg text-xs font-mono overflow-x-auto border border-border/50">
                         <code>{step.code}</code>

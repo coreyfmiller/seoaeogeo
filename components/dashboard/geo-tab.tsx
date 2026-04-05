@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { LearnMore } from "@/components/ui/learn-more"
+import { FormattedFixText } from "@/components/ui/formatted-fix-text"
 import { useState } from "react"
 
 interface EnhancedPenalty {
@@ -224,7 +225,7 @@ export function GEOTab({ data, hideScoreDeductions }: GEOTabProps) {
                                   )}
                                 </button>
                               </div>
-                              <p className="text-sm text-foreground leading-relaxed">{penalty.fix}</p>
+                              <FormattedFixText text={penalty.fix} />
                             </div>
                           </div>
                         )}
@@ -325,7 +326,7 @@ export function GEOTab({ data, hideScoreDeductions }: GEOTabProps) {
                                     )}
                                   </button>
                                 </div>
-                                <p className="text-sm text-foreground leading-relaxed">{penalty.fix}</p>
+                                <FormattedFixText text={penalty.fix} />
                               </div>
                             </div>
                           )}
@@ -359,17 +360,17 @@ export function GEOTab({ data, hideScoreDeductions }: GEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <ImageIcon className="h-5 w-5 text-geo" />
               Media Context & Brand Visibility
-              <LearnMore term="alt-text" />
+              <LearnMore term="brand-visibility" />
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="rounded-lg border border-geo/20 bg-geo/10 p-4">
-                <span className="text-sm font-medium text-muted-foreground">Total Brand Images</span>
+                <span className="text-sm font-medium text-muted-foreground flex items-center gap-1">Total Brand Images <LearnMore term="alt-text" className="h-3 w-3 text-[7px]" /></span>
                 <p className="mt-1 text-3xl font-bold font-mono">{struct?.media?.totalImages || 0}</p>
               </div>
               <div className="rounded-lg border border-geo/20 bg-geo/10 p-4">
-                <span className="text-sm font-medium text-muted-foreground">Images with AI Context</span>
+                <span className="text-sm font-medium text-muted-foreground flex items-center gap-1">Images with AI Context <LearnMore term="alt-text" className="h-3 w-3 text-[7px]" /></span>
                 <p className="mt-1 text-3xl font-bold font-mono text-geo">{struct?.media?.imagesWithAlt || 0}</p>
               </div>
               <div className="rounded-lg border border-geo/20 bg-geo/10 p-4">
@@ -389,7 +390,7 @@ export function GEOTab({ data, hideScoreDeductions }: GEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Sparkles className="h-5 w-5 text-geo" />
               LLM Context Clarity
-              <LearnMore term="geo" />
+              <LearnMore term="citation-likelihood" />
             </CardTitle>
           </CardHeader>
           <CardContent>

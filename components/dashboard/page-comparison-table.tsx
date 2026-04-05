@@ -21,6 +21,7 @@ import {
   Zap
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { FormattedFixText } from "@/components/ui/formatted-fix-text"
 
 interface PageIssue {
   type: string
@@ -391,11 +392,14 @@ export function PageComparisonTable({ pages, itemsPerPage = 10 }: PageComparison
                                       </Badge>
                                       <div className="flex-1 min-w-0">
                                         <p className="text-sm font-bold mb-1">{issue.type}</p>
-                                        <div className="flex items-start gap-2 p-2 rounded bg-background/50 border border-border/30">
-                                          <Zap className="h-3 w-3 text-[#00e5ff] shrink-0 mt-0.5" />
-                                          <p className="text-xs text-foreground/90 leading-relaxed">
-                                            <span className="font-semibold text-[#00e5ff]">Fix:</span> {issue.fix}
-                                          </p>
+                                        <div className="p-2.5 rounded-lg bg-background/50 border border-border/30">
+                                          <div className="flex items-start gap-2">
+                                            <Zap className="h-3.5 w-3.5 text-[#00e5ff] shrink-0 mt-0.5" />
+                                            <div className="flex-1 min-w-0">
+                                              <p className="text-[10px] font-bold uppercase tracking-wider text-[#00e5ff] mb-1.5">Fix</p>
+                                              <FormattedFixText text={issue.fix} size="text-xs" />
+                                            </div>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>

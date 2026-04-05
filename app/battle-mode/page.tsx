@@ -244,10 +244,10 @@ export default function BattleModeV3() {
                                     report += `  AEO:  ${siteALabel} ${c.aeo?.siteA ?? '?'} vs ${siteBLabel} ${c.aeo?.siteB ?? '?'}\n`
                                     report += `  GEO:  ${siteALabel} ${c.geo?.siteA ?? '?'} vs ${siteBLabel} ${c.geo?.siteB ?? '?'}\n`
                                     if (blA && blB) {
-                                        report += `  DA:   ${siteALabel} ${blA.metrics.domainAuthority} vs ${siteBLabel} ${blB.metrics.domainAuthority}\n`
+                                        report += `  Domain Authority: ${siteALabel} ${blA.metrics.domainAuthority} vs ${siteBLabel} ${blB.metrics.domainAuthority}\n`
                                         report += `\nBACKLINK PROFILE:\n`
-                                        report += `  ${siteALabel}: ${blA.metrics.totalBacklinks.toLocaleString()} backlinks, ${blA.metrics.linkingDomains.toLocaleString()} linking domains, DA ${blA.metrics.domainAuthority}\n`
-                                        report += `  ${siteBLabel}: ${blB.metrics.totalBacklinks.toLocaleString()} backlinks, ${blB.metrics.linkingDomains.toLocaleString()} linking domains, DA ${blB.metrics.domainAuthority}\n`
+                                        report += `  ${siteALabel}: ${blA.metrics.totalBacklinks.toLocaleString()} backlinks, ${blA.metrics.linkingDomains.toLocaleString()} linking domains, Domain Authority ${blA.metrics.domainAuthority}\n`
+                                        report += `  ${siteBLabel}: ${blB.metrics.totalBacklinks.toLocaleString()} backlinks, ${blB.metrics.linkingDomains.toLocaleString()} linking domains, Domain Authority ${blB.metrics.domainAuthority}\n`
                                     }
                                     if (comparisonData.winnerVerdict || c.winnerVerdict) report += `\nEXPERT VERDICT:\n${comparisonData.winnerVerdict || c.winnerVerdict}\n`
                                     const recs = comparisonData.recommendations || c.recommendations || []

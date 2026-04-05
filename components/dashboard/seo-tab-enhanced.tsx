@@ -19,6 +19,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { LearnMore } from "@/components/ui/learn-more"
+import { FormattedFixText } from "@/components/ui/formatted-fix-text"
 import { useState } from "react"
 
 interface EnhancedPenalty {
@@ -240,7 +241,7 @@ export function SEOTabEnhanced({ data, hideScoreDeductions }: SEOTabProps) {
                                   )}
                                 </button>
                               </div>
-                              <p className="text-sm text-foreground leading-relaxed">{penalty.fix}</p>
+                              <FormattedFixText text={penalty.fix} />
                             </div>
                           </div>
                         )}
@@ -346,7 +347,7 @@ export function SEOTabEnhanced({ data, hideScoreDeductions }: SEOTabProps) {
                                     )}
                                   </button>
                                 </div>
-                                <p className="text-sm text-foreground leading-relaxed">{penalty.fix}</p>
+                                <FormattedFixText text={penalty.fix} />
                               </div>
                             </div>
                           )}
@@ -374,6 +375,7 @@ export function SEOTabEnhanced({ data, hideScoreDeductions }: SEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Sparkles className="h-5 w-5 text-seo" />
               On-Page AI Audit
+              <LearnMore term="seo-score" />
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -403,6 +405,7 @@ export function SEOTabEnhanced({ data, hideScoreDeductions }: SEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Sparkles className="h-5 w-5 text-seo" />
               Keyword Opportunities
+              <LearnMore term="competitive-gap" />
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -438,6 +441,7 @@ export function SEOTabEnhanced({ data, hideScoreDeductions }: SEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Shield className="h-5 w-5 text-seo" />
               Technical Response Items
+              <LearnMore term="site-speed" />
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -489,7 +493,7 @@ export function SEOTabEnhanced({ data, hideScoreDeductions }: SEOTabProps) {
                 </span>
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-background/50">
-                <span className="text-sm font-medium text-muted-foreground">Headers</span>
+                <span className="text-sm font-medium text-muted-foreground">Headers <LearnMore term="heading-structure" /></span>
                 <span className="font-mono font-bold">{struct?.semanticTags?.headers || 0}</span>
               </div>
             </div>

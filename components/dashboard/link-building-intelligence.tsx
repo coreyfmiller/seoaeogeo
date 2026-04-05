@@ -56,9 +56,10 @@ export function LinkBuildingIntelligence({ metrics, backlinks }: LinkBuildingInt
               <div className="flex items-center gap-0.5 mb-0.5">
                 <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold truncate">{m.label}</p>
                 {m.label === 'Domain Authority' && <LearnMore term="domain-authority" />}
+                {m.label === 'Page Authority' && <LearnMore term="page-authority" />}
                 {m.label === 'Spam Score' && <LearnMore term="spam-score" />}
-                {m.label === 'Linking Domains' && <LearnMore term="backlinks" />}
-                {m.label === 'Total Backlinks' && <LearnMore term="backlinks" />}
+                {m.label === 'Linking Domains' && <LearnMore term="linking-domains" />}
+                {m.label === 'Total Backlinks' && <LearnMore term="total-backlinks" />}
               </div>
               <p className={cn("text-lg font-black", m.color)}>{m.value}</p>
             </div>
@@ -81,10 +82,10 @@ export function LinkBuildingIntelligence({ metrics, backlinks }: LinkBuildingInt
             {da >= 60 && "Strong domain authority. Maintain your edge."}
           </p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            {da < 20 && "With a DA of " + da + ", even great on-page optimization won't be enough to outrank competitors with stronger backlink profiles. The sites ranking above you likely have more high-quality links pointing to them. A deliberate link-building strategy is the single highest-ROI activity you can invest in right now."}
-            {da >= 20 && da < 40 && "A DA of " + da + " puts you in the average range. You're competitive for lower-difficulty keywords, but to rank for anything meaningful you need to actively earn quality backlinks. Consistent link building will push you ahead of competitors who aren't working on this."}
-            {da >= 40 && da < 60 && "A DA of " + da + " is strong. You're competitive for most keywords. Focus on earning links from high-DA sites in your industry to break into the top tier."}
-            {da >= 60 && "A DA of " + da + " puts you in the top tier. Focus on maintaining your backlink profile, earning links from authoritative sources, and disavowing any toxic links."}
+            {da < 20 && "With a Domain Authority of " + da + ", even great on-page optimization won't be enough to outrank competitors with stronger backlink profiles. The sites ranking above you likely have more high-quality links pointing to them. A deliberate link-building strategy is the single highest-ROI activity you can invest in right now."}
+            {da >= 20 && da < 40 && "A Domain Authority of " + da + " puts you in the average range. You're competitive for lower-difficulty keywords, but to rank for anything meaningful you need to actively earn quality backlinks. Consistent link building will push you ahead of competitors who aren't working on this."}
+            {da >= 40 && da < 60 && "A Domain Authority of " + da + " is strong. You're competitive for most keywords. Focus on earning links from high-authority sites in your industry to break into the top tier."}
+            {da >= 60 && "A Domain Authority of " + da + " puts you in the top tier. Focus on maintaining your backlink profile, earning links from authoritative sources, and disavowing any toxic links."}
           </p>
         </div>
 
@@ -114,16 +115,17 @@ export function LinkBuildingIntelligence({ metrics, backlinks }: LinkBuildingInt
               <div className="flex items-center gap-2">
                 <ExternalLink className="h-5 w-5 text-green-500" />
                 <h3 className="text-base font-black">Top {backlinks.length} Referring Domains</h3>
+                <LearnMore term="top-referring-domains" />
                 <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-green-500/30 text-green-500 bg-green-500/10">MOZ</Badge>
               </div>
               <p className="text-sm text-muted-foreground mt-1">The highest-authority domains linking to your site</p>
             </div>
             <div className="px-5 py-3 space-y-2">
               <div className="flex items-center gap-3 text-xs text-muted-foreground uppercase font-bold pb-2 border-b border-border/30">
-                <span className="w-10">DA</span>
+                <span className="w-10 flex items-center gap-0.5">DA <LearnMore term="domain-authority" className="h-3 w-3 text-[7px]" /></span>
                 <span className="flex-1">Linking Domain</span>
-                <span className="w-32 text-right">Anchor Text</span>
-                <span className="w-16 text-right">Type</span>
+                <span className="w-32 text-right flex items-center justify-end gap-0.5">Anchor Text <LearnMore term="anchor-text" className="h-3 w-3 text-[7px]" /></span>
+                <span className="w-16 text-right flex items-center justify-end gap-0.5">Type <LearnMore term="nofollow-dofollow" className="h-3 w-3 text-[7px]" /></span>
               </div>
               {backlinks.map((bl, i) => (
                 <div key={i} className="flex items-center gap-3 text-sm border-b border-border/10 pb-2 last:border-0">

@@ -106,11 +106,11 @@ function generateInsights(userSite: ArenaSite, allSites: ArenaSite[], avg: Arena
     const compDA = competitorDA.domainAuthority
     const gap = compDA - userDA
     if (gap > 20) {
-      insights.push({ type: 'gap', metric: 'Domain Authority', detail: `Your DA is ${userDA} — top competitor has ${compDA}. This ${gap}-point gap is the biggest factor holding you back in rankings.`, severity: 'critical' })
+      insights.push({ type: 'gap', metric: 'Domain Authority', detail: `Your Domain Authority is ${userDA} — top competitor has ${compDA}. This ${gap}-point gap is the biggest factor holding you back in rankings.`, severity: 'critical' })
     } else if (gap > 5) {
-      insights.push({ type: 'gap', metric: 'Domain Authority', detail: `Your DA (${userDA}) is ${gap} points behind the top competitor (${compDA}). Targeted link building can close this gap.`, severity: 'warning' })
+      insights.push({ type: 'gap', metric: 'Domain Authority', detail: `Your Domain Authority (${userDA}) is ${gap} points behind the top competitor (${compDA}). Targeted link building can close this gap.`, severity: 'warning' })
     } else if (gap <= 0) {
-      insights.push({ type: 'strength', metric: 'Domain Authority', detail: `Your DA (${userDA}) is competitive with or ahead of the top competitor (${compDA}).`, severity: 'good' })
+      insights.push({ type: 'strength', metric: 'Domain Authority', detail: `Your Domain Authority (${userDA}) is competitive with or ahead of the top competitor (${compDA}).`, severity: 'good' })
     }
   }
 
@@ -727,14 +727,14 @@ export default function KeywordArenaV3Page() {
                     {/* Rank comparison boxes */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
                       <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 text-center">
-                        <p className="text-xs text-white/60 uppercase font-bold tracking-widest mb-1">Google Rank <LearnMore term="google-rank-vs-ai-rank" /></p>
+                        <p className="text-[10px] text-white/60 uppercase font-bold tracking-wider mb-1 leading-tight">Google Rank <LearnMore term="google-rank-vs-ai-rank" /></p>
                         <p className="text-3xl font-black text-white tabular-nums">
                           {userSite.googleRank ? `#${userSite.googleRank}` : '—'}
                         </p>
                         <p className="text-xs text-white/50 mt-1">{userSite.googleRank ? 'In search results' : 'Not ranked'}</p>
                       </div>
                       <div className="rounded-xl border border-[#00e5ff]/30 bg-[#00e5ff]/[0.05] p-4 text-center">
-                        <p className="text-xs text-[#00e5ff]/80 uppercase font-bold tracking-widest mb-1">AI Rank <LearnMore term="google-rank-vs-ai-rank" /></p>
+                        <p className="text-[10px] text-[#00e5ff]/80 uppercase font-bold tracking-wider mb-1 leading-tight">AI Rank <LearnMore term="google-rank-vs-ai-rank" /></p>
                         <p className="text-3xl font-black text-[#00e5ff] tabular-nums">
                           #{arenaResult.userSiteRank}
                         </p>
@@ -748,7 +748,7 @@ export default function KeywordArenaV3Page() {
                               ? "border-red-500/30 bg-red-500/[0.05]"
                               : "border-yellow-500/30 bg-yellow-500/[0.05]"
                         )}>
-                          <p className="text-xs text-white/60 uppercase font-bold tracking-widest mb-1">Delta <LearnMore term="google-rank-vs-ai-rank" /></p>
+                          <p className="text-[10px] text-white/60 uppercase font-bold tracking-wider mb-1 leading-tight">Delta <LearnMore term="google-rank-vs-ai-rank" /></p>
                           {arenaResult.userSiteRank < userSite.googleRank ? (
                             <>
                               <div className="flex items-center justify-center gap-1">
@@ -775,7 +775,7 @@ export default function KeywordArenaV3Page() {
                       )}
                       {arenaResult.backlinkData?.metrics?.domainAuthority != null && (
                         <div className="rounded-xl border border-green-500/30 bg-green-500/[0.05] p-4 text-center">
-                          <p className="text-xs text-green-400/80 uppercase font-bold tracking-widest mb-1">Your DA <LearnMore term="domain-authority" /></p>
+                          <p className="text-[10px] text-green-400/80 uppercase font-bold tracking-wider mb-1 leading-tight">Your Domain Authority <LearnMore term="domain-authority" /></p>
                           <p className={cn("text-3xl font-black tabular-nums",
                             arenaResult.backlinkData.metrics.domainAuthority >= 40 ? "text-green-400" :
                             arenaResult.backlinkData.metrics.domainAuthority >= 20 ? "text-yellow-400" : "text-red-400"
@@ -787,7 +787,7 @@ export default function KeywordArenaV3Page() {
                       )}
                       {arenaResult.competitorDA?.domainAuthority != null && (
                         <div className="rounded-xl border border-[#fe3f8c]/30 bg-[#fe3f8c]/[0.05] p-4 text-center">
-                          <p className="text-xs text-[#fe3f8c]/80 uppercase font-bold tracking-widest mb-1">{arenaResult.userSiteRank === 1 ? '#2' : '#1'} DA <LearnMore term="domain-authority" /></p>
+                          <p className="text-[10px] text-[#fe3f8c]/80 uppercase font-bold tracking-wider mb-1 leading-tight">{arenaResult.userSiteRank === 1 ? '#2' : '#1'} Domain Authority <LearnMore term="domain-authority" /></p>
                           <p className={cn("text-3xl font-black tabular-nums",
                             arenaResult.competitorDA.domainAuthority >= 40 ? "text-green-400" :
                             arenaResult.competitorDA.domainAuthority >= 20 ? "text-yellow-400" : "text-red-400"
@@ -897,8 +897,8 @@ export default function KeywordArenaV3Page() {
                   <span className="font-bold">Seeing a mismatch with what you see on Google?</span>{' '}
                   Google personalizes results for every user based on location, search history, device, and account activity.
                   Duelly checks rankings from a neutral, standardized perspective — like a fresh browser with no history.
-                  This gives you a consistent benchmark for comparing competitors on a level playing field.{' '}
-                  <LearnMore term="google-rank-vs-ai-rank" inline label="Why this happens" />
+                  This gives you a consistent benchmark for comparing competitors on a level playing field.
+                  <LearnMore term="google-rank-vs-ai-rank" />
                 </p>
               </div>
 
@@ -1068,25 +1068,18 @@ export default function KeywordArenaV3Page() {
                         <AlertTriangle className="h-4 w-4 text-red-400" /> Competitive Gaps
                       </h3>
                       <div className="space-y-2">
-                        {gaps.map((gap, i) => (
-                          <div key={i} className={cn("rounded-lg p-3 border", gap.severity === 'critical' ? "border-red-500/30 bg-red-500/10" : "border-yellow-500/30 bg-yellow-500/10")}>
-                            <p className={cn("text-xs font-bold", gap.severity === 'critical' ? "text-red-400" : "text-yellow-400")}>
+                        {gaps.map((gap, i) => {
+                          const term = gap.metric === 'Domain Authority' ? 'domain-authority' : (gap.metric === 'Schema Markup' || gap.metric === 'Schema Quality') ? 'schema-markup' : gap.metric === 'Content Depth' ? 'content-depth' : gap.metric === 'Site Speed' ? 'site-speed' : gap.metric === 'Image Alt Text' ? 'alt-text' : gap.metric === 'AEO Score' ? 'aeo' : gap.metric === 'GEO Score' ? 'geo' : gap.metric === 'Heading Structure' ? 'heading-structure' : gap.metric === 'HTTPS Security' ? 'https' : gap.metric === 'Social Sharing' ? 'open-graph' : gap.metric === 'SEO Score' ? 'competitive-gap' : null
+                          return (
+                          <div key={i} className={cn("rounded-lg p-3 border relative", gap.severity === 'critical' ? "border-red-500/30 bg-red-500/10" : "border-yellow-500/30 bg-yellow-500/10")}>
+                            <p className={cn("text-xs font-bold flex items-center gap-1", gap.severity === 'critical' ? "text-red-400" : "text-yellow-400")}>
                               {gap.metric}
-                              {gap.metric === 'Domain Authority' && <> <LearnMore term="domain-authority" inline /></>}
-                              {(gap.metric === 'Schema Markup' || gap.metric === 'Schema Quality') && <> <LearnMore term="schema-markup" inline /></>}
-                              {gap.metric === 'Content Depth' && <> <LearnMore term="content-depth" inline /></>}
-                              {gap.metric === 'Site Speed' && <> <LearnMore term="site-speed" inline /></>}
-                              {gap.metric === 'Image Alt Text' && <> <LearnMore term="alt-text" inline /></>}
-                              {gap.metric === 'AEO Score' && <> <LearnMore term="aeo" inline /></>}
-                              {gap.metric === 'GEO Score' && <> <LearnMore term="geo" inline /></>}
-                              {gap.metric === 'Heading Structure' && <> <LearnMore term="heading-structure" inline /></>}
-                              {gap.metric === 'HTTPS Security' && <> <LearnMore term="https" inline /></>}
-                              {gap.metric === 'Social Sharing' && <> <LearnMore term="open-graph" inline /></>}
-                              {gap.metric === 'SEO Score' && <> <LearnMore term="competitive-gap" inline /></>}
+                              {term && <LearnMore term={term} />}
                             </p>
                             <p className="text-[11px] text-white/60 mt-0.5">{gap.detail}</p>
                           </div>
-                        ))}
+                          )
+                        })}
                       </div>
                     </div>
                   )}
@@ -1096,25 +1089,18 @@ export default function KeywordArenaV3Page() {
                         <CheckCircle2 className="h-4 w-4 text-green-400" /> Your Strengths
                       </h3>
                       <div className="space-y-2">
-                        {strengths.map((s, i) => (
+                        {strengths.map((s, i) => {
+                          const term = s.metric === 'Domain Authority' ? 'domain-authority' : (s.metric === 'Schema Markup' || s.metric === 'Schema Quality') ? 'schema-markup' : s.metric === 'Content Depth' ? 'content-depth' : s.metric === 'Site Speed' ? 'site-speed' : s.metric === 'Image Alt Text' ? 'alt-text' : s.metric === 'AEO Score' ? 'aeo' : s.metric === 'GEO Score' ? 'geo' : s.metric === 'Heading Structure' ? 'heading-structure' : s.metric === 'HTTPS Security' ? 'https' : s.metric === 'Social Sharing' ? 'open-graph' : s.metric === 'SEO Score' ? 'competitive-gap' : null
+                          return (
                           <div key={i} className="rounded-lg p-3 border border-green-500/30 bg-green-500/10">
-                            <p className="text-xs font-bold text-green-400">
+                            <p className="text-xs font-bold text-green-400 flex items-center gap-1">
                               {s.metric}
-                              {s.metric === 'Domain Authority' && <> <LearnMore term="domain-authority" inline /></>}
-                              {(s.metric === 'Schema Markup' || s.metric === 'Schema Quality') && <> <LearnMore term="schema-markup" inline /></>}
-                              {s.metric === 'Content Depth' && <> <LearnMore term="content-depth" inline /></>}
-                              {s.metric === 'Site Speed' && <> <LearnMore term="site-speed" inline /></>}
-                              {s.metric === 'Image Alt Text' && <> <LearnMore term="alt-text" inline /></>}
-                              {s.metric === 'AEO Score' && <> <LearnMore term="aeo" inline /></>}
-                              {s.metric === 'GEO Score' && <> <LearnMore term="geo" inline /></>}
-                              {s.metric === 'Heading Structure' && <> <LearnMore term="heading-structure" inline /></>}
-                              {s.metric === 'HTTPS Security' && <> <LearnMore term="https" inline /></>}
-                              {s.metric === 'Social Sharing' && <> <LearnMore term="open-graph" inline /></>}
-                              {s.metric === 'SEO Score' && <> <LearnMore term="competitive-gap" inline /></>}
+                              {term && <LearnMore term={term} />}
                             </p>
                             <p className="text-[11px] text-white/60 mt-0.5">{s.detail}</p>
                           </div>
-                        ))}
+                          )
+                        })}
                       </div>
                     </div>
                   )}

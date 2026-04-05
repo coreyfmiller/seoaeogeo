@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { LearnMore } from "@/components/ui/learn-more"
+import { FormattedFixText } from "@/components/ui/formatted-fix-text"
 import { useState } from "react"
 
 interface EnhancedPenalty {
@@ -224,7 +225,7 @@ export function AEOTab({ data, hideScoreDeductions }: AEOTabProps) {
                                   )}
                                 </button>
                               </div>
-                              <p className="text-sm text-foreground leading-relaxed">{penalty.fix}</p>
+                              <FormattedFixText text={penalty.fix} />
                             </div>
                           </div>
                         )}
@@ -325,7 +326,7 @@ export function AEOTab({ data, hideScoreDeductions }: AEOTabProps) {
                                     )}
                                   </button>
                                 </div>
-                                <p className="text-sm text-foreground leading-relaxed">{penalty.fix}</p>
+                                <FormattedFixText text={penalty.fix} />
                               </div>
                             </div>
                           )}
@@ -470,16 +471,16 @@ export function AEOTab({ data, hideScoreDeductions }: AEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Code2 className="h-5 w-5 text-aeo" />
               Content QA Depth
-              <LearnMore term="aeo" />
+              <LearnMore term="question-answering" />
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 py-4">
             <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-background/50">
-              <span className="text-sm font-medium text-muted-foreground">Conversational Headers</span>
+              <span className="text-sm font-medium text-muted-foreground">Conversational Headers <LearnMore term="conversational-headers" /></span>
               <span className="font-mono font-bold text-aeo">{struct?.semanticTags?.headers || 0}</span>
             </div>
             <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-background/50">
-              <span className="text-sm font-medium text-muted-foreground">Total Answer Corpus</span>
+              <span className="text-sm font-medium text-muted-foreground">Total Answer Corpus <LearnMore term="content-depth" /></span>
               <span className="font-mono font-bold">{struct?.wordCount || 0} words</span>
             </div>
             <p className="mt-2 text-sm text-muted-foreground text-center">

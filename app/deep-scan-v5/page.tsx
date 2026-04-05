@@ -11,7 +11,6 @@ import { ExpertAnalysis } from '@/components/dashboard/expert-analysis'
 import { CrawlConfig } from '@/components/dashboard/crawl-config'
 import { PageComparisonTable } from '@/components/dashboard/page-comparison-table'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
-import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { LearnMore } from '@/components/ui/learn-more'
 import { Badge } from '@/components/ui/badge'
 import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
@@ -580,16 +579,16 @@ export default function DeepV3Page() {
                   const pctColor = (v: number) => v >= 75 ? "text-green-500" : v >= 50 ? "text-yellow-500" : "text-red-500"
                   const respColor = (ms: number) => ms <= 300 ? "text-green-500" : ms <= 600 ? "text-yellow-500" : "text-red-500"
                   const metrics = [
-                    { label: "Domain Health", value: `${ai?.domainHealthScore ?? '–'}%`, color: pctColor(ai?.domainHealthScore ?? 0), tip: "AI-powered aggregate domain quality score combining content quality, schema implementation, metadata completeness, technical performance, and site architecture across all crawled pages. This is the single most important metric for understanding your site's overall health." },
-                    { label: "Brand", value: `${ai?.consistencyScore ?? '–'}%`, color: pctColor(ai?.consistencyScore ?? 0), tip: "Brand consistency across all crawled pages — measures uniform tone, messaging, visual identity signals, and content voice. Inconsistent branding confuses both users and AI engines, reducing citation likelihood and trust." },
-                    { label: "Schema", value: `${ai?.authorityMetrics?.schemaCoverage ?? '–'}%`, color: pctColor(ai?.authorityMetrics?.schemaCoverage ?? 0), tip: "Percentage of crawled pages with valid structured data (JSON-LD). Schema markup enables rich snippets in search results and helps AI engines understand your content. Low coverage means missed opportunities for enhanced search visibility." },
-                    { label: "Metadata", value: `${metaPct}%`, color: pctColor(metaPct), tip: "Percentage of crawled pages with both a title tag and meta description. These control how your pages appear in search results. Pages without metadata get auto-generated snippets that rarely perform well." },
-                    { label: "H1 Tags", value: `${h1Pct}%`, color: pctColor(h1Pct), tip: "Percentage of crawled pages with an H1 heading tag. The H1 is the primary heading that tells search engines what each page is about. Every page should have exactly one — missing H1s confuse crawlers and hurt rankings." },
-                    { label: "HTTPS", value: `${httpsPct}%`, color: pctColor(httpsPct), tip: "Percentage of crawled pages served over HTTPS. Google uses HTTPS as a ranking signal and browsers show 'Not Secure' warnings for HTTP pages. Anything less than 100% is a critical security and SEO issue." },
-                    { label: "Response", value: `${result.aggregateMetrics.avgResponseTime}ms`, color: respColor(result.aggregateMetrics.avgResponseTime), tip: "Average server response time (TTFB) across all crawled pages. Under 300ms is good, under 600ms is acceptable, over 600ms needs attention. Slow response times compound across a site and hurt Core Web Vitals." },
-                    { label: "Robots.txt", value: result.robotsTxt ? "Found" : "Missing", color: result.robotsTxt ? "text-green-500" : "text-red-500", tip: "Whether a robots.txt file exists at the domain root. This file controls how search engine crawlers navigate your site — which pages to index and which to skip. Without it, crawlers may waste budget on unimportant pages." },
-                    { label: "Sitemap", value: result.sitemapFound ? "Found" : "Missing", color: result.sitemapFound ? "text-green-500" : "text-red-500", tip: "Whether an XML sitemap was found at the domain root. Sitemaps help search engines discover all your pages efficiently, especially new content or deeply nested pages that might not be found through internal links alone." },
-                    { label: "Alt Text", value: `${imgAltPct}%`, color: pctColor(imgAltPct), tip: "Percentage of images across all crawled pages with descriptive alt text. Alt text is critical for accessibility (screen readers rely on it) and image search rankings. Google Images drives significant traffic — missing alt text means lost opportunities." },
+                    { label: "Domain Health", value: `${ai?.domainHealthScore ?? '–'}%`, color: pctColor(ai?.domainHealthScore ?? 0), knowledgeId: "domain-health" },
+                    { label: "Brand", value: `${ai?.consistencyScore ?? '–'}%`, color: pctColor(ai?.consistencyScore ?? 0), knowledgeId: "brand-visibility" },
+                    { label: "Schema", value: `${ai?.authorityMetrics?.schemaCoverage ?? '–'}%`, color: pctColor(ai?.authorityMetrics?.schemaCoverage ?? 0), knowledgeId: "schema-markup" },
+                    { label: "Metadata", value: `${metaPct}%`, color: pctColor(metaPct), knowledgeId: "metadata" },
+                    { label: "H1 Tags", value: `${h1Pct}%`, color: pctColor(h1Pct), knowledgeId: "h1-tag" },
+                    { label: "HTTPS", value: `${httpsPct}%`, color: pctColor(httpsPct), knowledgeId: "https" },
+                    { label: "Response", value: `${result.aggregateMetrics.avgResponseTime}ms`, color: respColor(result.aggregateMetrics.avgResponseTime), knowledgeId: "response-time" },
+                    { label: "Robots.txt", value: result.robotsTxt ? "Found" : "Missing", color: result.robotsTxt ? "text-green-500" : "text-red-500", knowledgeId: "robots-txt" },
+                    { label: "Sitemap", value: result.sitemapFound ? "Found" : "Missing", color: result.sitemapFound ? "text-green-500" : "text-red-500", knowledgeId: "xml-sitemap" },
+                    { label: "Alt Text", value: `${imgAltPct}%`, color: pctColor(imgAltPct), knowledgeId: "alt-text" },
                   ]
                   return (
                     <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-10 gap-2">
@@ -597,7 +596,7 @@ export default function DeepV3Page() {
                         <div key={m.label} className="rounded-lg border border-border/50 bg-card/50 px-2.5 py-2">
                           <div className="flex items-center gap-0.5 mb-0.5">
                             <p className="text-[8px] uppercase tracking-wider text-muted-foreground font-bold leading-tight truncate">{m.label}</p>
-                            <InfoTooltip content={m.tip} className="shrink-0 [&_svg]:h-2.5 [&_svg]:w-2.5" />
+                            <LearnMore term={m.knowledgeId} className="h-3 w-3 text-[7px]" />
                           </div>
                           <p className={`text-sm font-black ${m.color} truncate`}>{m.value}</p>
                         </div>
