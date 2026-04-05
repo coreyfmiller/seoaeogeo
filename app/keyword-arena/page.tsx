@@ -301,7 +301,6 @@ export default function KeywordArenaV3Page() {
     if (!keyword.trim()) return
     setIsSearching(true)
     setSearchResults(null)
-    setArenaResult(null)
     setError(null)
     setUserSiteUrl("")
     setUserSiteConfirmed(false)
@@ -314,7 +313,10 @@ export default function KeywordArenaV3Page() {
         body: JSON.stringify({ keyword: keyword.trim(), count: resultCount }),
       })
       const data = await res.json()
-      if (data.success) setSearchResults(data.results)
+      if (data.success) {
+        setSearchResults(data.results)
+        setArenaResult(null) // Clear old arena results only after new search succeeds
+      }
       else setError(data.error || 'Search failed')
     } catch { setError('Connection failed') }
     finally { setIsSearching(false) }
@@ -520,7 +522,7 @@ export default function KeywordArenaV3Page() {
           )}
 
           {/* ── STEP 1: Keyword Search (hero version, only when no results) ── */}
-          {!searchResults && !arenaResult && !isAnalyzing && (
+          {!searchResults && !arenaResult && !isAnalyzing && !isSearching && (
             <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-xl p-8 sm:p-12 flex flex-col items-center relative overflow-hidden">
               <div className="absolute top-0 left-1/4 w-80 h-80 bg-[#00e5ff]/8 rounded-full blur-[120px] pointer-events-none" />
               <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-[#BC13FE]/8 rounded-full blur-[120px] pointer-events-none" />
