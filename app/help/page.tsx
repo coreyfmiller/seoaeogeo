@@ -81,7 +81,7 @@ const faqs: FAQItem[] = [
   {
     category: "Data & Privacy",
     question: "Where is my scan data stored?",
-    answer: "All scan history and results are stored locally in your browser's localStorage. Nothing is sent to or stored on our servers beyond the initial analysis. If you clear your browser data or switch devices, your history will be lost. Use the Export feature on the Dashboard to back up your data."
+    answer: "Scan results are stored in your Supabase account and retained for 1 year. After 12 months, scan data is automatically deleted. You'll see an 'expiring soon' notice on scans approaching their 1-year mark. Download PDF reports for any scans you want to keep permanently."
   },
   {
     category: "Data & Privacy",

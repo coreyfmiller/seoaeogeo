@@ -22,7 +22,6 @@ const tiers = [
     price: "$79.99",
     credits: 180,
     icon: Rocket,
-    retention: "1 Year",
     description: "Audit your homepage and top landing pages, scope out the competition, and see exactly what AI engines think of your site. Enough firepower to fix your core pages and start getting cited.",
     lineup: [
       "2 Pro Analyses — 20 Credits",
@@ -42,7 +41,6 @@ const tiers = [
     price: "$149.99",
     credits: 550,
     icon: Zap,
-    retention: "2 Years",
     description: "Go beyond the basics. Audit every service page, track your blog content, and run competitive intelligence across your market. Bonus credits give you room to dig deeper.",
     lineup: [
       "6 Pro Analyses — 60 Credits",
@@ -63,8 +61,7 @@ const tiers = [
     price: "$299.99",
     credits: 1450,
     icon: Crown,
-    retention: "3 Years",
-    description: "Built for consultants and agencies running audits across client portfolios. Best per-credit rate, white-label exports, priority processing, and 3 years of data retention.",
+    description: "Built for consultants and agencies running audits across client portfolios. Our best per-credit rate with the biggest bonus. Audit entire client sites without watching your balance.",
     lineup: [
       "25 Pro Analyses — 250 Credits",
       "25 Deep Scans (5-page) — 750 Credits",
@@ -76,11 +73,7 @@ const tiers = [
     bestFor: "SEO consultants and agencies managing multiple client sites.",
     cta: "Get the Agency Suite",
     popular: false,
-    premiumFeatures: [
-      "White-Label PDF Exports (your branding)",
-      "Priority Processing (skip the queue)",
-      "3-Year Data Retention",
-    ],
+    premiumFeatures: null,
   },
 ]
 
@@ -137,6 +130,7 @@ export default function PricingPage() {
               <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5"><Infinity className="h-4 w-4 text-[#00e5ff]" /> Credits never expire</span>
                 <span className="flex items-center gap-1.5"><Shield className="h-4 w-4 text-[#00e5ff]" /> One-time purchase</span>
+                <span className="flex items-center gap-1.5"><Clock className="h-4 w-4 text-[#00e5ff]" /> 1 year data retention</span>
               </div>
             </div>
 
@@ -162,10 +156,6 @@ export default function PricingPage() {
                     {tier.bonusNote && (
                       <p className="text-xs text-green-400 font-semibold mt-1">{tier.bonusNote}</p>
                     )}
-                    <div className="flex items-center justify-center gap-1 mt-1 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      {tier.retention} Data Retention
-                    </div>
                   </CardHeader>
                   <CardContent className="flex flex-col flex-1 space-y-4">
                     <p className="text-xs text-muted-foreground leading-relaxed">{tier.description}</p>
@@ -174,12 +164,6 @@ export default function PricingPage() {
                         <li key={item} className="flex items-start gap-2 text-sm">
                           <CheckCircle2 className="h-4 w-4 text-[#00e5ff] shrink-0 mt-0.5" />
                           {item}
-                        </li>
-                      ))}
-                      {tier.premiumFeatures && tier.premiumFeatures.map(pf => (
-                        <li key={pf} className="flex items-start gap-2 text-sm text-[#00e5ff]">
-                          <Crown className="h-4 w-4 text-[#00e5ff] shrink-0 mt-0.5" />
-                          {pf}
                         </li>
                       ))}
                     </ul>

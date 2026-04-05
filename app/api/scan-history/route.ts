@@ -44,7 +44,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to fetch history' }, { status: 500 })
   }
 
-  return NextResponse.json({ scans: data || [] })
+  // Flag scans expiring within 30 days (older than 11 months)
+  const elevenMonthsAgo = new Date()
+  elevenMonthsAgo.setMonth(elevenMonthsAgo.getMonth() - 11)
+  const scans = (data || []).map(scan => ({
+    ...scan,
+    expiringSoon: new Date(scan.created_at) < elevenMonthsAgo,
+  }))
+
+  return NextResponse.json({ scans })
 }
 
 /**
