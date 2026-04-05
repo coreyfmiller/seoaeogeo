@@ -6,6 +6,7 @@ import { analyzeWithGeminiSingle } from '@/lib/gemini'
 import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/lib/supabase/auth-helpers'
 import { saveScanToDb } from '@/lib/scan-history-db'
 import { generateAIExpertAnalysis } from '@/lib/gemini-expert-analysis'
+import { fetchBacklinksWithCache } from '@/lib/backlink-fetcher'
 
 export const maxDuration = 300
 
@@ -109,8 +110,39 @@ export async function POST(req: Request) {
       console.log(`[Arena V3] Skipping expert analysis: userSite=${!!userSite}, scores=${userSite?.scores?.seo}`)
     }
 
+    // Fetch backlink data for user's site only (single Moz API call)
+    let backlinkData: any = null
+    if (userSite && userSiteUrl) {
+      try {
+        const fullUrl = userSiteUrl.startsWith('http') ? userSiteUrl : `https://${userSiteUrl}`
+        const domain = new URL(fullUrl).hostname
+        const blData = await fetchBacklinksWithCache(domain, false)
+        if (blData) {
+          backlinkData = {
+            metrics: {
+              domain,
+              domainAuthority: blData.urlMetrics?.domain_authority ?? 0,
+              pageAuthority: blData.urlMetrics?.page_authority ?? 0,
+              linkingDomains: blData.urlMetrics?.linking_domains ?? 0,
+              totalBacklinks: blData.urlMetrics?.total_backlinks ?? 0,
+              spamScore: blData.urlMetrics?.spam_score ?? 0,
+            },
+            backlinks: (blData.topBacklinks || []).slice(0, 10).map((bl: any) => ({
+              sourceDomain: bl.source_domain || bl.sourceDomain || '',
+              sourceUrl: bl.source_url || bl.sourceUrl || '',
+              anchorText: bl.anchor_text || bl.anchorText || '',
+              domainAuthority: bl.domain_authority || bl.domainAuthority || 0,
+              isDofollow: bl.is_dofollow ?? bl.isDofollow ?? true,
+            })),
+          }
+        }
+      } catch (err) {
+        console.error('[Arena V3] Backlink fetch failed:', err instanceof Error ? err.message : err)
+      }
+    }
+
     const resultData = {
-      keyword, sites, userSiteRank, arenaAvg, expertAnalysis,
+      keyword, sites, userSiteRank, arenaAvg, expertAnalysis, backlinkData,
       totalSites: sites.length,
       scoredSites: scoredSites.length,
       creditCost,

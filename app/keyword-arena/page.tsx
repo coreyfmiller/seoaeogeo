@@ -10,6 +10,7 @@ import { ScanErrorDialog } from "@/components/dashboard/scan-error-dialog"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
 import { ExpertAnalysis } from "@/components/dashboard/expert-analysis"
 import { DownloadReportButton } from "@/components/dashboard/download-report-button"
+import { LinkBuildingIntelligence } from "@/components/dashboard/link-building-intelligence"
 import { safeSetItem } from "@/lib/safe-storage"
 import { cn } from "@/lib/utils"
 import {
@@ -79,6 +80,7 @@ interface ArenaResult {
   creditCost: number
   arenaAvg: ArenaAverages | null
   expertAnalysis?: string | { bottomLine: string; keyInsight: string; priorityAction: string } | null
+  backlinkData?: { metrics: any; backlinks: any[] } | null
 }
 
 /** Normalize URL for comparison (strip protocol, www, trailing slash) */
@@ -984,6 +986,14 @@ export default function KeywordArenaV3Page() {
                     </div>
                   )}
                 </div>
+              )}
+
+              {/* Link Building Intelligence */}
+              {arenaResult.backlinkData && (
+                <LinkBuildingIntelligence
+                  metrics={arenaResult.backlinkData.metrics}
+                  backlinks={arenaResult.backlinkData.backlinks}
+                />
               )}
 
               {/* Recommended Next Steps */}
