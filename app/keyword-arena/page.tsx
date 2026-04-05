@@ -738,16 +738,6 @@ export default function KeywordArenaV3Page() {
                 } : undefined}
               />
 
-              {/* Google Rank Disclaimer — between leaders and leaderboard table */}
-              <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/[0.04] p-4">
-                <p className="text-sm text-yellow-200/90 leading-relaxed">
-                  <span className="font-bold">Seeing a mismatch with what you see on Google?</span>{' '}
-                  Google personalizes results for every user based on location, search history, device, and account activity.
-                  Duelly checks rankings from a neutral, standardized perspective — like a fresh browser with no history.
-                  This gives you a consistent benchmark for comparing competitors on a level playing field.
-                </p>
-              </div>
-
               {/* Leaderboard header */}
               <h3 className="text-sm font-black text-white flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-[#00e5ff]" /> Leaderboard
@@ -802,6 +792,16 @@ export default function KeywordArenaV3Page() {
                   </div>
                 )
               })()}
+
+              {/* Google Rank Disclaimer */}
+              <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/[0.04] p-4">
+                <p className="text-sm text-yellow-200/90 leading-relaxed">
+                  <span className="font-bold">Seeing a mismatch with what you see on Google?</span>{' '}
+                  Google personalizes results for every user based on location, search history, device, and account activity.
+                  Duelly checks rankings from a neutral, standardized perspective — like a fresh browser with no history.
+                  This gives you a consistent benchmark for comparing competitors on a level playing field.
+                </p>
+              </div>
 
               {/* Leaderboard Table */}
               <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-xl overflow-hidden">
