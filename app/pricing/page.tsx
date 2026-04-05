@@ -127,10 +127,10 @@ export default function PricingPage() {
                 <Coins className="h-4 w-4" />
                 ONE-TIME CREDIT PACKS
               </div>
-              <h1 className="text-4xl font-bold">Your Competitor Didn't Get Lucky. They Got Optimized.</h1>
+              <h1 className="text-4xl font-bold">AI Search Is Here. Is Your Site Ready?</h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 When AI or Google cites a competitor instead of you, it's not random. Their site had better structure, clearer content, stronger signals.
-                Duelly runs the same comparison so you can see exactly what they did right — and do it better.
+                Pick a pack and start optimizing today.
               </p>
               <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5"><Infinity className="h-4 w-4 text-[#00e5ff]" /> Credits never expire</span>

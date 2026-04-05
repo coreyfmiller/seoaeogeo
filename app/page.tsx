@@ -57,7 +57,7 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-6 pt-20 pb-4 text-center">
         <h1 className="text-5xl md:text-6xl font-black tracking-tight leading-tight mb-6">
           Your Competitor Didn't Get Lucky.
-          <span className="bg-gradient-to-r from-[#00e5ff] via-[#BC13FE] to-[#fe3f8c] bg-clip-text text-transparent"> They Got Optimized.</span>
+          They Got Optimized.
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
           When AI or Google cites a competitor instead of you, it's not random. Their site had better structure,
