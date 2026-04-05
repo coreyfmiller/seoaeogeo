@@ -736,6 +736,16 @@ export default function KeywordArenaV3Page() {
                 } : undefined}
               />
 
+              {/* Google Rank Disclaimer */}
+              <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/[0.04] p-4">
+                <p className="text-sm text-yellow-200/90 leading-relaxed">
+                  <span className="font-bold">Why don&apos;t these rankings match what I see on Google?</span>{' '}
+                  Google personalizes results for every user based on location, search history, device, and account activity.
+                  Duelly checks rankings from a neutral, standardized perspective — like a fresh browser with no history.
+                  This gives you a consistent benchmark for comparing competitors on a level playing field.
+                </p>
+              </div>
+
               {/* Leaderboard header */}
               <h3 className="text-sm font-black text-white flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-[#00e5ff]" /> Leaderboard
@@ -770,7 +780,9 @@ export default function KeywordArenaV3Page() {
                               <div className="h-7 w-7 rounded-lg flex items-center justify-center" style={{ background: `${l.color}15`, color: l.color }}>{l.icon}</div>
                               <span className="text-[10px] font-black uppercase tracking-widest text-white/50">{l.label}</span>
                             </div>
-                            <p className="text-xs text-white/60 truncate mb-1">{leaderTitle}</p>
+                            <p className="text-xs text-white/60 truncate mb-1">
+                              {(() => { try { return new URL(l.site.url.startsWith('http') ? l.site.url : `https://${l.site.url}`).hostname } catch { return l.site.url } })()}
+                            </p>
                             <p className="text-3xl font-black tabular-nums" style={{ color: l.color }}>{l.score ?? '—'}</p>
                             {userSite && !isUser && diff != null && diff > 0 && (
                               <p className="text-xs text-white/50 mt-2">Your score: <span className="text-white/70 font-bold">{userScore}</span> <span className="text-red-400">({diff} pts behind)</span></p>
@@ -843,7 +855,9 @@ export default function KeywordArenaV3Page() {
                                   <p className={cn("text-sm font-bold truncate max-w-[500px]", isUser ? "text-[#00e5ff]" : "text-white/80")}>
                                     {site.title || site.url}
                                   </p>
-                                  <a href={site.url.startsWith('http') ? site.url : `https://${site.url}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs text-white/60 truncate max-w-[500px] hover:text-[#00e5ff] hover:underline block">{site.url}</a>
+                                  <a href={site.url.startsWith('http') ? site.url : `https://${site.url}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs text-white/60 hover:text-[#00e5ff] hover:underline block">
+                                    {(() => { try { return new URL(site.url.startsWith('http') ? site.url : `https://${site.url}`).hostname } catch { return site.url } })()}
+                                  </a>
                                 </div>
                                 {isUser && <Badge className="shrink-0 bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-[8px] font-black">YOU</Badge>}
                                 {!scored && (
