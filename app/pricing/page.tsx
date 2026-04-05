@@ -86,7 +86,7 @@ const creditCosts = [
   { action: "Pro Analysis", cost: "10 credits", note: "Single page AI deep dive with fix instructions" },
   { action: "Deep Scan", cost: "30 credits", note: "5-page crawl with sitewide intelligence" },
   { action: "Competitor Duel", cost: "10 credits", note: "Head-to-head comparison with backlink analysis" },
-  { action: "Keyword Arena", cost: "10 credits/site", note: "Score top-ranking sites for any keyword" },
+  { action: "Keyword Arena", cost: "10 credits", note: "Score top-ranking sites for any keyword" },
 ]
 
 export default function PricingPage() {

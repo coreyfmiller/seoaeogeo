@@ -96,7 +96,7 @@ const faqs: FAQItem[] = [
   {
     category: "Plans & Limits",
     question: "What are the plan limits?",
-    answer: "Credits are one-time purchases — buy more when you need them. Pro Analysis costs 10 credits. Deep Scan costs 30 credits (5 pages). Competitor Duel costs 10 credits. Keyword Arena costs 10 credits per site. Free audits don't count against your credits."
+    answer: "Credits are one-time purchases — buy more when you need them. Pro Analysis costs 10 credits. Deep Scan costs 30 credits (5 pages). Competitor Duel costs 10 credits. Keyword Arena costs 10 credits per run. Free audits don't count against your credits."
   },
   {
     category: "Plans & Limits",

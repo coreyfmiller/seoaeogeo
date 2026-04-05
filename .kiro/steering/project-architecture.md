@@ -11,7 +11,7 @@ Duelly is a search intelligence platform that audits websites across SEO, AEO (A
 - `/pro-audit` — Single-page AI audit (10 credits). API: `/api/analyze-v3`
 - `/deep-scan` — Multi-page site audit (30 credits). API: `/api/analyze-deep-v3`
 - `/battle-mode` — Competitor Duel, head-to-head comparison (10 credits). API: `/api/battle-v3`
-- `/keyword-arena` — Keyword Arena, multi-site scoring (10/site). API: `/api/keyword-arena-v3`
+- `/keyword-arena` — Keyword Arena, multi-site scoring (10 credits per run). API: `/api/keyword-arena-v3`
 
 ## Page Layout Patterns
 - **Dashboard pages** (tools): Use `PageShell` component (sidebar + header). Scroll via `<main className="flex-1 overflow-y-auto">`.

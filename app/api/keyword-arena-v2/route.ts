@@ -38,12 +38,12 @@ export async function POST(req: Request) {
     }
 
     const finalUrls = allUrls.slice(0, 10)
-    creditCost = finalUrls.length * 10
+    creditCost = 10
 
     const { allowed } = await useCredits(user.id, creditCost)
     if (!allowed) {
       return NextResponse.json({
-        error: `Insufficient credits. Keyword Arena with ${finalUrls.length} sites costs ${creditCost} credits.`
+        error: `Insufficient credits. Keyword Arena costs 10 credits.`
       }, { status: 402 })
     }
 

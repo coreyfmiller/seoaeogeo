@@ -360,7 +360,7 @@ export default function KeywordArenaV3Page() {
     finally { setRetryingUrl(null) }
   }
 
-  const creditCost = pendingUrls.length * 10
+  const creditCost = 10
   const scoreColor = (v: number | null) => v === null ? "text-white/20" : v >= 75 ? "text-green-500" : v >= 50 ? "text-yellow-500" : "text-red-500"
 
   const handleReset = () => {
@@ -398,7 +398,7 @@ export default function KeywordArenaV3Page() {
 
           <ScanErrorDialog error={error} onClose={() => setError(null)} onRetry={handleStartArena} creditsRefunded={creditsRefunded} />
           <CreditConfirmDialog open={creditDialogOpen} onConfirm={handleConfirmArena} onCancel={() => setCreditDialogOpen(false)}
-            creditCost={creditCost} scanType="Keyword Arena" costBreakdown={`${pendingUrls.length} sites × 10 credits each = ${creditCost} credits`} />
+            creditCost={creditCost} scanType="Keyword Arena" costBreakdown="10 credits per Keyword Arena run" />
 
           {/* ── Persistent Keyword Search Bar (always visible) ── */}
           <div className="mb-6 flex items-center gap-2">
@@ -471,11 +471,11 @@ export default function KeywordArenaV3Page() {
                   <span className="text-xs text-white/60">Analyze:</span>
                   <button onClick={() => setResultCount(5)} className={cn("px-4 py-1.5 rounded-lg text-xs font-bold transition-all border",
                     resultCount === 5 ? "bg-[#00e5ff]/20 text-[#00e5ff] border-[#00e5ff]/40" : "bg-white/[0.03] text-white/60 border-white/[0.08] hover:border-white/[0.15]")}>
-                    Top 5 — 50 credits
+                    Top 5
                   </button>
                   <button onClick={() => setResultCount(10)} className={cn("px-4 py-1.5 rounded-lg text-xs font-bold transition-all border",
                     resultCount === 10 ? "bg-[#BC13FE]/20 text-[#BC13FE] border-[#BC13FE]/40" : "bg-white/[0.03] text-white/60 border-white/[0.08] hover:border-white/[0.15]")}>
-                    Top 10 — 100 credits
+                    Top 10
                   </button>
                 </div>
               </div>

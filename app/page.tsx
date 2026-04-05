@@ -162,7 +162,7 @@ export default function HomePage() {
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
               Search any keyword and see how every top-ranking site scores. Compare Google Rank vs AI Rank
-              and find exactly where you need to improve to climb. 10 credits per site.
+              and find exactly where you need to improve to climb. 10 credits per run.
             </p>
             <Link href="/keyword-arena" className="text-sm font-semibold text-[#00e5ff] hover:underline flex items-center gap-1">
               Enter the Arena <ArrowRight className="h-3 w-3" />
@@ -241,7 +241,7 @@ export default function HomePage() {
             },
             {
               q: 'How many credits does each scan cost?',
-              a: 'Pro Analysis costs 10 credits per scan. Deep Scan costs 30 credits (5 pages). Competitor Duel costs 10 credits per comparison. Keyword Arena costs 10 credits per site analyzed.',
+              a: 'Pro Analysis costs 10 credits per scan. Deep Scan costs 30 credits (5 pages). Competitor Duel costs 10 credits per comparison. Keyword Arena costs 10 credits per run.',
             },
             {
               q: 'What platforms does Duelly detect?',
@@ -268,7 +268,7 @@ export default function HomePage() {
               { '@type': 'Question', name: 'What is GEO (Generative Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'GEO measures how well your content performs in AI-generated search results, evaluating expertise signals, factual density, tone objectivity, and citation likelihood.' } },
               { '@type': 'Question', name: 'How does Duelly calculate scores?', acceptedAnswer: { '@type': 'Answer', text: 'Duelly uses a headless browser crawl plus dual Gemini AI analysis with site-type-specific scoring weights for consistent, accurate results.' } },
               { '@type': 'Question', name: 'Is there a free tier?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. You can run a free audit with no account required. Credit packs start at $79.99 for 180 credits.' } },
-              { '@type': 'Question', name: 'How many credits does each scan cost?', acceptedAnswer: { '@type': 'Answer', text: 'Pro Analysis: 10 credits. Deep Scan: 30 credits (5 pages). Competitor Duel: 10 credits. Keyword Arena: 10 credits per site.' } },
+              { '@type': 'Question', name: 'How many credits does each scan cost?', acceptedAnswer: { '@type': 'Answer', text: 'Pro Analysis: 10 credits. Deep Scan: 30 credits (5 pages). Competitor Duel: 10 credits. Keyword Arena: 10 credits per run.' } },
               { '@type': 'Question', name: 'What platforms does Duelly detect?', acceptedAnswer: { '@type': 'Answer', text: 'WordPress, Shopify, Wix, Squarespace, Webflow, Next.js, Gatsby, Hugo, and more. Fix instructions are tailored to the detected platform.' } },
             ],
           }),
