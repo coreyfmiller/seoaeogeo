@@ -72,39 +72,60 @@ function deriveGlHl(location: string): { gl?: string; hl?: string } {
  * Primary: Serper.dev — fast, reliable, real Google results
  */
 async function searchWithSerper(query: string, count: number, apiKey: string, location?: string): Promise<SearchResult[]> {
-  const body: Record<string, any> = { q: query, num: count }
+  const body: Record<string, any> = { q: query, num: 10 }
 
   if (location) {
     const { gl, hl } = deriveGlHl(location)
     if (gl) body.gl = gl
     if (hl) body.hl = hl
-    // Only use gl/hl for country targeting — Serper's location param uses
-    // Google Ads geo DB which doesn't cover small cities well and can
-    // actually make results worse. The keyword itself carries location intent.
     console.log(`[Serper] gl: ${gl}, hl: ${hl} (from: ${location})`)
   }
 
-  const res = await fetch('https://google.serper.dev/search', {
-    method: 'POST',
-    headers: {
-      'X-API-KEY': apiKey,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  })
+  const headers = { 'X-API-KEY': apiKey, 'Content-Type': 'application/json' }
 
-  if (!res.ok) {
-    const err = await res.text()
-    console.error('[Serper] Error:', res.status, err)
-    throw new Error(`Serper search failed: ${res.status}`)
+  // Fetch page 1 and page 2 in parallel to get up to 20 organic results
+  const [res1, res2] = await Promise.all([
+    fetch('https://google.serper.dev/search', {
+      method: 'POST', headers,
+      body: JSON.stringify({ ...body, page: 1 }),
+    }),
+    count > 10 ? fetch('https://google.serper.dev/search', {
+      method: 'POST', headers,
+      body: JSON.stringify({ ...body, page: 2 }),
+    }) : Promise.resolve(null),
+  ])
+
+  if (!res1.ok) {
+    const err = await res1.text()
+    console.error('[Serper] Error page 1:', res1.status, err)
+    throw new Error(`Serper search failed: ${res1.status}`)
   }
 
-  const data = await res.json()
-  const organic = data.organic || []
+  const data1 = await res1.json()
+  const organic1 = data1.organic || []
 
-  console.log(`[Serper] Requested ${count}, got ${organic.length} organic results for "${query}"`)
+  let organic2: any[] = []
+  if (res2 && res2.ok) {
+    const data2 = await res2.json()
+    organic2 = data2.organic || []
+  } else if (res2) {
+    console.warn(`[Serper] Page 2 failed: ${res2.status}`)
+  }
 
-  const results: SearchResult[] = organic.slice(0, count).map((item: any, i: number) => ({
+  // Merge and deduplicate by URL
+  const seen = new Set<string>()
+  const allOrganic: any[] = []
+  for (const item of [...organic1, ...organic2]) {
+    const url = item.link || ''
+    if (!seen.has(url)) {
+      seen.add(url)
+      allOrganic.push(item)
+    }
+  }
+
+  console.log(`[Serper] Page 1: ${organic1.length}, Page 2: ${organic2.length}, merged: ${allOrganic.length} for "${query}"`)
+
+  const results: SearchResult[] = allOrganic.slice(0, count).map((item: any, i: number) => ({
     rank: i + 1,
     title: item.title || '',
     url: item.link || '',
