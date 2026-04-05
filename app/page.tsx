@@ -40,7 +40,7 @@ export default function HomePage() {
           </div>
           <div className="flex items-center gap-4">
             <Link href="/signup" className="px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-bold text-sm transition-colors">
-              Get Started Free
+              Get Started
             </Link>
             <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Log In
@@ -68,7 +68,7 @@ export default function HomePage() {
             href="/signup"
             className="px-8 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-lg transition-colors flex items-center gap-2"
           >
-            Get 20 Free Credits <ArrowRight className="h-5 w-5" />
+            Get Started <ArrowRight className="h-5 w-5" />
           </Link>
           <Link
             href="/pricing"
@@ -267,7 +267,7 @@ export default function HomePage() {
             },
             {
               q: 'Is there a free tier?',
-              a: 'Yes. Every new account gets 20 free credits on signup, no credit card required. That gives you 2 free Pro Analyses to try the platform. After that, credit packs start at $79.99 for 180 credits.',
+              a: 'Yes. You can run a free audit with no account required. After that, credit packs start at $79.99 for 180 credits.',
             },
             {
               q: 'How many credits does each scan cost?',
@@ -297,7 +297,7 @@ export default function HomePage() {
               { '@type': 'Question', name: 'What is AEO (Answer Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'AEO is the practice of optimizing your content so that AI-powered answer engines like ChatGPT, Perplexity, and Google AI Overviews cite your website as a source.' } },
               { '@type': 'Question', name: 'What is GEO (Generative Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'GEO measures how well your content performs in AI-generated search results, evaluating expertise signals, factual density, tone objectivity, and citation likelihood.' } },
               { '@type': 'Question', name: 'How does Duelly calculate scores?', acceptedAnswer: { '@type': 'Answer', text: 'Duelly uses a headless browser crawl plus dual Gemini AI analysis with site-type-specific scoring weights for consistent, accurate results.' } },
-              { '@type': 'Question', name: 'Is there a free tier?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Every new account gets 20 free credits on signup. That gives you 2 free Pro Analyses. Credit packs start at $79.99 for 180 credits.' } },
+              { '@type': 'Question', name: 'Is there a free tier?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. You can run a free audit with no account required. Credit packs start at $79.99 for 180 credits.' } },
               { '@type': 'Question', name: 'How many credits does each scan cost?', acceptedAnswer: { '@type': 'Answer', text: 'Pro Analysis: 10 credits. Deep Scan: 30 credits (5 pages). Competitor Duel: 10 credits. Keyword Arena: 10 credits per site.' } },
               { '@type': 'Question', name: 'What platforms does Duelly detect?', acceptedAnswer: { '@type': 'Answer', text: 'WordPress, Shopify, Wix, Squarespace, Webflow, Next.js, Gatsby, Hugo, and more. Fix instructions are tailored to the detected platform.' } },
             ],
@@ -310,13 +310,13 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-6 py-20 text-center border-t border-border/30">
         <h2 className="text-3xl font-black mb-4">Ready to Audit Your Site?</h2>
         <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-          Sign up and get 20 free credits to run your first Pro Audit. No credit card required.
+          Create an account and run your first audit. No credit card required.
         </p>
         <Link
           href="/signup"
           className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-lg transition-colors"
         >
-          Get 20 Free Credits <ArrowRight className="h-5 w-5" />
+          Get Started <ArrowRight className="h-5 w-5" />
         </Link>
       </section>
 
