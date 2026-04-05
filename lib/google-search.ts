@@ -102,6 +102,8 @@ async function searchWithSerper(query: string, count: number, apiKey: string, lo
   const data = await res.json()
   const organic = data.organic || []
 
+  console.log(`[Serper] Requested ${count}, got ${organic.length} organic results for "${query}"`)
+
   const results: SearchResult[] = organic.slice(0, count).map((item: any, i: number) => ({
     rank: i + 1,
     title: item.title || '',
