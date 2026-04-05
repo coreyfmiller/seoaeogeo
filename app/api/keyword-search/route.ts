@@ -24,14 +24,14 @@ export async function POST(req: Request) {
 
     const validCount = count === 5 ? 5 : 10
 
-    // TEMPORARY DEBUG: Show all results unfiltered to diagnose Serper response count
-    const fetchCount = 30
+    // Fetch 25 unfiltered results from Serper for testing (paid plan now supports num > 10)
+    const fetchCount = 25
     const rawResults = await searchGoogle(keyword.trim(), fetchCount, location?.trim() || undefined)
 
-    // Temporarily skip filtering to see raw Serper results
-    const results = rawResults.slice(0, 20).map((r, i) => ({ ...r, rank: i + 1 }))
+    // Show all results unfiltered, capped at 25
+    const results = rawResults.slice(0, 25).map((r, i) => ({ ...r, rank: i + 1 }))
 
-    console.log(`[Keyword Search] DEBUG: Serper returned ${rawResults.length} raw results for "${keyword.trim()}", showing ${results.length} unfiltered`)
+    console.log(`[Keyword Search] Serper returned ${rawResults.length} results for "${keyword.trim()}", showing ${results.length}`)
 
     return NextResponse.json({ success: true, results, keyword: keyword.trim() })
   } catch (error: any) {
