@@ -131,8 +131,9 @@ export default function PricingPage() {
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Most SEO tools charge $100 to $500 per month and audit for search crawlers.
                 Duelly audits for AI engines — the systems increasingly deciding which businesses get recommended.
-                One-time purchase. No subscriptions. Credits never expire.
+                One-time purchase. No subscriptions.
               </p>
+              <p className="text-sm font-bold text-[#00e5ff]">Credits never expire.</p>
               <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5"><Infinity className="h-4 w-4 text-[#00e5ff]" /> Credits never expire</span>
                 <span className="flex items-center gap-1.5"><Shield className="h-4 w-4 text-[#00e5ff]" /> One-time purchase</span>
