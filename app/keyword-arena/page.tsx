@@ -894,17 +894,11 @@ export default function KeywordArenaV3Page() {
               })()}
 
               {/* Google Rank Disclaimer */}
-              <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/[0.04] p-4 space-y-2">
+              <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/[0.04] p-4">
                 <p className="text-sm text-yellow-200/90 leading-relaxed">
-                  <span className="font-bold">Seeing a mismatch with what you see on Google?</span>{' '}
-                  Google personalizes results for every user based on location, search history, device, and account activity.
-                  Duelly checks rankings from a neutral, standardized perspective — like a fresh browser with no history.
-                  This gives you a consistent benchmark for comparing competitors on a level playing field.
+                  <span className="font-bold">Results may differ from what you see on Google.</span>{' '}
+                  Google personalizes results based on your location, history, and device. Duelly uses a neutral, unpersonalized perspective for a fair comparison. Social media pages, directories, and aggregator platforms are filtered out — only independent websites are compared.
                   <LearnMore term="google-rank-vs-ai-rank" />
-                </p>
-                <p className="text-sm text-yellow-200/60 leading-relaxed">
-                  <span className="font-bold text-yellow-200/80">Missing some results?</span>{' '}
-                  Social media pages (Facebook, Instagram), directories (Yelp, TripAdvisor), and other aggregator platforms are automatically filtered out. Duelly only compares independent websites where businesses control their own SEO — giving you the competitive analysis that actually matters.
                 </p>
               </div>
 
