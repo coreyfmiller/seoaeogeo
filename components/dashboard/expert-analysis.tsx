@@ -67,13 +67,15 @@ export function ExpertAnalysis({
     }
   }
 
-  // Auto-generate on mount when analysis is null and generateData is available
+  // Auto-generate when analysis is null/missing and generateData is available
   useEffect(() => {
-    if (autoGenerate && !initialAnalysis && generateData && !autoFired.current && !isGenerating) {
+    if (!initialAnalysis && generateData && !autoFired.current && !isGenerating) {
       autoFired.current = true
-      handleGenerate()
+      // Small delay to let the page render first
+      const timer = setTimeout(() => handleGenerate(), 500)
+      return () => clearTimeout(timer)
     }
-  }, [autoGenerate, initialAnalysis, generateData]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [initialAnalysis, generateData]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Empty state — show generate button
   if (!analysis || (typeof analysis === 'string' && (analysis.trim().startsWith('{') || analysis.trim().startsWith('"bottomLine"')))) {

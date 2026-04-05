@@ -858,9 +858,14 @@ export default function KeywordArenaV3Page() {
                                   <p className={cn("text-sm font-bold truncate max-w-[500px]", isUser ? "text-[#00e5ff]" : "text-white/80")}>
                                     {site.title || site.url}
                                   </p>
-                                  <a href={site.url.startsWith('http') ? site.url : `https://${site.url}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs text-white/60 hover:text-[#00e5ff] hover:underline block">
-                                    {(() => { try { return new URL(site.url.startsWith('http') ? site.url : `https://${site.url}`).hostname } catch { return site.url } })()}
-                                  </a>
+                                  <div className="flex items-center gap-1.5">
+                                    <a href={site.url.startsWith('http') ? site.url : `https://${site.url}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs text-white/60 hover:text-[#00e5ff] hover:underline">
+                                      {(() => { try { return new URL(site.url.startsWith('http') ? site.url : `https://${site.url}`).hostname } catch { return site.url } })()}
+                                    </a>
+                                    {site.siteType && site.siteType !== 'general' && (
+                                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/[0.06] text-white/40 font-bold uppercase">{site.siteType}</span>
+                                    )}
+                                  </div>
                                 </div>
                                 {isUser && <Badge className="shrink-0 bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-[8px] font-black">YOU</Badge>}
                                 {!scored && (
