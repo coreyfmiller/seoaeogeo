@@ -24,14 +24,22 @@ export async function POST(req: Request) {
 
     const validCount = count === 5 ? 5 : 10
 
-    // Fetch 30 unfiltered results from Serper (3 pages of 10)
+    // Fetch 30 results from Serper (3 pages), filter aggregators, take top 10
     const fetchCount = 30
     const rawResults = await searchGoogle(keyword.trim(), fetchCount, location?.trim() || undefined)
 
-    // Show all results unfiltered, capped at 30
-    const results = rawResults.slice(0, 30).map((r, i) => ({ ...r, rank: i + 1 }))
+    // Filter out aggregator/directory domains and take the requested count
+    const filtered = filterAggregators(rawResults).slice(0, validCount)
 
-    console.log(`[Keyword Search] Serper returned ${rawResults.length} results for "${keyword.trim()}", showing ${results.length}`)
+    // Re-number ranks after filtering
+    const results = filtered.map((r, i) => ({ ...r, rank: i + 1 }))
+
+    const removedCount = rawResults.length - filterAggregators(rawResults).length
+    if (removedCount > 0) {
+      console.log(`[Keyword Search] Filtered ${removedCount} aggregator domains from ${rawResults.length} results for "${keyword.trim()}", showing ${results.length}`)
+    } else {
+      console.log(`[Keyword Search] ${rawResults.length} results for "${keyword.trim()}", no aggregators filtered, showing ${results.length}`)
+    }
 
     return NextResponse.json({ success: true, results, keyword: keyword.trim() })
   } catch (error: any) {
