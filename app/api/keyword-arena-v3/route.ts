@@ -112,6 +112,7 @@ export async function POST(req: Request) {
 
     // Fetch backlink data for user's site only (single Moz API call)
     let backlinkData: any = null
+    let competitorDA: { domain: string; url: string; domainAuthority: number } | null = null
     if (userSite && userSiteUrl) {
       try {
         const fullUrl = userSiteUrl.startsWith('http') ? userSiteUrl : `https://${userSiteUrl}`
@@ -139,10 +140,32 @@ export async function POST(req: Request) {
       } catch (err) {
         console.error('[Arena V3] Backlink fetch failed:', err instanceof Error ? err.message : err)
       }
+
+      // Fetch DA for the most relevant competitor (1 additional Moz call)
+      // If user is #1, compare against #2. Otherwise compare against #1.
+      try {
+        const competitorSite = userSiteRank === 1
+          ? scoredSites.find(s => !s.isUserSite)  // #2 overall
+          : scoredSites[0]?.isUserSite ? scoredSites[1] : scoredSites[0]  // #1 overall (skip if it's the user)
+        if (competitorSite) {
+          const compUrl = competitorSite.url.startsWith('http') ? competitorSite.url : `https://${competitorSite.url}`
+          const compDomain = new URL(compUrl).hostname
+          const compBlData = await fetchBacklinksWithCache(compDomain, false)
+          if (compBlData) {
+            competitorDA = {
+              domain: compDomain,
+              url: competitorSite.url,
+              domainAuthority: compBlData.urlMetrics?.domain_authority ?? 0,
+            }
+          }
+        }
+      } catch (err) {
+        console.error('[Arena V3] Competitor DA fetch failed:', err instanceof Error ? err.message : err)
+      }
     }
 
     const resultData = {
-      keyword, sites, userSiteRank, arenaAvg, expertAnalysis, backlinkData,
+      keyword, sites, userSiteRank, arenaAvg, expertAnalysis, backlinkData, competitorDA,
       totalSites: sites.length,
       scoredSites: scoredSites.length,
       creditCost,

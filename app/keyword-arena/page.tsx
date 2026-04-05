@@ -81,6 +81,7 @@ interface ArenaResult {
   arenaAvg: ArenaAverages | null
   expertAnalysis?: string | { bottomLine: string; keyInsight: string; priorityAction: string } | null
   backlinkData?: { metrics: any; backlinks: any[] } | null
+  competitorDA?: { domain: string; url: string; domainAuthority: number } | null
 }
 
 /** Normalize URL for comparison (strip protocol, www, trailing slash) */
@@ -994,6 +995,67 @@ export default function KeywordArenaV3Page() {
                   metrics={arenaResult.backlinkData.metrics}
                   backlinks={arenaResult.backlinkData.backlinks}
                 />
+              )}
+
+              {/* DA Comparison Card */}
+              {arenaResult.backlinkData && arenaResult.competitorDA && (
+                <div className="rounded-2xl border border-[#00e5ff]/20 bg-[#00e5ff]/[0.03] p-5">
+                  <h3 className="text-sm font-black text-white flex items-center gap-2 mb-4">
+                    <Target className="h-4 w-4 text-[#00e5ff]" /> Domain Authority Comparison
+                    <InfoTooltip content="Domain Authority (DA) is a 0-100 score predicting how well a site will rank. Higher DA = more trust from search engines. This compares your authority against your top competitor in this arena." />
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="rounded-xl border border-[#00e5ff]/30 bg-[#00e5ff]/[0.05] p-4 text-center">
+                      <p className="text-xs text-[#00e5ff]/80 uppercase font-bold tracking-widest mb-1">Your DA</p>
+                      <p className={cn("text-4xl font-black tabular-nums",
+                        arenaResult.backlinkData.metrics.domainAuthority >= 40 ? "text-green-400" :
+                        arenaResult.backlinkData.metrics.domainAuthority >= 20 ? "text-yellow-400" : "text-red-400"
+                      )}>
+                        {arenaResult.backlinkData.metrics.domainAuthority}
+                      </p>
+                      <p className="text-xs text-white/50 mt-1 truncate">
+                        {(() => { try { return new URL(userSiteUrl.startsWith('http') ? userSiteUrl : `https://${userSiteUrl}`).hostname } catch { return userSiteUrl } })()}
+                      </p>
+                    </div>
+                    <div className="rounded-xl border border-[#fe3f8c]/30 bg-[#fe3f8c]/[0.05] p-4 text-center">
+                      <p className="text-xs text-[#fe3f8c]/80 uppercase font-bold tracking-widest mb-1">
+                        {arenaResult.userSiteRank === 1 ? '#2 Competitor' : 'Top Competitor'}
+                      </p>
+                      <p className={cn("text-4xl font-black tabular-nums",
+                        arenaResult.competitorDA.domainAuthority >= 40 ? "text-green-400" :
+                        arenaResult.competitorDA.domainAuthority >= 20 ? "text-yellow-400" : "text-red-400"
+                      )}>
+                        {arenaResult.competitorDA.domainAuthority}
+                      </p>
+                      <p className="text-xs text-white/50 mt-1 truncate">{arenaResult.competitorDA.domain}</p>
+                    </div>
+                  </div>
+                  {(() => {
+                    const userDA = arenaResult.backlinkData!.metrics.domainAuthority
+                    const compDA = arenaResult.competitorDA!.domainAuthority
+                    const gap = compDA - userDA
+                    if (gap > 20) return (
+                      <div className="rounded-lg p-3 text-sm bg-red-500/10 text-red-300">
+                        ⚠️ Your competitor has {gap} points more domain authority. Content improvements alone won&apos;t close this gap — you need a backlink strategy to build trust with search engines.
+                      </div>
+                    )
+                    if (gap > 5) return (
+                      <div className="rounded-lg p-3 text-sm bg-yellow-500/10 text-yellow-300">
+                        Your competitor has a {gap}-point DA advantage. Targeted link building from local directories, partnerships, and industry sites can close this gap.
+                      </div>
+                    )
+                    if (gap > -5) return (
+                      <div className="rounded-lg p-3 text-sm bg-[#00e5ff]/10 text-[#00e5ff]/80">
+                        Your domain authority is competitive with your top competitor. Focus on content quality and on-page optimization to pull ahead.
+                      </div>
+                    )
+                    return (
+                      <div className="rounded-lg p-3 text-sm bg-green-500/10 text-green-300">
+                        🚀 You have a {Math.abs(gap)}-point DA advantage over your competitor. Your authority is strong — focus on content and AI readiness to maximize your edge.
+                      </div>
+                    )
+                  })()}
+                </div>
               )}
 
               {/* Recommended Next Steps */}
