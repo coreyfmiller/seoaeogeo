@@ -82,34 +82,6 @@ export async function POST(req: Request) {
 
     console.log(`[Arena V3] Done. ${scoredSites.length} scored, ${sites.length - scoredSites.length} failed.`)
 
-    // Generate AI expert analysis for the user's site
-    let expertAnalysis: string | { bottomLine: string; keyInsight: string; priorityAction: string } | null = null
-    if (userSite && userSite.scores.seo != null) {
-      try {
-        const topCompetitors = scoredSites.filter(s => !s.isUserSite).slice(0, 5).map(s => ({
-          url: s.url,
-          scores: { seo: s.scores.seo ?? 0, aeo: s.scores.aeo ?? 0, geo: s.scores.geo ?? 0 },
-          googleRank: s.googleRank,
-          wordCount: s.scanDetails?.wordCount,
-          hasSchema: s.scanDetails?.hasSchema,
-          schemaTypes: s.scanDetails?.schemaTypes,
-        }))
-        expertAnalysis = await generateAIExpertAnalysis({
-          context: 'keyword-arena', keyword, userSiteUrl: userSite.url,
-          userScores: { seo: userSite.scores.seo ?? 0, aeo: userSite.scores.aeo ?? 0, geo: userSite.scores.geo ?? 0 },
-          googleRank: userSite.googleRank, arenaRank: userSiteRank, totalSites: scoredSites.length,
-          arenaAvg: arenaAvg ? { seo: arenaAvg.seo, aeo: arenaAvg.aeo, geo: arenaAvg.geo } : undefined,
-          wordCount: userSite.scanDetails?.wordCount, schemaCount: userSite.scanDetails?.hasSchema ? 1 : 0,
-          topCompetitors,
-        })
-        console.log(`[Arena V3] Expert analysis: ${expertAnalysis ? (typeof expertAnalysis === 'string' ? `${expertAnalysis.length} chars` : 'structured') : 'null'}`)
-      } catch (err) {
-        console.error('[Arena V3] Expert analysis failed:', err instanceof Error ? err.message : err)
-      }
-    } else {
-      console.log(`[Arena V3] Skipping expert analysis: userSite=${!!userSite}, scores=${userSite?.scores?.seo}`)
-    }
-
     // Fetch backlink data for user's site only (single Moz API call)
     let backlinkData: any = null
     let competitorDA: { domain: string; url: string; domainAuthority: number } | null = null
@@ -161,6 +133,35 @@ export async function POST(req: Request) {
         }
       } catch (err) {
         console.error('[Arena V3] Competitor DA fetch failed:', err instanceof Error ? err.message : err)
+      }
+    }
+
+    // Generate AI expert analysis AFTER backlink data is available
+    let expertAnalysis: string | { bottomLine: string; keyInsight: string; priorityAction: string; priorityActions?: string[] } | null = null
+    if (userSite && userSite.scores.seo != null) {
+      try {
+        const topCompetitors = scoredSites.filter(s => !s.isUserSite).slice(0, 5).map(s => ({
+          url: s.url,
+          scores: { seo: s.scores.seo ?? 0, aeo: s.scores.aeo ?? 0, geo: s.scores.geo ?? 0 },
+          googleRank: s.googleRank,
+          wordCount: s.scanDetails?.wordCount,
+          hasSchema: s.scanDetails?.hasSchema,
+          schemaTypes: s.scanDetails?.schemaTypes,
+        }))
+        expertAnalysis = await generateAIExpertAnalysis({
+          context: 'keyword-arena', keyword, userSiteUrl: userSite.url,
+          userScores: { seo: userSite.scores.seo ?? 0, aeo: userSite.scores.aeo ?? 0, geo: userSite.scores.geo ?? 0 },
+          googleRank: userSite.googleRank, arenaRank: userSiteRank, totalSites: scoredSites.length,
+          arenaAvg: arenaAvg ? { seo: arenaAvg.seo, aeo: arenaAvg.aeo, geo: arenaAvg.geo } : undefined,
+          wordCount: userSite.scanDetails?.wordCount, schemaCount: userSite.scanDetails?.hasSchema ? 1 : 0,
+          domainAuthority: backlinkData?.metrics?.domainAuthority,
+          competitorDA: competitorDA ? { domain: competitorDA.domain, domainAuthority: competitorDA.domainAuthority } : undefined,
+          siteType: userSite.siteType,
+          topCompetitors,
+        })
+        console.log(`[Arena V3] Expert analysis: ${expertAnalysis ? (typeof expertAnalysis === 'string' ? `${expertAnalysis.length} chars` : 'structured') : 'null'}`)
+      } catch (err) {
+        console.error('[Arena V3] Expert analysis failed:', err instanceof Error ? err.message : err)
       }
     }
 

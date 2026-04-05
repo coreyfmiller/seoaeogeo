@@ -75,8 +75,10 @@ interface ArenaData {
   totalSites?: number
   arenaAvg?: { seo: number; aeo: number; geo: number }
   domainAuthority?: number
+  competitorDA?: { domain: string; domainAuthority: number }
   wordCount?: number
   schemaCount?: number
+  siteType?: string
   topCompetitors?: Array<{ url: string; scores: { seo: number; aeo: number; geo: number }; googleRank?: number | null; wordCount?: number; hasSchema?: boolean; schemaTypes?: string[] }>
 }
 
@@ -194,18 +196,42 @@ User's Site: ${data.userSiteUrl}
   Domain Authority: ${data.domainAuthority ?? 'N/A'}
   Word Count: ${data.wordCount ?? 'Unknown'}
   Schemas: ${data.schemaCount ?? 0}
+  Detected Site Type: ${data.siteType ?? 'Unknown'}
+
+${data.competitorDA ? `Top Competitor DA: ${data.competitorDA.domain} has DA ${data.competitorDA.domainAuthority} (${data.domainAuthority != null ? `user DA is ${data.domainAuthority}, gap of ${data.competitorDA.domainAuthority - data.domainAuthority} points` : 'user DA unknown'})` : ''}
 
 Arena Averages: SEO ${data.arenaAvg?.seo ?? '?'}, AEO ${data.arenaAvg?.aeo ?? '?'}, GEO ${data.arenaAvg?.geo ?? '?'}
 
 ${data.topCompetitors?.length ? 'Top Competitors:\n' + data.topCompetitors.slice(0, 5).map((c: any) => `  ${c.url} — SEO ${c.scores.seo}, AEO ${c.scores.aeo}, GEO ${c.scores.geo}, Google #${c.googleRank ?? '?'}, Words: ${c.wordCount ?? '?'}, Schema: ${c.hasSchema ? 'Yes' : 'No'}`).join('\n') : ''}
 
+IMPORTANT — DOMAIN AUTHORITY CONTEXT:
+Domain Authority (DA) is a critical factor. If the user's DA is significantly lower than competitors, on-page improvements alone won't be enough to outrank them. Always factor DA into your analysis:
+- DA gap > 20 points: backlink building is the #1 priority, period. On-page fixes help but won't close a massive authority gap.
+- DA gap 5-20 points: a mix of on-page optimization AND link building is needed.
+- DA gap < 5 points or user is ahead: on-page and content quality become the deciding factors.
+- If DA data is not available, focus on on-page factors but mention that backlink profile is an unknown variable.
+
+IMPORTANT — SITE TYPE CONTEXT:
+Tailor your advice to the detected site type. A restaurant doesn't need 1000 words of content — it needs Restaurant schema, Google Business Profile, menu markup, hours, and local citations. A SaaS site needs different advice than a local plumber. Be specific to the business type.
+
 WRITE ABOUT (focused on the user's site):
-- If arena rank is better than Google rank: this is the key insight. Explain that their content is technically better than their ranking suggests. The gap is almost certainly off-page — domain authority, backlinks, brand recognition. "You're doing the on-page work right, but Google needs to see other websites vouching for you before it'll rank you higher."
+- If arena rank is better than Google rank: explain that their content is technically better than their ranking suggests. The gap is almost certainly off-page — domain authority, backlinks, brand recognition.
 - If arena rank is worse than Google rank: explain that their brand/authority is carrying them, but competitors with better on-page optimization could overtake them.
-- If content is thin compared to top competitors: use specific numbers. "The top 3 sites average X words. Your page has Y. Google and AI engines both need substance to rank confidently."
-- If schema is missing but competitors have it: explain the specific disadvantage — they're missing rich results that competitors are getting.
-- End with the single most impactful action to move up for this specific keyword, with a realistic timeline.
-- For local businesses: mention Google Business Profile optimization as a parallel priority since Maps results often dominate local searches.`
+- If content is thin compared to top competitors: use specific numbers.
+- If schema is missing but competitors have it: explain the specific disadvantage.
+- For local businesses/restaurants: mention Google Business Profile optimization, local schema, and local citations as priorities — NOT generic "write more content" advice.
+
+Return a JSON object with this EXACT structure:
+{
+  "bottomLine": "2-3 sentence summary of competitive position",
+  "keyInsight": "The single most important thing the user needs to understand about their position",
+  "priorityActions": [
+    "The #1 highest-ROI action to take (be specific, include timeline)",
+    "The #2 action — if DA gap exists, this should address backlink/authority building"
+  ]
+}
+
+CRITICAL: Return "priorityActions" as an array of 2 strings. The first should be the highest-impact on-page or content action. The second should address domain authority/backlinks if there's a gap, or the next most impactful on-page action if DA is competitive.`
   }
 }
 
@@ -229,10 +255,19 @@ async function attemptExpertAnalysis(
     try {
       const parsed = safeJsonParse(jsonMatch[0])
 
-      // Structured format: { bottomLine, keyInsight, priorityAction }
-      if (parsed?.bottomLine && parsed?.keyInsight && parsed?.priorityAction) {
+      // Structured format: { bottomLine, keyInsight, priorityAction/priorityActions }
+      if (parsed?.bottomLine && parsed?.keyInsight && (parsed?.priorityAction || parsed?.priorityActions)) {
         console.log(`[Expert Analysis] Structured format success for ${context}`)
-        return parsed as { bottomLine: string; keyInsight: string; priorityAction: string }
+        // Normalize: support both priorityAction (string) and priorityActions (array)
+        const result: any = {
+          bottomLine: parsed.bottomLine,
+          keyInsight: parsed.keyInsight,
+          priorityAction: parsed.priorityAction || (parsed.priorityActions?.[0] ?? ''),
+        }
+        if (parsed.priorityActions && Array.isArray(parsed.priorityActions)) {
+          result.priorityActions = parsed.priorityActions
+        }
+        return result
       }
 
       // Legacy format: { analysis: "..." }

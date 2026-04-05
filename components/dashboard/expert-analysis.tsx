@@ -8,6 +8,7 @@ interface StructuredAnalysis {
   bottomLine: string
   keyInsight: string
   priorityAction: string
+  priorityActions?: string[]
 }
 
 interface ExpertAnalysisProps {
@@ -130,11 +131,19 @@ export function ExpertAnalysis({
     )
   }
 
-  // Structured 3-section format
+  // Structured sections format
+  const priorityActions = analysis.priorityActions || (analysis.priorityAction ? [analysis.priorityAction] : [])
   const sections = [
     { icon: <Zap className="h-3.5 w-3.5" />, title: "Bottom Line", text: analysis.bottomLine, color: "text-[#00e5ff]", border: "border-[#00e5ff]/20", bg: "bg-[#00e5ff]/5" },
     { icon: <Lightbulb className="h-3.5 w-3.5" />, title: "Key Insight", text: analysis.keyInsight, color: "text-[#BC13FE]", border: "border-[#BC13FE]/20", bg: "bg-[#BC13FE]/5" },
-    { icon: <Target className="h-3.5 w-3.5" />, title: "Priority Action", text: analysis.priorityAction, color: "text-[#22c55e]", border: "border-[#22c55e]/20", bg: "bg-[#22c55e]/5" },
+    ...priorityActions.map((action, i) => ({
+      icon: <Target className="h-3.5 w-3.5" />,
+      title: priorityActions.length > 1 ? `Priority Action ${i + 1}` : "Priority Action",
+      text: action,
+      color: i === 0 ? "text-[#22c55e]" : "text-[#f59e0b]",
+      border: i === 0 ? "border-[#22c55e]/20" : "border-[#f59e0b]/20",
+      bg: i === 0 ? "bg-[#22c55e]/5" : "bg-[#f59e0b]/5",
+    })),
   ].filter(s => s.text)
 
   if (sections.length === 0) return null
