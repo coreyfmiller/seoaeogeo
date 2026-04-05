@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     const validCount = count === 5 ? 5 : 10
 
     // Request extra results from Google to compensate for aggregators we'll filter out
-    const fetchCount = Math.min(validCount + 10, 20)
+    const fetchCount = Math.min(validCount + 10, 30)
     const rawResults = await searchGoogle(keyword.trim(), fetchCount, location?.trim() || undefined)
 
     // Filter out aggregator/directory domains and take the requested count
