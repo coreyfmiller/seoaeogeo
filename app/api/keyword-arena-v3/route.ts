@@ -94,13 +94,13 @@ export async function POST(req: Request) {
           backlinkData = {
             metrics: {
               domain,
-              domainAuthority: blData.urlMetrics?.domain_authority ?? 0,
-              pageAuthority: blData.urlMetrics?.page_authority ?? 0,
-              linkingDomains: blData.urlMetrics?.linking_domains ?? 0,
-              totalBacklinks: blData.urlMetrics?.total_backlinks ?? 0,
-              spamScore: blData.urlMetrics?.spam_score ?? 0,
+              domainAuthority: blData.metrics?.domainAuthority ?? 0,
+              pageAuthority: blData.metrics?.pageAuthority ?? 0,
+              linkingDomains: blData.metrics?.linkingDomains ?? 0,
+              totalBacklinks: blData.metrics?.totalBacklinks ?? 0,
+              spamScore: blData.metrics?.spamScore ?? 0,
             },
-            backlinks: (blData.topBacklinks || []).slice(0, 10).map((bl: any) => ({
+            backlinks: (blData.backlinks || []).slice(0, 10).map((bl: any) => ({
               sourceDomain: bl.source_domain || bl.sourceDomain || '',
               sourceUrl: bl.source_url || bl.sourceUrl || '',
               anchorText: bl.anchor_text || bl.anchorText || '',
@@ -127,7 +127,7 @@ export async function POST(req: Request) {
             competitorDA = {
               domain: compDomain,
               url: competitorSite.url,
-              domainAuthority: compBlData.urlMetrics?.domain_authority ?? 0,
+              domainAuthority: compBlData.metrics?.domainAuthority ?? 0,
             }
           }
         }
