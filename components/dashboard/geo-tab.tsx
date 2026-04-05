@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
+import { LearnMore } from "@/components/ui/learn-more"
 import { useState } from "react"
 
 interface EnhancedPenalty {
@@ -349,7 +350,7 @@ export function GEOTab({ data, hideScoreDeductions }: GEOTabProps) {
       {/* Generative Engine Readiness */}
       <h2 className="text-xl font-bold mt-4 flex items-center gap-2">
         <Sparkles className="h-6 w-6 text-geo" />
-        Generative Engine Readiness
+        Generative Engine Readiness <LearnMore term="geo" />
       </h2>
 
       <div className="grid gap-6 lg:grid-cols-2">

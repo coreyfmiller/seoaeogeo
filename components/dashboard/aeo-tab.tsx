@@ -17,6 +17,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
+import { LearnMore } from "@/components/ui/learn-more"
 import { useState } from "react"
 
 interface EnhancedPenalty {
@@ -349,7 +350,7 @@ export function AEOTab({ data, hideScoreDeductions }: AEOTabProps) {
       {/* Answer Engine Readiness */}
       <h2 className="text-xl font-bold mt-4 flex items-center gap-2">
         <Sparkles className="h-6 w-6 text-aeo" />
-        Answer Engine Readiness
+        Answer Engine Readiness <LearnMore term="aeo" />
       </h2>
 
       {/* Question-Based Content Analysis */}

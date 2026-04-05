@@ -11,6 +11,7 @@ import { InfoTooltip } from "@/components/ui/info-tooltip"
 import { ExpertAnalysis } from "@/components/dashboard/expert-analysis"
 import { DownloadReportButton } from "@/components/dashboard/download-report-button"
 import { LinkBuildingIntelligence } from "@/components/dashboard/link-building-intelligence"
+import { LearnMore } from "@/components/ui/learn-more"
 import { safeSetItem } from "@/lib/safe-storage"
 import { cn } from "@/lib/utils"
 import {
@@ -726,7 +727,7 @@ export default function KeywordArenaV3Page() {
                     {/* Rank comparison boxes */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
                       <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 text-center">
-                        <p className="text-xs text-white/60 uppercase font-bold tracking-widest mb-1">Google Rank <InfoTooltip content="Your position in Google's traditional search results for this keyword." /></p>
+                        <p className="text-xs text-white/60 uppercase font-bold tracking-widest mb-1">Google Rank <LearnMore term="google-rank-vs-ai-rank" /> <InfoTooltip content="Your position in Google's traditional search results for this keyword." /></p>
                         <p className="text-3xl font-black text-white tabular-nums">
                           {userSite.googleRank ? `#${userSite.googleRank}` : '—'}
                         </p>
@@ -774,7 +775,7 @@ export default function KeywordArenaV3Page() {
                       )}
                       {arenaResult.backlinkData?.metrics?.domainAuthority != null && (
                         <div className="rounded-xl border border-green-500/30 bg-green-500/[0.05] p-4 text-center">
-                          <p className="text-xs text-green-400/80 uppercase font-bold tracking-widest mb-1">Your DA <InfoTooltip content="Domain Authority — a 0-100 score predicting how well your site will rank. Based on your backlink profile." /></p>
+                          <p className="text-xs text-green-400/80 uppercase font-bold tracking-widest mb-1">Your DA <LearnMore term="domain-authority" /> <InfoTooltip content="Domain Authority — a 0-100 score predicting how well your site will rank. Based on your backlink profile." /></p>
                           <p className={cn("text-3xl font-black tabular-nums",
                             arenaResult.backlinkData.metrics.domainAuthority >= 40 ? "text-green-400" :
                             arenaResult.backlinkData.metrics.domainAuthority >= 20 ? "text-yellow-400" : "text-red-400"
@@ -786,7 +787,7 @@ export default function KeywordArenaV3Page() {
                       )}
                       {arenaResult.competitorDA?.domainAuthority != null && (
                         <div className="rounded-xl border border-[#fe3f8c]/30 bg-[#fe3f8c]/[0.05] p-4 text-center">
-                          <p className="text-xs text-[#fe3f8c]/80 uppercase font-bold tracking-widest mb-1">{arenaResult.userSiteRank === 1 ? '#2' : '#1'} DA <InfoTooltip content={`Domain Authority of your ${arenaResult.userSiteRank === 1 ? 'closest competitor' : 'top competitor'}.`} /></p>
+                          <p className="text-xs text-[#fe3f8c]/80 uppercase font-bold tracking-widest mb-1">{arenaResult.userSiteRank === 1 ? '#2' : '#1'} DA <LearnMore term="domain-authority" /> <InfoTooltip content={`Domain Authority of your ${arenaResult.userSiteRank === 1 ? 'closest competitor' : 'top competitor'}.`} /></p>
                           <p className={cn("text-3xl font-black tabular-nums",
                             arenaResult.competitorDA.domainAuthority >= 40 ? "text-green-400" :
                             arenaResult.competitorDA.domainAuthority >= 20 ? "text-yellow-400" : "text-red-400"
@@ -897,7 +898,8 @@ export default function KeywordArenaV3Page() {
                   <span className="font-bold">Seeing a mismatch with what you see on Google?</span>{' '}
                   Google personalizes results for every user based on location, search history, device, and account activity.
                   Duelly checks rankings from a neutral, standardized perspective — like a fresh browser with no history.
-                  This gives you a consistent benchmark for comparing competitors on a level playing field.
+                  This gives you a consistent benchmark for comparing competitors on a level playing field.{' '}
+                  <LearnMore term="google-rank-vs-ai-rank" inline label="Why this happens" />
                 </p>
               </div>
 
@@ -1070,7 +1072,20 @@ export default function KeywordArenaV3Page() {
                       <div className="space-y-2">
                         {gaps.map((gap, i) => (
                           <div key={i} className={cn("rounded-lg p-3 border", gap.severity === 'critical' ? "border-red-500/30 bg-red-500/10" : "border-yellow-500/30 bg-yellow-500/10")}>
-                            <p className={cn("text-xs font-bold", gap.severity === 'critical' ? "text-red-400" : "text-yellow-400")}>{gap.metric}</p>
+                            <p className={cn("text-xs font-bold", gap.severity === 'critical' ? "text-red-400" : "text-yellow-400")}>
+                              {gap.metric}
+                              {gap.metric === 'Domain Authority' && <> <LearnMore term="domain-authority" inline /></>}
+                              {(gap.metric === 'Schema Markup' || gap.metric === 'Schema Quality') && <> <LearnMore term="schema-markup" inline /></>}
+                              {gap.metric === 'Content Depth' && <> <LearnMore term="content-depth" inline /></>}
+                              {gap.metric === 'Site Speed' && <> <LearnMore term="site-speed" inline /></>}
+                              {gap.metric === 'Image Alt Text' && <> <LearnMore term="alt-text" inline /></>}
+                              {gap.metric === 'AEO Score' && <> <LearnMore term="aeo" inline /></>}
+                              {gap.metric === 'GEO Score' && <> <LearnMore term="geo" inline /></>}
+                              {gap.metric === 'Heading Structure' && <> <LearnMore term="heading-structure" inline /></>}
+                              {gap.metric === 'HTTPS Security' && <> <LearnMore term="https" inline /></>}
+                              {gap.metric === 'Social Sharing' && <> <LearnMore term="open-graph" inline /></>}
+                              {gap.metric === 'SEO Score' && <> <LearnMore term="competitive-gap" inline /></>}
+                            </p>
                             <p className="text-[11px] text-white/60 mt-0.5">{gap.detail}</p>
                           </div>
                         ))}
@@ -1086,7 +1101,20 @@ export default function KeywordArenaV3Page() {
                       <div className="space-y-2">
                         {strengths.map((s, i) => (
                           <div key={i} className="rounded-lg p-3 border border-green-500/30 bg-green-500/10">
-                            <p className="text-xs font-bold text-green-400">{s.metric}</p>
+                            <p className="text-xs font-bold text-green-400">
+                              {s.metric}
+                              {s.metric === 'Domain Authority' && <> <LearnMore term="domain-authority" inline /></>}
+                              {(s.metric === 'Schema Markup' || s.metric === 'Schema Quality') && <> <LearnMore term="schema-markup" inline /></>}
+                              {s.metric === 'Content Depth' && <> <LearnMore term="content-depth" inline /></>}
+                              {s.metric === 'Site Speed' && <> <LearnMore term="site-speed" inline /></>}
+                              {s.metric === 'Image Alt Text' && <> <LearnMore term="alt-text" inline /></>}
+                              {s.metric === 'AEO Score' && <> <LearnMore term="aeo" inline /></>}
+                              {s.metric === 'GEO Score' && <> <LearnMore term="geo" inline /></>}
+                              {s.metric === 'Heading Structure' && <> <LearnMore term="heading-structure" inline /></>}
+                              {s.metric === 'HTTPS Security' && <> <LearnMore term="https" inline /></>}
+                              {s.metric === 'Social Sharing' && <> <LearnMore term="open-graph" inline /></>}
+                              {s.metric === 'SEO Score' && <> <LearnMore term="competitive-gap" inline /></>}
+                            </p>
                             <p className="text-[11px] text-white/60 mt-0.5">{s.detail}</p>
                           </div>
                         ))}

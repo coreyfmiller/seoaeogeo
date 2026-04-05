@@ -5,6 +5,7 @@ import { Link2, ExternalLink } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
+import { LearnMore } from "@/components/ui/learn-more"
 
 interface BacklinkMetrics {
   domain: string
@@ -36,7 +37,7 @@ export function LinkBuildingIntelligence({ metrics, backlinks }: LinkBuildingInt
       <CardHeader>
         <div className="flex items-center gap-2">
           <Link2 className="h-5 w-5 text-green-500" />
-          <CardTitle>Link Building Intelligence</CardTitle>
+          <CardTitle>Link Building Intelligence <LearnMore term="backlinks" /></CardTitle>
           <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-green-500/30 text-green-500 bg-green-500/10 gap-1">
             MOZ
           </Badge>
@@ -57,6 +58,8 @@ export function LinkBuildingIntelligence({ metrics, backlinks }: LinkBuildingInt
               <div className="flex items-center gap-0.5 mb-0.5">
                 <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold truncate">{m.label}</p>
                 <InfoTooltip content={m.tip} className="shrink-0 [&_svg]:h-2.5 [&_svg]:w-2.5" />
+                {m.label === 'Domain Authority' && <LearnMore term="domain-authority" />}
+                {m.label === 'Spam Score' && <LearnMore term="spam-score" />}
               </div>
               <p className={cn("text-lg font-black", m.color)}>{m.value}</p>
             </div>

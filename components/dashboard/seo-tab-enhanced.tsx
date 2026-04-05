@@ -19,6 +19,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { InfoTooltip } from "@/components/ui/info-tooltip"
+import { LearnMore } from "@/components/ui/learn-more"
 import { useState } from "react"
 
 interface EnhancedPenalty {
@@ -476,15 +477,15 @@ export function SEOTabEnhanced({ data, hideScoreDeductions }: SEOTabProps) {
           <CardContent>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-background/50">
-                <span className="text-sm font-medium text-muted-foreground">Word Count</span>
+                <span className="text-sm font-medium text-muted-foreground">Word Count <LearnMore term="content-depth" /></span>
                 <span className="font-mono font-bold">{struct?.wordCount || 0}</span>
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-background/50">
-                <span className="text-sm font-medium text-muted-foreground">Internal Links</span>
+                <span className="text-sm font-medium text-muted-foreground">Internal Links <LearnMore term="internal-linking" /></span>
                 <span className="font-mono font-bold text-seo">{struct?.links?.internal || 0}</span>
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-background/50">
-                <span className="text-sm font-medium text-muted-foreground">Semantic Tags</span>
+                <span className="text-sm font-medium text-muted-foreground">Semantic Tags <LearnMore term="semantic-html" /></span>
                 <span className="font-mono font-bold">
                   {(struct?.semanticTags?.article || 0) + (struct?.semanticTags?.main || 0) + (struct?.semanticTags?.aside || 0)}
                 </span>
