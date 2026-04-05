@@ -117,7 +117,7 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
   const planLabel = profile?.is_admin
     ? 'Admin'
     : profile?.plan
-      ? profile.plan === 'pro_plus' ? 'Pro Plus' : profile.plan === 'agency' ? 'Agency' : profile.plan.charAt(0).toUpperCase() + profile.plan.slice(1)
+      ? profile.plan === 'launch' ? 'Launch' : profile.plan === 'growth' ? 'Growth' : profile.plan === 'authority' ? 'Authority' : profile.plan.charAt(0).toUpperCase() + profile.plan.slice(1)
       : 'Free'
 
   const isAdmin = profile?.is_admin === true
@@ -156,7 +156,7 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
               .map((item) => {
               const isProOnly = proOnlyPaths.includes(item.href)
               const isLocked = isProOnly && isFreeUser
-              const href = isLocked ? '/pro' : item.href
+              const href = isLocked ? '/pricing' : item.href
 
               return (
               <li key={item.name}>
@@ -247,13 +247,13 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
             {referralOpen && (
               <div className="absolute bottom-full left-0 right-0 mb-2 p-4 rounded-xl border border-[#fe3f8c]/30 bg-card shadow-xl z-50 space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-bold text-foreground">Earn 200 Credits</p>
+                  <p className="text-sm font-bold text-foreground">Earn 180 Credits</p>
                   <button onClick={() => setReferralOpen(false)} className="text-muted-foreground hover:text-foreground">
                     <X className="h-4 w-4" />
                   </button>
                 </div>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Share your link. When someone signs up and makes their first purchase, you get 200 credits added to your account. No limits on how many times you can earn.
+                  Share your link. When someone signs up and makes their first purchase, you get 180 credits added to your account. No limits on how many times you can earn.
                 </p>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 rounded-lg border border-border/50 bg-muted/30 px-3 py-2 text-xs text-muted-foreground truncate font-mono">

@@ -34,10 +34,10 @@ export async function POST(request: NextRequest) {
     })
   }
 
-  const cost = 25
+  const cost = 30
   const { allowed } = await useCredits(user.id, cost)
   if (!allowed) {
-    return new Response(JSON.stringify({ error: `Insufficient credits. Deep Scan costs 25 credits.` }), {
+    return new Response(JSON.stringify({ error: `Insufficient credits. Deep Scan costs 30 credits.` }), {
       status: 402, headers: { 'Content-Type': 'application/json' },
     })
   }

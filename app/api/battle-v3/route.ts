@@ -26,9 +26,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
 
-    const { allowed } = await useCredits(user.id, 20)
+    const { allowed } = await useCredits(user.id, 10)
     if (!allowed) {
-      return NextResponse.json({ error: 'Insufficient credits. Competitor Duel costs 20 credits.' }, { status: 402 })
+      return NextResponse.json({ error: 'Insufficient credits. Competitor Duel costs 10 credits.' }, { status: 402 })
     }
 
     const { siteAUrl, siteBUrl } = await req.json()
@@ -150,7 +150,7 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('[Battle V3] Error:', error)
     if (user) {
-      try { await refundCredits(user.id, 20) } catch (e) { console.error('[Battle V3] Refund failed:', e) }
+      try { await refundCredits(user.id, 10) } catch (e) { console.error('[Battle V3] Refund failed:', e) }
     }
     return NextResponse.json({
       success: false,

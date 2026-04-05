@@ -133,7 +133,7 @@ export function Header({ onAnalyze, isAnalyzing, currentUrl, apiStatus = "idle",
         )}
 
         {/* Buy Credits Button */}
-        <Link href="/pro">
+        <Link href="/pricing">
           <Button
             className="bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-semibold px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base shadow-md"
           >

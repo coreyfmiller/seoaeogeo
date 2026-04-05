@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     }
 
     const finalUrls = allUrls.slice(0, 10)
-    creditCost = finalUrls.length * 5
+    creditCost = finalUrls.length * 10
 
     const { allowed } = await useCredits(user.id, creditCost)
     if (!allowed) {

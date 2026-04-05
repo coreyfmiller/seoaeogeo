@@ -193,7 +193,7 @@ export default function KeywordArenaPage() {
     }
   }
 
-  const creditCost = pendingUrls.length * 5
+  const creditCost = pendingUrls.length * 10
   const scoreColor = (v: number | null) => v === null ? "text-white/20" : v >= 75 ? "text-green-500" : v >= 50 ? "text-yellow-500" : "text-red-500"
 
   const handleReset = () => {
@@ -235,7 +235,7 @@ export default function KeywordArenaPage() {
             onCancel={() => setCreditDialogOpen(false)}
             creditCost={creditCost}
             scanType="Keyword Arena"
-            costBreakdown={`${pendingUrls.length} sites × 5 credits each = ${creditCost} credits`}
+            costBreakdown={`${pendingUrls.length} sites × 10 credits each = ${creditCost} credits`}
           />
 
           {/* ── STEP 1: Keyword Search ── */}
@@ -284,7 +284,7 @@ export default function KeywordArenaPage() {
                         : "bg-white/[0.03] text-white/40 border-white/[0.08] hover:border-white/[0.15]"
                     )}
                   >
-                    Top 5 — 25 credits
+                    Top 5 — 50 credits
                   </button>
                   <button
                     onClick={() => setResultCount(10)}
@@ -295,7 +295,7 @@ export default function KeywordArenaPage() {
                         : "bg-white/[0.03] text-white/40 border-white/[0.08] hover:border-white/[0.15]"
                     )}
                   >
-                    Top 10 — 50 credits
+                    Top 10 — 100 credits
                   </button>
                 </div>
               </div>

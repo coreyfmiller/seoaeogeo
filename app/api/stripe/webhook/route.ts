@@ -60,8 +60,8 @@ export async function POST(req: NextRequest) {
             .single()
 
           if (referral) {
-            // Credit the referrer with Pro-equivalent credits (+20/+10/+10)
-            await addCredits(referral.referrer_id, 'pro')
+            // Credit the referrer with Launch-equivalent credits
+            await addCredits(referral.referrer_id, 'launch')
 
             // Mark referral as credited
             await supabaseAdmin

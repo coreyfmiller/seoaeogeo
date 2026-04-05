@@ -602,9 +602,9 @@ export default function DeepV3Page() {
               open={creditDialogOpen}
               onConfirm={handleConfirmAnalyze}
               onCancel={() => setCreditDialogOpen(false)}
-              creditCost={25}
+              creditCost={30}
               scanType="Deep Scan"
-              costBreakdown="5 pages — 25 credits"
+              costBreakdown="5 pages — 30 credits"
             />
 
             <ScanErrorDialog error={error} onClose={() => sse.reset()} onRetry={() => handleAnalyze(currentUrl)} creditsRefunded={sse.creditsRefunded} />

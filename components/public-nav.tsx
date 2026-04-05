@@ -10,7 +10,7 @@ export function PublicNav() {
           </Link>
           <div className="hidden md:flex items-center gap-6">
             <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
-            <Link href="/pro" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
+            <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
             <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help</Link>
             <Link href="/standards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How We Score</Link>
           </div>

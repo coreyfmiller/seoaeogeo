@@ -248,9 +248,9 @@ export default function SiteVsSite() {
                             open={creditDialogOpen}
                             onConfirm={handleConfirmBattle}
                             onCancel={() => setCreditDialogOpen(false)}
-                            creditCost={20}
+                            creditCost={10}
                             scanType="Competitive Intel"
-                            costBreakdown="20 credits per competitive intelligence scan (2 sites analyzed)"
+                            costBreakdown="10 credits per competitive intelligence scan (2 sites analyzed)"
                         />
 
                         {/* Battle Form */}

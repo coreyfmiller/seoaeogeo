@@ -110,7 +110,7 @@ export function CrawlConfig({ onStartCrawl, isAnalyzing }: CrawlConfigProps) {
 
       {/* Info about what gets scanned */}
       <p className="text-xs text-muted-foreground text-center">
-        Scans your homepage + key inner pages • 25 credits • ~90 seconds
+        Scans your homepage + key inner pages • 30 credits • ~90 seconds
       </p>
 
       {/* Submit Button - Matching style */}

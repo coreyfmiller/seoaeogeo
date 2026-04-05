@@ -66,7 +66,7 @@ export function CreditConfirmDialog({
 
   if (!open) return null
 
-  const effectiveCost = showPageSelector ? (selectedPages <= 5 ? 25 : 50) : creditCost
+  const effectiveCost = showPageSelector ? (selectedPages <= 5 ? 30 : 60) : creditCost
   const effectiveBreakdown = showPageSelector
     ? `${selectedPages} pages — ${effectiveCost} credits`
     : costBreakdown
@@ -155,7 +155,7 @@ export function CreditConfirmDialog({
               <p className="text-sm font-semibold text-red-500">Insufficient credits</p>
               <p className="text-xs text-red-400 mt-0.5">
                 You need {effectiveCost - balance} more credits.{" "}
-                <a href="/pro" className="underline hover:text-red-300">Buy credits</a>
+                <a href="/pricing" className="underline hover:text-red-300">Buy credits</a>
               </p>
             </div>
           </div>

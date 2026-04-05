@@ -34,7 +34,7 @@ export default function HomePage() {
           </Link>
           <div className="hidden md:flex items-center gap-6">
             <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
-            <Link href="/pro" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
+            <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
             <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help</Link>
             <Link href="/standards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How We Score</Link>
           </div>
@@ -71,7 +71,7 @@ export default function HomePage() {
             Get 20 Free Credits <ArrowRight className="h-5 w-5" />
           </Link>
           <Link
-            href="/pro"
+            href="/pricing"
             className="px-8 py-3 rounded-xl border border-border/50 hover:border-[#BC13FE]/50 hover:bg-[#BC13FE]/5 font-bold text-lg transition-colors"
           >
             View Pricing
@@ -184,7 +184,7 @@ export default function HomePage() {
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
               Multi-page site-wide audit. Crawls up to 50 pages, runs AI analysis on each,
               detects duplicate titles and meta descriptions, checks robots.txt and sitemap,
-              and provides sitewide intelligence. 10 credits + 1 per page.
+              and provides sitewide intelligence. 30 credits per scan.
             </p>
             <Link href="/deep-scan" className="text-sm font-semibold text-[#BC13FE] hover:underline flex items-center gap-1">
               Run Deep Scan <ArrowRight className="h-3 w-3" />
@@ -199,7 +199,7 @@ export default function HomePage() {
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
               Head-to-head comparison of two websites with backlink analysis powered by Moz.
               See Domain Authority, top referring domains, link gaps, and AI-generated counter-strategies
-              to outrank your competitor. 20 credits per duel.
+              to outrank your competitor. 10 credits per duel.
             </p>
             <Link href="/battle-mode-v3" className="text-sm font-semibold text-[#fe3f8c] hover:underline flex items-center gap-1">
               Start a Duel <ArrowRight className="h-3 w-3" />
@@ -214,7 +214,7 @@ export default function HomePage() {
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
               Search a keyword, find the top-ranking sites, and battle them all with AI scoring.
               See how your site stacks up against the competition with Google Rank vs AI Rank
-              comparison and competitive gap insights. 5 credits per site.
+              comparison and competitive gap insights. 10 credits per site.
             </p>
             <Link href="/keyword-arena-v3" className="text-sm font-semibold text-[#00e5ff] hover:underline flex items-center gap-1">
               Enter the Arena <ArrowRight className="h-3 w-3" />
@@ -267,11 +267,11 @@ export default function HomePage() {
             },
             {
               q: 'Is there a free tier?',
-              a: 'Yes. Every new account gets 20 free credits on signup, no credit card required. That gives you 2 Pro Audits to try the platform. After that, credit packs start at $20 for 200 credits.',
+              a: 'Yes. Every new account gets 20 free credits on signup, no credit card required. That gives you 2 free Pro Analyses to try the platform. After that, credit packs start at $79.99 for 180 credits.',
             },
             {
               q: 'How many credits does each scan cost?',
-              a: 'Pro Audit costs 10 credits per scan. Deep Scan costs 25 credits (5 pages) or 50 credits (10 pages). Competitor Duel costs 20 credits per comparison. Keyword Arena costs 5 credits per site analyzed.',
+              a: 'Pro Analysis costs 10 credits per scan. Deep Scan costs 30 credits (5 pages). Competitor Duel costs 10 credits per comparison. Keyword Arena costs 10 credits per site analyzed.',
             },
             {
               q: 'What platforms does Duelly detect?',
@@ -297,8 +297,8 @@ export default function HomePage() {
               { '@type': 'Question', name: 'What is AEO (Answer Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'AEO is the practice of optimizing your content so that AI-powered answer engines like ChatGPT, Perplexity, and Google AI Overviews cite your website as a source.' } },
               { '@type': 'Question', name: 'What is GEO (Generative Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'GEO measures how well your content performs in AI-generated search results, evaluating expertise signals, factual density, tone objectivity, and citation likelihood.' } },
               { '@type': 'Question', name: 'How does Duelly calculate scores?', acceptedAnswer: { '@type': 'Answer', text: 'Duelly uses a headless browser crawl plus dual Gemini AI analysis with site-type-specific scoring weights for consistent, accurate results.' } },
-              { '@type': 'Question', name: 'Is there a free tier?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Every new account gets 20 free credits on signup. That gives you 2 Pro Audits. Credit packs start at $20 for 200 credits.' } },
-              { '@type': 'Question', name: 'How many credits does each scan cost?', acceptedAnswer: { '@type': 'Answer', text: 'Pro Audit: 10 credits. Deep Scan: 25 credits (5 pages) or 50 credits (10 pages). Competitor Duel: 20 credits. Keyword Arena: 5 credits per site.' } },
+              { '@type': 'Question', name: 'Is there a free tier?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Every new account gets 20 free credits on signup. That gives you 2 free Pro Analyses. Credit packs start at $79.99 for 180 credits.' } },
+              { '@type': 'Question', name: 'How many credits does each scan cost?', acceptedAnswer: { '@type': 'Answer', text: 'Pro Analysis: 10 credits. Deep Scan: 30 credits (5 pages). Competitor Duel: 10 credits. Keyword Arena: 10 credits per site.' } },
               { '@type': 'Question', name: 'What platforms does Duelly detect?', acceptedAnswer: { '@type': 'Answer', text: 'WordPress, Shopify, Wix, Squarespace, Webflow, Next.js, Gatsby, Hugo, and more. Fix instructions are tailored to the detected platform.' } },
             ],
           }),
@@ -339,7 +339,7 @@ export default function HomePage() {
                 <li><Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link></li>
                 <li><Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help Center</Link></li>
                 <li><Link href="/standards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Our Standards</Link></li>
-                <li><Link href="/pro" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link></li>
+                <li><Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link></li>
               </ul>
             </div>
             <div>

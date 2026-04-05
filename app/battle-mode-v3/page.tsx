@@ -285,7 +285,7 @@ export default function BattleModeV3() {
                     </div>
 
                     <ScanErrorDialog error={error} onClose={() => setError(null)} onRetry={() => handleBattle(siteA, siteB)} creditsRefunded={creditsRefunded} />
-                    <CreditConfirmDialog open={creditDialogOpen} onConfirm={handleConfirmBattle} onCancel={() => setCreditDialogOpen(false)} creditCost={20} scanType="Competitor Duel" costBreakdown="20 credits per competitive intelligence duel (2 sites analyzed + backlink profiles)" />
+                    <CreditConfirmDialog open={creditDialogOpen} onConfirm={handleConfirmBattle} onCancel={() => setCreditDialogOpen(false)} creditCost={10} scanType="Competitor Duel" costBreakdown="10 credits per competitive intelligence duel (2 sites analyzed + backlink profiles)" />
 
                     {/* ── ENTRY FORM (hero version, only when no results) ── */}
                     {!comparisonData && !isAnalyzing ? (

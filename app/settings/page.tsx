@@ -197,9 +197,9 @@ export default function SettingsPage() {
   }
 
   const planLabel = profile?.is_admin ? 'Admin'
-    : profile?.plan === 'pro_plus' ? 'Pro Plus'
-    : profile?.plan === 'agency' ? 'Agency'
-    : profile?.plan === 'pro' ? 'Pro'
+    : profile?.plan === 'launch' ? 'AI Launch Pack'
+    : profile?.plan === 'growth' ? 'Visibility Growth'
+    : profile?.plan === 'authority' ? 'Authority Agency'
     : 'Free'
 
   const isAdmin = profile?.is_admin
@@ -246,7 +246,7 @@ export default function SettingsPage() {
                   </div>
                   {!isAdmin && (
                     <Link
-                      href="/pro"
+                      href="/pricing"
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-medium text-sm transition-colors"
                     >
                       <Crown className="h-4 w-4" />
@@ -276,7 +276,7 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Credits never expire. <a href="/pro" className="text-seo hover:underline">Buy more credits</a>
+                  Credits never expire. <a href="/pricing" className="text-seo hover:underline">Buy more credits</a>
                 </p>
               </CardContent>
             </Card>

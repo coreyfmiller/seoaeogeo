@@ -66,7 +66,7 @@ export function ProLockScreen({ featureName, description }: ProLockScreenProps) 
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
             <p className="text-xs text-muted-foreground">
-              Plans starting at $20
+              Packs starting at $79.99
             </p>
           </div>
         </CardContent>

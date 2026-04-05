@@ -162,7 +162,7 @@ export default function KeywordArenaV2Page() {
     finally { setRetryingUrl(null) }
   }
 
-  const creditCost = pendingUrls.length * 5
+  const creditCost = pendingUrls.length * 10
   const scoreColor = (v: number | null) => v === null ? "text-white/20" : v >= 75 ? "text-green-500" : v >= 50 ? "text-yellow-500" : "text-red-500"
 
   const handleReset = () => {
@@ -195,7 +195,7 @@ export default function KeywordArenaV2Page() {
 
           <ScanErrorDialog error={error} onClose={() => setError(null)} onRetry={handleStartArena} creditsRefunded={creditsRefunded} />
           <CreditConfirmDialog open={creditDialogOpen} onConfirm={handleConfirmArena} onCancel={() => setCreditDialogOpen(false)}
-            creditCost={creditCost} scanType="Keyword Arena" costBreakdown={`${pendingUrls.length} sites × 5 credits each = ${creditCost} credits`} />
+            creditCost={creditCost} scanType="Keyword Arena" costBreakdown={`${pendingUrls.length} sites × 10 credits each = ${creditCost} credits`} />
 
           {/* ── STEP 1: Keyword Search ── */}
           {!searchResults && !arenaResult && !isAnalyzing && (
@@ -224,11 +224,11 @@ export default function KeywordArenaV2Page() {
                   <span className="text-xs text-white/30">Analyze:</span>
                   <button onClick={() => setResultCount(5)} className={cn("px-4 py-1.5 rounded-lg text-xs font-bold transition-all border",
                     resultCount === 5 ? "bg-[#00e5ff]/20 text-[#00e5ff] border-[#00e5ff]/40" : "bg-white/[0.03] text-white/40 border-white/[0.08] hover:border-white/[0.15]")}>
-                    Top 5 — 25 credits
+                    Top 5 — 50 credits
                   </button>
                   <button onClick={() => setResultCount(10)} className={cn("px-4 py-1.5 rounded-lg text-xs font-bold transition-all border",
                     resultCount === 10 ? "bg-[#BC13FE]/20 text-[#BC13FE] border-[#BC13FE]/40" : "bg-white/[0.03] text-white/40 border-white/[0.08] hover:border-white/[0.15]")}>
-                    Top 10 — 50 credits
+                    Top 10 — 100 credits
                   </button>
                 </div>
               </div>

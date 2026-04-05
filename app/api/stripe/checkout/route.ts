@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
         plan,
       },
       success_url: `${origin}/settings?checkout=success`,
-      cancel_url: `${origin}/pro?checkout=cancelled`,
+      cancel_url: `${origin}/pricing?checkout=cancelled`,
     })
 
     return NextResponse.json({ url: session.url })

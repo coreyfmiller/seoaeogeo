@@ -6,7 +6,7 @@ import { getAuthUser, useCredits, refundCredits, incrementScanCount } from '@/li
 
 /**
  * Keyword Arena API: Crawls and scores multiple competitor URLs in parallel.
- * Credit cost: 5 per site (top 5 = 25 credits, top 10 = 50 credits)
+ * Credit cost: 10 per site (top 5 = 50 credits, top 10 = 100 credits)
  */
 export async function POST(req: Request) {
   let user: Awaited<ReturnType<typeof getAuthUser>> = null
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 
     // Cap at 10 sites max
     const finalUrls = allUrls.slice(0, 10)
-    creditCost = finalUrls.length * 5
+    creditCost = finalUrls.length * 10
 
     const { allowed } = await useCredits(user.id, creditCost)
     if (!allowed) {
