@@ -142,10 +142,18 @@ export default function PricingPage() {
             {/* Tier Cards */}
             <div className="grid md:grid-cols-3 gap-6">
               {tiers.map(tier => (
-                <Card key={tier.name} className={`relative flex flex-col ${tier.popular ? 'border-[#00e5ff] shadow-lg shadow-[#00e5ff]/10' : 'border-border/50'}`}>
+                <Card key={tier.name} className={`relative flex flex-col ${
+                  tier.popular ? 'border-green-500 shadow-lg shadow-green-500/10'
+                  : tier.packId === 'growth' ? 'border-[#00e5ff] shadow-lg shadow-[#00e5ff]/10'
+                  : tier.packId === 'authority' ? 'border-[#BC13FE] shadow-lg shadow-[#BC13FE]/10'
+                  : 'border-border/50'
+                }`}>
                   {tier.badge && (
                     <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-xs font-bold ${
-                      tier.popular ? 'bg-[#00e5ff] text-white' : 'bg-muted text-foreground border border-border/50'
+                      tier.popular ? 'bg-green-500 text-white'
+                      : tier.packId === 'growth' ? 'bg-[#00e5ff] text-white'
+                      : tier.packId === 'authority' ? 'bg-[#BC13FE] text-white'
+                      : 'bg-muted text-foreground border border-border/50'
                     }`}>
                       {tier.badge}
                     </div>
@@ -180,7 +188,11 @@ export default function PricingPage() {
                       disabled={loadingPack !== null}
                       className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors ${
                         tier.popular
+                          ? 'bg-green-500 hover:bg-green-500/90 text-white shadow-md'
+                          : tier.packId === 'growth'
                           ? 'bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white shadow-md'
+                          : tier.packId === 'authority'
+                          ? 'bg-[#BC13FE] hover:bg-[#BC13FE]/90 text-white shadow-md'
                           : 'border border-border hover:border-[#00e5ff]/50 hover:bg-[#00e5ff]/5'
                       }`}
                     >
