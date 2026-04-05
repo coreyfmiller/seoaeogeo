@@ -155,7 +155,7 @@ export default function LoginPage() {
         </Suspense>
 
         <p className="text-center text-xs text-muted-foreground">
-          Free audits don't require an account. <Link href="/free-audit" className="text-seo hover:underline">Try one now</Link>
+          Don&apos;t have an account? <Link href="/signup" className="text-seo hover:underline">Sign up</Link>
         </p>
       </div>
     </div>

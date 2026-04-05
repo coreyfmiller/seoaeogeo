@@ -200,7 +200,7 @@ export default function SettingsPage() {
     : profile?.plan === 'launch' ? 'AI Launch Pack'
     : profile?.plan === 'growth' ? 'Visibility Growth'
     : profile?.plan === 'authority' ? 'Authority Agency'
-    : 'Free'
+    : 'Starter'
 
   const isAdmin = profile?.is_admin
 

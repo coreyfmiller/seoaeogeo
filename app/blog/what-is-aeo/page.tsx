@@ -25,7 +25,7 @@ export default function WhatIsAEOPage() {
 
         <div className="prose prose-invert prose-lg max-w-none space-y-6">
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Picture this. Someone opens ChatGPT and types &ldquo;best plumber in Moncton&rdquo; or asks Perplexity &ldquo;how to fix a leaky faucet.&rdquo; The AI doesn&apos;t spit out ten blue links like Google does. It gives one answer. Maybe two. And if your business isn&apos;t the one getting mentioned, you basically don&apos;t exist to that person.
+            Picture this. Someone opens <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">ChatGPT</a> and types &ldquo;best plumber in Moncton&rdquo; or asks <a href="https://www.perplexity.ai/" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Perplexity</a> &ldquo;how to fix a leaky faucet.&rdquo; The AI doesn&apos;t spit out ten blue links like Google does. It gives one answer. Maybe two. And if your business isn&apos;t the one getting mentioned, you basically don&apos;t exist to that person.
           </p>
           <p className="text-muted-foreground leading-relaxed">
             That&apos;s the problem AEO solves. AEO stands for Answer Engine Optimization, and it&apos;s all about making your website&apos;s content easy for AI systems to understand, trust, and actually cite when they&apos;re pulling together an answer.
@@ -53,7 +53,7 @@ export default function WhatIsAEOPage() {
 
           <h2 className="text-2xl font-bold mt-10 mb-4">Why should small businesses pay attention to this?</h2>
           <p className="text-muted-foreground leading-relaxed">
-            AI search is growing really fast. Google AI Overviews are showing up on a huge chunk of searches now. ChatGPT has hundreds of millions of users. When someone asks an AI &ldquo;who should I hire for [service] in [city],&rdquo; it goes looking for websites that have clear, well structured content about that exact service in that exact location.
+            AI search is growing really fast. <a href="https://blog.google/products/search/generative-ai-google-search-may-2024/" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Google AI Overviews</a> are showing up on a huge chunk of searches now. ChatGPT has hundreds of millions of users. When someone asks an AI &ldquo;who should I hire for [service] in [city],&rdquo; it goes looking for websites that have clear, well structured content about that exact service in that exact location.
           </p>
           <p className="text-muted-foreground leading-relaxed">
             Here&apos;s the thing. If your competitor has a detailed FAQ page, clear service descriptions, and proper schema markup, and you don&apos;t, the AI is going to recommend them instead of you. This is especially true for local businesses where the competition for AI citations is still pretty low. There&apos;s a real window of opportunity right now.
@@ -70,9 +70,9 @@ export default function WhatIsAEOPage() {
 
           <div className="mt-12 p-6 rounded-2xl border border-[#BC13FE]/30 bg-[#BC13FE]/5">
             <h3 className="font-bold mb-2">Check your AEO score</h3>
-            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 free credits to audit your site for AI search readiness.</p>
+            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 credits to audit your site for AI search readiness.</p>
             <Link href="/signup" className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#BC13FE] hover:bg-[#BC13FE]/90 text-white font-bold text-sm transition-colors">
-              Get 20 Free Credits <ArrowRight className="h-4 w-4" />
+              Get Started <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>

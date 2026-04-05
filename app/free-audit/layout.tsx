@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Free SEO Audit | Duelly.ai',
-  description: 'Run a free SEO, AEO, and GEO audit on any website. No account required. Get instant scores and recommendations.',
+  title: 'Quick SEO Audit | Duelly.ai',
+  description: 'Run a quick SEO, AEO, and GEO audit on any website. Get instant scores and recommendations.',
   alternates: { canonical: '/free-audit' },
 }
 

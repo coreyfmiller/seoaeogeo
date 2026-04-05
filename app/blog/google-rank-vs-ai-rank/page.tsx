@@ -33,7 +33,7 @@ export default function GoogleRankVsAIRankPage() {
 
           <h2 className="text-2xl font-bold mt-10 mb-4">How Google decides who ranks</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Google&apos;s algorithm has been refined over 25+ years, and it weighs a very specific set of signals. Backlinks are still a massive factor. If 50 reputable websites link to your page, Google sees that as a vote of confidence. Technical SEO matters too. Page speed, mobile responsiveness, HTTPS, clean URL structures, proper canonical tags. Then there&apos;s content relevance, keyword placement, and user engagement metrics like bounce rate and time on page.
+            Google&apos;s algorithm has been refined over 25+ years, and it weighs a very specific set of signals. <a href="https://moz.com/learn/seo/backlinks" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Backlinks</a> are still a massive factor. If 50 reputable websites link to your page, Google sees that as a vote of confidence. Technical SEO matters too. Page speed, mobile responsiveness, HTTPS, clean URL structures, proper canonical tags. Then there&apos;s content relevance, keyword placement, and user engagement metrics like bounce rate and time on page.
           </p>
           <p className="text-muted-foreground leading-relaxed">
             The thing is, you can rank well on Google with a page that&apos;s technically solid and has strong backlinks, even if the actual content is mediocre. We&apos;ve all seen those pages that rank #1 but don&apos;t really answer your question. Google&apos;s system rewards authority and technical signals heavily.
@@ -87,9 +87,9 @@ export default function GoogleRankVsAIRankPage() {
 
           <div className="mt-12 p-6 rounded-2xl border border-[#BC13FE]/30 bg-[#BC13FE]/5">
             <h3 className="font-bold mb-2">See where you rank in AI search</h3>
-            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 free credits to compare your Google ranking vs your AI ranking.</p>
+            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 credits to compare your Google ranking vs your AI ranking.</p>
             <Link href="/signup" className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#BC13FE] hover:bg-[#BC13FE]/90 text-white font-bold text-sm transition-colors">
-              Get 20 Free Credits <ArrowRight className="h-4 w-4" />
+              Get Started <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>

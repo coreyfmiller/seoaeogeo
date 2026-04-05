@@ -60,9 +60,9 @@ export function ProLockScreen({ featureName, description }: ProLockScreenProps) 
             <Button
               size="lg"
               className="bg-geo hover:bg-geo/90 text-geo-foreground shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
-              onClick={() => window.location.href = '/free-audit'}
+              onClick={() => window.location.href = '/pricing'}
             >
-              Try Free Scan
+              Get Credits
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
             <p className="text-xs text-muted-foreground">

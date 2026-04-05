@@ -132,7 +132,7 @@ export default function V4Page() {
           <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 pb-6">
       
             <AuditPageHeader
-              title="V4 Free Audit"
+              title="V4 Lite Audit"
               description="Lite AI-powered scoring with Domain Health and Brand analysis."
               badge="BETA AI"
               badgeVariant="beta"
@@ -161,7 +161,7 @@ export default function V4Page() {
                   <div className="flex flex-col items-center gap-4 py-8">
                     <div className="h-12 w-12 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
                     <div className="text-center min-h-[48px]">
-                      <h3 className="text-lg font-bold text-foreground">V4 Free Audit in Progress</h3>
+                      <h3 className="text-lg font-bold text-foreground">V4 Lite Audit in Progress</h3>
                       <p className="text-sm text-muted-foreground mt-1">{sse.phase || 'Initializing...'}</p>
                     </div>
                     <div className="w-64 h-1.5 bg-muted rounded-full overflow-hidden">
@@ -180,9 +180,9 @@ export default function V4Page() {
                     <Sparkles className="h-8 w-8 text-[#BC13FE]" />
                   </div>
                   <div>
-                    <CardTitle className="text-3xl mb-2">V4 Free Audit</CardTitle>
+                    <CardTitle className="text-3xl mb-2">V4 Lite Audit</CardTitle>
                     <CardDescription className="text-base max-w-2xl mx-auto">
-                      Lite AI analysis with Domain Health and Brand scoring. Minimal token usage for free tier.
+                      Lite AI analysis with Domain Health and Brand scoring. Minimal token usage.
                     </CardDescription>
                   </div>
                 </CardHeader>
@@ -231,7 +231,7 @@ export default function V4Page() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground">
-                      ~2,000 tokens vs ~6,000+ for full Pro Audit. Sustainable for free tier.
+                      ~2,000 tokens vs ~6,000+ for full Pro Audit. Sustainable for lite tier.
                     </p>
                   </CardContent>
                 </Card>

@@ -39,6 +39,7 @@ export default function HomePage() {
             <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link>
             <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help</Link>
             <Link href="/standards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How We Score</Link>
+            <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</Link>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/signup" className="px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-bold text-sm transition-colors">
@@ -78,7 +79,7 @@ export default function HomePage() {
             View Pricing
           </Link>
         </div>
-        <p className="text-sm text-muted-foreground mt-3">No credit card required.</p>
+        <p className="text-sm text-muted-foreground mt-3">20 credits included with every new account.</p>
       </section>
 
       {/* Three Pillars — compact */}
@@ -236,8 +237,8 @@ export default function HomePage() {
               a: 'Duelly uses a multi-layer approach: a headless browser crawls your page to extract technical data, then Gemini AI analyzes content quality and semantic signals. Two parallel AI calls are averaged for stability. Scores are calculated using site-type-specific weights — an e-commerce site is graded differently than a blog or local business.',
             },
             {
-              q: 'Is there a free tier?',
-              a: 'Yes. You can run a free audit with no account required. After that, credit packs start at $79.99 for 180 credits.',
+              q: 'How do I get started?',
+              a: 'Sign up for an account and you\'ll receive 20 credits to start auditing immediately. Credit packs start at $79.99 for 180 credits.',
             },
             {
               q: 'How many credits does each scan cost?',
@@ -267,7 +268,7 @@ export default function HomePage() {
               { '@type': 'Question', name: 'What is AEO (Answer Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'AEO is the practice of optimizing your content so that AI-powered answer engines like ChatGPT, Perplexity, and Google AI Overviews cite your website as a source.' } },
               { '@type': 'Question', name: 'What is GEO (Generative Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'GEO measures how well your content performs in AI-generated search results, evaluating expertise signals, factual density, tone objectivity, and citation likelihood.' } },
               { '@type': 'Question', name: 'How does Duelly calculate scores?', acceptedAnswer: { '@type': 'Answer', text: 'Duelly uses a headless browser crawl plus dual Gemini AI analysis with site-type-specific scoring weights for consistent, accurate results.' } },
-              { '@type': 'Question', name: 'Is there a free tier?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. You can run a free audit with no account required. Credit packs start at $79.99 for 180 credits.' } },
+              { '@type': 'Question', name: 'How do I get started?', acceptedAnswer: { '@type': 'Answer', text: 'Sign up for an account and you\'ll receive 20 credits to start auditing immediately. Credit packs start at $79.99 for 180 credits.' } },
               { '@type': 'Question', name: 'How many credits does each scan cost?', acceptedAnswer: { '@type': 'Answer', text: 'Pro Analysis: 10 credits. Deep Scan: 30 credits (5 pages). Competitor Duel: 10 credits. Keyword Arena: 10 credits per run.' } },
               { '@type': 'Question', name: 'What platforms does Duelly detect?', acceptedAnswer: { '@type': 'Answer', text: 'WordPress, Shopify, Wix, Squarespace, Webflow, Next.js, Gatsby, Hugo, and more. Fix instructions are tailored to the detected platform.' } },
             ],
@@ -280,11 +281,11 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-6 py-20 text-center border-t border-border/30">
         <h2 className="text-3xl font-black mb-4">Ready to See What AI Sees?</h2>
         <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-          Run a free audit in 60 seconds. No account required.
+          Sign up and start auditing in minutes. 20 credits included with every new account.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/free-audit"
+            href="/signup"
             className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-lg transition-colors"
           >
             Get Started <ArrowRight className="h-5 w-5" />
@@ -317,6 +318,7 @@ export default function HomePage() {
                 <li><Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link></li>
                 <li><Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help Center</Link></li>
                 <li><Link href="/standards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How We Score</Link></li>
+                <li><Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</Link></li>
                 <li><Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link></li>
               </ul>
             </div>

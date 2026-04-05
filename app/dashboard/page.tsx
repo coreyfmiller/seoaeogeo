@@ -116,8 +116,8 @@ export default function DashboardPage() {
 
   const getTypeLabel = (type: string) => {
     switch (type) {
-      case 'free-v3': return { label: 'Free Audit', color: 'bg-blue-500/10 text-blue-600 border-blue-500/20' }
-      case 'free-v4': return { label: 'Free Audit', color: 'bg-[#BC13FE]/10 text-[#BC13FE] border-[#BC13FE]/20' }
+      case 'free-v3': return { label: 'Quick Audit', color: 'bg-blue-500/10 text-blue-600 border-blue-500/20' }
+      case 'free-v4': return { label: 'Lite Audit', color: 'bg-[#BC13FE]/10 text-[#BC13FE] border-[#BC13FE]/20' }
       case 'pro': return { label: 'Pro Audit', color: 'bg-seo/10 text-seo border-seo/20' }
       case 'deep': return { label: 'Deep Scan', color: 'bg-orange-500/10 text-orange-600 border-orange-500/20' }
       case 'competitive': return { label: 'Competitor Duel', color: 'bg-aeo/10 text-aeo border-aeo/20' }

@@ -34,7 +34,6 @@ interface NavItem {
 }
 
 const mainNav: NavItem[] = [
-  { name: "Free Audit", icon: Sparkles, href: "/free-audit" },
   { name: "Pro Audit", icon: Bot, href: "/pro-audit" },
   { name: "Deep Scan", icon: Layers, href: "/deep-scan" },
   { name: "Competitor Duel", icon: Swords, href: "/battle-mode" },
@@ -118,7 +117,7 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
     ? 'Admin'
     : profile?.plan
       ? profile.plan === 'launch' ? 'Launch' : profile.plan === 'growth' ? 'Growth' : profile.plan === 'authority' ? 'Authority' : profile.plan.charAt(0).toUpperCase() + profile.plan.slice(1)
-      : 'Free'
+      : 'Starter'
 
   const isAdmin = profile?.is_admin === true
   const isFreeUser = !user
@@ -152,7 +151,6 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
           </p>
           <ul className="space-y-1">
             {mainNav
-              .filter((item) => !(item.href === '/free-audit' && user))
               .map((item) => {
               const isProOnly = proOnlyPaths.includes(item.href)
               const isLocked = isProOnly && isFreeUser
@@ -183,9 +181,9 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
                       PRO AI
                     </span>
                   )}
-                  {item.badge === "FREE" && (
+                  {item.badge === "LITE" && (
                     <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
-                      FREE
+                      LITE
                     </span>
                   )}
                   {item.badge === "ADMIN" && (

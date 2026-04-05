@@ -181,9 +181,9 @@ export default function V2Page() {
       
       {/* Page Header with Actions */}
       <AuditPageHeader
-        title="Free Audit"
+        title="Quick Audit"
         description="Fast heuristic scoring with Core Web Vitals and site-type detection."
-        badge="FREE"
+        badge="LITE"
         badgeVariant="default"
         currentUrl={currentUrl}
         hasResults={!!result}
@@ -212,7 +212,7 @@ export default function V2Page() {
             <div className="flex flex-col items-center gap-4 py-8">
               <div className="h-12 w-12 rounded-full border-2 border-t-seo border-r-aeo border-b-geo border-l-transparent animate-spin" />
               <div className="text-center min-h-[48px]">
-                <h3 className="text-lg font-bold text-foreground">Free Audit in Progress</h3>
+                <h3 className="text-lg font-bold text-foreground">Quick Audit in Progress</h3>
                 <p className="text-sm text-muted-foreground mt-1 transition-opacity duration-500">{sse.phase || 'Initializing...'}</p>
               </div>
               <div className="w-64 h-1.5 bg-muted rounded-full overflow-hidden">
@@ -236,7 +236,7 @@ export default function V2Page() {
               The Future of SEO Auditing
             </CardTitle>
             <CardDescription className="text-base max-w-2xl mx-auto">
-              Free Audit includes Core Web Vitals, mobile-first scoring, and AI-powered insights.
+              Quick Audit includes Core Web Vitals, mobile-first scoring, and AI-powered insights.
               Built for the 2026 search landscape.
             </CardDescription>
           </div>
@@ -419,7 +419,7 @@ export default function V2Page() {
                   YOU FOUND THE PROBLEMS. NOW FIX THEM.
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-black text-foreground mb-2">
-                  Your Free Audit Found Issues. Pro Tells You Exactly How to Fix Them.
+                  Your Quick Audit Found Issues. Pro Tells You Exactly How to Fix Them.
                 </h3>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
                   Every penalty above has a step-by-step fix instruction waiting for you — tailored to your platform, prioritized by impact, with code snippets you can copy and paste.
@@ -446,14 +446,14 @@ export default function V2Page() {
 
               {/* Step 3: The offer */}
               <div className="rounded-2xl border-2 border-[#BC13FE]/30 bg-[#BC13FE]/5 p-6 text-center mb-6">
-                <p className="text-xs font-bold text-[#BC13FE] uppercase tracking-widest mb-2">Start for free</p>
-                <p className="text-3xl font-black text-foreground mb-1">20 Free Credits on Signup</p>
-                <p className="text-muted-foreground text-sm mb-4">No credit card required. Enough for 2 Pro Audits or 1 Deep Scan.</p>
+                <p className="text-xs font-bold text-[#BC13FE] uppercase tracking-widest mb-2">Go deeper</p>
+                <p className="text-3xl font-black text-foreground mb-1">20 Credits on Signup</p>
+                <p className="text-muted-foreground text-sm mb-4">Enough for 2 Pro Audits or 1 Deep Scan.</p>
                 <button
                   onClick={() => router.push('/signup')}
                   className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#BC13FE] hover:bg-[#BC13FE]/90 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all"
                 >
-                  Create Free Account
+                  Create Account
                   <ArrowRight className="h-5 w-5" />
                 </button>
               </div>

@@ -30,7 +30,7 @@ export default function LocalSEOAtlanticCanadaPage() {
 
           <h2 className="text-2xl font-bold mt-10 mb-4">1. Claim your Google Business Profile</h2>
           <p className="text-muted-foreground leading-relaxed">
-            This is hands down the most important thing you can do for local visibility. Your Google Business Profile (it used to be called Google My Business) is what shows up in the map pack when someone searches &ldquo;plumber near me&rdquo; or &ldquo;restaurant in Fredericton.&rdquo; If you haven&apos;t claimed yours yet, go do it today at business.google.com. Seriously, stop reading and go do it.
+            This is hands down the most important thing you can do for local visibility. Your <a href="https://www.google.com/business/" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Google Business Profile</a> (it used to be called Google My Business) is what shows up in the map pack when someone searches &ldquo;plumber near me&rdquo; or &ldquo;restaurant in Fredericton.&rdquo; If you haven&apos;t claimed yours yet, go do it today at business.google.com. Seriously, stop reading and go do it.
           </p>
           <p className="text-muted-foreground leading-relaxed">
             Once it&apos;s claimed, make sure your name, address, and phone number are exactly the same everywhere you appear online. Even small inconsistencies confuse Google and can hurt your rankings. While you&apos;re at it, add some good photos, keep your business hours up to date, and make a habit of responding to reviews.
@@ -95,9 +95,9 @@ export default function LocalSEOAtlanticCanadaPage() {
 
           <div className="mt-12 p-6 rounded-2xl border border-[#22c55e]/30 bg-[#22c55e]/5">
             <h3 className="font-bold mb-2">See how your business scores</h3>
-            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 free credits to check your SEO, AEO, and GEO scores. See exactly what&apos;s helping and what&apos;s hurting your visibility.</p>
+            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 credits to check your SEO, AEO, and GEO scores. See exactly what&apos;s helping and what&apos;s hurting your visibility.</p>
             <Link href="/signup" className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#22c55e] hover:bg-[#22c55e]/90 text-black font-bold text-sm transition-colors">
-              Get 20 Free Credits <ArrowRight className="h-4 w-4" />
+              Get Started <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>

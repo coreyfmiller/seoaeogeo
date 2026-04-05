@@ -45,8 +45,8 @@ const faqs: FAQItem[] = [
   },
   {
     category: "Getting Started",
-    question: "What's the difference between Free and Pro audits?",
-    answer: "Free Audit runs a comprehensive rule-based analysis checking 50+ technical and content signals — no AI involved. Pro Audit adds AI-powered analysis using Gemini to generate specific fix instructions, deeper content evaluation, and actionable recommendations tailored to your site type."
+    question: "What does Pro Audit do?",
+    answer: "Pro Audit runs an AI-powered analysis using Gemini to generate specific fix instructions, deeper content evaluation, and actionable recommendations tailored to your site type. It costs 10 credits per scan."
   },
   {
     category: "Getting Started",
@@ -66,7 +66,7 @@ const faqs: FAQItem[] = [
   {
     category: "Scoring",
     question: "Why do my scores differ between audit types?",
-    answer: "Free audits use rule-based analysis only, while Pro audits incorporate AI evaluation for deeper content and quality assessment. The underlying scoring components are the same, but Pro audits can detect nuances that rule-based checks miss."
+    answer: "Pro audits incorporate AI evaluation for deeper content and quality assessment. Deep Scans analyze multiple pages across your site. The underlying scoring components are the same, but AI-powered audits can detect nuances that basic checks miss."
   },
   {
     category: "Scoring",
@@ -96,12 +96,12 @@ const faqs: FAQItem[] = [
   {
     category: "Plans & Limits",
     question: "What are the plan limits?",
-    answer: "Credits are one-time purchases — buy more when you need them. Pro Analysis costs 10 credits. Deep Scan costs 30 credits (5 pages). Competitor Duel costs 10 credits. Keyword Arena costs 10 credits per run. Free audits don't count against your credits."
+    answer: "Credits are one-time purchases — buy more when you need them. Pro Analysis costs 10 credits. Deep Scan costs 30 credits (5 pages). Competitor Duel costs 10 credits. Keyword Arena costs 10 credits per run."
   },
   {
     category: "Plans & Limits",
-    question: "Do free audits count against my plan?",
-    answer: "No. Free audits are unlimited and don't use any AI credits. Only Pro Audits, Deep Scans, and Competitor Duel analyses count against your monthly quota."
+    question: "How do I get started?",
+    answer: "Sign up for an account and you'll receive 20 credits to start auditing immediately. That's enough for 2 Pro Audits or a Keyword Arena run plus a Competitor Duel."
   },
   {
     category: "Keyword Arena",
@@ -129,13 +129,13 @@ const categories = [...new Set(faqs.map(f => f.category))]
 
 const quickStartGuides = [
   {
-    title: "Free Audit",
-    desc: "Quick rule-based analysis of any URL. No AI, no limits.",
+    title: "Pro Audit",
+    desc: "AI-powered deep analysis with fix instructions. 10 credits.",
     icon: Sparkles,
     color: "text-seo",
     bg: "bg-seo/10",
-    href: "/free-audit",
-    steps: ["Enter any URL", "Get instant SEO/AEO/GEO scores", "Review detailed metric breakdowns", "No account or credits needed"],
+    href: "/pro-audit",
+    steps: ["Enter any URL", "AI analyzes your content", "Get SEO/AEO/GEO scores with fixes", "Follow platform-specific instructions"],
   },
   {
     title: "Pro Audit",
@@ -390,7 +390,7 @@ export default function HelpPage() {
               </div>
               <div className="grid md:grid-cols-2 gap-4">
                 {[
-                  { title: "Run Free first, then Pro", tip: "Start with a Free Audit to get baseline scores. If you need specific fix instructions, follow up with a Pro Audit. This saves your Pro credits for when you need them." },
+                  { title: "Start with Pro Audit", tip: "Run a Pro Audit on your most important page first. The AI-powered fix instructions will show you exactly what to improve and in what order." },
                   { title: "Scan after making changes", tip: "After implementing fixes, run another audit to track your progress. Each scan is saved to your history so you can see improvement over time." },
                   { title: "Use Competitor Duel strategically", tip: "Compare against your top-ranking competitor for your target keyword. The counter-strategies are most valuable when you're competing for the same search intent." },
                   { title: "Export your data regularly", tip: "Since scan history is stored locally, use the Export button on the Dashboard to back up your data. This protects against browser data loss and lets you share results with your team." },

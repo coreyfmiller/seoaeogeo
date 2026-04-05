@@ -50,10 +50,12 @@ export function useSSEAnalysis<T = any>(apiEndpoint: string): UseSSEAnalysisRetu
     const timer = setInterval(() => {
       setDisplayProgress(prev => {
         const target = Math.max(prev, state.progress)
-        if (target >= 99) return 99
-        return Math.min(target + 1, 99)
+        if (target >= 85) return target // Stop creeping past 85 — only server updates push higher
+        // Slow logarithmic creep: smaller increments as we get higher
+        const increment = prev < 30 ? 0.5 : prev < 60 ? 0.3 : 0.15
+        return Math.min(target + increment, 85)
       })
-    }, 1500)
+    }, 2000)
     return () => clearInterval(timer)
   }, [state.isAnalyzing, state.progress])
 

@@ -25,7 +25,7 @@ export default function ContentAICitesPage() {
 
         <div className="prose prose-invert prose-lg max-w-none space-y-6">
           <p className="text-lg text-muted-foreground leading-relaxed">
-            You&apos;ve probably noticed that when you ask ChatGPT or Perplexity a question, it doesn&apos;t just make stuff up (well, usually). It pulls from real websites and cites them. But here&apos;s the thing that frustrates a lot of content creators: it doesn&apos;t cite everyone equally. Some pages get referenced constantly while others, even well written ones, get completely ignored.
+            You&apos;ve probably noticed that when you ask <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">ChatGPT</a> or <a href="https://www.perplexity.ai/" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Perplexity</a> a question, it doesn&apos;t just make stuff up (well, usually). It pulls from real websites and cites them. But here&apos;s the thing that frustrates a lot of content creators: it doesn&apos;t cite everyone equally. Some pages get referenced constantly while others, even well written ones, get completely ignored.
           </p>
           <p className="text-muted-foreground leading-relaxed">
             So what&apos;s the difference? What makes AI pick one source over another? After analyzing thousands of AI citations through Duelly audits, we&apos;ve found some very clear patterns. And the good news is, most of them are things you can fix today.
@@ -125,9 +125,9 @@ export default function ContentAICitesPage() {
 
           <div className="mt-12 p-6 rounded-2xl border border-[#fe3f8c]/30 bg-[#fe3f8c]/5">
             <h3 className="font-bold mb-2">Find out if AI is citing your content</h3>
-            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 free credits to see how your content scores for AI citation readiness.</p>
+            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 credits to see how your content scores for AI citation readiness.</p>
             <Link href="/signup" className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#fe3f8c] hover:bg-[#fe3f8c]/90 text-white font-bold text-sm transition-colors">
-              Get 20 Free Credits <ArrowRight className="h-4 w-4" />
+              Get Started <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>

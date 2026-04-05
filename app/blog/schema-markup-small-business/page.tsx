@@ -33,7 +33,7 @@ export default function SchemaMarkupPage() {
             Schema markup is a small piece of code you add to your website that tells search engines and AI systems exactly what your business is. Think of it like a label on a package. Without the label, the delivery driver has to guess what&apos;s inside. With it, they know immediately. Schema does the same thing for Google, ChatGPT, and every other search system that looks at your site.
           </p>
           <p className="text-muted-foreground leading-relaxed">
-            It&apos;s written in a format called JSON-LD, which sounds intimidating but is really just a structured list of facts about your business. Your name, address, phone number, hours, what you sell, your reviews. All organized in a way that machines can read instantly.
+            It&apos;s written in a format called <a href="https://schema.org/" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">JSON-LD</a>, which sounds intimidating but is really just a structured list of facts about your business. Your name, address, phone number, hours, what you sell, your reviews. All organized in a way that machines can read instantly.
           </p>
 
           <h2 className="text-2xl font-bold mt-10 mb-4">Why should a small business care?</h2>
@@ -61,7 +61,7 @@ export default function SchemaMarkupPage() {
             If you&apos;re on WordPress, there are plugins like Yoast SEO or Rank Math that can generate schema for you automatically. Shopify has built in product schema. Squarespace and Wix have basic schema support too, though it&apos;s more limited.
           </p>
           <p className="text-muted-foreground leading-relaxed">
-            If you want to do it manually or your platform doesn&apos;t support it well, you can write the JSON-LD yourself and paste it into your page&apos;s HTML. It goes in a script tag in the head of your page. Google has a free tool called the Structured Data Markup Helper that walks you through it step by step.
+            If you want to do it manually or your platform doesn&apos;t support it well, you can write the JSON-LD yourself and paste it into your page&apos;s HTML. It goes in a script tag in the head of your page. Google has a free tool called the <a href="https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Structured Data documentation</a> that walks you through it, and you can validate your markup with the <a href="https://search.google.com/test/rich-results" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Rich Results Test</a>.
           </p>
 
           <h2 className="text-2xl font-bold mt-10 mb-4">The bottom line</h2>
@@ -71,9 +71,9 @@ export default function SchemaMarkupPage() {
 
           <div className="mt-12 p-6 rounded-2xl border border-[#00e5ff]/30 bg-[#00e5ff]/5">
             <h3 className="font-bold mb-2">See if your site has schema markup</h3>
-            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 free credits to run a Pro Audit. We&apos;ll check your schema, tell you what&apos;s missing, and give you the code to add it.</p>
+            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 credits to run a Pro Audit. We&apos;ll check your schema, tell you what&apos;s missing, and give you the code to add it.</p>
             <Link href="/signup" className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-bold text-sm transition-colors">
-              Get 20 Free Credits <ArrowRight className="h-4 w-4" />
+              Get Started <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>

@@ -86,6 +86,29 @@ export default function RootLayout({
                   logo: 'https://duelly.ai/logo.png',
                   description: 'Search intelligence platform providing SEO, AEO, and GEO analytics for the AI search era.',
                   email: 'support@duelly.ai',
+                  founder: {
+                    '@type': 'Person',
+                    name: 'Fundylogic',
+                    url: 'https://fundylogic.com',
+                  },
+                  foundingDate: '2025',
+                  sameAs: [
+                    'https://fundylogic.com',
+                  ],
+                },
+                {
+                  '@type': 'WebSite',
+                  name: 'Duelly',
+                  url: 'https://duelly.ai',
+                  description: 'AI-powered search intelligence platform for SEO, AEO, and GEO analytics.',
+                  potentialAction: {
+                    '@type': 'SearchAction',
+                    target: {
+                      '@type': 'EntryPoint',
+                      urlTemplate: 'https://duelly.ai/keyword-arena?q={search_term_string}',
+                    },
+                    'query-input': 'required name=search_term_string',
+                  },
                 },
                 {
                   '@type': 'SoftwareApplication',
@@ -95,7 +118,6 @@ export default function RootLayout({
                   operatingSystem: 'Web',
                   description: 'AI-powered website auditing tool that scores pages on SEO, AEO, and GEO with actionable fix instructions.',
                   offers: [
-                    { '@type': 'Offer', name: 'Free Audit', price: '0', priceCurrency: 'USD', description: 'Basic SEO, AEO, and GEO score. No account required.' },
                     { '@type': 'Offer', name: 'AI Launch Pack', price: '79.99', priceCurrency: 'USD', description: '180 credits for Pro Analysis, Deep Scan, Competitor Duel, and Keyword Arena.' },
                     { '@type': 'Offer', name: 'Visibility Growth Bundle', price: '149.99', priceCurrency: 'USD', description: '550 credits for all tools. Includes 60 bonus credits.' },
                     { '@type': 'Offer', name: 'Authority Agency Suite', price: '299.99', priceCurrency: 'USD', description: '1,450 credits for all tools with premium features. Includes 150 bonus credits.' },
@@ -115,6 +137,13 @@ export default function RootLayout({
                   '@type': 'BreadcrumbList',
                   itemListElement: [
                     { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://duelly.ai' },
+                    { '@type': 'ListItem', position: 2, name: 'Pro Audit', item: 'https://duelly.ai/pro-audit' },
+                    { '@type': 'ListItem', position: 2, name: 'Deep Scan', item: 'https://duelly.ai/deep-scan' },
+                    { '@type': 'ListItem', position: 2, name: 'Competitor Duel', item: 'https://duelly.ai/battle-mode' },
+                    { '@type': 'ListItem', position: 2, name: 'Keyword Arena', item: 'https://duelly.ai/keyword-arena' },
+                    { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://duelly.ai/blog' },
+                    { '@type': 'ListItem', position: 2, name: 'Pricing', item: 'https://duelly.ai/pricing' },
+                    { '@type': 'ListItem', position: 2, name: 'About', item: 'https://duelly.ai/about' },
                   ],
                 },
               ],

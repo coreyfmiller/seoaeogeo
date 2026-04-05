@@ -38,10 +38,10 @@ export default function SEOvsAEOvsGEOPage() {
 
           <h2 className="text-2xl font-bold mt-10 mb-4">AEO: Answer Engine Optimization</h2>
           <p className="text-muted-foreground leading-relaxed">
-            AEO is about getting your business cited by AI answer engines like ChatGPT, Perplexity, Google AI Overviews, and others. When someone asks an AI a question, it doesn&apos;t show a list of websites. It puts together a direct answer and cites its sources. AEO is how you become one of those cited sources.
+            AEO is about getting your business cited by AI answer engines like <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">ChatGPT</a>, <a href="https://www.perplexity.ai/" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Perplexity</a>, Google AI Overviews, and others. When someone asks an AI a question, it doesn&apos;t show a list of websites. It puts together a direct answer and cites its sources. AEO is how you become one of those cited sources.
           </p>
           <p className="text-muted-foreground leading-relaxed">
-            The things that matter for AEO include structured data (schema markup), clear question and answer formatting, entity density (meaning specific names, numbers, and facts), and content that genuinely answers questions rather than just selling your services.
+            The things that matter for AEO include <a href="https://schema.org/" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">structured data (schema markup)</a>, clear question and answer formatting, entity density (meaning specific names, numbers, and facts), and content that genuinely answers questions rather than just selling your services.
           </p>
 
           <h2 className="text-2xl font-bold mt-10 mb-4">GEO: Generative Engine Optimization</h2>
@@ -78,9 +78,9 @@ export default function SEOvsAEOvsGEOPage() {
 
           <div className="mt-12 p-6 rounded-2xl border border-[#00e5ff]/30 bg-[#00e5ff]/5">
             <h3 className="font-bold mb-2">See your SEO, AEO, and GEO scores</h3>
-            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 free credits to audit your site across all three dimensions.</p>
+            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 credits to audit your site across all three dimensions.</p>
             <Link href="/signup" className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-bold text-sm transition-colors">
-              Get 20 Free Credits <ArrowRight className="h-4 w-4" />
+              Get Started <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>

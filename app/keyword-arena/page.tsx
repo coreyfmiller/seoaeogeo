@@ -836,6 +836,15 @@ export default function KeywordArenaV3Page() {
                   googleRank: userSite.googleRank, arenaRank: arenaResult?.userSiteRank,
                   totalSites: arenaResult?.totalSites,
                   arenaAvg: arenaResult?.arenaAvg ? { seo: arenaResult.arenaAvg.seo, aeo: arenaResult.arenaAvg.aeo, geo: arenaResult.arenaAvg.geo } : undefined,
+                  siteType: userSite.siteType,
+                  wordCount: userSite.scanDetails?.wordCount,
+                  schemaCount: userSite.scanDetails?.schemaTypes?.length ?? 0,
+                  domainAuthority: arenaResult?.backlinkData?.metrics?.domainAuthority,
+                  competitorDA: arenaResult?.competitorDA ? { domain: arenaResult.competitorDA.domain, domainAuthority: arenaResult.competitorDA.domainAuthority } : undefined,
+                  topCompetitors: arenaResult?.sites.filter(s => !s.isUserSite && s.scores.overall !== null).slice(0, 5).map(s => ({
+                    url: s.url, scores: { seo: s.scores.seo ?? 0, aeo: s.scores.aeo ?? 0, geo: s.scores.geo ?? 0 },
+                    googleRank: s.googleRank, wordCount: s.scanDetails?.wordCount, hasSchema: s.scanDetails?.hasSchema, schemaTypes: s.scanDetails?.schemaTypes,
+                  })),
                 } : undefined}
               />
 
@@ -873,7 +882,7 @@ export default function KeywordArenaV3Page() {
                               <span className="text-[10px] font-black uppercase tracking-widest text-white/50">{l.label}</span>
                             </div>
                             <p className="text-xs text-white/60 truncate mb-1">
-                              {(() => { try { return new URL(l.site.url.startsWith('http') ? l.site.url : `https://${l.site.url}`).hostname } catch { return l.site.url } })()}
+                              {(() => { try { const u = new URL(l.site.url.startsWith('http') ? l.site.url : `https://${l.site.url}`); return u.hostname + (u.pathname !== '/' ? u.pathname.replace(/\/$/, '') : '') } catch { return l.site.url } })()}
                             </p>
                             <p className="text-3xl font-black tabular-nums" style={{ color: l.color }}>{l.score ?? '—'}</p>
                             {userSite && !isUser && diff != null && diff > 0 && (
@@ -958,7 +967,7 @@ export default function KeywordArenaV3Page() {
                                   </p>
                                   <div className="flex items-center gap-1.5">
                                     <a href={site.url.startsWith('http') ? site.url : `https://${site.url}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs text-white/60 hover:text-[#00e5ff] hover:underline">
-                                      {(() => { try { return new URL(site.url.startsWith('http') ? site.url : `https://${site.url}`).hostname } catch { return site.url } })()}
+                                      {(() => { try { const u = new URL(site.url.startsWith('http') ? site.url : `https://${site.url}`); return u.hostname + (u.pathname !== '/' ? u.pathname.replace(/\/$/, '') : '') } catch { return site.url } })()}
                                     </a>
                                     {site.siteType && site.siteType !== 'general' && (
                                       <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/[0.06] text-white/40 font-bold uppercase">{site.siteType}</span>

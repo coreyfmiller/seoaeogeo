@@ -81,14 +81,14 @@ export default function SEOMistakesSmallBusinessPage() {
 
           <h2 className="text-2xl font-bold mt-10 mb-4">5. Slow page speed</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Page speed is a confirmed Google ranking factor, and it&apos;s been one since 2018. Google&apos;s Core Web Vitals (LCP, FID, and CLS) measure how fast your page loads, how quickly it becomes interactive, and how stable the layout is while loading. Sites that fail these metrics get pushed down in rankings.
+            Page speed is a confirmed Google ranking factor, and it&apos;s been one since 2018. Google&apos;s <a href="https://web.dev/articles/vitals" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Core Web Vitals</a> (LCP, FID, and CLS) measure how fast your page loads, how quickly it becomes interactive, and how stable the layout is while loading. Sites that fail these metrics get pushed down in rankings.
           </p>
           <p className="text-muted-foreground leading-relaxed">
             The numbers are stark. Pages that load in under 2.5 seconds have a bounce rate of about 9%. Pages that take 5 seconds jump to a 38% bounce rate. And pages over 10 seconds? Over 58% of visitors leave before the page even finishes loading. Every second counts.
           </p>
           <div className="p-4 rounded-xl border border-[#f59e0b]/30 bg-[#f59e0b]/5 my-4">
             <p className="text-sm font-bold text-[#f59e0b] mb-1">How to fix it</p>
-            <p className="text-sm text-muted-foreground">Run your site through Google PageSpeed Insights and aim for a score above 80 on mobile. The most common fixes: compress and resize images (this alone often cuts load time in half), enable browser caching, minimize CSS and JavaScript files, and use a CDN if you serve visitors across multiple regions. If you&apos;re on WordPress, a caching plugin like WP Rocket can make a huge difference.</p>
+            <p className="text-sm text-muted-foreground">Run your site through <a href="https://pagespeed.web.dev/" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Google PageSpeed Insights</a> and aim for a score above 80 on mobile. The most common fixes: compress and resize images (this alone often cuts load time in half), enable browser caching, minimize CSS and JavaScript files, and use a CDN if you serve visitors across multiple regions. If you&apos;re on WordPress, a caching plugin like WP Rocket can make a huge difference.</p>
           </div>
 
           <h2 className="text-2xl font-bold mt-10 mb-4">6. Thin content (under 300 words)</h2>
@@ -125,9 +125,9 @@ export default function SEOMistakesSmallBusinessPage() {
 
           <div className="mt-12 p-6 rounded-2xl border border-[#f59e0b]/30 bg-[#f59e0b]/5">
             <h3 className="font-bold mb-2">Find out which mistakes your site is making</h3>
-            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 free credits to run a full SEO audit and see exactly what needs fixing.</p>
+            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 credits to run a full SEO audit and see exactly what needs fixing.</p>
             <Link href="/signup" className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#f59e0b] hover:bg-[#f59e0b]/90 text-black font-bold text-sm transition-colors">
-              Get 20 Free Credits <ArrowRight className="h-4 w-4" />
+              Get Started <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>

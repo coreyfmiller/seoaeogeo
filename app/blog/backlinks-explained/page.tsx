@@ -70,7 +70,7 @@ export default function BacklinksExplainedPage() {
 
           <h2 className="text-2xl font-bold mt-10 mb-4">What is domain authority?</h2>
           <p className="text-muted-foreground leading-relaxed">
-            You&apos;ll often hear people talk about &ldquo;domain authority&rdquo; or DA. This is a score from 1 to 100 (created by Moz, not Google) that estimates how likely a website is to rank in search results. It&apos;s based largely on the quality and quantity of backlinks pointing to that domain.
+            You&apos;ll often hear people talk about &ldquo;domain authority&rdquo; or DA. This is a score from 1 to 100 (created by <a href="https://moz.com/learn/seo/domain-authority" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Moz</a>, not Google) that estimates how likely a website is to rank in search results. It&apos;s based largely on the quality and quantity of backlinks pointing to that domain.
           </p>
           <p className="text-muted-foreground leading-relaxed">
             A brand new website with no backlinks might have a DA of 1. A site like Wikipedia has a DA of 100. Most small business websites fall somewhere between 10 and 30. Getting your DA up takes time and consistent effort, but every quality backlink you earn moves the needle.
@@ -111,7 +111,7 @@ export default function BacklinksExplainedPage() {
 
           <h2 className="text-2xl font-bold mt-10 mb-4">How to check your backlink profile</h2>
           <p className="text-muted-foreground leading-relaxed">
-            You can see who&apos;s linking to your site using free tools like Google Search Console (under the Links section), Ahrefs&apos; free backlink checker, or Moz&apos;s Link Explorer. These will show you how many backlinks you have, which sites are linking to you, and which of your pages get the most links.
+            You can see who&apos;s linking to your site using free tools like <a href="https://search.google.com/search-console/about" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Google Search Console</a> (under the Links section), <a href="https://ahrefs.com/backlink-checker" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Ahrefs&apos; free backlink checker</a>, or <a href="https://moz.com/link-explorer" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Moz&apos;s Link Explorer</a>. These will show you how many backlinks you have, which sites are linking to you, and which of your pages get the most links.
           </p>
           <p className="text-muted-foreground leading-relaxed">
             Check your profile at least once a quarter. Look for any spammy links you didn&apos;t ask for (you can disavow these through Google Search Console) and identify opportunities where you could earn more links from sites that already mention you but don&apos;t link to you yet.
@@ -119,9 +119,9 @@ export default function BacklinksExplainedPage() {
 
           <div className="mt-12 p-6 rounded-2xl border border-[#00e5ff]/30 bg-[#00e5ff]/5">
             <h3 className="font-bold mb-2">See how your backlink profile stacks up</h3>
-            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 free credits to audit your site&apos;s SEO health, including backlink signals.</p>
+            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 credits to audit your site&apos;s SEO health, including backlink intelligence.</p>
             <Link href="/signup" className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-bold text-sm transition-colors">
-              Get 20 Free Credits <ArrowRight className="h-4 w-4" />
+              Get Started <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
