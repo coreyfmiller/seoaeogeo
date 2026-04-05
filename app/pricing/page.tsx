@@ -31,7 +31,8 @@ const tiers = [
     ],
     bestFor: 'Small business owners auditing their core pages for AI visibility.',
     cta: "Get the Launch Pack",
-    popular: false,
+    popular: true,
+    badge: "Most Popular",
     premiumFeatures: null,
     bonusNote: null,
   },
@@ -52,7 +53,8 @@ const tiers = [
     bonusNote: "Includes 60 Bonus Credits",
     bestFor: "Growing brands with multiple service pages or a consistent blog.",
     cta: "Get the Growth Bundle",
-    popular: true,
+    popular: false,
+    badge: "Best Value",
     premiumFeatures: null,
   },
   {
@@ -73,6 +75,7 @@ const tiers = [
     bestFor: "SEO consultants and agencies managing multiple client sites.",
     cta: "Get the Agency Suite",
     popular: false,
+    badge: "For Agencies",
     premiumFeatures: null,
   },
 ]
@@ -138,9 +141,11 @@ export default function PricingPage() {
             <div className="grid md:grid-cols-3 gap-6">
               {tiers.map(tier => (
                 <Card key={tier.name} className={`relative flex flex-col ${tier.popular ? 'border-[#00e5ff] shadow-lg shadow-[#00e5ff]/10' : 'border-border/50'}`}>
-                  {tier.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-[#00e5ff] text-white text-xs font-bold">
-                      Best Value
+                  {tier.badge && (
+                    <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-xs font-bold ${
+                      tier.popular ? 'bg-[#00e5ff] text-white' : 'bg-muted text-foreground border border-border/50'
+                    }`}>
+                      {tier.badge}
                     </div>
                   )}
                   <CardHeader className="text-center pb-2">
