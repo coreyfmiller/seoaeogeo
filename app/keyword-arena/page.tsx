@@ -210,6 +210,7 @@ function generateInsights(userSite: ArenaSite, allSites: ArenaSite[], avg: Arena
 export default function KeywordArenaV3Page() {
   const [keyword, setKeyword] = useState("")
   const [resultCount, setResultCount] = useState<5 | 10>(10)
+  const [searchCountry, setSearchCountry] = useState("canada")
   const [searchResults, setSearchResults] = useState<SearchResult[] | null>(null)
   const [isSearching, setIsSearching] = useState(false)
 
@@ -311,7 +312,7 @@ export default function KeywordArenaV3Page() {
       const res = await fetch('/api/keyword-search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ keyword: keyword.trim(), count: resultCount }),
+        body: JSON.stringify({ keyword: keyword.trim(), count: resultCount, location: searchCountry }),
       })
       const data = await res.json()
       if (data.success) {
@@ -487,6 +488,20 @@ export default function KeywordArenaV3Page() {
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               placeholder="Enter a keyword to battle (e.g. plumber in Toronto)"
               className="flex-1 px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 text-sm" />
+            <select value={searchCountry} onChange={(e) => setSearchCountry(e.target.value)}
+              className="px-3 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white/80 text-sm focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 cursor-pointer shrink-0 appearance-none"
+              style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 12 12\'%3E%3Cpath fill=\'%23888\' d=\'M6 8L1 3h10z\'/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center', paddingRight: '28px' }}>
+              <option value="canada">🇨🇦 Canada</option>
+              <option value="united states">🇺🇸 United States</option>
+              <option value="united kingdom">🇬🇧 United Kingdom</option>
+              <option value="australia">🇦🇺 Australia</option>
+              <option value="france">🇫🇷 France</option>
+              <option value="germany">🇩🇪 Germany</option>
+              <option value="india">🇮🇳 India</option>
+              <option value="new zealand">🇳🇿 New Zealand</option>
+              <option value="ireland">🇮🇪 Ireland</option>
+              <option value="south africa">🇿🇦 South Africa</option>
+            </select>
             <button onClick={handleSearch} disabled={isSearching || !keyword.trim() || isAnalyzing}
               className="px-5 py-2.5 bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-black rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm shrink-0">
               {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} Search
@@ -543,6 +558,20 @@ export default function KeywordArenaV3Page() {
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     placeholder="e.g. plumber in Toronto"
                     className="flex-1 px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 text-sm" />
+                  <select value={searchCountry} onChange={(e) => setSearchCountry(e.target.value)}
+                    className="px-3 py-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white/80 text-sm focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 cursor-pointer shrink-0 appearance-none"
+                    style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 12 12\'%3E%3Cpath fill=\'%23888\' d=\'M6 8L1 3h10z\'/%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 10px center', paddingRight: '28px' }}>
+                    <option value="canada">🇨🇦 Canada</option>
+                    <option value="united states">🇺🇸 United States</option>
+                    <option value="united kingdom">🇬🇧 United Kingdom</option>
+                    <option value="australia">🇦🇺 Australia</option>
+                    <option value="france">🇫🇷 France</option>
+                    <option value="germany">🇩🇪 Germany</option>
+                    <option value="india">🇮🇳 India</option>
+                    <option value="new zealand">🇳🇿 New Zealand</option>
+                    <option value="ireland">🇮🇪 Ireland</option>
+                    <option value="south africa">🇿🇦 South Africa</option>
+                  </select>
                   <button onClick={handleSearch} disabled={isSearching || !keyword.trim()}
                     className="px-6 py-3 bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-black rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm">
                     {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} Search
