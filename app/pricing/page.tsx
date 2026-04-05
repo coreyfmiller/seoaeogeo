@@ -210,6 +210,15 @@ export default function PricingPage() {
               ))}
             </div>
 
+            {/* Competitor Callout */}
+            <div className="rounded-2xl border border-[#fe3f8c]/30 bg-[#fe3f8c]/5 p-8 text-center space-y-3">
+              <h2 className="text-2xl font-bold">Your Competitor Didn't Get Lucky. They Got Optimized.</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                When AI cites a competitor instead of you, it's not random. Their site had better structure, clearer content, stronger signals.
+                Duelly runs the same comparison so you can see exactly what they did right — and do it better.
+              </p>
+            </div>
+
             {/* Credit Cost Reference */}
             <Card className="border-border/50">
               <CardHeader>
