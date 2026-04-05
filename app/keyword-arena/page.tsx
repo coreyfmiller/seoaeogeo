@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils"
 import {
   Trophy, Search, Sparkles, Bot, Clock, Crown,
   Plus, X, Globe, ChevronDown, ChevronUp,
-  Swords, Loader2, Copy, RefreshCw, TrendingUp, TrendingDown,
+  Swords, Loader2, Copy, RefreshCw,
   ArrowRight, AlertTriangle, CheckCircle2, Target, Zap
 } from "lucide-react"
 import Link from "next/link"
@@ -727,7 +727,7 @@ export default function KeywordArenaV3Page() {
                     </div>
 
                     {/* Rank comparison boxes */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                       <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 text-center">
                         <p className="text-[10px] text-white/60 uppercase font-bold tracking-wider mb-1 leading-tight">Google Rank <LearnMore term="google-rank-vs-ai-rank" /></p>
                         <p className="text-3xl font-black text-white tabular-nums">
@@ -736,45 +736,12 @@ export default function KeywordArenaV3Page() {
                         <p className="text-xs text-white/50 mt-1">{userSite.googleRank ? 'In search results' : 'Not ranked'}</p>
                       </div>
                       <div className="rounded-xl border border-[#00e5ff]/30 bg-[#00e5ff]/[0.05] p-4 text-center">
-                        <p className="text-[10px] text-[#00e5ff]/80 uppercase font-bold tracking-wider mb-1 leading-tight">AI Rank <LearnMore term="google-rank-vs-ai-rank" /></p>
+                        <p className="text-[10px] text-[#00e5ff]/80 uppercase font-bold tracking-wider mb-1 leading-tight">Duelly Rank <LearnMore term="duelly-rank" /></p>
                         <p className="text-3xl font-black text-[#00e5ff] tabular-nums">
                           #{arenaResult.userSiteRank}
                         </p>
-                        <p className="text-xs text-white/50 mt-1">Duelly AI Score</p>
+                        <p className="text-xs text-white/50 mt-1">Overall Score Rank</p>
                       </div>
-                      {userSite.googleRank && arenaResult.userSiteRank && (
-                        <div className={cn("rounded-xl border p-4 text-center sm:col-span-1 col-span-2",
-                          arenaResult.userSiteRank < userSite.googleRank
-                            ? "border-green-500/30 bg-green-500/[0.05]"
-                            : arenaResult.userSiteRank > userSite.googleRank
-                              ? "border-red-500/30 bg-red-500/[0.05]"
-                              : "border-yellow-500/30 bg-yellow-500/[0.05]"
-                        )}>
-                          <p className="text-[10px] text-white/60 uppercase font-bold tracking-wider mb-1 leading-tight">Delta <LearnMore term="google-rank-vs-ai-rank" /></p>
-                          {arenaResult.userSiteRank < userSite.googleRank ? (
-                            <>
-                              <div className="flex items-center justify-center gap-1">
-                                <TrendingUp className="h-5 w-5 text-green-400" />
-                                <p className="text-3xl font-black text-green-400 tabular-nums">+{userSite.googleRank - arenaResult.userSiteRank}</p>
-                              </div>
-                              <p className="text-xs text-green-400/80 mt-1">AI-ready content</p>
-                            </>
-                          ) : arenaResult.userSiteRank > userSite.googleRank ? (
-                            <>
-                              <div className="flex items-center justify-center gap-1">
-                                <TrendingDown className="h-5 w-5 text-red-400" />
-                                <p className="text-3xl font-black text-red-400 tabular-nums">-{arenaResult.userSiteRank - userSite.googleRank}</p>
-                              </div>
-                              <p className="text-xs text-red-400/80 mt-1">AI readiness gap</p>
-                            </>
-                          ) : (
-                            <>
-                              <p className="text-3xl font-black text-yellow-400 tabular-nums">0</p>
-                              <p className="text-xs text-yellow-400/80 mt-1">Consistent ranking</p>
-                            </>
-                          )}
-                        </div>
-                      )}
                       {arenaResult.backlinkData?.metrics?.domainAuthority != null && (
                         <div className="rounded-xl border border-green-500/30 bg-green-500/[0.05] p-4 text-center">
                           <p className="text-[10px] text-green-400/80 uppercase font-bold tracking-wider mb-1 leading-tight">Your Domain Authority <LearnMore term="domain-authority" /></p>
