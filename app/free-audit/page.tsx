@@ -321,7 +321,6 @@ export default function V2Page() {
                 size={140}
                 strokeWidth={10}
               />
-              />
               </div>
             </Card>
 
