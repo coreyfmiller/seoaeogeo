@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server'
 import { searchGoogle } from '@/lib/google-search'
 import { getAuthUser } from '@/lib/supabase/auth-helpers'
+import { filterAggregators } from '@/lib/aggregator-domains'
 
 /**
  * Keyword Search API: Returns top Google results for a keyword.
  * No credits charged — this is just the discovery step.
+ * Aggregator/directory domains (TripAdvisor, Yelp, etc.) are filtered out
+ * so users only see real business competitors.
  */
 export async function POST(req: Request) {
   try {
@@ -20,7 +23,21 @@ export async function POST(req: Request) {
     }
 
     const validCount = count === 5 ? 5 : 10
-    const results = await searchGoogle(keyword.trim(), validCount, location?.trim() || undefined)
+
+    // Request extra results from Google to compensate for aggregators we'll filter out
+    const fetchCount = Math.min(validCount + 10, 20)
+    const rawResults = await searchGoogle(keyword.trim(), fetchCount, location?.trim() || undefined)
+
+    // Filter out aggregator/directory domains and take the requested count
+    const filtered = filterAggregators(rawResults).slice(0, validCount)
+
+    // Re-number ranks after filtering
+    const results = filtered.map((r, i) => ({ ...r, rank: i + 1 }))
+
+    const removedCount = rawResults.length - filterAggregators(rawResults).length
+    if (removedCount > 0) {
+      console.log(`[Keyword Search] Filtered ${removedCount} aggregator domains from results for "${keyword.trim()}"`)
+    }
 
     return NextResponse.json({ success: true, results, keyword: keyword.trim() })
   } catch (error: any) {
