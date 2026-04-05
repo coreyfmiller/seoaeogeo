@@ -736,10 +736,10 @@ export default function KeywordArenaV3Page() {
                 } : undefined}
               />
 
-              {/* Google Rank Disclaimer */}
+              {/* Google Rank Disclaimer — between leaders and leaderboard table */}
               <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/[0.04] p-4">
                 <p className="text-sm text-yellow-200/90 leading-relaxed">
-                  <span className="font-bold">Why don&apos;t these rankings match what I see on Google?</span>{' '}
+                  <span className="font-bold">Seeing a mismatch with what you see on Google?</span>{' '}
                   Google personalizes results for every user based on location, search history, device, and account activity.
                   Duelly checks rankings from a neutral, standardized perspective — like a fresh browser with no history.
                   This gives you a consistent benchmark for comparing competitors on a level playing field.
