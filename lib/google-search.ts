@@ -83,8 +83,8 @@ async function searchWithSerper(query: string, count: number, apiKey: string, lo
 
   const headers = { 'X-API-KEY': apiKey, 'Content-Type': 'application/json' }
 
-  // Fetch page 1 and page 2 in parallel to get up to 20 organic results
-  const [res1, res2] = await Promise.all([
+  // Fetch pages 1, 2, and 3 in parallel to get up to 30 organic results
+  const [res1, res2, res3] = await Promise.all([
     fetch('https://google.serper.dev/search', {
       method: 'POST', headers,
       body: JSON.stringify({ ...body, page: 1 }),
@@ -92,6 +92,10 @@ async function searchWithSerper(query: string, count: number, apiKey: string, lo
     count > 10 ? fetch('https://google.serper.dev/search', {
       method: 'POST', headers,
       body: JSON.stringify({ ...body, page: 2 }),
+    }) : Promise.resolve(null),
+    count > 20 ? fetch('https://google.serper.dev/search', {
+      method: 'POST', headers,
+      body: JSON.stringify({ ...body, page: 3 }),
     }) : Promise.resolve(null),
   ])
 
@@ -112,10 +116,18 @@ async function searchWithSerper(query: string, count: number, apiKey: string, lo
     console.warn(`[Serper] Page 2 failed: ${res2.status}`)
   }
 
+  let organic3: any[] = []
+  if (res3 && res3.ok) {
+    const data3 = await res3.json()
+    organic3 = data3.organic || []
+  } else if (res3) {
+    console.warn(`[Serper] Page 3 failed: ${res3.status}`)
+  }
+
   // Merge and deduplicate by URL
   const seen = new Set<string>()
   const allOrganic: any[] = []
-  for (const item of [...organic1, ...organic2]) {
+  for (const item of [...organic1, ...organic2, ...organic3]) {
     const url = item.link || ''
     if (!seen.has(url)) {
       seen.add(url)
@@ -123,7 +135,7 @@ async function searchWithSerper(query: string, count: number, apiKey: string, lo
     }
   }
 
-  console.log(`[Serper] Page 1: ${organic1.length}, Page 2: ${organic2.length}, merged: ${allOrganic.length} for "${query}"`)
+  console.log(`[Serper] P1: ${organic1.length}, P2: ${organic2.length}, P3: ${organic3.length}, merged: ${allOrganic.length} for "${query}"`)
 
   const results: SearchResult[] = allOrganic.slice(0, count).map((item: any, i: number) => ({
     rank: i + 1,
