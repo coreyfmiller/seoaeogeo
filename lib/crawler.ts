@@ -38,6 +38,8 @@ export interface ScanResult {
         hasTwitterCard: boolean;
     };
     platformDetection?: PlatformResult;
+    /** Detected if the page returned a bot protection challenge instead of real content */
+    botProtection?: { detected: boolean; type: string };
 }
 
 /**
@@ -132,6 +134,9 @@ export async function extractPageDataFromPage(page: Page, targetUrl: string, sta
     // Detect platform/CMS from HTML
     const platformDetection = detectPlatform(html);
 
+    // Detect bot protection / Cloudflare challenges
+    const botProtection = detectBotProtection(title, html);
+
     return {
         url: targetUrl,
         title,
@@ -150,8 +155,50 @@ export async function extractPageDataFromPage(page: Page, targetUrl: string, sta
             descriptionLength: description.length,
             ...metaChecks
         },
-        platformDetection
+        platformDetection,
+        botProtection,
     };
+}
+
+/**
+ * Detect if the page returned a bot protection challenge instead of real content.
+ * Checks for Cloudflare, Sucuri, Akamai, and other common WAF challenge pages.
+ */
+function detectBotProtection(title: string, html: string): { detected: boolean; type: string } | undefined {
+  const t = title.toLowerCase()
+  const h = html.toLowerCase()
+
+  // Cloudflare "Just a moment..." / "Attention Required"
+  if (
+    t.includes('just a moment') ||
+    t.includes('attention required') ||
+    h.includes('cf-browser-verification') ||
+    h.includes('cf_chl_opt') ||
+    h.includes('cloudflare-static/rocket-loader') ||
+    (h.includes('challenge-platform') && h.includes('cloudflare'))
+  ) {
+    return { detected: true, type: 'Cloudflare' }
+  }
+
+  // Sucuri WAF
+  if (h.includes('sucuri-firewall') || t.includes('sucuri website firewall')) {
+    return { detected: true, type: 'Sucuri' }
+  }
+
+  // Akamai Bot Manager
+  if (h.includes('akamai') && (h.includes('bot manager') || h.includes('access denied'))) {
+    return { detected: true, type: 'Akamai' }
+  }
+
+  // Generic CAPTCHA / access denied
+  if (
+    (t.includes('access denied') && h.includes('captcha')) ||
+    (t === 'robot or human?' || t.includes('are you a robot'))
+  ) {
+    return { detected: true, type: 'Bot Protection' }
+  }
+
+  return undefined
 }
 
 /**

@@ -200,6 +200,24 @@ export async function POST(req: Request) {
 async function scoreSite(url: string, userSiteUrl?: string, googleRank?: number | null) {
   try {
     const scan = await performScan(url)
+
+    // Detect bot protection (Cloudflare, Sucuri, etc.) — mark as blocked instead of scoring garbage
+    if (scan.botProtection?.detected) {
+      console.log(`[Arena V3] Bot protection detected on ${url}: ${scan.botProtection.type}`)
+      return {
+        url,
+        title: url,
+        description: '',
+        siteType: 'general',
+        scores: { seo: null, aeo: null, geo: null, overall: null },
+        googleRank: googleRank ?? null,
+        aiStatus: 'failed' as const,
+        isUserSite: url === userSiteUrl,
+        error: `This site has ${scan.botProtection.type} bot protection enabled. Our crawler received a challenge page instead of the actual content. Scores cannot be calculated.`,
+        scanDetails: null,
+      }
+    }
+
     const siteType = detectSiteType(scan)
     scan.siteType = siteType.primaryType
 

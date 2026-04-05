@@ -47,6 +47,14 @@ export async function POST(request: NextRequest) {
       send({ type: 'progress', phase: 'Crawling page and extracting content...', progress: 10 })
       updateScanProgress(user.id, 'pro', 10, 'Crawling page...').catch(() => {})
       const pageData = await performScan(url)
+
+      // Check for bot protection (Cloudflare, Sucuri, etc.)
+      if (pageData.botProtection?.detected) {
+        send({ type: 'error', error: `This site has ${pageData.botProtection.type} bot protection enabled. Our crawler received a challenge page instead of the actual website content. Please try disabling bot protection temporarily, or contact your hosting provider to whitelist our crawler.` })
+        if (user) { try { await refundCredits(user.id, creditCost) } catch {} }
+        return
+      }
+
       send({ type: 'progress', phase: 'Detecting site type...', progress: 25 })
       updateScanProgress(user.id, 'pro', 25, 'Detecting site type...').catch(() => {})
 

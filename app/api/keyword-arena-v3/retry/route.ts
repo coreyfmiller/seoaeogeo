@@ -26,6 +26,15 @@ export async function POST(req: Request) {
     console.log(`[Arena V3 Retry] Re-scoring: ${url}`)
 
     const scan = await performScan(url)
+
+    // Detect bot protection
+    if (scan.botProtection?.detected) {
+      return NextResponse.json({
+        success: false,
+        error: `This site has ${scan.botProtection.type} bot protection enabled. Our crawler received a challenge page instead of the actual content. Scores cannot be calculated.`,
+      }, { status: 200 })
+    }
+
     const siteType = detectSiteType(scan)
     scan.siteType = siteType.primaryType
 
