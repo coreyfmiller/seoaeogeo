@@ -127,10 +127,10 @@ export default function PricingPage() {
                 <Coins className="h-4 w-4" />
                 ONE-TIME CREDIT PACKS
               </div>
-              <h1 className="text-4xl font-bold">See What AI Sees. Fix What AI Skips.</h1>
+              <h1 className="text-4xl font-bold">Your Competitor Didn't Get Lucky. They Got Optimized.</h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                ChatGPT, Perplexity, and Gemini don't crawl your site — they read it and decide whether to cite you.
-                Duelly audits your pages with the same AI, so you see exactly what they see.
+                When AI or Google cites a competitor instead of you, it's not random. Their site had better structure, clearer content, stronger signals.
+                Duelly runs the same comparison so you can see exactly what they did right — and do it better.
               </p>
               <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5"><Infinity className="h-4 w-4 text-[#00e5ff]" /> Credits never expire</span>
@@ -208,15 +208,6 @@ export default function PricingPage() {
                   </CardContent>
                 </Card>
               ))}
-            </div>
-
-            {/* Competitor Callout */}
-            <div className="rounded-2xl border border-[#fe3f8c]/30 bg-[#fe3f8c]/5 p-8 text-center space-y-3">
-              <h2 className="text-2xl font-bold">Your Competitor Didn't Get Lucky. They Got Optimized.</h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                When AI cites a competitor instead of you, it's not random. Their site had better structure, clearer content, stronger signals.
-                Duelly runs the same comparison so you can see exactly what they did right — and do it better.
-              </p>
             </div>
 
             {/* Credit Cost Reference */}
