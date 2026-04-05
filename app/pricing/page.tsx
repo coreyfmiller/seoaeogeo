@@ -211,16 +211,6 @@ export default function PricingPage() {
               ))}
             </div>
 
-            {/* Value Proposition */}
-            <div className="rounded-2xl border border-[#00e5ff]/20 bg-[#00e5ff]/5 p-8 text-center space-y-4">
-              <h2 className="text-2xl font-bold">Why Pay $500/Month When You Can Pay Once?</h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Traditional SEO tools charge $100 to $500 per month and audit for search crawlers.
-                Duelly audits for AI engines — the systems increasingly deciding which businesses get recommended.
-                Buy once, use at your own pace. No subscriptions. No monthly bills. Your credits never expire.
-              </p>
-            </div>
-
             {/* Credit Cost Reference */}
             <Card className="border-border/50">
               <CardHeader>
