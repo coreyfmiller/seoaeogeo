@@ -8,10 +8,10 @@ inclusion: auto
 Duelly is a search intelligence platform that audits websites across SEO, AEO (Answer Engine Optimization), and GEO (Generative Engine Optimization). Built with Next.js 14 App Router, Tailwind CSS, Supabase, and Google Gemini AI.
 
 ## Active Tool Pages (V4 = current)
-- `/pro-audit-v4` — Single-page AI audit (10 credits). API: `/api/analyze-v3`
-- `/deep-scan-v4` — Multi-page site audit (30 credits). API: `/api/analyze-deep-v3`
-- `/battle-mode-v3` — Competitor Duel, head-to-head comparison (10 credits). API: `/api/battle-v3`
-- `/keyword-arena-v3` — Keyword Arena, multi-site scoring (10/site). API: `/api/keyword-arena-v3`
+- `/pro-audit` — Single-page AI audit (10 credits). API: `/api/analyze-v3`
+- `/deep-scan` — Multi-page site audit (30 credits). API: `/api/analyze-deep-v3`
+- `/battle-mode` — Competitor Duel, head-to-head comparison (10 credits). API: `/api/battle-v3`
+- `/keyword-arena` — Keyword Arena, multi-site scoring (10/site). API: `/api/keyword-arena-v3`
 
 ## Page Layout Patterns
 - **Dashboard pages** (tools): Use `PageShell` component (sidebar + header). Scroll via `<main className="flex-1 overflow-y-auto">`.

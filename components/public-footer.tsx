@@ -8,10 +8,10 @@ export function PublicFooter() {
           <div>
             <h4 className="font-bold text-sm mb-3">Tools</h4>
             <ul className="space-y-2">
-              <li><Link href="/pro-audit-v4" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pro Audit</Link></li>
-              <li><Link href="/deep-scan-v4" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Deep Scan</Link></li>
-              <li><Link href="/battle-mode-v3" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Competitor Duel</Link></li>
-              <li><Link href="/keyword-arena-v3" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Keyword Arena</Link></li>
+              <li><Link href="/pro-audit" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pro Audit</Link></li>
+              <li><Link href="/deep-scan" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Deep Scan</Link></li>
+              <li><Link href="/battle-mode" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Competitor Duel</Link></li>
+              <li><Link href="/keyword-arena" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Keyword Arena</Link></li>
             </ul>
           </div>
           <div>

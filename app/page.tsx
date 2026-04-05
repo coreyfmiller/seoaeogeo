@@ -150,7 +150,7 @@ export default function HomePage() {
               Pick any competitor and run a head-to-head comparison. See their scores, backlinks, and gaps —
               then get AI-generated strategies to overtake them. 10 credits.
             </p>
-            <Link href="/battle-mode-v3" className="text-sm font-semibold text-[#fe3f8c] hover:underline flex items-center gap-1">
+            <Link href="/battle-mode" className="text-sm font-semibold text-[#fe3f8c] hover:underline flex items-center gap-1">
               Start a Duel <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
@@ -164,7 +164,7 @@ export default function HomePage() {
               Search any keyword and see how every top-ranking site scores. Compare Google Rank vs AI Rank
               and find exactly where you need to improve to climb. 10 credits per site.
             </p>
-            <Link href="/keyword-arena-v3" className="text-sm font-semibold text-[#00e5ff] hover:underline flex items-center gap-1">
+            <Link href="/keyword-arena" className="text-sm font-semibold text-[#00e5ff] hover:underline flex items-center gap-1">
               Enter the Arena <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
@@ -307,8 +307,8 @@ export default function HomePage() {
               <ul className="space-y-2">
                 <li><Link href="/pro-audit" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pro Analysis</Link></li>
                 <li><Link href="/deep-scan" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Deep Scan</Link></li>
-                <li><Link href="/battle-mode-v3" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Competitor Duel</Link></li>
-                <li><Link href="/keyword-arena-v3" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Keyword Arena</Link></li>
+                <li><Link href="/battle-mode" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Competitor Duel</Link></li>
+                <li><Link href="/keyword-arena" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Keyword Arena</Link></li>
               </ul>
             </div>
             <div>

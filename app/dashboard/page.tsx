@@ -13,10 +13,10 @@ import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 
 const quickActions = [
-  { label: "Pro Audit", desc: "AI-powered fix instructions", icon: Zap, href: "/pro-audit-v4", color: "text-seo", bg: "bg-seo/10", tip: "Run a full AI-powered audit with Gemini analysis, site intelligence, and detailed fix instructions for every issue found." },
-  { label: "Deep Scan", desc: "Multi-page site analysis", icon: Layers, href: "/deep-scan-v4", color: "text-[#BC13FE]", bg: "bg-[#BC13FE]/10", tip: "Crawl up to 20 pages of your site to find sitewide issues like duplicate titles, missing schemas, orphan pages, and content gaps." },
-  { label: "Competitor Duel", desc: "Compare against competitors", icon: Globe, href: "/battle-mode-v3", color: "text-[#fe3f8c]", bg: "bg-[#fe3f8c]/10", tip: "Benchmark your site against a competitor across SEO, AEO, and GEO. Get AI-generated counter-strategies to outperform them." },
-  { label: "Keyword Arena", desc: "Battle top-ranking sites", icon: Trophy, href: "/keyword-arena-v3", color: "text-[#00e5ff]", bg: "bg-[#00e5ff]/10", tip: "Search a keyword, find the top-ranking sites, and score them all with AI. See how you stack up against the competition." },
+  { label: "Pro Audit", desc: "AI-powered fix instructions", icon: Zap, href: "/pro-audit", color: "text-seo", bg: "bg-seo/10", tip: "Run a full AI-powered audit with Gemini analysis, site intelligence, and detailed fix instructions for every issue found." },
+  { label: "Deep Scan", desc: "Multi-page site analysis", icon: Layers, href: "/deep-scan", color: "text-[#BC13FE]", bg: "bg-[#BC13FE]/10", tip: "Crawl up to 20 pages of your site to find sitewide issues like duplicate titles, missing schemas, orphan pages, and content gaps." },
+  { label: "Competitor Duel", desc: "Compare against competitors", icon: Globe, href: "/battle-mode", color: "text-[#fe3f8c]", bg: "bg-[#fe3f8c]/10", tip: "Benchmark your site against a competitor across SEO, AEO, and GEO. Get AI-generated counter-strategies to outperform them." },
+  { label: "Keyword Arena", desc: "Battle top-ranking sites", icon: Trophy, href: "/keyword-arena", color: "text-[#00e5ff]", bg: "bg-[#00e5ff]/10", tip: "Search a keyword, find the top-ranking sites, and score them all with AI. See how you stack up against the competition." },
 ]
 
 export default function DashboardPage() {

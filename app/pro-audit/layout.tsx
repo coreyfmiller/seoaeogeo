@@ -1,11 +1,8 @@
-import type { Metadata } from 'next'
-
-export const metadata: Metadata = {
-  title: 'Pro Audit - AI-Powered SEO Analysis',
-  description: 'Run an AI-powered Pro Audit on any website. Get SEO, AEO, and GEO scores with platform-specific fix instructions and actionable recommendations.',
-  alternates: { canonical: '/pro-audit' },
+export const metadata = {
+  title: "Pro Audit | Duelly",
+  description: "AI-powered single-page audit with Roadmap to 100, backlink intelligence, and platform-specific fix instructions.",
 }
 
-export default function V3Layout({ children }: { children: React.ReactNode }) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return children
 }

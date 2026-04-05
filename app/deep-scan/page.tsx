@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Layers, Sparkles, Zap, ShieldCheck, AlertTriangle, FileText, Search, CheckCircle2, Clock, Copy } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Layers, Sparkles, Zap, ShieldCheck, AlertTriangle, FileText, Search, CheckCircle2, Clock, Copy, Filter, Loader2, RefreshCw } from 'lucide-react'
 import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan, wasHistoryCleared } from '@/lib/scan-history'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { PageShell } from '@/components/dashboard/page-shell'
@@ -87,7 +87,6 @@ interface DeepScanResult {
       isDofollow: boolean
     }>
   } | null
-  expertAnalysis?: string | { bottomLine: string; keyInsight: string; priorityAction: string } | null
 }
 
 export default function DeepV3Page() {
@@ -99,26 +98,77 @@ export default function DeepV3Page() {
   })
   const [creditDialogOpen, setCreditDialogOpen] = useState(false)
   const [pendingUrl, setPendingUrl] = useState('')
-  const [pendingMaxPages, setPendingMaxPages] = useState(5)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
+  const [priorityFilter, setPriorityFilter] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM'>('ALL')
+  const [sitewideData, setSitewideData] = useState<any>(null)
+  const [sitewideLoading, setSitewideLoading] = useState(false)
+  const [sitewideError, setSitewideError] = useState(false)
 
-  const handleAnalyze = async (submittedUrl: string, maxPages?: number) => {
+  const generateSitewideIntelligence = async () => {
+    if (!result || sitewideLoading) return
+    setSitewideLoading(true)
+    setSitewideError(false)
+    try {
+      const pages = (result.pages || []).map((p: any) => ({
+        url: p.url, title: p.title || '', description: '',
+        schemas: p.scanData?.schemas || [], wordCount: p.wordCount || 0,
+        internalLinks: p.scanData?.structuralData?.links?.internal || 0,
+        hasH1: p.hasH1 === true, isHttps: p.isHttps === true,
+        responseTimeMs: p.responseTimeMs || 0,
+        h2Count: p.scanData?.structuralData?.semanticTags?.h2Count || 0,
+        h3Count: p.scanData?.structuralData?.semanticTags?.h3Count || 0,
+        imgTotal: p.scanData?.structuralData?.media?.totalImages || 0,
+        imgWithAlt: p.scanData?.structuralData?.media?.imagesWithAlt || 0,
+      }))
+      const domain = (() => { try { return new URL(result.url || currentUrl).hostname } catch { return currentUrl } })()
+      const res = await fetch('/api/sitewide-intelligence', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          domain, pages,
+          siteType: result.siteTypeResult?.primaryType,
+          platform: result.platformDetection?.label,
+          currentScores: result.scores,
+          backlinkData: result.backlinkData,
+          url: result.url || currentUrl,
+        }),
+      })
+      const data = await res.json()
+      if (data.success && data.data) {
+        setSitewideData(data.data)
+      } else {
+        setSitewideError(true)
+      }
+    } catch {
+      setSitewideError(true)
+    } finally {
+      setSitewideLoading(false)
+    }
+  }
+
+  const handleAnalyze = async (submittedUrl: string) => {
     setPendingUrl(submittedUrl)
-    if (maxPages) setPendingMaxPages(maxPages)
     setCreditDialogOpen(true)
   }
 
-  const handleConfirmAnalyze = async (pageCount?: number) => {
+  const handleConfirmAnalyze = async () => {
     setCreditDialogOpen(false)
-    const pages = pageCount || pendingMaxPages
-    setCrawlConfig(prev => ({ ...prev, maxPages: pages }))
+    setCrawlConfig(prev => ({ ...prev, maxPages: 5 }))
     setCurrentUrl(pendingUrl)
-    await sse.startAnalysis(pendingUrl, { maxPages: pages })
+    await sse.startAnalysis(pendingUrl, { maxPages: 5 })
   }
 
   const result = sse.data
   const isAnalyzing = sse.isAnalyzing
   const error = sse.error
+
+  // Merge on-demand sitewide data with scan result
+  const effectiveSitewide = result?.sitewideIntelligence || sitewideData
+
+  // Reset sitewide state on new scan
+  useEffect(() => {
+    if (isAnalyzing) { setSitewideData(null); setSitewideError(false) }
+  }, [isAnalyzing])
 
   // Elapsed time counter while analyzing
   useEffect(() => {
@@ -259,7 +309,7 @@ export default function DeepV3Page() {
             {/* Page Header with Actions */}
             <AuditPageHeader
               title="Deep Scan"
-              description="AI-powered multi-page analysis with site intelligence and comprehensive site audit."
+              description="Crawls your homepage and key inner pages to score your site across SEO, AEO, and GEO with AI-powered analysis."
               currentUrl={currentUrl}
               hasResults={!!result}
               isAnalyzing={isAnalyzing}
@@ -279,6 +329,108 @@ export default function DeepV3Page() {
               onSiteTypeChange={handleSiteTypeChange}
               onPlatformChange={handlePlatformChange}
               cwv={result?.cwv}
+              onCopyReport={result ? () => {
+                const sep = '─'.repeat(60)
+                const sw = effectiveSitewide
+                const sections: string[] = []
+
+                // Header
+                sections.push(`DUELLY DEEP SCAN REPORT\n${'='.repeat(60)}\nURL: ${currentUrl}\nDate: ${new Date().toLocaleString()}\nPages Crawled: ${result.pagesCrawled}\nSite Type: ${result.siteTypeResult?.primaryType || 'Unknown'}\nPlatform: ${result.platformDetection?.label || 'Unknown'}`)
+
+                // Average Scores
+                sections.push(`\nAVERAGE SCORES\n${sep}\n  SEO: ${result.scores.seo}/100\n  AEO: ${result.scores.aeo}/100\n  GEO: ${result.scores.geo}/100`)
+
+                // Key Metrics
+                const am = result.aggregateMetrics
+                const imgAlt = am.totalImages > 0 ? Math.round((am.totalImagesWithAlt / am.totalImages) * 100) : 100
+                sections.push(`\nKEY METRICS\n${sep}\n  Domain Health: ${sw?.domainHealthScore ?? '–'}/100\n  Brand Consistency: ${sw?.consistencyScore ?? '–'}/100\n  Schema Coverage: ${sw?.authorityMetrics?.schemaCoverage ?? '–'}%\n  Metadata: ${sw?.authorityMetrics?.metadataOptimization ?? '–'}%\n  Avg Response: ${am.avgResponseTime}ms\n  Robots.txt: ${result.robotsTxt ? 'Found' : 'Missing'}\n  Sitemap: ${result.sitemapFound ? 'Found' : 'Missing'}\n  Alt Text: ${imgAlt}%`)
+
+                // Expert Analysis
+                if (result.expertAnalysis) {
+                  const ea = result.expertAnalysis
+                  if (typeof ea === 'object' && ea.bottomLine) {
+                    sections.push(`\nEXPERT ANALYSIS\n${sep}\n  Bottom Line: ${ea.bottomLine}\n  Key Insight: ${ea.keyInsight}\n  Priority Action: ${ea.priorityAction}`)
+                  } else if (typeof ea === 'string') {
+                    sections.push(`\nEXPERT ANALYSIS\n${sep}\n  ${ea}`)
+                  }
+                }
+
+                // Page-by-Page Comparison
+                if (result.pages?.length > 0) {
+                  sections.push(`\nPAGE-BY-PAGE COMPARISON\n${sep}`)
+                  result.pages.forEach((p: any) => {
+                    const issues = (p.enhancedPenalties || []).slice(0, 5).map((pen: any) => `    [${pen.severity?.toUpperCase()}] ${pen.component}: ${pen.fix}`).join('\n')
+                    sections.push(`  ${p.url}\n    SEO: ${p.scores?.seo?.score ?? '–'} | AEO: ${p.scores?.aeo?.score ?? '–'} | GEO: ${p.scores?.geo?.score ?? '–'} | Words: ${p.wordCount || 0}\n${issues || '    No issues'}`)
+                  })
+                }
+
+                // Roadmap to 100
+                if (sw?.recommendations?.length > 0) {
+                  sections.push(`\nROADMAP TO 100 (${sw.recommendations.length} recommendations)\n${sep}`)
+                  sw.recommendations.forEach((r: any, i: number) => {
+                    const p = r.priority === 'STEADY' ? 'MEDIUM' : (r.priority || 'MEDIUM')
+                    sections.push(`  ${i + 1}. [${p}] [${(r.domain || 'SEO').toUpperCase()}] ${r.title}\n     Why: ${r.description || '–'}\n     Fix: ${r.howToFix || '–'}`)
+                  })
+                }
+
+                // Domain Health
+                if (sw?.domainHealthBreakdown) {
+                  const dh = sw.domainHealthBreakdown
+                  sections.push(`\nDOMAIN HEALTH BREAKDOWN\n${sep}\n  Content: ${dh.contentQuality ?? '–'}/100\n  Schema: ${dh.schemaQuality ?? '–'}/100\n  Metadata: ${dh.metadataQuality ?? '–'}/100\n  Technical: ${dh.technicalHealth ?? '–'}/100\n  Architecture: ${dh.architectureHealth ?? '–'}/100`)
+                }
+
+                // AEO Readiness
+                if (sw?.aeoReadiness) {
+                  const aeo = sw.aeoReadiness
+                  const signals = Object.entries(aeo.signals || {}).map(([k, v]) => `    ${v ? '✓' : '✗'} ${k.replace(/^has/, '').replace(/([A-Z])/g, ' $1').trim()}`).join('\n')
+                  sections.push(`\nAEO READINESS: ${aeo.score}/100\n${sep}\n  ${aeo.verdict}\n${signals}`)
+                }
+
+                // GEO Readiness
+                if (sw?.geoReadiness) {
+                  const geo = sw.geoReadiness
+                  const signals = Object.entries(geo.signals || {}).map(([k, v]) => `    ${v ? '✓' : '✗'} ${k.replace(/^has/, '').replace(/([A-Z])/g, ' $1').trim()}`).join('\n')
+                  sections.push(`\nGEO READINESS: ${geo.score}/100\n${sep}\n  ${geo.verdict}\n${signals}`)
+                }
+
+                // Backlinks
+                if (result.backlinkData?.metrics) {
+                  const bl = result.backlinkData.metrics
+                  sections.push(`\nBACKLINK DATA\n${sep}\n  Domain Authority: ${bl.domainAuthority ?? '–'}\n  Total Backlinks: ${bl.totalBacklinks ?? '–'}\n  Referring Domains: ${bl.referringDomains ?? '–'}\n  Spam Score: ${bl.spamScore ?? '–'}%`)
+                }
+
+                // Duplicates
+                if (result.duplicateTitles?.length > 0) {
+                  sections.push(`\nDUPLICATE TITLES\n${sep}`)
+                  result.duplicateTitles.forEach((d: any) => sections.push(`  "${d.title}" — ${d.urls.length} pages`))
+                }
+
+                navigator.clipboard.writeText(sections.join('\n'))
+              } : undefined}
+              downloadReport={result ? {
+                filename: `duelly-deep-scan-${currentUrl.replace(/^https?:\/\//, '').replace(/[^a-z0-9]/gi, '-')}-${new Date().toISOString().slice(0, 10)}.pdf`,
+                generatePdf: async () => {
+                  const { generatePdfBlob } = await import('@/lib/pdf/generate')
+                  const { ProAuditReport } = await import('@/lib/pdf/pro-audit-report')
+                  const React = (await import('react')).default
+                  return generatePdfBlob(React.createElement(ProAuditReport, {
+                    url: currentUrl, date: new Date().toLocaleDateString(),
+                    scores: { seo: result.scores.seo, aeo: result.scores.aeo, geo: result.scores.geo },
+                    siteType: result.siteTypeResult?.primaryType, platform: result.platformDetection?.label,
+                    overallFeedback: effectiveSitewide?.domainHealthScore ? `Domain Health: ${effectiveSitewide.domainHealthScore}%. ${result.pagesCrawled} pages analyzed.` : undefined,
+                    recommendations: effectiveSitewide?.recommendations,
+                    metrics: [
+                      { label: 'Pages Crawled', value: `${result.pagesCrawled}` },
+                      { label: 'Domain Health', value: `${effectiveSitewide?.domainHealthScore ?? '–'}%` },
+                      { label: 'Schema Coverage', value: `${effectiveSitewide?.authorityMetrics?.schemaCoverage ?? '–'}%` },
+                      { label: 'Avg Response', value: `${result.aggregateMetrics.avgResponseTime}ms` },
+                      { label: 'Robots.txt', value: result.robotsTxt ? 'Found' : 'Missing' },
+                      { label: 'Sitemap', value: result.sitemapFound ? 'Found' : 'Missing' },
+                    ],
+                    backlinkData: result.backlinkData,
+                  }))
+                },
+              } : undefined}
             />
 
             {/* Hero Section - Only show when no results */}
@@ -290,17 +442,16 @@ export default function DeepV3Page() {
                   </div>
                   <div>
                     <CardTitle className="text-3xl mb-2">
-                      The Ultimate SEO Audit
+                      Deep Scan
                     </CardTitle>
                     <CardDescription className="text-base max-w-2xl mx-auto">
-                      Combines AI-powered intelligence with multi-page deep crawling. 
-                      Get site intelligence, actionable fixes, and comprehensive site analysis.
+                      Crawls your homepage and key inner pages to surface patterns across your site&apos;s SEO, AEO, and GEO health. Averaged scores reveal systemic issues that single-page audits miss.
                     </CardDescription>
                   </div>
                 </CardHeader>
                 <CardContent className="max-w-4xl mx-auto space-y-6">
                   <CrawlConfig
-                    onStartCrawl={(config) => handleAnalyze(config.url, config.pageCount)}
+                    onStartCrawl={(config) => handleAnalyze(config.url)}
                     isAnalyzing={isAnalyzing}
                   />
                 </CardContent>
@@ -333,7 +484,7 @@ export default function DeepV3Page() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground">
-                      Crawl up to 20 pages with schema coverage, content gaps, and internal link analysis.
+                      Crawls key pages — your homepage plus top internal pages — for schema coverage, content depth, and structural analysis.
                     </p>
                   </CardContent>
                 </Card>
@@ -451,11 +602,9 @@ export default function DeepV3Page() {
               open={creditDialogOpen}
               onConfirm={handleConfirmAnalyze}
               onCancel={() => setCreditDialogOpen(false)}
-              creditCost={pendingMaxPages <= 5 ? 30 : 60}
+              creditCost={30}
               scanType="Deep Scan"
-              costBreakdown={`${pendingMaxPages} pages — ${pendingMaxPages <= 5 ? 30 : 60} credits`}
-              showPageSelector
-              defaultPageCount={pendingMaxPages}
+              costBreakdown="5 pages — 30 credits"
             />
 
             <ScanErrorDialog error={error} onClose={() => sse.reset()} onRetry={() => handleAnalyze(currentUrl)} creditsRefunded={sse.creditsRefunded} />
@@ -487,7 +636,7 @@ export default function DeepV3Page() {
 
                 {/* Key Metrics — unified strip */}
                 {(() => {
-                  const ai = result.sitewideIntelligence
+                  const ai = effectiveSitewide
                   const pages = result.pages || []
                   const imgAltPct = result.aggregateMetrics.totalImages > 0
                     ? Math.round((result.aggregateMetrics.totalImagesWithAlt / result.aggregateMetrics.totalImages) * 100)
@@ -527,6 +676,7 @@ export default function DeepV3Page() {
                 {/* ═══ EXPERT ANALYSIS ═══ */}
                 <ExpertAnalysis
                   analysis={result.expertAnalysis}
+                  autoGenerate
                   generateData={{
                     context: 'deep-scan', url: result.url,
                     scores: result.scores, siteType: result.siteTypeResult?.primaryType,
@@ -535,109 +685,6 @@ export default function DeepV3Page() {
                     totalBacklinks: result.backlinkData?.metrics?.totalBacklinks,
                   }}
                 />
-
-                {/* Prioritized Site Improvements */}
-                {result.sitewideIntelligence?.recommendations?.length > 0 && (
-                  <Card className="border-[#00e5ff]/30 bg-gradient-to-br from-[#00e5ff]/5 to-[#BC13FE]/5">
-                    <CardHeader>
-                      <div className="flex items-center gap-2">
-                        <Zap className="h-5 w-5 text-[#00e5ff]" />
-                        <CardTitle>Prioritized Site Improvements</CardTitle>
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-[#BC13FE]/30 text-[#BC13FE] bg-[#BC13FE]/10 gap-1">
-                          <Sparkles className="h-2.5 w-2.5" />
-                          AI-Powered
-                        </Badge>
-                        <InfoTooltip content="AI-generated strategic roadmap ranked by impact. Each recommendation includes step-by-step fix instructions, code snippets, and validation links tailored to your site type." />
-                        <button
-                          onClick={() => {
-                            const recs = result.sitewideIntelligence.recommendations
-                            const sep = '\u2500'.repeat(60)
-                            const text = `PRIORITIZED SITE IMPROVEMENTS (${recs.length})\n${'='.repeat(60)}\n\n` + recs.map((r: any, i: number) => {
-                              const p = (r.priority || 'MEDIUM').toUpperCase()
-                              const domain = r.domain || 'SEO'
-                              let t = `${sep}\n${i + 1}. [${p}] [${domain.toUpperCase()}] ${r.title}\n${sep}`
-                              if (r.description) t += `\n\nWhy This Matters:\n${r.description}`
-                              if (r.platform) t += `\n\nPlatform: ${r.platform}`
-                              if (r.estimatedTime || r.effort) t += `\nEffort: ${r.estimatedTime || r.effort + 'h'}`
-                              if (r.steps?.length) {
-                                t += '\n\nImplementation Steps:'
-                                r.steps.forEach((s: any) => {
-                                  t += `\n\n  Step ${s.step}: ${s.title}\n  ${s.description}`
-                                  if (s.code) t += `\n\n  Code:\n  ${s.code}`
-                                })
-                              }
-                              if (r.code || r.codeSnippet) t += `\n\nCode:\n${r.code || r.codeSnippet}`
-                              if (r.validationLinks?.length) {
-                                t += '\n\nValidation Links:'
-                                r.validationLinks.forEach((v: any) => { t += `\n  - ${v.tool}: ${v.url}` })
-                              }
-                              return t
-                            }).join('\n\n')
-                            navigator.clipboard.writeText(text)
-                          }}
-                          className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-[#00e5ff]/50 transition-colors"
-                        >
-                          <Copy className="h-3.5 w-3.5" />
-                          Copy All
-                        </button>
-                      </div>
-                      <CardDescription>Sitewide actions ranked by impact</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      {(() => {
-                        const recs = result.sitewideIntelligence.recommendations
-                        const normPriority = (r: any) => r.priority === 'STEADY' ? 'MEDIUM' : (r.priority || 'MEDIUM')
-                        const urgent = recs.filter((r: any) => normPriority(r) === 'CRITICAL')
-                        const high = recs.filter((r: any) => normPriority(r) === 'HIGH')
-                        const medium = recs.filter((r: any) => normPriority(r) === 'MEDIUM')
-                        const groups = [
-                          { label: '🔥 Urgent', items: urgent },
-                          { label: '⚡ High', items: high },
-                          { label: '📌 Medium', items: medium },
-                        ].filter(g => g.items.length > 0)
-
-                        const renderCard = (rec: any, i: number) => (
-                          <FixInstructionCard
-                            key={i}
-                            title={rec.title}
-                            domain={rec.domain ? rec.domain.toLowerCase() as any : 'seo'}
-                            priority={normPriority(rec)}
-                            steps={rec.steps || [{ step: 1, title: 'How To Fix', description: rec.howToFix || rec.fix || rec.description }]}
-                            code={rec.code || rec.codeSnippet}
-                            platform={rec.platform || 'Any'}
-                            estimatedTime={rec.estimatedTime || `${rec.effort || 1}h`}
-                            difficulty={rec.effort >= 3 ? 'difficult' : rec.effort >= 2 ? 'moderate' : 'easy'}
-                            impact={rec.priority === 'CRITICAL' ? 'high' : rec.priority === 'HIGH' ? 'medium' : 'low'}
-                            affectedPages={result.pagesCrawled}
-                            validationLinks={rec.validationLinks}
-                            impactedScores={rec.impactedScores}
-                          />
-                        )
-
-                        return (
-                          <div className="space-y-6">
-                            {groups.map(group => (
-                              <div key={group.label}>
-                                <p className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-3">{group.label} ({group.items.length})</p>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                  {group.items.map((rec: any, i: number) => renderCard(rec, i))}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )
-                      })()}
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Link Building Intelligence */}
-                {result.backlinkData && (
-                  <LinkBuildingIntelligence
-                    metrics={result.backlinkData.metrics}
-                    backlinks={result.backlinkData.backlinks}
-                  />
-                )}
 
                 {/* Page Comparison Table */}
                 {result.pages.length > 1 && (
@@ -663,25 +710,139 @@ export default function DeepV3Page() {
                   />
                 )}
 
+                {/* Roadmap to 100 - Prioritized Site Improvements */}
+                {!effectiveSitewide && !sitewideLoading && (
+                  <Card className="border-[#00e5ff]/20 bg-[#00e5ff]/[0.02] p-5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="h-9 w-9 rounded-lg bg-[#00e5ff]/10 border border-[#00e5ff]/20 flex items-center justify-center shrink-0">
+                          <Zap className="h-4 w-4 text-[#00e5ff]" />
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-black uppercase text-[#00e5ff] tracking-widest">Sitewide Intelligence</h4>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {sitewideError ? 'Generation failed. Try again.' : 'Roadmap, Domain Health, Schema Audit, and AEO Readiness not yet generated.'}
+                          </p>
+                        </div>
+                      </div>
+                      <button onClick={generateSitewideIntelligence}
+                        className="px-4 py-2 bg-[#00e5ff]/10 hover:bg-[#00e5ff]/20 border border-[#00e5ff]/30 text-[#00e5ff] text-xs font-bold rounded-lg transition-all flex items-center gap-1.5">
+                        <RefreshCw className="h-3.5 w-3.5" /> Generate
+                      </button>
+                    </div>
+                  </Card>
+                )}
+                {sitewideLoading && !effectiveSitewide && (
+                  <Card className="border-[#00e5ff]/20 bg-[#00e5ff]/5 p-6">
+                    <div className="flex items-center gap-3">
+                      <Loader2 className="h-5 w-5 text-[#00e5ff] animate-spin" />
+                      <p className="text-sm font-medium text-[#00e5ff]">Generating sitewide intelligence analysis...</p>
+                    </div>
+                  </Card>
+                )}
+                {effectiveSitewide?.recommendations?.length > 0 && (() => {
+                  const recs = effectiveSitewide.recommendations
+                  const normPriority = (r: any) => r.priority === 'STEADY' ? 'MEDIUM' : (r.priority || 'MEDIUM')
+                  const normDomain = (r: any) => (r.domain || 'SEO').toLowerCase()
+                  const criticalCount = recs.filter((r: any) => normPriority(r) === 'CRITICAL').length
+                  const highCount = recs.filter((r: any) => normPriority(r) === 'HIGH').length
+                  const mediumCount = recs.filter((r: any) => normPriority(r) === 'MEDIUM').length
+                  const filtered = priorityFilter === 'ALL' ? recs : recs.filter((r: any) => normPriority(r) === priorityFilter)
+
+                  return (
+                    <Card className="border-[#00e5ff]/30 bg-gradient-to-br from-[#00e5ff]/5 to-[#BC13FE]/5">
+                      <CardHeader>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Zap className="h-5 w-5 text-[#00e5ff]" />
+                          <CardTitle>Roadmap to 100 - Prioritized Site Improvements</CardTitle>
+                          <InfoTooltip content="AI-generated strategic roadmap ranked by impact. Each recommendation includes why it matters, estimated point impact, step-by-step fix instructions, and code snippets tailored to your platform." />
+                          <button onClick={() => {
+                            const sep = '\u2500'.repeat(60)
+                            const text = `ROADMAP TO 100 - PRIORITIZED SITE IMPROVEMENTS (${recs.length})\n${'='.repeat(60)}\n\n` + recs.map((r: any, i: number) => {
+                              const p = normPriority(r); const domain = r.domain || 'SEO'
+                              let t = `${sep}\n${i + 1}. [${p}] [${domain.toUpperCase()}] ${r.title}\n${sep}`
+                              if (r.description) t += `\n\nWhy This Matters:\n${r.description}`
+                              if (r.platform) t += `\n\nPlatform: ${r.platform}`
+                              if (r.steps?.length) { t += '\n\nSteps:'; r.steps.forEach((s: any) => { t += `\n  ${s.step}. ${s.title}: ${s.description}`; if (s.code) t += `\n  Code: ${s.code}` }) }
+                              if (r.code || r.codeSnippet) t += `\n\nCode:\n${r.code || r.codeSnippet}`
+                              return t
+                            }).join('\n\n')
+                            navigator.clipboard.writeText(text)
+                          }} className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 text-xs text-muted-foreground hover:text-foreground hover:border-[#00e5ff]/50 transition-colors">
+                            <Copy className="h-3.5 w-3.5" /> Copy All
+                          </button>
+                        </div>
+                        {/* Priority Filter */}
+                        <div className="flex items-center gap-2 mt-3">
+                          <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+                          {[
+                            { key: 'ALL' as const, label: 'All', count: recs.length, activeColor: 'bg-[#00e5ff]/20 text-[#00e5ff] border-[#00e5ff]/40', inactiveColor: 'bg-muted/30 text-muted-foreground border-border/30 hover:border-border/50' },
+                            { key: 'CRITICAL' as const, label: 'Critical', count: criticalCount, activeColor: 'bg-destructive/20 text-destructive border-destructive/40', inactiveColor: 'bg-destructive/5 text-destructive/60 border-destructive/20 hover:bg-destructive/10' },
+                            { key: 'HIGH' as const, label: 'High', count: highCount, activeColor: 'bg-[#f59e0b]/20 text-[#f59e0b] border-[#f59e0b]/40', inactiveColor: 'bg-[#f59e0b]/5 text-[#f59e0b]/60 border-[#f59e0b]/20 hover:bg-[#f59e0b]/10' },
+                            { key: 'MEDIUM' as const, label: 'Medium', count: mediumCount, activeColor: 'bg-[#BC13FE]/20 text-[#BC13FE] border-[#BC13FE]/40', inactiveColor: 'bg-[#BC13FE]/5 text-[#BC13FE]/60 border-[#BC13FE]/20 hover:bg-[#BC13FE]/10' },
+                          ].filter(f => f.key === 'ALL' || f.count > 0).map(f => (
+                            <button key={f.key} onClick={() => setPriorityFilter(f.key)}
+                              className={cn("px-3 py-1 rounded-lg text-xs font-bold transition-all border",
+                                priorityFilter === f.key ? f.activeColor : f.inactiveColor
+                              )}>
+                              {f.label} ({f.count})
+                            </button>
+                          ))}
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {filtered.map((rec: any, i: number) => (
+                              <FixInstructionCard
+                                key={i}
+                                title={rec.title}
+                                domain={normDomain(rec) as any}
+                                priority={normPriority(rec)}
+                                steps={rec.steps || [{ step: 1, title: 'How To Fix', description: rec.howToFix || rec.fix || rec.description }]}
+                                code={rec.code || rec.codeSnippet}
+                                platform={rec.platform || 'Any'}
+                                estimatedTime={rec.estimatedTime || `${rec.effort || 1}h`}
+                                difficulty={rec.effort >= 3 ? 'difficult' : rec.effort >= 2 ? 'moderate' : 'easy'}
+                                impact={rec.priority === 'CRITICAL' ? 'high' : rec.priority === 'HIGH' ? 'medium' : 'low'}
+                                affectedPages={result.pagesCrawled}
+                                validationLinks={rec.validationLinks}
+                                impactedScores={rec.impactedScores}
+                                whyItMatters={rec.description}
+                              />
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                })()}
+
+                {/* Link Building Intelligence */}
+                {result.backlinkData && (
+                  <LinkBuildingIntelligence
+                    metrics={result.backlinkData.metrics}
+                    backlinks={result.backlinkData.backlinks}
+                  />
+                )}
+
                 {/* Domain Health Breakdown */}
-                {result.sitewideIntelligence?.domainHealthBreakdown && (
+                {effectiveSitewide?.domainHealthBreakdown && (
                   <Card className="border-[#00e5ff]/20 bg-[#00e5ff]/5">
                     <CardHeader>
                       <div className="flex items-center gap-2">
                         <ShieldCheck className="h-5 w-5 text-[#00e5ff]" />
                         <CardTitle className="text-foreground">Domain Health Breakdown</CardTitle>
                         <InfoTooltip content="Aggregate domain quality across 5 key areas: content, schema, metadata, technical performance, and architecture." />
-                        <Badge className="ml-auto bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-xs font-black">{result.sitewideIntelligence.domainHealthScore ?? '–'} / 100</Badge>
+                        <Badge className="ml-auto bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-xs font-black">{effectiveSitewide.domainHealthScore ?? '–'} / 100</Badge>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 pb-4 border-b border-border/50 mb-4">
                         {[
-                          { label: "Content", value: result.sitewideIntelligence.domainHealthBreakdown.contentQuality },
-                          { label: "Schema", value: result.sitewideIntelligence.domainHealthBreakdown.schemaQuality },
-                          { label: "Metadata", value: result.sitewideIntelligence.domainHealthBreakdown.metadataQuality },
-                          { label: "Technical", value: result.sitewideIntelligence.domainHealthBreakdown.technicalHealth },
-                          { label: "Architecture", value: result.sitewideIntelligence.domainHealthBreakdown.architectureHealth },
+                          { label: "Content", value: effectiveSitewide.domainHealthBreakdown.contentQuality },
+                          { label: "Schema", value: effectiveSitewide.domainHealthBreakdown.schemaQuality },
+                          { label: "Metadata", value: effectiveSitewide.domainHealthBreakdown.metadataQuality },
+                          { label: "Technical", value: effectiveSitewide.domainHealthBreakdown.technicalHealth },
+                          { label: "Architecture", value: effectiveSitewide.domainHealthBreakdown.architectureHealth },
                         ].map(item => {
                           const v = item.value ?? 0
                           const scoreColor = v >= 75 ? "text-green-500" : v >= 50 ? "text-yellow-500" : "text-red-500"
@@ -694,9 +855,9 @@ export default function DeepV3Page() {
                         })}
                       </div>
                       {/* Health explanations */}
-                      {result.sitewideIntelligence.domainHealthExplanations && (
+                      {effectiveSitewide.domainHealthExplanations && (
                         <div className="space-y-3">
-                          {Object.entries(result.sitewideIntelligence.domainHealthExplanations).map(([key, data]: [string, any]) => (
+                          {Object.entries(effectiveSitewide.domainHealthExplanations).map(([key, data]: [string, any]) => (
                             <div key={key} className="p-3 border rounded-lg">
                               <div className="flex items-center justify-between mb-1">
                                 <span className="text-sm font-semibold capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
@@ -704,78 +865,21 @@ export default function DeepV3Page() {
                               </div>
                               {data.issues?.length > 0 && (
                                 <ul className="text-xs text-muted-foreground space-y-0.5 mt-1">
-                                  {data.issues.slice(0, 3).map((issue: string, i: number) => (
+                                  {data.issues.slice(0, 3).map((issue: any, i: number) => (
                                     <li key={i} className="flex items-start gap-1">
-                                      <span className="text-yellow-600 mt-0.5">⚠</span> {issue}
+                                      <span className="text-yellow-600 mt-0.5">⚠</span> {typeof issue === 'string' ? issue : JSON.stringify(issue)}
                                     </li>
                                   ))}
                                 </ul>
                               )}
                               {data.recommendations?.length > 0 && (
                                 <ul className="text-xs space-y-0.5 mt-2">
-                                  {data.recommendations.slice(0, 3).map((rec: string, i: number) => (
+                                  {data.recommendations.slice(0, 3).map((rec: any, i: number) => (
                                     <li key={i} className="flex items-start gap-1 text-[#00e5ff]">
-                                      <Zap className="h-3 w-3 shrink-0 mt-0.5" /> <span className="text-foreground/80">{rec}</span>
+                                      <Zap className="h-3 w-3 shrink-0 mt-0.5" /> <span className="text-foreground/80">{typeof rec === 'string' ? rec : JSON.stringify(rec)}</span>
                                     </li>
                                   ))}
                                 </ul>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Schema Health Audit */}
-                {result.sitewideIntelligence?.schemaHealthAudit && (
-                  <Card>
-                    <CardHeader>
-                      <div className="flex items-center gap-2">
-                        <FileText className="h-5 w-5 text-seo" />
-                        <CardTitle>Schema Health Audit</CardTitle>
-                        <InfoTooltip content="Deterministic validation of structured data quality, coverage, and diversity across all crawled pages." />
-                        <Badge className="ml-auto bg-seo/10 text-seo border-seo/30 text-xs font-black">
-                          {result.sitewideIntelligence.schemaHealthAudit.overallScore}/100
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-border/50">
-                        {[
-                          { label: "Coverage", value: result.sitewideIntelligence.schemaHealthAudit.breakdown?.coverage ?? 0 },
-                          { label: "Quality", value: result.sitewideIntelligence.schemaHealthAudit.breakdown?.quality ?? 0 },
-                          { label: "Diversity", value: result.sitewideIntelligence.schemaHealthAudit.breakdown?.diversity ?? 0 },
-                        ].map(item => {
-                          const v = typeof item.value === 'number' ? item.value : 0
-                          const color = v >= 75 ? "text-green-500" : v >= 50 ? "text-yellow-500" : "text-red-500"
-                          return (
-                            <div key={item.label} className="text-center">
-                              <p className={`text-xl font-black ${color}`}>{v}%</p>
-                              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">{item.label}</p>
-                            </div>
-                          )
-                        })}
-                      </div>
-                      {result.sitewideIntelligence.schemaHealthAudit.issues?.length > 0 && (
-                        <div className="space-y-2">
-                          {result.sitewideIntelligence.schemaHealthAudit.issues.slice(0, 5).map((issue: any, i: number) => (
-                            <div key={i} className="p-3 border rounded-lg">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className={`text-xs px-1.5 py-0.5 rounded font-bold ${
-                                  issue.severity === 'critical' ? 'bg-red-500/10 text-red-600' :
-                                  issue.severity === 'high' ? 'bg-yellow-500/10 text-yellow-600' :
-                                  'bg-blue-500/10 text-blue-600'
-                                }`}>{issue.severity}</span>
-                                <span className="text-sm font-medium">{issue.issue}</span>
-                              </div>
-                              <p className="text-xs text-muted-foreground">{issue.affectedCount} page(s) affected • -{issue.pointsDeducted} pts</p>
-                              {issue.howToFix && (
-                                <div className="flex items-start gap-1.5 mt-1.5 p-1.5 rounded bg-[#00e5ff]/5 border border-[#00e5ff]/20">
-                                  <Zap className="h-3 w-3 text-[#00e5ff] shrink-0 mt-0.5" />
-                                  <p className="text-xs text-foreground/80"><span className="font-semibold text-[#00e5ff]">Fix:</span> {issue.howToFix}</p>
-                                </div>
                               )}
                             </div>
                           ))}
@@ -827,7 +931,7 @@ export default function DeepV3Page() {
                 )}
 
                 {/* AEO Readiness */}
-                {result.sitewideIntelligence?.aeoReadiness && (
+                {effectiveSitewide?.aeoReadiness && (
                   <Card className="border-[#BC13FE]/20 bg-[#BC13FE]/5">
                     <CardHeader>
                       <div className="flex items-center gap-2">
@@ -835,14 +939,14 @@ export default function DeepV3Page() {
                         <CardTitle>AEO Readiness</CardTitle>
                         <InfoTooltip content="How ready your domain is to be cited by AI assistants like ChatGPT, Perplexity, and Gemini." />
                         <Badge className="ml-auto bg-[#BC13FE]/10 text-[#BC13FE] border-[#BC13FE]/30 text-xs font-black">
-                          {result.sitewideIntelligence.aeoReadiness.score}/100
+                          {effectiveSitewide.aeoReadiness.score}/100
                         </Badge>
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-muted-foreground mb-3">{result.sitewideIntelligence.aeoReadiness.verdict}</p>
+                      <p className="text-sm text-muted-foreground mb-3">{effectiveSitewide.aeoReadiness.verdict}</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {Object.entries(result.sitewideIntelligence.aeoReadiness.signals || {}).map(([key, val]) => {
+                        {Object.entries(effectiveSitewide.aeoReadiness.signals || {}).map(([key, val]) => {
                           const label = key.replace(/^has/, '').replace(/([A-Z])/g, ' $1').trim()
                           const fixes: Record<string, string> = {
                             'AboutPage': 'Create a detailed About page with team bios, company history, and expertise signals.',
@@ -852,6 +956,48 @@ export default function DeepV3Page() {
                             'ClearTopicFocus': 'Tighten your content around core topics. Avoid covering too many unrelated subjects.',
                             'SchemaForAi': 'Add JSON-LD schema (Organization, LocalBusiness, FAQPage) to help AI engines understand your site.',
                             'LongformContent': 'Create in-depth content (1000+ words) on key topics to demonstrate expertise.',
+                          }
+                          const fixKey = key.replace(/^has/, '')
+                          return (
+                            <div key={key} className={`p-2 rounded border text-xs ${val ? 'border-green-500/30 bg-green-500/5 text-green-600' : 'border-red-500/30 bg-red-500/5 text-red-600'}`}>
+                              <p>{val ? '✓' : '✗'} {label}</p>
+                              {!val && fixes[fixKey] && (
+                                <p className="text-[10px] text-foreground/60 mt-1">💡 {fixes[fixKey]}</p>
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* GEO Readiness */}
+                {effectiveSitewide?.geoReadiness && (
+                  <Card className="border-[#22c55e]/20 bg-[#22c55e]/5">
+                    <CardHeader>
+                      <div className="flex items-center gap-2">
+                        <Zap className="h-5 w-5 text-[#22c55e]" />
+                        <CardTitle>GEO Readiness</CardTitle>
+                        <InfoTooltip content="How ready your domain is to appear in AI-generated search results like Google SGE and Bing Copilot." />
+                        <Badge className="ml-auto bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/30 text-xs font-black">
+                          {effectiveSitewide.geoReadiness.score}/100
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground mb-3">{effectiveSitewide.geoReadiness.verdict}</p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        {Object.entries(effectiveSitewide.geoReadiness.signals || {}).map(([key, val]) => {
+                          const label = key.replace(/^has/, '').replace(/([A-Z])/g, ' $1').trim()
+                          const fixes: Record<string, string> = {
+                            'SocialProof': 'Add testimonials, case studies, client logos, or review schema to build trust signals.',
+                            'AuthoritySignals': 'Highlight certifications, awards, partnerships, or media mentions on your site.',
+                            'FactualDensity': 'Include specific statistics, data points, and numbers in your content.',
+                            'ObjectiveTone': 'Balance promotional content with informative, neutral writing that AI engines prefer.',
+                            'CitableContent': 'Create original research, unique data, or expert analysis that others would reference.',
+                            'BrandClarity': 'Ensure consistent brand messaging, clear value proposition, and unified identity across pages.',
+                            'TopicalDepth': 'Create comprehensive, in-depth content on your core topics rather than surface-level pages.',
                           }
                           const fixKey = key.replace(/^has/, '')
                           return (

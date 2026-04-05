@@ -114,10 +114,10 @@ export function getRouteForType(type: ScanHistoryEntry['type']): string {
   switch (type) {
     case 'free-v3': return '/free-audit'
     case 'free-v4': return '/v4'
-    case 'pro': return '/pro-audit-v4'
-    case 'deep': return '/deep-scan-v4'
-    case 'competitive': return '/battle-mode-v3'
-    case 'keyword-arena': return '/keyword-arena-v3'
+    case 'pro': return '/pro-audit'
+    case 'deep': return '/deep-scan'
+    case 'competitive': return '/battle-mode'
+    case 'keyword-arena': return '/keyword-arena'
     default: return '/free-audit'
   }
 }
