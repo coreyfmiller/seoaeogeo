@@ -8,17 +8,19 @@ import {
   Shield,
   BarChart3,
   ArrowRight,
-  CheckCircle2,
   Globe,
   Brain,
   Target,
   TrendingUp,
+  FileText,
+  Code,
+  Layers,
 } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Duelly - SEO, AEO & GEO Intelligence Platform',
   description:
-    'Audit your website for SEO, AEO, and GEO with AI-powered scoring. Get actionable fixes for the 2026 search landscape.',
+    'Audit your website for SEO, AEO, and GEO with AI-powered scoring. See what AI sees, fix what AI skips, and outrank your competitors.',
   alternates: { canonical: '/' },
 }
 
@@ -54,21 +56,20 @@ export default function HomePage() {
       <article>
       <section className="max-w-6xl mx-auto px-6 pt-20 pb-4 text-center">
         <h1 className="text-5xl md:text-6xl font-black tracking-tight leading-tight mb-6">
-          Search Intelligence for the
-          <span className="bg-gradient-to-r from-[#00e5ff] via-[#BC13FE] to-[#fe3f8c] bg-clip-text text-transparent"> AI Era</span>
+          Your Competitor Didn't Get Lucky.
+          <span className="bg-gradient-to-r from-[#00e5ff] via-[#BC13FE] to-[#fe3f8c] bg-clip-text text-transparent"> They Got Optimized.</span>
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
-          Duelly is a search intelligence platform that audits your website across three dimensions:
-          traditional SEO, Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO).
-          Built for the 2026 search landscape where AI-powered search engines like ChatGPT, Perplexity,
-          and Google AI Overviews determine who gets cited and who gets ignored.
+          When AI or Google cites a competitor instead of you, it's not random. Their site had better structure,
+          clearer content, stronger signals. Duelly runs the same comparison so you can see exactly what they
+          did right — and do it better.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/signup"
+            href="/free-audit"
             className="px-8 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-lg transition-colors flex items-center gap-2"
           >
-            Get Started <ArrowRight className="h-5 w-5" />
+            Run a Free Audit <ArrowRight className="h-5 w-5" />
           </Link>
           <Link
             href="/pricing"
@@ -77,114 +78,63 @@ export default function HomePage() {
             View Pricing
           </Link>
         </div>
-        <p className="text-sm text-muted-foreground mt-3">No credit card required.</p>
-        <Link href="/battle-mode-v3" className="mt-8 inline-block text-4xl md:text-5xl font-black text-[#fe3f8c] hover:text-[#fe3f8c]/80 transition-colors">
-          Beat Your Competition
-        </Link>
+        <p className="text-sm text-muted-foreground mt-3">No account required. See your scores in 60 seconds.</p>
       </section>
 
-      {/* What is Duelly */}
-      <section className="max-w-6xl mx-auto px-6 py-6">
-        <h2 className="text-3xl font-black text-center mb-4">What is Duelly?</h2>
-        <p className="text-muted-foreground text-center max-w-3xl mx-auto mb-12 leading-relaxed">
-          Duelly is a comprehensive website auditing tool that scores your pages on SEO, AEO, and GEO
-          using AI-powered analysis. It crawls your site, analyzes content quality with Google Gemini,
-          detects your platform (WordPress, Shopify, Next.js, and more), and delivers actionable,
-          platform-specific fix instructions ranked by impact.
+      {/* Three Pillars — compact */}
+      <section className="max-w-6xl mx-auto px-6 py-12">
+        <h2 className="text-3xl font-black text-center mb-4">Three Scores That Tell You Everything</h2>
+        <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-10">
+          Duelly audits your site across the three dimensions that determine your visibility in 2026.
         </p>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="p-6 rounded-2xl border border-[#00e5ff]/20 bg-[#00e5ff]/5">
-            <div className="h-12 w-12 rounded-xl bg-[#00e5ff]/10 flex items-center justify-center mb-4">
-              <Search className="h-6 w-6 text-[#00e5ff]" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">SEO Analysis</h3>
-            <p className="text-muted-foreground leading-relaxed">
-              Evaluates technical SEO, content quality, metadata, schema markup, internal linking,
-              and <a href="https://web.dev/articles/vitals" target="_blank" rel="noopener noreferrer" className="text-[#00e5ff] hover:underline">Core Web Vitals</a> using
-              real PageSpeed Insights data. Scores against 2026 Google crawling standards.
-            </p>
+        <div className="grid md:grid-cols-3 gap-6">
+          <div className="p-6 rounded-2xl border border-[#00e5ff]/20 bg-[#00e5ff]/5 text-center">
+            <Search className="h-8 w-8 text-[#00e5ff] mx-auto mb-3" />
+            <h3 className="text-xl font-bold mb-2">SEO</h3>
+            <p className="text-sm text-muted-foreground">Can search engines find you? Technical health, content quality, metadata, site speed, and internal linking.</p>
           </div>
-
-          <div className="p-6 rounded-2xl border border-[#BC13FE]/20 bg-[#BC13FE]/5">
-            <div className="h-12 w-12 rounded-xl bg-[#BC13FE]/10 flex items-center justify-center mb-4">
-              <Sparkles className="h-6 w-6 text-[#BC13FE]" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">AEO Analysis</h3>
-            <p className="text-muted-foreground leading-relaxed">
-              Measures how likely AI assistants like ChatGPT, Perplexity, and Gemini are to cite
-              your content. Evaluates Q&A coverage, definition clarity, entity density, and
-              <a href="https://schema.org" target="_blank" rel="noopener noreferrer" className="text-[#BC13FE] hover:underline">structured data</a> quality.
-            </p>
+          <div className="p-6 rounded-2xl border border-[#BC13FE]/20 bg-[#BC13FE]/5 text-center">
+            <Sparkles className="h-8 w-8 text-[#BC13FE] mx-auto mb-3" />
+            <h3 className="text-xl font-bold mb-2">AEO</h3>
+            <p className="text-sm text-muted-foreground">Will AI engines cite you? Q&A coverage, structured data, entity density, and definition clarity.</p>
           </div>
-
-          <div className="p-6 rounded-2xl border border-[#fe3f8c]/20 bg-[#fe3f8c]/5">
-            <div className="h-12 w-12 rounded-xl bg-[#fe3f8c]/10 flex items-center justify-center mb-4">
-              <Bot className="h-6 w-6 text-[#fe3f8c]" />
-            </div>
-            <h3 className="text-xl font-bold mb-2">GEO Analysis</h3>
-            <p className="text-muted-foreground leading-relaxed">
-              Assesses how well your content performs in AI-generated search results and summaries.
-              Analyzes <a href="https://developers.google.com/search/docs/fundamentals/creating-helpful-content" target="_blank" rel="noopener noreferrer" className="text-[#fe3f8c] hover:underline">expertise signals</a>, factual density, tone objectivity, and citation likelihood
-              across major AI platforms.
-            </p>
+          <div className="p-6 rounded-2xl border border-[#fe3f8c]/20 bg-[#fe3f8c]/5 text-center">
+            <Bot className="h-8 w-8 text-[#fe3f8c] mx-auto mb-3" />
+            <h3 className="text-xl font-bold mb-2">GEO</h3>
+            <p className="text-sm text-muted-foreground">Are you showing up in AI results? Expertise signals, factual density, tone, and citation likelihood.</p>
           </div>
         </div>
       </section>
 
-      {/* How It Works */}
+      {/* Tools — what they do for you */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-border/30">
-        <h2 className="text-3xl font-black text-center mb-12">How It Works</h2>
-        <div className="grid md:grid-cols-4 gap-6">
-          {[
-            { step: '1', icon: <Globe className="h-5 w-5" />, title: 'Enter Your URL', desc: 'Paste any website URL into the audit tool. No installation or code changes required.' },
-            { step: '2', icon: <Brain className="h-5 w-5" />, title: 'AI Crawl & Analysis', desc: 'A headless browser crawls your page. Gemini AI analyzes content quality, tone, and structure.' },
-            { step: '3', icon: <BarChart3 className="h-5 w-5" />, title: 'Get Your Scores', desc: 'Receive SEO, AEO, and GEO scores out of 100 with a detailed breakdown of every penalty.' },
-            { step: '4', icon: <Target className="h-5 w-5" />, title: 'Fix & Improve', desc: 'Follow prioritized, platform-specific fix instructions to improve your scores and visibility.' },
-          ].map((item) => (
-            <div key={item.step} className="text-center">
-              <div className="h-10 w-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center mx-auto mb-3 text-sm font-black">
-                {item.step}
-              </div>
-              <h3 className="font-bold mb-1">{item.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Audit Tools */}
-      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-border/30">
-        <h2 className="text-3xl font-black text-center mb-4">Our Tools</h2>
+        <h2 className="text-3xl font-black text-center mb-4">Four Ways to Outrank Your Competition</h2>
         <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-12">
-          Four powerful tools to analyze, compare, and dominate your search landscape.
+          Audit your pages, scan your entire site, spy on competitors, and dominate your keyword landscape.
         </p>
-
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="p-6 rounded-2xl border border-border/50 bg-card/50">
+          <div className="p-6 rounded-2xl border border-[#00e5ff]/30 bg-[#00e5ff]/5">
             <div className="flex items-center gap-2 mb-3">
               <Zap className="h-5 w-5 text-[#00e5ff]" />
-              <h3 className="text-lg font-bold">Pro Audit</h3>
+              <h3 className="text-lg font-bold">Pro Analysis</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-              Single-page deep analysis. Dual AI calls for score stability, real Core Web Vitals
-              from PageSpeed Insights, site type detection, and up to 15 prioritized fix instructions.
-              10 credits per scan.
+              Deep-dive a single page with AI. Get your SEO, AEO, and GEO scores plus up to 15 prioritized
+              fix instructions written for your specific platform. 10 credits.
             </p>
             <Link href="/pro-audit" className="text-sm font-semibold text-[#00e5ff] hover:underline flex items-center gap-1">
-              Run Pro Audit <ArrowRight className="h-3 w-3" />
+              Run Pro Analysis <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
 
           <div className="p-6 rounded-2xl border border-[#BC13FE]/30 bg-[#BC13FE]/5">
             <div className="flex items-center gap-2 mb-3">
-              <Shield className="h-5 w-5 text-[#BC13FE]" />
+              <Layers className="h-5 w-5 text-[#BC13FE]" />
               <h3 className="text-lg font-bold">Deep Scan</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-              Multi-page site-wide audit. Crawls up to 50 pages, runs AI analysis on each,
-              detects duplicate titles and meta descriptions, checks robots.txt and sitemap,
-              and provides sitewide intelligence. 30 credits per scan.
+              Crawl up to 50 pages and find sitewide issues — duplicate titles, missing schemas, slow pages,
+              and content gaps your competitors don't have. 30 credits.
             </p>
             <Link href="/deep-scan" className="text-sm font-semibold text-[#BC13FE] hover:underline flex items-center gap-1">
               Run Deep Scan <ArrowRight className="h-3 w-3" />
@@ -197,9 +147,8 @@ export default function HomePage() {
               <h3 className="text-lg font-bold">Competitor Duel</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-              Head-to-head comparison of two websites with backlink analysis powered by Moz.
-              See Domain Authority, top referring domains, link gaps, and AI-generated counter-strategies
-              to outrank your competitor. 10 credits per duel.
+              Pick any competitor and run a head-to-head comparison. See their scores, backlinks, and gaps —
+              then get AI-generated strategies to overtake them. 10 credits.
             </p>
             <Link href="/battle-mode-v3" className="text-sm font-semibold text-[#fe3f8c] hover:underline flex items-center gap-1">
               Start a Duel <ArrowRight className="h-3 w-3" />
@@ -212,9 +161,8 @@ export default function HomePage() {
               <h3 className="text-lg font-bold">Keyword Arena</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-              Search a keyword, find the top-ranking sites, and battle them all with AI scoring.
-              See how your site stacks up against the competition with Google Rank vs AI Rank
-              comparison and competitive gap insights. 10 credits per site.
+              Search any keyword and see how every top-ranking site scores. Compare Google Rank vs AI Rank
+              and find exactly where you need to improve to climb. 10 credits per site.
             </p>
             <Link href="/keyword-arena-v3" className="text-sm font-semibold text-[#00e5ff] hover:underline flex items-center gap-1">
               Enter the Arena <ArrowRight className="h-3 w-3" />
@@ -223,26 +171,48 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Key Features */}
+      {/* How It Works */}
       <section className="max-w-6xl mx-auto px-6 py-16 border-t border-border/30">
-        <h2 className="text-3xl font-black text-center mb-12">What Sets Duelly Apart</h2>
-        <div className="grid md:grid-cols-2 gap-6">
+        <h2 className="text-3xl font-black text-center mb-12">How It Works</h2>
+        <div className="grid md:grid-cols-4 gap-6">
           {[
-            { icon: <Brain className="h-5 w-5 text-[#BC13FE]" />, title: 'Dual AI Scoring', desc: 'Every Pro Audit runs two parallel Gemini AI calls and averages the results for consistent, stable scores across repeated scans.' },
-            { icon: <Globe className="h-5 w-5 text-[#00e5ff]" />, title: 'Real Core Web Vitals', desc: 'Integrates the Google PageSpeed Insights API for real LCP, INP, and CLS data — the same metrics Google uses as ranking signals.' },
-            { icon: <Target className="h-5 w-5 text-[#fe3f8c]" />, title: 'Site Type Detection', desc: 'Automatically detects your site type (e-commerce, blog, SaaS, portfolio, etc.) and adjusts scoring weights accordingly.' },
-            { icon: <Shield className="h-5 w-5 text-[#BC13FE]" />, title: 'Platform-Specific Fixes', desc: 'Detects WordPress, Shopify, Wix, Squarespace, Next.js, and more. Fix instructions reference your actual admin paths and plugins.' },
-            { icon: <BarChart3 className="h-5 w-5 text-[#00e5ff]" />, title: 'Transparent Scoring', desc: 'Every point deducted is explained with severity, impact reasoning, and a step-by-step fix. No black-box scores.' },
-            { icon: <Zap className="h-5 w-5 text-[#fe3f8c]" />, title: 'Live Interrogation', desc: 'Secretly asks AI models if they would recommend your business — revealing your actual visibility in AI-generated answers.' },
-          ].map((feature, i) => (
-            <div key={i} className="flex gap-4 p-4 rounded-xl border border-border/30 bg-card/30">
-              <div className="h-10 w-10 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
-                {feature.icon}
+            { step: '1', icon: <Globe className="h-5 w-5" />, title: 'Enter Your URL', desc: 'Paste any website URL. No installation or code changes required.' },
+            { step: '2', icon: <Brain className="h-5 w-5" />, title: 'AI Analyzes Your Site', desc: 'Gemini AI reads your content the same way AI search engines do.' },
+            { step: '3', icon: <BarChart3 className="h-5 w-5" />, title: 'Get Your Scores', desc: 'SEO, AEO, and GEO scores with a breakdown of every issue found.' },
+            { step: '4', icon: <Target className="h-5 w-5" />, title: 'Fix & Outrank', desc: 'Follow prioritized, platform-specific instructions to improve your visibility.' },
+          ].map((item) => (
+            <div key={item.step} className="text-center">
+              <div className="h-10 w-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center mx-auto mb-3 text-sm font-black">
+                {item.step}
               </div>
-              <div>
-                <h3 className="font-bold mb-1">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
-              </div>
+              <h3 className="font-bold mb-1">{item.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* What's Included */}
+      <section className="max-w-6xl mx-auto px-6 py-16 border-t border-border/30">
+        <h2 className="text-3xl font-black text-center mb-4">What You Get</h2>
+        <p className="text-muted-foreground text-center max-w-2xl mx-auto mb-12">
+          Every feature unlocked from the start. No hidden tiers.
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { icon: <Bot className="h-5 w-5 text-[#00e5ff]" />, title: "AI-Powered Audits", desc: "Evaluated by the same Gemini AI that powers AI search. Not a checklist — an actual AI reading your content." },
+            { icon: <BarChart3 className="h-5 w-5 text-[#00e5ff]" />, title: "Real Site Speed Scores", desc: "Performance data from Google PageSpeed Insights — the same metrics Google uses to rank you." },
+            { icon: <Code className="h-5 w-5 text-[#BC13FE]" />, title: "Platform-Specific Fixes", desc: "Step-by-step instructions tailored to WordPress, Shopify, Wix, Squarespace, and more." },
+            { icon: <FileText className="h-5 w-5 text-[#BC13FE]" />, title: "PDF Reports", desc: "Every scan generates a shareable PDF you can send to your developer or keep for your records." },
+            { icon: <Layers className="h-5 w-5 text-[#fe3f8c]" />, title: "Backlink Intelligence", desc: "See who's linking to you and your competitors, powered by Moz. Find the gaps." },
+            { icon: <Shield className="h-5 w-5 text-[#fe3f8c]" />, title: "Priority-Ranked Fixes", desc: "Every issue scored by impact so you always know what to fix first." },
+            { icon: <Sparkles className="h-5 w-5 text-[#00e5ff]" />, title: "Schema Markup", desc: "Structured data generated for your site type — ready to copy and paste." },
+            { icon: <Zap className="h-5 w-5 text-[#BC13FE]" />, title: "Competitor Gap Analysis", desc: "Head-to-head comparisons showing exactly where competitors beat you." },
+          ].map((f, i) => (
+            <div key={i} className="rounded-xl border border-border/50 bg-card/50 p-4 space-y-2">
+              {f.icon}
+              <p className="text-sm font-bold">{f.title}</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </div>
@@ -259,11 +229,11 @@ export default function HomePage() {
             },
             {
               q: 'What is GEO (Generative Engine Optimization)?',
-              a: 'GEO measures how well your content performs in AI-generated search results. It evaluates expertise signals (E-E-A-T), factual density, tone objectivity, and citation likelihood. Content that scores high on GEO is more likely to appear in AI summaries and be recommended by large language models.',
+              a: 'GEO measures how well your content performs in AI-generated search results. It evaluates expertise signals, factual density, tone objectivity, and citation likelihood. Content that scores high on GEO is more likely to appear in AI summaries and be recommended by large language models.',
             },
             {
               q: 'How does Duelly calculate scores?',
-              a: 'Duelly uses a multi-layer approach: a headless browser crawls your page to extract technical data, then Google Gemini AI analyzes content quality and semantic signals. Two parallel AI calls are averaged for stability. Scores are calculated using site-type-specific weights — an e-commerce site is graded differently than a blog or SaaS product.',
+              a: 'Duelly uses a multi-layer approach: a headless browser crawls your page to extract technical data, then Gemini AI analyzes content quality and semantic signals. Two parallel AI calls are averaged for stability. Scores are calculated using site-type-specific weights — an e-commerce site is graded differently than a blog or local business.',
             },
             {
               q: 'Is there a free tier?',
@@ -275,7 +245,7 @@ export default function HomePage() {
             },
             {
               q: 'What platforms does Duelly detect?',
-              a: 'Duelly automatically detects WordPress, Shopify, Wix, Squarespace, Webflow, Next.js, Gatsby, Hugo, and many other platforms. When a platform is detected, all fix instructions are tailored to that specific platform — referencing actual admin paths, plugins, and configuration files.',
+              a: 'Duelly automatically detects WordPress, Shopify, Wix, Squarespace, Webflow, Next.js, Gatsby, Hugo, and many other platforms. When a platform is detected, all fix instructions are tailored to that specific platform.',
             },
           ].map((faq, i) => (
             <div key={i} className="p-5 rounded-xl border border-border/30 bg-card/30">
@@ -308,16 +278,24 @@ export default function HomePage() {
       {/* CTA */}
       </article>
       <section className="max-w-6xl mx-auto px-6 py-20 text-center border-t border-border/30">
-        <h2 className="text-3xl font-black mb-4">Ready to Audit Your Site?</h2>
+        <h2 className="text-3xl font-black mb-4">Ready to See What AI Sees?</h2>
         <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-          Create an account and run your first audit. No credit card required.
+          Run a free audit in 60 seconds. No account required.
         </p>
-        <Link
-          href="/signup"
-          className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-lg transition-colors"
-        >
-          Get Started <ArrowRight className="h-5 w-5" />
-        </Link>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link
+            href="/free-audit"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-lg transition-colors"
+          >
+            Run Free Audit <ArrowRight className="h-5 w-5" />
+          </Link>
+          <Link
+            href="/pricing"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl border border-border/50 hover:border-[#BC13FE]/50 hover:bg-[#BC13FE]/5 font-bold text-lg transition-colors"
+          >
+            View Pricing
+          </Link>
+        </div>
       </section>
 
       {/* Footer */}
@@ -327,7 +305,7 @@ export default function HomePage() {
             <div>
               <h4 className="font-bold text-sm mb-3">Tools</h4>
               <ul className="space-y-2">
-                <li><Link href="/pro-audit" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pro Audit</Link></li>
+                <li><Link href="/pro-audit" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pro Analysis</Link></li>
                 <li><Link href="/deep-scan" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Deep Scan</Link></li>
                 <li><Link href="/battle-mode-v3" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Competitor Duel</Link></li>
                 <li><Link href="/keyword-arena-v3" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Keyword Arena</Link></li>
@@ -338,7 +316,7 @@ export default function HomePage() {
               <ul className="space-y-2">
                 <li><Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link></li>
                 <li><Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help Center</Link></li>
-                <li><Link href="/standards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Our Standards</Link></li>
+                <li><Link href="/standards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How We Score</Link></li>
                 <li><Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</Link></li>
               </ul>
             </div>
@@ -360,7 +338,7 @@ export default function HomePage() {
           </div>
           <div className="border-t border-border/30 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">© 2026 Duelly. All rights reserved.</p>
-            <p className="text-xs text-muted-foreground/50">The roadmap to outrank your rivals. Built by <a href="https://fundylogic.com" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors underline">Fundylogic.com</a></p>
+            <p className="text-xs text-muted-foreground/50">Built by <a href="https://fundylogic.com" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors underline">Fundylogic.com</a></p>
           </div>
         </div>
       </footer>
