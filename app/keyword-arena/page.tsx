@@ -509,6 +509,7 @@ export default function KeywordArenaV3Page() {
                     </div>
                   ) : (
                     <div className="space-y-3">
+                      <p className="text-xs text-[#00e5ff] text-center font-bold animate-pulse">👇 Click your site in the list below to select it</p>
                       {!showManualAdd ? (
                         <button onClick={() => setShowManualAdd(true)}
                           className="w-full p-3 rounded-xl border-2 border-dashed border-[#00e5ff]/20 hover:border-[#00e5ff]/40 text-[#00e5ff]/60 hover:text-[#00e5ff] transition-all flex items-center justify-center gap-2 text-sm font-bold">
@@ -529,7 +530,6 @@ export default function KeywordArenaV3Page() {
                           </button>
                         </div>
                       )}
-                      <p className="text-xs text-[#00e5ff] text-center font-bold animate-pulse">👇 Click your site in the list below to select it</p>
                     </div>
                   )}
                 </CardContent>
