@@ -26,6 +26,26 @@ export interface KnowledgeEntry {
 const KNOWLEDGE_BASE: KnowledgeEntry[] = [
 
   {
+    id: 'bot-protection',
+    term: 'Not Working? Bot Protection Detected',
+    category: 'technical',
+    shortDesc: 'This site has bot protection that prevented our crawler from accessing the real page content. Click for more detail.',
+    fullDesc: 'Some websites use security services like Cloudflare, Sucuri, or Akamai to protect against automated access. When our crawler visits these sites, it receives a challenge page ("Just a moment...") instead of the actual website content. This means we can\'t read the page\'s HTML, schema markup, or text — so we can\'t generate SEO, AEO, or GEO scores. This is a security feature chosen by the site owner, not a Duelly limitation.',
+    whyItMatters: 'Without access to the actual page content, we can\'t analyze the site\'s on-page optimization, schema markup, content quality, or any other ranking signals. The scores would be meaningless because we\'d be scoring a security challenge page, not the real website. We show "N/A" instead of fake scores to keep your competitive analysis accurate.',
+    tips: [
+      'Hit the Retry button — bot protection is often intermittent and the next attempt may succeed.',
+      'If this is your own site, temporarily set Cloudflare\'s security level to "Essentially Off" in your Cloudflare dashboard before scanning, then turn it back on after.',
+      'Most small business websites don\'t have aggressive bot protection. This mainly affects larger sites and sites that have been targeted by bots.',
+      'The site\'s Google rank is still shown because that comes from Google\'s search results, not from crawling the site directly.',
+    ],
+    commonMistakes: [
+      'Assuming the site is down — it\'s not. The site works fine for regular visitors in a browser. Only automated crawlers are blocked.',
+      'Thinking Duelly is broken — this is the target site\'s security, not a bug in our system.',
+    ],
+    benchmarks: { good: 'Site loads normally and can be scored', average: 'Intermittent bot protection — retry may work', poor: 'Aggressive bot protection — site cannot be scored' },
+  },
+
+  {
     id: 'duelly-rank',
     term: 'Duelly Rank',
     category: 'seo',

@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { CreditConfirmDialog } from "@/components/dashboard/credit-confirm-dialog"
 import { ScanErrorDialog } from "@/components/dashboard/scan-error-dialog"
-import { InfoTooltip } from "@/components/ui/info-tooltip"
 import { ExpertAnalysis } from "@/components/dashboard/expert-analysis"
 import { DownloadReportButton } from "@/components/dashboard/download-report-button"
 import { LinkBuildingIntelligence } from "@/components/dashboard/link-building-intelligence"
@@ -973,9 +972,7 @@ export default function KeywordArenaV3Page() {
                                       className="flex items-center gap-1 px-2 py-1 rounded-md bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 text-xs font-bold hover:bg-yellow-500/20 transition-all disabled:opacity-50">
                                       {isRetrying ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3" />} Retry
                                     </button>
-                                    {site.error && (
-                                      <InfoTooltip content={site.error} className="[&_svg]:h-3.5 [&_svg]:w-3.5 [&_svg]:text-yellow-400" />
-                                    )}
+                                    <LearnMore term="bot-protection" className="h-3.5 w-3.5" />
                                   </div>
                                 )}
                               </div>
