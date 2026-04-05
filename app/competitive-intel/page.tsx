@@ -28,7 +28,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
-import { InfoTooltip } from '@/components/ui/info-tooltip'
+import { LearnMore } from '@/components/ui/learn-more'
 import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
 
 export default function SiteVsSite() {
@@ -395,7 +395,7 @@ export default function SiteVsSite() {
                                     {[
                                         {
                                             label: "SEO AUTHORITY BATTLE",
-                                            tooltip: "Compares traditional SEO strength between both sites — technical health, backlink authority, content optimization, metadata quality, and crawlability. The higher score indicates stronger search engine visibility.",
+                                            learnMoreTerm: "aeo",
                                             data: comparisonData.comparison.seo,
                                             titleColor: "text-seo",
                                             accentHex: "#00e5ff",
@@ -403,7 +403,7 @@ export default function SiteVsSite() {
                                         },
                                         {
                                             label: "AEO SNIPPET SHARE",
-                                            tooltip: "Compares Answer Engine Optimization — which site is more likely to be cited by AI assistants like ChatGPT, Perplexity, and Gemini. Measures structured data, FAQ coverage, direct answer formatting, and schema quality.",
+                                            learnMoreTerm: "aeo",
                                             data: comparisonData.comparison.aeo,
                                             titleColor: "text-aeo",
                                             accentHex: "#BC13FE",
@@ -411,7 +411,7 @@ export default function SiteVsSite() {
                                         },
                                         {
                                             label: "GEO CITATION LIKELIHOOD",
-                                            tooltip: "Compares Generative Engine Optimization — which site is more likely to appear in AI-generated search results and summaries. Measures brand authority, topical depth, content uniqueness, and citation-worthiness.",
+                                            learnMoreTerm: "geo",
                                             data: comparisonData.comparison.geo,
                                             titleColor: "text-[#fe3f8c]",
                                             accentHex: "#fe3f8c",
@@ -438,7 +438,7 @@ export default function SiteVsSite() {
                                                             {battle.label}
                                                         </span>
                                                         <span className="flex items-center gap-1.5">
-                                                            <InfoTooltip content={battle.tooltip} />
+                                                            <LearnMore term={battle.learnMoreTerm} />
                                                         </span>
                                                     </CardTitle>
                                                 </CardHeader>
@@ -486,7 +486,7 @@ export default function SiteVsSite() {
                                     <div className="rounded-xl bg-geo/10 border border-geo/20 px-5 py-3 flex items-center gap-3">
                                         <Zap className="h-5 w-5 text-geo shrink-0" />
                                         <div>
-                                            <h4 className="text-[10px] font-black uppercase text-geo tracking-widest mb-0.5 flex items-center gap-1.5">Expert Verdict <InfoTooltip content="AI-generated summary of the competitive landscape. Identifies the overall winner and explains the key factors driving the score difference between both sites." /></h4>
+                                            <h4 className="text-[10px] font-black uppercase text-geo tracking-widest mb-0.5 flex items-center gap-1.5">Expert Verdict</h4>
                                             <p className="text-sm font-medium text-foreground leading-relaxed">{comparisonData.winnerVerdict}</p>
                                         </div>
                                     </div>
@@ -500,7 +500,6 @@ export default function SiteVsSite() {
                                                 <CardTitle className="flex items-center gap-2">
                                                     <Zap className="h-5 w-5 text-geo" />
                                                     Top 6 Counter-Strategies
-                                                    <InfoTooltip content="AI-generated tactical plan to outperform this competitor. Each strategy is ranked by potential impact and includes specific actions you can take. Categories include content, technical SEO, schema, and brand authority improvements." />
                                                 </CardTitle>
                                                 <CardDescription>AI-generated plan to outmaneuver this competitor in AI search rankings</CardDescription>
                                             </div>
@@ -643,7 +642,6 @@ export default function SiteVsSite() {
                                                     <CardTitle className="flex items-center gap-2 text-foreground">
                                                         <Zap className="h-5 w-5 text-aeo" />
                                                         Stolen Opportunities
-                                                        <InfoTooltip content="Specific areas where your competitor is outperforming you in AI search visibility. These are opportunities they've captured that you're missing — fixing these has the highest ROI for reclaiming lost traffic and citations." />
                                                     </CardTitle>
                                                     <CardDescription>Strategies where they are winning LLM citations</CardDescription>
                                                 </div>
@@ -693,7 +691,6 @@ export default function SiteVsSite() {
                                                 <CardTitle className="flex items-center gap-2 text-foreground">
                                                     <ShieldAlert className="h-5 w-5 text-geo" />
                                                     Critical Strategic Gaps
-                                                    <InfoTooltip content="Fundamental weaknesses in your site's strategy compared to the competitor. These are structural or strategic issues that, if left unaddressed, will continue to erode your competitive position in both traditional and AI-powered search." />
                                                 </CardTitle>
                                             </CardHeader>
                                             <CardContent>

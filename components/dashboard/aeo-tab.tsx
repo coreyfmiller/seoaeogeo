@@ -16,7 +16,6 @@ import {
   Zap,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { InfoTooltip } from "@/components/ui/info-tooltip"
 import { LearnMore } from "@/components/ui/learn-more"
 import { useState } from "react"
 
@@ -360,7 +359,7 @@ export function AEOTab({ data, hideScoreDeductions }: AEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Code2 className="h-5 w-5 text-aeo" />
               Question-Based Content Analysis
-              <InfoTooltip content="Measures how well your content answers common question types (Who, What, Where, Why, How). Answer engines like ChatGPT and Google's AI Overviews prioritize content that directly answers questions. Higher scores = better AI visibility." />
+              <LearnMore term="aeo" />
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -471,7 +470,7 @@ export function AEOTab({ data, hideScoreDeductions }: AEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Code2 className="h-5 w-5 text-aeo" />
               Content QA Depth
-              <InfoTooltip content="Answer engines like ChatGPT and Google's AI Overviews prioritize content with clear question-answer structure. Headers formatted as questions and comprehensive answers improve AI visibility." />
+              <LearnMore term="aeo" />
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 py-4">
@@ -495,7 +494,7 @@ export function AEOTab({ data, hideScoreDeductions }: AEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Code2 className="h-5 w-5 text-aeo" />
               Schema Opportunities
-              <InfoTooltip content="Schema markup (structured data) helps AI systems understand your content. Different schema types enable different AI capabilities like FAQs, products, recipes, etc." />
+              <LearnMore term="schema-markup" />
             </CardTitle>
           </CardHeader>
           <CardContent>

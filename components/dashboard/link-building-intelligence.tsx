@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils"
 import { Link2, ExternalLink } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { InfoTooltip } from "@/components/ui/info-tooltip"
 import { LearnMore } from "@/components/ui/learn-more"
 
 interface BacklinkMetrics {
@@ -41,25 +40,25 @@ export function LinkBuildingIntelligence({ metrics, backlinks }: LinkBuildingInt
           <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-green-500/30 text-green-500 bg-green-500/10 gap-1">
             MOZ
           </Badge>
-          <InfoTooltip content="Backlinks are links from other websites pointing to yours. They're one of the strongest signals Google uses to decide who ranks higher. More quality backlinks = more trust = higher rankings." />
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Metrics Grid */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {[
-            { label: "Domain Authority", value: `${da}/100`, color: da >= 60 ? "text-green-500" : da >= 40 ? "text-seo" : da >= 20 ? "text-yellow-500" : "text-red-500", tip: "Moz's 0-100 score predicting how well a domain will rank. DA 1-20 is low, 20-40 is average, 40-60 is strong, 60+ is excellent." },
-            { label: "Page Authority", value: `${metrics.pageAuthority}/100`, color: metrics.pageAuthority >= 40 ? "text-green-500" : "text-yellow-500", tip: "Moz's score for this specific page's ranking strength." },
-            { label: "Linking Domains", value: metrics.linkingDomains.toLocaleString(), color: "text-foreground", tip: "Unique root domains linking to your site. Diversity matters more than total count." },
-            { label: "Total Backlinks", value: metrics.totalBacklinks.toLocaleString(), color: "text-foreground", tip: "Total external pages linking to your domain." },
-            { label: "Spam Score", value: `${metrics.spamScore}%`, color: metrics.spamScore > 30 ? "text-red-500" : "text-green-500", tip: "Likelihood of being penalized. Under 30% is healthy, over 30% needs attention." },
+            { label: "Domain Authority", value: `${da}/100`, color: da >= 60 ? "text-green-500" : da >= 40 ? "text-seo" : da >= 20 ? "text-yellow-500" : "text-red-500" },
+            { label: "Page Authority", value: `${metrics.pageAuthority}/100`, color: metrics.pageAuthority >= 40 ? "text-green-500" : "text-yellow-500" },
+            { label: "Linking Domains", value: metrics.linkingDomains.toLocaleString(), color: "text-foreground" },
+            { label: "Total Backlinks", value: metrics.totalBacklinks.toLocaleString(), color: "text-foreground" },
+            { label: "Spam Score", value: `${metrics.spamScore}%`, color: metrics.spamScore > 30 ? "text-red-500" : "text-green-500" },
           ].map(m => (
             <div key={m.label} className="rounded-lg border border-border/50 bg-card/50 px-3 py-2">
               <div className="flex items-center gap-0.5 mb-0.5">
                 <p className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold truncate">{m.label}</p>
-                <InfoTooltip content={m.tip} className="shrink-0 [&_svg]:h-2.5 [&_svg]:w-2.5" />
                 {m.label === 'Domain Authority' && <LearnMore term="domain-authority" />}
                 {m.label === 'Spam Score' && <LearnMore term="spam-score" />}
+                {m.label === 'Linking Domains' && <LearnMore term="backlinks" />}
+                {m.label === 'Total Backlinks' && <LearnMore term="backlinks" />}
               </div>
               <p className={cn("text-lg font-black", m.color)}>{m.value}</p>
             </div>

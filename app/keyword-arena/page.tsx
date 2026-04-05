@@ -727,14 +727,14 @@ export default function KeywordArenaV3Page() {
                     {/* Rank comparison boxes */}
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
                       <div className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-4 text-center">
-                        <p className="text-xs text-white/60 uppercase font-bold tracking-widest mb-1">Google Rank <LearnMore term="google-rank-vs-ai-rank" /> <InfoTooltip content="Your position in Google's traditional search results for this keyword." /></p>
+                        <p className="text-xs text-white/60 uppercase font-bold tracking-widest mb-1">Google Rank <LearnMore term="google-rank-vs-ai-rank" /></p>
                         <p className="text-3xl font-black text-white tabular-nums">
                           {userSite.googleRank ? `#${userSite.googleRank}` : '—'}
                         </p>
                         <p className="text-xs text-white/50 mt-1">{userSite.googleRank ? 'In search results' : 'Not ranked'}</p>
                       </div>
                       <div className="rounded-xl border border-[#00e5ff]/30 bg-[#00e5ff]/[0.05] p-4 text-center">
-                        <p className="text-xs text-[#00e5ff]/80 uppercase font-bold tracking-widest mb-1">AI Rank <InfoTooltip content="Your position based on Duelly's combined SEO, AEO, and GEO scoring. This predicts how well your site performs in AI-powered search." /></p>
+                        <p className="text-xs text-[#00e5ff]/80 uppercase font-bold tracking-widest mb-1">AI Rank <LearnMore term="google-rank-vs-ai-rank" /></p>
                         <p className="text-3xl font-black text-[#00e5ff] tabular-nums">
                           #{arenaResult.userSiteRank}
                         </p>
@@ -748,7 +748,7 @@ export default function KeywordArenaV3Page() {
                               ? "border-red-500/30 bg-red-500/[0.05]"
                               : "border-yellow-500/30 bg-yellow-500/[0.05]"
                         )}>
-                          <p className="text-xs text-white/60 uppercase font-bold tracking-widest mb-1">Delta <InfoTooltip content="The difference between your Google rank and AI rank. A positive delta means you're better prepared for AI search than your Google position suggests." /></p>
+                          <p className="text-xs text-white/60 uppercase font-bold tracking-widest mb-1">Delta <LearnMore term="google-rank-vs-ai-rank" /></p>
                           {arenaResult.userSiteRank < userSite.googleRank ? (
                             <>
                               <div className="flex items-center justify-center gap-1">
@@ -775,7 +775,7 @@ export default function KeywordArenaV3Page() {
                       )}
                       {arenaResult.backlinkData?.metrics?.domainAuthority != null && (
                         <div className="rounded-xl border border-green-500/30 bg-green-500/[0.05] p-4 text-center">
-                          <p className="text-xs text-green-400/80 uppercase font-bold tracking-widest mb-1">Your DA <LearnMore term="domain-authority" /> <InfoTooltip content="Domain Authority — a 0-100 score predicting how well your site will rank. Based on your backlink profile." /></p>
+                          <p className="text-xs text-green-400/80 uppercase font-bold tracking-widest mb-1">Your DA <LearnMore term="domain-authority" /></p>
                           <p className={cn("text-3xl font-black tabular-nums",
                             arenaResult.backlinkData.metrics.domainAuthority >= 40 ? "text-green-400" :
                             arenaResult.backlinkData.metrics.domainAuthority >= 20 ? "text-yellow-400" : "text-red-400"
@@ -787,7 +787,7 @@ export default function KeywordArenaV3Page() {
                       )}
                       {arenaResult.competitorDA?.domainAuthority != null && (
                         <div className="rounded-xl border border-[#fe3f8c]/30 bg-[#fe3f8c]/[0.05] p-4 text-center">
-                          <p className="text-xs text-[#fe3f8c]/80 uppercase font-bold tracking-widest mb-1">{arenaResult.userSiteRank === 1 ? '#2' : '#1'} DA <LearnMore term="domain-authority" /> <InfoTooltip content={`Domain Authority of your ${arenaResult.userSiteRank === 1 ? 'closest competitor' : 'top competitor'}.`} /></p>
+                          <p className="text-xs text-[#fe3f8c]/80 uppercase font-bold tracking-widest mb-1">{arenaResult.userSiteRank === 1 ? '#2' : '#1'} DA <LearnMore term="domain-authority" /></p>
                           <p className={cn("text-3xl font-black tabular-nums",
                             arenaResult.competitorDA.domainAuthority >= 40 ? "text-green-400" :
                             arenaResult.competitorDA.domainAuthority >= 20 ? "text-yellow-400" : "text-red-400"
@@ -840,7 +840,6 @@ export default function KeywordArenaV3Page() {
               {/* Leaderboard header */}
               <h3 className="text-sm font-black text-white flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-[#00e5ff]" /> Leaderboard
-                <InfoTooltip content="Sites ranked by their combined SEO, AEO, and GEO scores. Higher overall score = better optimized for both traditional and AI search." />
               </h3>
 
               {/* SEO / AEO / GEO Leaders */}
@@ -912,7 +911,7 @@ export default function KeywordArenaV3Page() {
                         <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-widest text-white/50">Rank</th>
                         <th className="px-4 py-3 text-left text-xs font-black uppercase tracking-widest text-white/50">Site</th>
                         <th className="px-4 py-3 text-center text-xs font-black uppercase tracking-widest text-white/40">
-                          Google <InfoTooltip content="Rankings are measured from a neutral, standardized perspective. Google personalizes results based on your location, search history, device, and account activity — so these positions may differ from what you see in your browser. This is normal. Arena rankings provide a consistent benchmark for comparing competitors on a level playing field." />
+                          Google <LearnMore term="google-rank-vs-ai-rank" />
                         </th>
                         <th className="px-4 py-3 text-center text-xs font-black uppercase tracking-widest text-[#00e5ff]/70">SEO</th>
                         <th className="px-4 py-3 text-center text-xs font-black uppercase tracking-widest text-[#BC13FE]/70">AEO</th>
@@ -1020,38 +1019,38 @@ export default function KeywordArenaV3Page() {
                     <div className="border-t border-white/[0.06] bg-white/[0.01] px-6 py-4">
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">Words <InfoTooltip content="Total word count. Pages under 300 words are thin content. 800+ is ideal." /></p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Words <LearnMore term="content-depth" /></p>
                           <p className="text-lg font-black text-white/70 tabular-nums">{d.wordCount.toLocaleString()}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">Schema <InfoTooltip content="Whether structured data (JSON-LD) is present. Enables rich search results." /></p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Schema <LearnMore term="schema-markup" /></p>
                           <p className={cn("text-lg font-black tabular-nums", d.hasSchema ? "text-green-400" : "text-red-400")}>{d.hasSchema ? 'Yes' : 'No'}</p>
                           {d.schemaTypes.length > 0 && <p className="text-xs text-white/50 truncate">{d.schemaTypes.join(', ')}</p>}
                         </div>
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">Alt Text <InfoTooltip content="Percentage of images with descriptive alt text for accessibility and image search." /></p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Alt Text <LearnMore term="alt-text" /></p>
                           <p className={cn("text-lg font-black tabular-nums", altPct >= 90 ? "text-green-400" : altPct >= 50 ? "text-yellow-400" : "text-red-400")}>{altPct}%</p>
                         </div>
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">Open Graph <InfoTooltip content="Social sharing tags (og:title, og:description, og:image). Controls how links appear on social media." /></p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Open Graph <LearnMore term="open-graph" /></p>
                           <p className={cn("text-lg font-black", d.hasOgTitle && d.hasOgDescription ? "text-green-400" : "text-yellow-400")}>
                             {[d.hasOgTitle, d.hasOgDescription, d.hasOgImage].filter(Boolean).length}/3
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">Headings <InfoTooltip content="H1 and H2 heading tags that structure content for search engines." /></p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Headings <LearnMore term="heading-structure" /></p>
                           <p className="text-sm text-white/70">H1: {d.h1Count} · H2: {d.h2Count}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">Links <InfoTooltip content="Internal links (to your own pages) and external links (to other sites)." /></p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Links <LearnMore term="internal-linking" /></p>
                           <p className="text-sm text-white/70">Int: {d.internalLinks} · Ext: {d.externalLinks}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">HTTPS <InfoTooltip content="Whether the page uses SSL encryption. Required for trust and rankings." /></p>
+                          <p className="text-xs text-white/60 uppercase font-bold">HTTPS <LearnMore term="https" /></p>
                           <p className={cn("text-lg font-black", d.isHttps ? "text-green-400" : "text-red-400")}>{d.isHttps ? '✓' : '✗'}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-white/60 uppercase font-bold">Platform <InfoTooltip content="The detected CMS or framework (WordPress, Shopify, etc.)." /></p>
+                          <p className="text-xs text-white/60 uppercase font-bold">Platform <LearnMore term="platform-detection" /></p>
                           <p className="text-sm text-white/70">{d.platform || 'Custom'}</p>
                         </div>
                       </div>
@@ -1067,7 +1066,6 @@ export default function KeywordArenaV3Page() {
                     <div className="rounded-2xl border border-red-500/20 bg-red-500/[0.02] p-5">
                       <h3 className="text-sm font-black text-white flex items-center gap-2 mb-3">
                         <AlertTriangle className="h-4 w-4 text-red-400" /> Competitive Gaps
-                        <InfoTooltip content="Areas where your competitors outperform you. These are your biggest opportunities for improvement." />
                       </h3>
                       <div className="space-y-2">
                         {gaps.map((gap, i) => (
@@ -1096,7 +1094,6 @@ export default function KeywordArenaV3Page() {
                     <div className="rounded-2xl border border-green-500/20 bg-green-500/[0.02] p-5">
                       <h3 className="text-sm font-black text-white flex items-center gap-2 mb-3">
                         <CheckCircle2 className="h-4 w-4 text-green-400" /> Your Strengths
-                        <InfoTooltip content="Areas where you outperform the competition. Maintain these advantages while working on your gaps." />
                       </h3>
                       <div className="space-y-2">
                         {strengths.map((s, i) => (
@@ -1137,7 +1134,6 @@ export default function KeywordArenaV3Page() {
                 <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
                   <h3 className="text-sm font-black text-white flex items-center gap-2 mb-4">
                     <Zap className="h-4 w-4 text-[#00e5ff]" /> Recommended Next Steps
-                    <InfoTooltip content="Based on your scores and competitive gaps, these are the most impactful tools to run next." />
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {(userSite.scores.overall ?? 0) < 90 && (

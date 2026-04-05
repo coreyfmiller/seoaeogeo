@@ -31,7 +31,7 @@ import {
   YAxis,
   Tooltip,
 } from "recharts"
-import { InfoTooltip } from "@/components/ui/info-tooltip"
+import { LearnMore } from "@/components/ui/learn-more"
 
 const keywordData = [
   {
@@ -353,7 +353,6 @@ export function SEOTab({ data }: SEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Shield className="h-5 w-5 text-seo" />
               Technical Response Items
-              <InfoTooltip content="Technical health checks that search engines and AI crawlers evaluate. These affect your site's crawlability, indexability, and user experience." />
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -377,7 +376,7 @@ export function SEOTab({ data }: SEOTabProps) {
                   <span className="text-sm font-medium text-foreground">{item.name}</span>
                   <div className="ml-auto flex items-center gap-1">
                     {item.name === "Core Web Vitals" && (
-                      <InfoTooltip content="Core Web Vitals measure page loading speed, interactivity, and visual stability. Google uses these metrics for ranking. Fix: Optimize images, reduce JavaScript, use a CDN, and enable caching." />
+                      <LearnMore term="core-web-vitals" />
                     )}
                     {item.status ? (
                       <CheckCircle2 className="h-5 w-5 text-geo" />

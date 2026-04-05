@@ -8,7 +8,6 @@ import { PageShell } from '@/components/dashboard/page-shell'
 import { getScanHistory, ScanHistoryEntry, setLoadFromHistory, getRouteForType, exportScanHistory, importScanHistory, clearScanHistory } from '@/lib/scan-history'
 import { Button } from '@/components/ui/button'
 import { Download, Upload, Trash2 } from 'lucide-react'
-import { InfoTooltip } from '@/components/ui/info-tooltip'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 
@@ -155,7 +154,7 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <p className="text-2xl font-black">{s.value}</p>
-                      <p className="text-xs text-muted-foreground flex items-center gap-1">{s.label} <InfoTooltip content={s.tip} className="[&_svg]:h-3 [&_svg]:w-3" /></p>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">{s.label}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -172,7 +171,7 @@ export default function DashboardPage() {
                       <a.icon className={`h-5 w-5 ${a.color}`} />
                     </div>
                     <div>
-                      <p className="text-sm font-bold flex items-center gap-1">{a.label} <InfoTooltip content={a.tip} className="[&_svg]:h-3 [&_svg]:w-3" /></p>
+                      <p className="text-sm font-bold flex items-center gap-1">{a.label}</p>
                       <p className="text-xs text-muted-foreground">{a.desc}</p>
                     </div>
                     <ArrowRight className="h-4 w-4 text-muted-foreground" />
@@ -189,7 +188,6 @@ export default function DashboardPage() {
                     <CardTitle className="text-base flex items-center gap-2">
                       <Clock className="h-4 w-4 text-muted-foreground" />
                       Recent Scans
-                      <InfoTooltip content="Your scan history. When logged in, results are saved to your account and accessible from any device. Click any row to reload that scan result." />
                     </CardTitle>
                     <p className="text-xs text-muted-foreground mt-1">Your recent audit history</p>
                   </div>

@@ -246,19 +246,16 @@ export default function V4Page() {
                   <Card className="flex items-center justify-center p-6">
                     <div className="flex flex-col items-center gap-1">
                     <CircularProgress value={result.scores.seo.score} variant="seo" label="SEO Score" size={140} strokeWidth={10} />
-                    <InfoTooltip content="Search Engine Optimization — measures technical health, metadata, crawlability, content structure, and on-page factors. A high SEO score means search engines can easily find, crawl, and understand your page." />
                     </div>
                   </Card>
                   <Card className="flex items-center justify-center p-6">
                     <div className="flex flex-col items-center gap-1">
                     <CircularProgress value={result.scores.aeo.score} variant="aeo" label="AEO Score" size={140} strokeWidth={10} />
-                    <InfoTooltip content="Answer Engine Optimization — measures how likely AI assistants like ChatGPT, Perplexity, and Gemini are to cite your content. Factors include structured data, FAQ coverage, direct answer formatting, and schema markup." />
                     </div>
                   </Card>
                   <Card className="flex items-center justify-center p-6">
                     <div className="flex flex-col items-center gap-1">
                     <CircularProgress value={result.scores.geo.score} variant="geo" label="GEO Score" size={140} strokeWidth={10} />
-                    <InfoTooltip content="Generative Engine Optimization — measures how well your content is structured for AI-generated search results and summaries. Evaluates brand clarity, topical authority, citation-worthiness, and content uniqueness." />
                     </div>
                   </Card>
                 </div>
@@ -319,7 +316,6 @@ export default function V4Page() {
                       <div className="flex items-center gap-2">
                         <span className={`text-lg font-black ${textColor}`}>{total}</span>
                         <span className="text-sm font-medium">issues found</span>
-                        <InfoTooltip content="Total number of SEO, AEO, and GEO issues detected. Critical issues have the highest impact on your scores. Upgrade to Pro for detailed fix instructions." />
                         <span className="text-xs text-muted-foreground">
                           {critical > 0 && <span className="text-red-600 font-medium">({critical} critical)</span>}
                         </span>

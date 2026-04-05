@@ -13,7 +13,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
-import { InfoTooltip } from '@/components/ui/info-tooltip'
+import { LearnMore } from '@/components/ui/learn-more'
 import { ExpertAnalysis } from '@/components/dashboard/expert-analysis'
 import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
@@ -343,10 +343,10 @@ export default function BattleModeV3() {
                             {/* ── Score Duel Rings (SEO + AEO + GEO + DA) ── */}
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 {[
-                                    { label: "SEO", data: comparisonData.comparison?.seo || comparisonData.seo, icon: <Search className="h-3.5 w-3.5" />, tooltip: "Traditional SEO strength — measures technical health, on-page optimization, content quality, meta tags, heading structure, internal linking, and mobile-friendliness. A higher score means the site follows more SEO best practices.", colorA: "#00e5ff", colorB: "#fe3f8c" },
-                                    { label: "AEO", data: comparisonData.comparison?.aeo || comparisonData.aeo, icon: <Sparkles className="h-3.5 w-3.5" />, tooltip: "Answer Engine Optimization — measures how well a site is optimized for AI answer engines like Google SGE, ChatGPT, and Perplexity. Evaluates structured data (schema markup), FAQ content, direct Q&A formatting, entity density, and content conciseness.", colorA: "#00e5ff", colorB: "#fe3f8c" },
-                                    { label: "GEO", data: comparisonData.comparison?.geo || comparisonData.geo, icon: <Globe className="h-3.5 w-3.5" />, tooltip: "Generative Engine Optimization — measures how likely AI systems are to cite and recommend this site. Evaluates brand authority, expertise signals, objectivity, data-backed claims, image accessibility, and content tone. Higher GEO = more likely to appear in AI-generated answers.", colorA: "#00e5ff", colorB: "#fe3f8c" },
-                                    { label: "Domain Authority", data: blA && blB ? { siteA: blA.metrics.domainAuthority, siteB: blB.metrics.domainAuthority } : null, icon: <Link2 className="h-3.5 w-3.5" />, tooltip: "Moz Domain Authority (DA) — a 0-100 score predicting how well a domain will rank in search results. Based on the quantity and quality of backlinks pointing to the domain. DA 1-20 is low, 20-40 is average, 40-60 is good, 60+ is excellent. This is an off-page signal that complements on-page SEO/AEO/GEO scores.", colorA: "#00e5ff", colorB: "#fe3f8c" },
+                                    { label: "SEO", data: comparisonData.comparison?.seo || comparisonData.seo, icon: <Search className="h-3.5 w-3.5" />, learnMoreTerm: "aeo", colorA: "#00e5ff", colorB: "#fe3f8c" },
+                                    { label: "AEO", data: comparisonData.comparison?.aeo || comparisonData.aeo, icon: <Sparkles className="h-3.5 w-3.5" />, learnMoreTerm: "aeo", colorA: "#00e5ff", colorB: "#fe3f8c" },
+                                    { label: "GEO", data: comparisonData.comparison?.geo || comparisonData.geo, icon: <Globe className="h-3.5 w-3.5" />, learnMoreTerm: "geo", colorA: "#00e5ff", colorB: "#fe3f8c" },
+                                    { label: "Domain Authority", data: blA && blB ? { siteA: blA.metrics.domainAuthority, siteB: blB.metrics.domainAuthority } : null, icon: <Link2 className="h-3.5 w-3.5" />, learnMoreTerm: "domain-authority", colorA: "#00e5ff", colorB: "#fe3f8c" },
                                 ].map((battle) => {
                                     const scoreA = battle.data?.siteA ?? 0
                                     const scoreB = battle.data?.siteB ?? 0
@@ -356,7 +356,7 @@ export default function BattleModeV3() {
                                             <div className="relative z-10">
                                                 <div className="flex items-center justify-between mb-4">
                                                     <span className="text-sm font-black uppercase tracking-widest text-white/80 flex items-center gap-1.5">{battle.icon}{battle.label}</span>
-                                                    <InfoTooltip content={battle.tooltip} />
+                                                    <LearnMore term={battle.learnMoreTerm} />
                                                 </div>
                                                 {noData ? (
                                                     <div className="flex items-center justify-center py-8">
@@ -427,7 +427,6 @@ export default function BattleModeV3() {
                                             <div className="flex items-center gap-2">
                                                 <Zap className="h-5 w-5 text-[#00e5ff]" />
                                                 <CardTitle className="text-white">Counter-Strategies</CardTitle>
-                                                <InfoTooltip content="AI-generated action plan to outrank your competitor. Each strategy targets a specific weakness in your site relative to theirs, with step-by-step implementation instructions." />
                                                 <button onClick={() => {
                                                     const text = recs.map((r: any, i: number) => `${i + 1}. [${normPriority(r)}] ${r.title}\n${r.description || ''}\n${r.howToFix || ''}`).join('\n\n')
                                                     navigator.clipboard.writeText(text)
@@ -474,16 +473,16 @@ export default function BattleModeV3() {
                             {blA && blB && (
                                 <div className="rounded-2xl border border-green-500/20 bg-green-500/[0.02] backdrop-blur-xl p-5">
                                     <h3 className="text-sm font-black text-white flex items-center gap-2 mb-4">
-                                        <Link2 className="h-4 w-4 text-green-400" /> Backlink Profile Comparison <InfoTooltip content="Side-by-side comparison of each site's backlink authority." />
+                                        <Link2 className="h-4 w-4 text-green-400" /> Backlink Profile Comparison <LearnMore term="backlinks" />
                                     </h3>
                                     <div className="grid grid-cols-3 gap-4 text-center">
                                         <div className="text-[#00e5ff]">
                                             <p className="text-xs font-bold uppercase tracking-widest mb-2 text-white/50">{siteALabel}</p>
                                             <div className="space-y-3">
-                                                <div><p className="text-2xl font-black">{blA.metrics.domainAuthority}</p><p className="text-xs text-white/40 flex items-center justify-center gap-1">Domain Authority <InfoTooltip content="Moz's 0-100 score predicting how well a domain will rank in search results. Based on the quantity and quality of external backlinks. DA 1-20 is low (new/small sites), 20-40 is average, 40-60 is strong, 60+ is excellent (major brands, news sites). Higher DA = more ranking power." /></p></div>
-                                                <div><p className="text-lg font-black">{blA.metrics.totalBacklinks.toLocaleString()}</p><p className="text-xs text-white/40 flex items-center justify-center gap-1">Total Backlinks <InfoTooltip content="The total number of external pages linking to this domain. More backlinks generally means more authority, but quality matters more than quantity. 1,000 backlinks from spam sites is worth less than 10 backlinks from high-DA domains like news sites or universities." /></p></div>
-                                                <div><p className="text-lg font-black">{blA.metrics.linkingDomains.toLocaleString()}</p><p className="text-xs text-white/40 flex items-center justify-center gap-1">Linking Domains <InfoTooltip content="The number of unique root domains that link to this site. This is often more important than total backlinks — 100 links from 100 different domains is far more valuable than 100 links from 1 domain. Google values diversity of linking sources as a stronger trust signal." /></p></div>
-                                                <div><p className={cn("text-lg font-black", blA.metrics.spamScore > 30 ? "text-red-400" : "text-green-400")}>{blA.metrics.spamScore}%</p><p className="text-xs text-white/40 flex items-center justify-center gap-1">Spam Score <InfoTooltip content="Moz's assessment of how likely this domain is to be penalized or banned by search engines. Based on 27 signals including thin content, low authority links, and suspicious patterns. 0-30% is healthy, 30-60% is moderate risk, 60%+ is high risk. A high spam score means the site may have toxic backlinks or spammy content." /></p></div>
+                                                <div><p className="text-2xl font-black">{blA.metrics.domainAuthority}</p><p className="text-xs text-white/40 flex items-center justify-center gap-1">Domain Authority <LearnMore term="domain-authority" /></p></div>
+                                                <div><p className="text-lg font-black">{blA.metrics.totalBacklinks.toLocaleString()}</p><p className="text-xs text-white/40 flex items-center justify-center gap-1">Total Backlinks <LearnMore term="backlinks" /></p></div>
+                                                <div><p className="text-lg font-black">{blA.metrics.linkingDomains.toLocaleString()}</p><p className="text-xs text-white/40 flex items-center justify-center gap-1">Linking Domains <LearnMore term="backlinks" /></p></div>
+                                                <div><p className={cn("text-lg font-black", blA.metrics.spamScore > 30 ? "text-red-400" : "text-green-400")}>{blA.metrics.spamScore}%</p><p className="text-xs text-white/40 flex items-center justify-center gap-1">Spam Score <LearnMore term="spam-score" /></p></div>
                                             </div>
                                         </div>
                                         <div className="flex flex-col items-center justify-center gap-2 text-white/20">
@@ -590,8 +589,7 @@ export default function BattleModeV3() {
                             {blA && (
                                 <div className="rounded-2xl border border-[#22c55e]/20 bg-[#22c55e]/[0.02] backdrop-blur-xl p-5">
                                     <h3 className="text-sm font-black text-white flex items-center gap-2 mb-4">
-                                        <Link2 className="h-4 w-4 text-green-400" /> Link Building Intelligence
-                                        <InfoTooltip content="Backlinks are links from other websites pointing to yours. They're one of the strongest signals Google uses to decide who ranks higher. More quality backlinks = more trust = higher rankings." />
+                                        <Link2 className="h-4 w-4 text-green-400" /> Link Building Intelligence <LearnMore term="backlinks" />
                                     </h3>
 
                                     {/* DA Assessment with backlink explainer */}
@@ -672,7 +670,7 @@ export default function BattleModeV3() {
                                     <div className="rounded-2xl border border-[#BC13FE]/20 bg-[#BC13FE]/[0.03] backdrop-blur-xl overflow-hidden">
                                         <div className="px-6 py-4 border-b border-[#BC13FE]/10">
                                             <h3 className="text-sm font-black text-white flex items-center gap-2">
-                                                <Zap className="h-4 w-4 text-[#BC13FE]" /> Stolen Opportunities <InfoTooltip content="Specific areas where your competitor is outperforming you in search visibility." />
+                                                <Zap className="h-4 w-4 text-[#BC13FE]" /> Stolen Opportunities
                                             </h3>
                                             <p className="text-xs text-white/40 mt-0.5">Where <span className="text-[#fe3f8c] font-bold">{siteBLabel}</span> is winning</p>
                                         </div>
@@ -698,7 +696,7 @@ export default function BattleModeV3() {
                                     <div className="rounded-2xl border border-green-500/20 bg-green-500/[0.03] backdrop-blur-xl overflow-hidden">
                                         <div className="px-6 py-4 border-b border-green-500/10">
                                             <h3 className="text-sm font-black text-white flex items-center gap-2">
-                                                <ShieldAlert className="h-4 w-4 text-green-400" /> Critical Strategic Gaps <InfoTooltip content="High-level weaknesses in your site's strategy compared to the competitor." />
+                                                <ShieldAlert className="h-4 w-4 text-green-400" /> Critical Strategic Gaps
                                             </h3>
                                             <p className="text-xs text-white/40 mt-0.5">Weaknesses the competitor is exploiting</p>
                                         </div>

@@ -12,6 +12,7 @@ import { CrawlConfig } from '@/components/dashboard/crawl-config'
 import { PageComparisonTable } from '@/components/dashboard/page-comparison-table'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
 import { InfoTooltip } from '@/components/ui/info-tooltip'
+import { LearnMore } from '@/components/ui/learn-more'
 import { Badge } from '@/components/ui/badge'
 import { ScanErrorDialog } from '@/components/dashboard/scan-error-dialog'
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
@@ -617,19 +618,16 @@ export default function DeepV3Page() {
                   <Card className="flex items-center justify-center p-6">
                     <div className="flex flex-col items-center gap-1">
                       <CircularProgress value={result.scores.seo} variant="seo" label="Avg SEO Score" size={140} strokeWidth={10} />
-                      <InfoTooltip content="Average SEO score across all crawled pages, using site-intelligence scoring weights." />
                     </div>
                   </Card>
                   <Card className="flex items-center justify-center p-6">
                     <div className="flex flex-col items-center gap-1">
                       <CircularProgress value={result.scores.aeo} variant="aeo" label="Avg AEO Score" size={140} strokeWidth={10} />
-                      <InfoTooltip content="Average Answer Engine Optimization score — how likely AI assistants will cite your pages." />
                     </div>
                   </Card>
                   <Card className="flex items-center justify-center p-6">
                     <div className="flex flex-col items-center gap-1">
                       <CircularProgress value={result.scores.geo} variant="geo" label="Avg GEO Score" size={140} strokeWidth={10} />
-                      <InfoTooltip content="Average Generative Engine Optimization score — readiness for AI-generated search results." />
                     </div>
                   </Card>
                 </div>
@@ -754,8 +752,7 @@ export default function DeepV3Page() {
                       <CardHeader>
                         <div className="flex items-center gap-2 flex-wrap">
                           <Zap className="h-5 w-5 text-[#00e5ff]" />
-                          <CardTitle>Roadmap to 100 - Prioritized Site Improvements</CardTitle>
-                          <InfoTooltip content="AI-generated strategic roadmap ranked by impact. Each recommendation includes why it matters, estimated point impact, step-by-step fix instructions, and code snippets tailored to your platform." />
+                        <CardTitle>Roadmap to 100 - Prioritized Site Improvements</CardTitle>
                           <button onClick={() => {
                             const sep = '\u2500'.repeat(60)
                             const text = `ROADMAP TO 100 - PRIORITIZED SITE IMPROVEMENTS (${recs.length})\n${'='.repeat(60)}\n\n` + recs.map((r: any, i: number) => {
@@ -831,7 +828,6 @@ export default function DeepV3Page() {
                       <div className="flex items-center gap-2">
                         <ShieldCheck className="h-5 w-5 text-[#00e5ff]" />
                         <CardTitle className="text-foreground">Domain Health Breakdown</CardTitle>
-                        <InfoTooltip content="Aggregate domain quality across 5 key areas: content, schema, metadata, technical performance, and architecture." />
                         <Badge className="ml-auto bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-xs font-black">{effectiveSitewide.domainHealthScore ?? '–'} / 100</Badge>
                       </div>
                     </CardHeader>
@@ -896,7 +892,6 @@ export default function DeepV3Page() {
                       <div className="flex items-center gap-2">
                         <AlertTriangle className="h-5 w-5 text-yellow-600" />
                         <CardTitle>Duplicate Content Detection</CardTitle>
-                        <InfoTooltip content="Pages sharing identical titles or meta descriptions can cause keyword cannibalization and confuse search engines." />
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -937,7 +932,7 @@ export default function DeepV3Page() {
                       <div className="flex items-center gap-2">
                         <Sparkles className="h-5 w-5 text-[#BC13FE]" />
                         <CardTitle>AEO Readiness</CardTitle>
-                        <InfoTooltip content="How ready your domain is to be cited by AI assistants like ChatGPT, Perplexity, and Gemini." />
+                        <LearnMore term="aeo" />
                         <Badge className="ml-auto bg-[#BC13FE]/10 text-[#BC13FE] border-[#BC13FE]/30 text-xs font-black">
                           {effectiveSitewide.aeoReadiness.score}/100
                         </Badge>
@@ -979,7 +974,7 @@ export default function DeepV3Page() {
                       <div className="flex items-center gap-2">
                         <Zap className="h-5 w-5 text-[#22c55e]" />
                         <CardTitle>GEO Readiness</CardTitle>
-                        <InfoTooltip content="How ready your domain is to appear in AI-generated search results like Google SGE and Bing Copilot." />
+                        <LearnMore term="geo" />
                         <Badge className="ml-auto bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/30 text-xs font-black">
                           {effectiveSitewide.geoReadiness.score}/100
                         </Badge>

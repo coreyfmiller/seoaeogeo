@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Zap, Target, Lightbulb, Loader2, RefreshCw } from "lucide-react"
-import { InfoTooltip } from "@/components/ui/info-tooltip"
 
 interface StructuredAnalysis {
   bottomLine: string
@@ -90,7 +89,7 @@ export function ExpertAnalysis({
             </div>
             <div>
               <h4 className="text-xs font-black uppercase text-[#00e5ff] tracking-widest flex items-center gap-1.5">
-                {label} <InfoTooltip content={tooltip} />
+                {label}
               </h4>
               <p className="text-xs text-white/40 mt-0.5">
                 {failed ? 'Analysis generation failed. Try again.' : 'AI analysis not yet generated for this scan.'}
@@ -124,7 +123,7 @@ export function ExpertAnalysis({
           </div>
           <div>
             <h4 className="text-xs font-black uppercase text-[#00e5ff] tracking-widest mb-1 flex items-center gap-1.5">
-              {label} <InfoTooltip content={tooltip} />
+              {label}
             </h4>
             <p className="text-sm font-medium text-white/80 leading-relaxed">{analysis}</p>
           </div>
@@ -155,7 +154,7 @@ export function ExpertAnalysis({
       <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#00e5ff]/5 rounded-full blur-[60px] pointer-events-none" />
       <div className="relative z-10">
         <h4 className="text-xs font-black uppercase text-[#00e5ff] tracking-widest mb-4 flex items-center gap-1.5">
-          {label} <InfoTooltip content={tooltip} />
+          {label}
         </h4>
         <div className="space-y-3">
           {sections.map((s, i) => (

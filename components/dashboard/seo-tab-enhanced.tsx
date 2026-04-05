@@ -18,7 +18,6 @@ import {
   Zap,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { InfoTooltip } from "@/components/ui/info-tooltip"
 import { LearnMore } from "@/components/ui/learn-more"
 import { useState } from "react"
 
@@ -439,7 +438,6 @@ export function SEOTabEnhanced({ data, hideScoreDeductions }: SEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Shield className="h-5 w-5 text-seo" />
               Technical Response Items
-              <InfoTooltip content="Technical health checks that search engines and AI crawlers evaluate." />
             </CardTitle>
           </CardHeader>
           <CardContent>

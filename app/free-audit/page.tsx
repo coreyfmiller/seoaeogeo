@@ -309,7 +309,6 @@ export default function V2Page() {
                 size={140}
                 strokeWidth={10}
               />
-              <InfoTooltip content="Search Engine Optimization — measures technical health, metadata, crawlability, content structure, and on-page factors. A high SEO score means search engines can easily find, crawl, and understand your page." />
               </div>
             </Card>
 
@@ -322,7 +321,7 @@ export default function V2Page() {
                 size={140}
                 strokeWidth={10}
               />
-              <InfoTooltip content="Answer Engine Optimization — measures how likely AI assistants like ChatGPT, Perplexity, and Gemini are to cite your content. Factors include structured data, FAQ coverage, direct answer formatting, and schema markup." />
+              />
               </div>
             </Card>
 
@@ -335,7 +334,6 @@ export default function V2Page() {
                 size={140}
                 strokeWidth={10}
               />
-              <InfoTooltip content="Generative Engine Optimization — measures how well your content is structured for AI-generated search results and summaries. Evaluates brand clarity, topical authority, citation-worthiness, and content uniqueness." />
               </div>
             </Card>
           </div>
@@ -398,7 +396,6 @@ export default function V2Page() {
                 <div className="flex items-center gap-2">
                   <span className={`text-lg font-black ${textColor}`}>{total}</span>
                   <span className="text-sm font-medium">issues found</span>
-                  <InfoTooltip content="Total number of SEO, AEO, and GEO issues detected on this page. Critical issues have the highest impact on your scores and should be fixed first. Upgrade to Pro for step-by-step fix instructions." />
                   {critical > 0 && <span className="text-xs text-red-600 font-medium">({critical} critical)</span>}
                 </div>
                 <button

@@ -14,6 +14,7 @@ import { SEOTabEnhanced } from '@/components/dashboard/seo-tab-enhanced'
 import { AEOTab } from '@/components/dashboard/aeo-tab'
 import { GEOTab } from '@/components/dashboard/geo-tab'
 import { InfoTooltip } from '@/components/ui/info-tooltip'
+import { LearnMore } from '@/components/ui/learn-more'
 import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
 import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
 import { Badge } from '@/components/ui/badge'
@@ -251,20 +252,17 @@ export default function ProAuditV4Page() {
               <div className="grid gap-6 md:grid-cols-3">
                 <Card className="flex items-center justify-center p-6">
                   <div className="flex flex-col items-center gap-1">
-                    <CircularProgress value={result.scores.seo.score} variant="seo" label="SEO Score" size={140} strokeWidth={10} />
-                    <InfoTooltip content="Search Engine Optimization score measuring technical SEO, content quality, metadata, and crawlability against 2026 standards." />
-                  </div>
+              <CircularProgress value={result.scores.seo.score} variant="seo" label="SEO Score" size={140} strokeWidth={10} />
+                    </div>
                 </Card>
                 <Card className="flex items-center justify-center p-6">
                   <div className="flex flex-col items-center gap-1">
                     <CircularProgress value={result.scores.aeo.score} variant="aeo" label="AEO Score" size={140} strokeWidth={10} />
-                    <InfoTooltip content="Answer Engine Optimization score measuring how likely AI assistants (ChatGPT, Perplexity, Gemini) are to cite your content as a source." />
                   </div>
                 </Card>
                 <Card className="flex items-center justify-center p-6">
                   <div className="flex flex-col items-center gap-1">
                     <CircularProgress value={result.scores.geo.score} variant="geo" label="GEO Score" size={140} strokeWidth={10} />
-                    <InfoTooltip content="Generative Engine Optimization score measuring how well your content is structured for AI-generated search results and summaries." />
                   </div>
                 </Card>
               </div>
@@ -342,7 +340,6 @@ export default function ProAuditV4Page() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <Zap className="h-5 w-5 text-[#00e5ff]" />
                         <CardTitle>Roadmap to 100 - Prioritized Site Improvements</CardTitle>
-                        <InfoTooltip content="AI-generated strategic roadmap ranked by impact. Each recommendation includes why it matters, estimated point impact, step-by-step fix instructions, and code snippets tailored to your platform." />
                         <button onClick={() => {
                           const sep = '\u2500'.repeat(60)
                           const text = `ROADMAP TO 100 - PRIORITIZED SITE IMPROVEMENTS (${recs.length})\n${'='.repeat(60)}\n\n` + recs.map((r: any, i: number) => {
@@ -436,7 +433,7 @@ export default function ProAuditV4Page() {
                   <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-base">
                       <Zap className="h-5 w-5 text-[#BC13FE]" /> Core Web Vitals
-                      <InfoTooltip content="Google's Core Web Vitals measure real-world user experience — loading speed (LCP), interactivity (INP), and visual stability (CLS). These are direct ranking signals." />
+                      <LearnMore term="core-web-vitals" />
                       <span className="ml-auto text-sm font-black text-[#BC13FE]">{result.cwv.performanceScore}/100</span>
                     </CardTitle>
                   </CardHeader>
@@ -448,7 +445,7 @@ export default function ProAuditV4Page() {
                         { data: result.cwv.cls, label: 'CLS', tip: 'Cumulative Layout Shift — measures visual stability. Under 0.1 is good, over 0.25 is poor.' },
                       ].map(({ data: d, label, tip }) => d && (
                         <div key={label} className={`rounded-lg border p-4 text-center ${d.category === 'FAST' ? 'border-green-500/30 bg-green-500/5' : d.category === 'SLOW' ? 'border-red-500/30 bg-red-500/5' : 'border-yellow-500/30 bg-yellow-500/5'}`}>
-                          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1 flex items-center justify-center gap-1">{label}<InfoTooltip content={tip} className="[&_svg]:h-3 [&_svg]:w-3" /></p>
+                          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1 flex items-center justify-center gap-1">{label}<LearnMore term="core-web-vitals" /></p>
                           <p className={`text-2xl font-black ${d.category === 'FAST' ? 'text-green-600' : d.category === 'SLOW' ? 'text-red-600' : 'text-yellow-600'}`}>{d.displayValue}</p>
                           <p className={`text-[10px] font-bold uppercase mt-1 ${d.category === 'FAST' ? 'text-green-600' : d.category === 'SLOW' ? 'text-red-600' : 'text-yellow-600'}`}>{d.category}</p>
                         </div>

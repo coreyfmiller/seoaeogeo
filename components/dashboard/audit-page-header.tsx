@@ -3,7 +3,7 @@
 import { RefreshCw, Search, Activity, Sparkles, HelpCircle, Zap, Copy, Check, FileDown, Loader2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { SiteTypeBadge } from "@/components/dashboard/site-type-badge"
-import { InfoTooltip } from "@/components/ui/info-tooltip"
+import { LearnMore } from "@/components/ui/learn-more"
 import { useState } from "react"
 
 
@@ -264,7 +264,7 @@ export function AuditPageHeader({
                         'border-yellow-500/30 bg-yellow-500/5 text-yellow-600'
                       }`}>
                         LCP {cwv.lcp.displayValue}
-                        <InfoTooltip content="Largest Contentful Paint — measures loading performance. How long until the largest visible element renders. Under 2.5s is good." className="[&_svg]:h-3 [&_svg]:w-3" />
+                        <LearnMore term="core-web-vitals" />
                       </span>
                     )}
                     {cwv.inp && (
@@ -274,7 +274,7 @@ export function AuditPageHeader({
                         'border-yellow-500/30 bg-yellow-500/5 text-yellow-600'
                       }`}>
                         INP {cwv.inp.displayValue}
-                        <InfoTooltip content="Interaction to Next Paint — measures responsiveness. How long until the page responds to user input. Under 200ms is good." className="[&_svg]:h-3 [&_svg]:w-3" />
+                        <LearnMore term="core-web-vitals" />
                       </span>
                     )}
                     {cwv.cls && (
@@ -284,7 +284,7 @@ export function AuditPageHeader({
                         'border-yellow-500/30 bg-yellow-500/5 text-yellow-600'
                       }`}>
                         CLS {cwv.cls.displayValue}
-                        <InfoTooltip content="Cumulative Layout Shift — measures visual stability. How much the page layout shifts during loading. Under 0.1 is good." className="[&_svg]:h-3 [&_svg]:w-3" />
+                        <LearnMore term="core-web-vitals" />
                       </span>
                     )}
                   </div>

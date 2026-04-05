@@ -16,7 +16,6 @@ import {
   Zap,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { InfoTooltip } from "@/components/ui/info-tooltip"
 import { LearnMore } from "@/components/ui/learn-more"
 import { useState } from "react"
 
@@ -360,7 +359,7 @@ export function GEOTab({ data, hideScoreDeductions }: GEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <ImageIcon className="h-5 w-5 text-geo" />
               Media Context & Brand Visibility
-              <InfoTooltip content="Multi-modal AI models (ChatGPT, Claude, Gemini) use image alt text to understand visual content. Without alt text, AI cannot 'see' your images or associate them with your brand." />
+              <LearnMore term="alt-text" />
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -390,7 +389,7 @@ export function GEOTab({ data, hideScoreDeductions }: GEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Sparkles className="h-5 w-5 text-geo" />
               LLM Context Clarity
-              <InfoTooltip content="Measures how clearly AI systems can understand and cite your content. Higher clarity = more frequent and accurate AI citations." />
+              <LearnMore term="geo" />
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -425,7 +424,7 @@ export function GEOTab({ data, hideScoreDeductions }: GEOTabProps) {
           <CardTitle className="text-lg flex items-center gap-2 text-foreground">
             <Bot className="h-5 w-5 text-geo" />
             AI Visibility Gaps
-            <InfoTooltip content="Areas where your content could be more visible to AI systems. These are opportunities to improve how generative engines understand and cite your content." />
+            <LearnMore term="geo" />
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -456,7 +455,7 @@ export function GEOTab({ data, hideScoreDeductions }: GEOTabProps) {
             <CardTitle className="text-lg flex items-center gap-2 text-foreground">
               <Sparkles className="h-5 w-5 text-geo" />
               LLM Sentiment Analysis
-              <InfoTooltip content="Measures how AI systems perceive your content's tone and trustworthiness. Positive sentiment increases citation likelihood." />
+              <LearnMore term="geo" />
             </CardTitle>
           </CardHeader>
           <CardContent>
