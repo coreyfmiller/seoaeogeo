@@ -20,7 +20,7 @@ import {
 export const metadata: Metadata = {
   title: 'Duelly - SEO, AEO & GEO Intelligence Platform',
   description:
-    'Audit your website for SEO, AEO, and GEO with AI-powered scoring. See what AI sees, fix what AI skips, and outrank your competitors.',
+    'Audit your website for SEO, AEO, and GEO. See how Google, ChatGPT, Gemini, and Perplexity view your site — and outrank your competitors.',
   alternates: { canonical: '/' },
 }
 
@@ -42,7 +42,7 @@ export default function HomePage() {
             <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</Link>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/signup" className="px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-bold text-sm transition-colors">
+            <Link href="/signup" className="px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-sm transition-colors">
               Get Started
             </Link>
             <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -61,7 +61,7 @@ export default function HomePage() {
           They Got Optimized.
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
-          When AI or Google cites a competitor instead of you, it's not random. Their site had better structure,
+          When Google, ChatGPT, Gemini, or Perplexity cites a competitor instead of you, it's not random. Their site had better structure,
           clearer content, stronger signals. Duelly runs the same comparison so you can see exactly what they
           did right — and do it better.
         </p>
@@ -79,7 +79,7 @@ export default function HomePage() {
             View Pricing
           </Link>
         </div>
-        <p className="text-sm text-muted-foreground mt-3">20 credits included with every new account.</p>
+        <p className="text-sm text-muted-foreground mt-3">Optimize for Google, ChatGPT, Gemini, and Perplexity — all in one platform.</p>
       </section>
 
       {/* Three Pillars — compact */}
@@ -156,16 +156,16 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="p-6 rounded-2xl border border-border/50 bg-card/50">
+          <div className="p-6 rounded-2xl border border-[#f59e0b]/30 bg-[#f59e0b]/5">
             <div className="flex items-center gap-2 mb-3">
-              <Search className="h-5 w-5 text-[#00e5ff]" />
+              <Search className="h-5 w-5 text-[#f59e0b]" />
               <h3 className="text-lg font-bold">Keyword Arena</h3>
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
               Search any keyword and see how every top-ranking site scores. Compare Google Rank vs AI Rank
               and find exactly where you need to improve to climb. 10 credits per run.
             </p>
-            <Link href="/keyword-arena" className="text-sm font-semibold text-[#00e5ff] hover:underline flex items-center gap-1">
+            <Link href="/keyword-arena" className="text-sm font-semibold text-[#f59e0b] hover:underline flex items-center gap-1">
               Enter the Arena <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
@@ -177,13 +177,13 @@ export default function HomePage() {
         <h2 className="text-3xl font-black text-center mb-12">How It Works</h2>
         <div className="grid md:grid-cols-4 gap-6">
           {[
-            { step: '1', icon: <Globe className="h-5 w-5" />, title: 'Enter Your URL', desc: 'Paste any website URL. No installation or code changes required.' },
-            { step: '2', icon: <Brain className="h-5 w-5" />, title: 'AI Analyzes Your Site', desc: 'Gemini AI reads your content the same way AI search engines do.' },
-            { step: '3', icon: <BarChart3 className="h-5 w-5" />, title: 'Get Your Scores', desc: 'SEO, AEO, and GEO scores with a breakdown of every issue found.' },
-            { step: '4', icon: <Target className="h-5 w-5" />, title: 'Fix & Outrank', desc: 'Follow prioritized, platform-specific instructions to improve your visibility.' },
+            { step: '1', icon: <Globe className="h-5 w-5" />, title: 'Enter Your URL', desc: 'Paste any website URL. No installation or code changes required.', color: '#00e5ff' },
+            { step: '2', icon: <Brain className="h-5 w-5" />, title: 'AI Analyzes Your Site', desc: 'Gemini AI reads your content the same way AI search engines do.', color: '#BC13FE' },
+            { step: '3', icon: <BarChart3 className="h-5 w-5" />, title: 'Get Your Scores', desc: 'SEO, AEO, and GEO scores with a breakdown of every issue found.', color: '#fe3f8c' },
+            { step: '4', icon: <Target className="h-5 w-5" />, title: 'Fix & Outrank', desc: 'Follow prioritized, platform-specific instructions to improve your visibility.', color: '#f59e0b' },
           ].map((item) => (
             <div key={item.step} className="text-center">
-              <div className="h-10 w-10 rounded-full bg-muted/50 border border-border/50 flex items-center justify-center mx-auto mb-3 text-sm font-black">
+              <div className="h-10 w-10 rounded-full flex items-center justify-center mx-auto mb-3 text-sm font-black border" style={{ borderColor: `${item.color}40`, background: `${item.color}15`, color: item.color }}>
                 {item.step}
               </div>
               <h3 className="font-bold mb-1">{item.title}</h3>
@@ -238,7 +238,7 @@ export default function HomePage() {
             },
             {
               q: 'How do I get started?',
-              a: 'Sign up for an account and you\'ll receive 20 credits to start auditing immediately. Credit packs start at $79.99 for 180 credits.',
+              a: 'Sign up for an account and choose a credit pack. Credit packs start at $79.99 for 180 credits.',
             },
             {
               q: 'How many credits does each scan cost?',
@@ -268,7 +268,7 @@ export default function HomePage() {
               { '@type': 'Question', name: 'What is AEO (Answer Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'AEO is the practice of optimizing your content so that AI-powered answer engines like ChatGPT, Perplexity, and Google AI Overviews cite your website as a source.' } },
               { '@type': 'Question', name: 'What is GEO (Generative Engine Optimization)?', acceptedAnswer: { '@type': 'Answer', text: 'GEO measures how well your content performs in AI-generated search results, evaluating expertise signals, factual density, tone objectivity, and citation likelihood.' } },
               { '@type': 'Question', name: 'How does Duelly calculate scores?', acceptedAnswer: { '@type': 'Answer', text: 'Duelly uses a headless browser crawl plus dual Gemini AI analysis with site-type-specific scoring weights for consistent, accurate results.' } },
-              { '@type': 'Question', name: 'How do I get started?', acceptedAnswer: { '@type': 'Answer', text: 'Sign up for an account and you\'ll receive 20 credits to start auditing immediately. Credit packs start at $79.99 for 180 credits.' } },
+              { '@type': 'Question', name: 'How do I get started?', acceptedAnswer: { '@type': 'Answer', text: 'Sign up for an account and choose a credit pack. Credit packs start at $79.99 for 180 credits.' } },
               { '@type': 'Question', name: 'How many credits does each scan cost?', acceptedAnswer: { '@type': 'Answer', text: 'Pro Analysis: 10 credits. Deep Scan: 30 credits (5 pages). Competitor Duel: 10 credits. Keyword Arena: 10 credits per run.' } },
               { '@type': 'Question', name: 'What platforms does Duelly detect?', acceptedAnswer: { '@type': 'Answer', text: 'WordPress, Shopify, Wix, Squarespace, Webflow, Next.js, Gatsby, Hugo, and more. Fix instructions are tailored to the detected platform.' } },
             ],
@@ -281,7 +281,7 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-6 py-20 text-center border-t border-border/30">
         <h2 className="text-3xl font-black mb-4">Ready to See What AI Sees?</h2>
         <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-          Sign up and start auditing in minutes. 20 credits included with every new account.
+          Sign up and start auditing in minutes. Credit packs starting at $79.99.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link

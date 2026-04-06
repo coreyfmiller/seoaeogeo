@@ -78,7 +78,7 @@ export default function SEOvsAEOvsGEOPage() {
 
           <div className="mt-12 p-6 rounded-2xl border border-[#00e5ff]/30 bg-[#00e5ff]/5">
             <h3 className="font-bold mb-2">See your SEO, AEO, and GEO scores</h3>
-            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 credits to audit your site across all three dimensions.</p>
+            <p className="text-sm text-muted-foreground mb-4">Sign up to audit your site across all three dimensions.</p>
             <Link href="/signup" className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-bold text-sm transition-colors">
               Get Started <ArrowRight className="h-4 w-4" />
             </Link>

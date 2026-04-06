@@ -101,7 +101,7 @@ const faqs: FAQItem[] = [
   {
     category: "Plans & Limits",
     question: "How do I get started?",
-    answer: "Sign up for an account and you'll receive 20 credits to start auditing immediately. That's enough for 2 Pro Audits or a Keyword Arena run plus a Competitor Duel."
+    answer: "Sign up for an account and choose a credit pack to start auditing. That's enough for Pro Audits, Keyword Arena runs, and Competitor Duels."
   },
   {
     category: "Keyword Arena",

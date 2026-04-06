@@ -16,7 +16,7 @@ export function PublicNav() {
             <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</Link>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/signup" className="px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-bold text-sm transition-colors">
+            <Link href="/signup" className="px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-sm transition-colors">
               Get Started
             </Link>
             <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">

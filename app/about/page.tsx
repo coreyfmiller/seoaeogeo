@@ -149,7 +149,7 @@ export default function AboutPage() {
           <section className="mt-12 rounded-2xl border border-[#00e5ff]/20 bg-[#00e5ff]/5 p-8 text-center not-prose">
             <h2 className="text-2xl font-black mb-3">Ready to see where you stand?</h2>
             <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
-              Sign up and start auditing in minutes. 20 credits included with every new account.
+              Sign up and start auditing in minutes. Credit packs starting at $79.99.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/signup" className="px-6 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-bold transition-colors flex items-center gap-2">

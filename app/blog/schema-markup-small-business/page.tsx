@@ -71,7 +71,7 @@ export default function SchemaMarkupPage() {
 
           <div className="mt-12 p-6 rounded-2xl border border-[#00e5ff]/30 bg-[#00e5ff]/5">
             <h3 className="font-bold mb-2">See if your site has schema markup</h3>
-            <p className="text-sm text-muted-foreground mb-4">Sign up and get 20 credits to run a Pro Audit. We&apos;ll check your schema, tell you what&apos;s missing, and give you the code to add it.</p>
+            <p className="text-sm text-muted-foreground mb-4">Sign up to run a Pro Audit. We&apos;ll check your schema, tell you what&apos;s missing, and give you the code to add it.</p>
             <Link href="/signup" className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-bold text-sm transition-colors">
               Get Started <ArrowRight className="h-4 w-4" />
             </Link>

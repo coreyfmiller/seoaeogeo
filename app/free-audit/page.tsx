@@ -447,13 +447,13 @@ export default function V2Page() {
               {/* Step 3: The offer */}
               <div className="rounded-2xl border-2 border-[#BC13FE]/30 bg-[#BC13FE]/5 p-6 text-center mb-6">
                 <p className="text-xs font-bold text-[#BC13FE] uppercase tracking-widest mb-2">Go deeper</p>
-                <p className="text-3xl font-black text-foreground mb-1">20 Credits on Signup</p>
-                <p className="text-muted-foreground text-sm mb-4">Enough for 2 Pro Audits or 1 Deep Scan.</p>
+                <p className="text-3xl font-black text-foreground mb-1">Unlock AI-Powered Fixes</p>
+                <p className="text-muted-foreground text-sm mb-4">Pro Audit gives you step-by-step instructions tailored to your platform. 10 credits per scan.</p>
                 <button
                   onClick={() => router.push('/signup')}
                   className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#BC13FE] hover:bg-[#BC13FE]/90 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all"
                 >
-                  Create Account
+                  Get Started
                   <ArrowRight className="h-5 w-5" />
                 </button>
               </div>
