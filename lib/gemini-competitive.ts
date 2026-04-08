@@ -116,7 +116,30 @@ ${options?.platform ? `
     if (!jsonMatch) throw new Error("Could not parse AI response as JSON");
 
     return safeJsonParse(jsonMatch[0]);
-  } catch (error) {
+  } catch (error: any) {
+    // If JSON parse failed, retry once — Gemini sometimes produces malformed JSON on first attempt
+    if (error?.message?.includes('Failed to parse AI response') || error?.message?.includes('Could not parse AI response')) {
+      console.log("[Gemini Competitive] First attempt failed with JSON parse error, retrying...")
+      try {
+        const retryResult = await model.generateContent(prompt);
+        const retryText = retryResult.response.text();
+        if (retryResult.response.usageMetadata) {
+          logUsage({
+            model: modelName,
+            type: "Competitive Battle (retry)",
+            inputTokens: retryResult.response.usageMetadata.promptTokenCount || 0,
+            outputTokens: retryResult.response.usageMetadata.candidatesTokenCount || 0,
+            url: `${siteA.title} vs ${siteB.title}`
+          });
+        }
+        const retryMatch = retryText.match(/\{[\s\S]*\}/);
+        if (!retryMatch) throw new Error("Retry: Could not parse AI response as JSON");
+        return safeJsonParse(retryMatch[0]);
+      } catch (retryError) {
+        console.error("Gemini Competitive Analysis Retry Error:", retryError);
+        throw retryError;
+      }
+    }
     console.error("Gemini Competitive Analysis Error:", error);
     throw error;
   }
