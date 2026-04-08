@@ -83,7 +83,7 @@ export default function SchemaMarkupPage() {
         '@context': 'https://schema.org', '@type': 'Article',
         headline: 'Schema Markup for Small Businesses: What It Is and Why You Need It',
         description: 'Schema markup sounds technical but it\'s one of the easiest ways to stand out in search results.',
-        datePublished: '2026-04-01', author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
+        datePublished: '2026-04-01', dateModified: '2026-04-08', author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
         publisher: { '@type': 'Organization', name: 'Duelly', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
       }) }} />
       <PublicFooter />

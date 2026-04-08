@@ -99,7 +99,7 @@ export default function GoogleRankVsAIRankPage() {
         '@context': 'https://schema.org', '@type': 'Article',
         headline: 'Why Your Google Ranking Doesn\'t Match Your AI Ranking',
         description: 'You can be #3 on Google and #8 in AI search. Here\'s why the gap exists and what you can do to close it.',
-        datePublished: '2026-04-01', author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
+        datePublished: '2026-04-01', dateModified: '2026-04-08', author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
         publisher: { '@type': 'Organization', name: 'Duelly', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
       }) }} />
       <PublicFooter />

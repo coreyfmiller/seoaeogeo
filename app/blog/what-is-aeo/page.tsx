@@ -82,7 +82,7 @@ export default function WhatIsAEOPage() {
         '@context': 'https://schema.org', '@type': 'Article',
         headline: 'What is AEO? Answer Engine Optimization Explained',
         description: 'AI search engines like ChatGPT and Perplexity are changing how people find businesses. AEO is how you make sure they find yours.',
-        datePublished: '2026-03-29', author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
+        datePublished: '2026-03-29', dateModified: '2026-04-08', author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
         publisher: { '@type': 'Organization', name: 'Duelly', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
       }) }} />
       <PublicFooter />

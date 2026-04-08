@@ -90,7 +90,7 @@ export default function SEOvsAEOvsGEOPage() {
         '@context': 'https://schema.org', '@type': 'Article',
         headline: 'SEO vs AEO vs GEO: What\'s the Difference?',
         description: 'Traditional SEO isn\'t enough anymore. Here\'s what AEO and GEO mean for your business and why all three matter in 2026.',
-        datePublished: '2026-03-29', author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
+        datePublished: '2026-03-29', dateModified: '2026-04-08', author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
         publisher: { '@type': 'Organization', name: 'Duelly', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
       }) }} />
       <PublicFooter />

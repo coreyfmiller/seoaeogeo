@@ -360,7 +360,7 @@ export default function BattleModeV3() {
                                                 </div>
                                                 {noData ? (
                                                     <div className="flex items-center justify-center py-8">
-                                                        <p className="text-xs text-white/30 italic">Moz API not configured</p>
+                                                        <p className="text-xs text-white/30 italic">Backlink data unavailable for this comparison</p>
                                                     </div>
                                                 ) : (
                                                     <>

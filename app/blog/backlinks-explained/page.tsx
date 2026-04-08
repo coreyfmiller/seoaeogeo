@@ -131,7 +131,7 @@ export default function BacklinksExplainedPage() {
         '@context': 'https://schema.org', '@type': 'Article',
         headline: 'Backlinks Explained: Why Other Websites Linking to You Matters',
         description: 'Backlinks are one of the biggest ranking factors in SEO. Here\'s what they are, why they matter, and how to actually get them.',
-        datePublished: '2026-04-01', author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
+        datePublished: '2026-04-01', dateModified: '2026-04-08', author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
         publisher: { '@type': 'Organization', name: 'Duelly', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
       }) }} />
       <PublicFooter />

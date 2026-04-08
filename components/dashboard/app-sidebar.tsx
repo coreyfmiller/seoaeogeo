@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import {
@@ -138,7 +139,7 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
       {/* Logo */}
       <div className="flex flex-col items-center justify-center px-6 py-5 border-b border-border/50">
         <a href="/pro-audit">
-          <img src="/logo.png" alt="Duelly" className="h-[66px] w-auto" />
+          <Image src="/logo.png" alt="Duelly" width={165} height={66} className="h-[66px] w-auto" priority />
         </a>
         <span className="text-xs text-muted-foreground/60 italic mt-1">The roadmap to outrank your rivals.</span>
       </div>

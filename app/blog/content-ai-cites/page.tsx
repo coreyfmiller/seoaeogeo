@@ -137,7 +137,7 @@ export default function ContentAICitesPage() {
         '@context': 'https://schema.org', '@type': 'Article',
         headline: 'How to Write Content That AI Actually Cites',
         description: 'AI search engines pick favorites. Here\'s what makes them choose one source over another and how to write content that gets cited.',
-        datePublished: '2026-04-01', author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
+        datePublished: '2026-04-01', dateModified: '2026-04-08', author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
         publisher: { '@type': 'Organization', name: 'Duelly', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
       }) }} />
       <PublicFooter />

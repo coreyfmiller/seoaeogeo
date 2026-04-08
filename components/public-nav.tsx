@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export function PublicNav() {
   return (
@@ -6,7 +7,7 @@ export function PublicNav() {
       <nav className="border-b border-border/50 bg-background/80 backdrop-blur-sm sticky top-0 z-50" aria-label="Main navigation">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center">
-            <img src="/logo.png" alt="Duelly" className="h-14 w-auto" />
+            <Image src="/logo.png" alt="Duelly" width={140} height={56} className="h-14 w-auto" priority />
           </Link>
           <div className="hidden md:flex items-center gap-6">
             <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link>

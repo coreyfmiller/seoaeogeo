@@ -137,7 +137,7 @@ export default function SEOMistakesSmallBusinessPage() {
         '@context': 'https://schema.org', '@type': 'Article',
         headline: 'The 7 Biggest SEO Mistakes Small Businesses Make',
         description: 'Most small business websites have at least 3 of these 7 SEO problems. Here\'s what they are and exactly how to fix each one.',
-        datePublished: '2026-04-01', author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
+        datePublished: '2026-04-01', dateModified: '2026-04-08', author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
         publisher: { '@type': 'Organization', name: 'Duelly', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
       }) }} />
       <PublicFooter />
