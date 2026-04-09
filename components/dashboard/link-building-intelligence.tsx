@@ -26,9 +26,10 @@ interface Backlink {
 interface LinkBuildingIntelligenceProps {
   metrics: BacklinkMetrics
   backlinks: Backlink[]
+  nofollowOnly?: boolean
 }
 
-export function LinkBuildingIntelligence({ metrics, backlinks }: LinkBuildingIntelligenceProps) {
+export function LinkBuildingIntelligence({ metrics, backlinks, nofollowOnly }: LinkBuildingIntelligenceProps) {
   const da = metrics.domainAuthority
 
   return (
@@ -119,6 +120,11 @@ export function LinkBuildingIntelligence({ metrics, backlinks }: LinkBuildingInt
                 <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-green-500/30 text-green-500 bg-green-500/10">MOZ</Badge>
               </div>
               <p className="text-sm text-muted-foreground mt-1">The highest-authority domains linking to your site</p>
+              {nofollowOnly && (
+                <p className="text-xs text-yellow-400/80 mt-2 leading-relaxed">
+                  ⚠ No dofollow backlinks found. These are nofollow links — typically from directories or automated sources. They don&apos;t pass ranking authority. Building quality dofollow backlinks should be a priority.
+                </p>
+              )}
             </div>
             <div className="px-5 py-3 space-y-2">
               <div className="flex items-center gap-3 text-xs text-muted-foreground uppercase font-bold pb-2 border-b border-border/30">

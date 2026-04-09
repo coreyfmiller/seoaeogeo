@@ -818,6 +818,7 @@ export default function DeepV3Page() {
                   <LinkBuildingIntelligence
                     metrics={result.backlinkData.metrics}
                     backlinks={result.backlinkData.backlinks}
+                    nofollowOnly={result.backlinkData.nofollowOnly}
                   />
                 )}
 

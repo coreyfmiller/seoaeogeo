@@ -42,6 +42,8 @@ export interface MozBacklink {
 export interface MozBacklinkData {
   metrics: MozUrlMetrics
   backlinks: MozBacklink[]
+  /** True when only nofollow links were found (no dofollow backlinks exist) */
+  nofollowOnly?: boolean
 }
 
 export function isMozConfigured(): boolean {
@@ -100,6 +102,7 @@ export async function getMozUrlMetrics(targetUrl: string): Promise<MozUrlMetrics
 
 /**
  * Get top backlinks via LEGACY API (lsapi.seomoz.com/v2).
+ * Tries follow-only first. If empty, falls back to all external links.
  * Costs 1 row per link returned.
  */
 export async function getMozBacklinks(targetUrl: string, limit?: number): Promise<MozBacklink[]> {
@@ -107,9 +110,28 @@ export async function getMozBacklinks(targetUrl: string, limit?: number): Promis
 
   const domain = extractDomain(targetUrl)
   const desiredCount = limit || MOZ_BACKLINK_LIMIT
-  // Fetch extra rows so we still have enough after deduplicating by domain
+
+  // Try follow-only first (quality links)
+  const followLinks = await fetchMozLinks(domain, desiredCount, 'external+follow')
+  if (followLinks.length > 0) {
+    console.log(`[Moz] Found ${followLinks.length} dofollow backlinks for: ${domain}`)
+    return followLinks
+  }
+
+  // Fallback: fetch all external links (includes nofollow)
+  console.log(`[Moz] No dofollow backlinks for ${domain}, falling back to all external links`)
+  const allLinks = await fetchMozLinks(domain, desiredCount, 'external')
+  if (allLinks.length > 0) {
+    // Mark these as nofollow-only results so the UI can show a note
+    allLinks.forEach(l => { (l as any)._nofollowFallback = true })
+  }
+  return allLinks
+}
+
+/** Internal: fetch and deduplicate backlinks from Moz legacy API */
+async function fetchMozLinks(domain: string, desiredCount: number, filter: string): Promise<MozBacklink[]> {
   const fetchLimit = desiredCount * 3
-  console.log(`[Moz] Fetching top ${fetchLimit} backlinks for: ${domain} (will dedupe to ${desiredCount} unique domains)`)
+  console.log(`[Moz] Fetching top ${fetchLimit} backlinks for: ${domain} (filter: ${filter})`)
 
   const res = await fetch('https://lsapi.seomoz.com/v2/links', {
     method: 'POST',
@@ -120,7 +142,7 @@ export async function getMozBacklinks(targetUrl: string, limit?: number): Promis
     body: JSON.stringify({
       target: domain,
       target_type: 'root_domain',
-      filter: 'external',
+      filter,
       sort: 'source_domain_authority',
       limit: fetchLimit,
     }),
@@ -176,5 +198,6 @@ export async function getMozBacklinkData(targetUrl: string, limit?: number): Pro
     getMozUrlMetrics(targetUrl),
     getMozBacklinks(targetUrl, limit),
   ])
-  return { metrics, backlinks }
+  const nofollowOnly = backlinks.length > 0 && backlinks.every(b => !b.isDofollow)
+  return { metrics, backlinks, nofollowOnly }
 }

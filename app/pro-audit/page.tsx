@@ -427,7 +427,7 @@ export default function ProAuditV4Page() {
 
               {/* Link Building Intelligence */}
               {result.backlinkData && (
-                <LinkBuildingIntelligence metrics={result.backlinkData.metrics} backlinks={result.backlinkData.backlinks} />
+                <LinkBuildingIntelligence metrics={result.backlinkData.metrics} backlinks={result.backlinkData.backlinks} nofollowOnly={(result.backlinkData as any)?.nofollowOnly} />
               )}
 
               {/* Core Web Vitals */}

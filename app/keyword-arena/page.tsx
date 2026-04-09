@@ -1128,6 +1128,7 @@ export default function KeywordArenaV3Page() {
                 <LinkBuildingIntelligence
                   metrics={arenaResult.backlinkData.metrics}
                   backlinks={arenaResult.backlinkData.backlinks}
+                  nofollowOnly={(arenaResult.backlinkData as any)?.nofollowOnly}
                 />
               )}
 
