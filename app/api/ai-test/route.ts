@@ -15,9 +15,9 @@ export async function POST(req: NextRequest) {
     const user = await getAuthUser()
     if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
 
-    const creditResult = await useCredits(user.id, CREDIT_COST, 'ai-test')
-    if (!creditResult.success) {
-      return NextResponse.json({ error: creditResult.error || 'Insufficient credits' }, { status: 402 })
+    const creditResult = await useCredits(user.id, CREDIT_COST)
+    if (!creditResult.allowed) {
+      return NextResponse.json({ error: 'Insufficient credits' }, { status: 402 })
     }
 
     console.log(`[AI Test] Running for keyword: "${keyword.trim()}"`)
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     // Check if all engines failed
     const allFailed = results.every(r => r.error && r.recommendations.length === 0)
     if (allFailed) {
-      await refundCredits(user.id, CREDIT_COST, 'ai-test-all-failed')
+      await refundCredits(user.id, CREDIT_COST)
       return NextResponse.json({
         success: false,
         error: 'All AI engines failed. Credits have been refunded.',
