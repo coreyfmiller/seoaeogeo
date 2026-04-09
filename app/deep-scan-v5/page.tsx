@@ -762,24 +762,25 @@ export default function DeepV3Page() {
                       <div className="flex items-center gap-2">
                         <ShieldCheck className="h-5 w-5 text-[#00e5ff]" />
                         <CardTitle className="text-foreground">Domain Health Breakdown</CardTitle>
+                        <LearnMore term="domain-health" />
                         <Badge className="ml-auto bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-xs font-black">{effectiveSitewide.domainHealthScore ?? '–'} / 100</Badge>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 pb-4 border-b border-border/50 mb-4">
                         {[
-                          { label: "Content", value: effectiveSitewide.domainHealthBreakdown.contentQuality },
-                          { label: "Schema", value: effectiveSitewide.domainHealthBreakdown.schemaQuality },
-                          { label: "Metadata", value: effectiveSitewide.domainHealthBreakdown.metadataQuality },
-                          { label: "Technical", value: effectiveSitewide.domainHealthBreakdown.technicalHealth },
-                          { label: "Architecture", value: effectiveSitewide.domainHealthBreakdown.architectureHealth },
+                          { label: "Content", value: effectiveSitewide.domainHealthBreakdown.contentQuality, term: "content-quality" },
+                          { label: "Schema", value: effectiveSitewide.domainHealthBreakdown.schemaQuality, term: "schema-quality" },
+                          { label: "Metadata", value: effectiveSitewide.domainHealthBreakdown.metadataQuality, term: "metadata-quality" },
+                          { label: "Technical", value: effectiveSitewide.domainHealthBreakdown.technicalHealth, term: "technical-health" },
+                          { label: "Architecture", value: effectiveSitewide.domainHealthBreakdown.architectureHealth, term: "architecture-health" },
                         ].map(item => {
                           const v = item.value ?? 0
                           const scoreColor = v >= 75 ? "text-green-500" : v >= 50 ? "text-yellow-500" : "text-red-500"
                           return (
                             <div key={item.label} className="text-center">
                               <p className={`text-2xl font-black ${scoreColor}`}>{v}</p>
-                              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">{item.label}</p>
+                              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold flex items-center justify-center gap-0.5">{item.label} <LearnMore term={item.term} className="h-3 w-3 text-[7px]" /></p>
                             </div>
                           )
                         })}
