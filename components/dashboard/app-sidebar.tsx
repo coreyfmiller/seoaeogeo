@@ -22,6 +22,7 @@ import {
   Trophy,
   HelpCircle,
   MessageSquare,
+  FlaskConical,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
@@ -39,10 +40,11 @@ const mainNav: NavItem[] = [
   { name: "Deep Scan", icon: Layers, href: "/deep-scan" },
   { name: "Competitor Duel", icon: Swords, href: "/battle-mode" },
   { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena" },
+  { name: "The AI Test", icon: FlaskConical, href: "/ai-test", badge: "NEW" },
   { name: "Dashboard", icon: Home, href: "/dashboard" },
 ]
 
-const proOnlyPaths = ['/pro-audit', '/deep-scan', '/battle-mode', '/keyword-arena', '/dashboard']
+const proOnlyPaths = ['/pro-audit', '/deep-scan', '/battle-mode', '/keyword-arena', '/ai-test', '/dashboard']
 
 const comingSoonNav: NavItem[] = []
 
@@ -200,6 +202,11 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
                   {item.badge === "BETA AI" && (
                     <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-gradient-to-r from-orange-500/10 to-[#BC13FE]/10 text-[#BC13FE] border border-[#BC13FE]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       BETA AI
+                    </span>
+                  )}
+                  {item.badge === "NEW" && (
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-[#00e5ff]/10 text-[#00e5ff] border border-[#00e5ff]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm animate-pulse">
+                      NEW
                     </span>
                   )}
                   {item.badge === "V1" && (
