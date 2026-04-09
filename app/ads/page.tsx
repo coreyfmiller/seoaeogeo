@@ -224,14 +224,10 @@ export default function AdsPage() {
                 </div>
                 <div className="text-center">
                   <CircularProgress value={lowGeo} variant="geo" size={120} strokeWidth={10} />
-                  <p className="text-xs text-white/30 font-bold mt-1">Can AI?</p>
+                  <p className="text-xs text-white/30 font-bold mt-1">CAN AI FIND YOU?</p>
                 </div>
               </div>
-              <p className="text-sm text-white/50">Find out where your site ranks.</p>
-              <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="Duelly" className="h-8" />
-                <span className="text-white/40 text-sm font-bold">duelly.ai</span>
-              </div>
+              <img src="/logo.png" alt="Duelly" className="h-14 mt-2" />
             </div>
           </div>
         </AdFrame>
