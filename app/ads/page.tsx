@@ -617,24 +617,239 @@ export default function AdsPage() {
         {/* AD 25: The Dark Horse — Underdog Story (4:3) */}
         <AdFrame ratio="4:3" id="ad-25-dark-horse">
           <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-80 h-80 bg-[#00e5ff]/8 rounded-full blur-[120px]" />
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#f59e0b]/8 rounded-full blur-[120px]" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-[#00e5ff]/10 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#f59e0b]/10 rounded-full blur-[120px]" />
+            <div className="absolute top-6 left-6 px-3 py-1 rounded-full bg-[#f59e0b]/20 border border-[#f59e0b]/40">
+              <span className="text-[10px] font-black text-[#f59e0b] uppercase tracking-widest">Small business. Big advantage.</span>
+            </div>
             <div className="relative z-10 flex flex-col items-center gap-5 px-10">
-              <p className="text-sm text-[#f59e0b] font-bold uppercase tracking-widest">Small business. Big advantage.</p>
-              <p className="text-2xl font-black text-center leading-tight">Your competitor has<br />10x your budget.</p>
-              <p className="text-xl text-[#00e5ff] font-black text-center">You have better data.</p>
-              <div className="flex items-center gap-10 mt-2">
-                <div className="text-center">
-                  <CircularProgress value={seo} variant="seo" size={100} strokeWidth={8} label="SEO" />
+              <p className="text-3xl font-black text-center leading-tight">Your competitor has<br /><span className="text-white/30">10x your budget.</span></p>
+              <p className="text-2xl text-[#00e5ff] font-black text-center">You have better data.</p>
+              <div className="flex items-center gap-8 mt-2">
+                <CircularProgress value={seo} variant="seo" size={110} strokeWidth={9} label="SEO" />
+                <CircularProgress value={aeo} variant="aeo" size={110} strokeWidth={9} label="AEO" />
+                <CircularProgress value={geo} variant="geo" size={110} strokeWidth={9} label="GEO" />
+              </div>
+              <Logo size="xl" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 26: The Equalizer (4:3) */}
+        <AdFrame ratio="4:3" id="ad-26-equalizer">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#f59e0b]/8 via-transparent to-[#00e5ff]/8" />
+            <div className="relative z-10 flex flex-col items-center gap-5 px-10">
+              <p className="text-2xl font-black text-center leading-tight">They have a marketing team.<br />You have Duelly.</p>
+              <div className="flex items-center gap-4 mt-2">
+                <div className="text-center p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] w-36">
+                  <p className="text-xs text-white/30 font-bold mb-1">Their team</p>
+                  <p className="text-3xl font-black text-white/20">$8K</p>
+                  <p className="text-[10px] text-white/20">per month</p>
                 </div>
-                <div className="text-center">
-                  <CircularProgress value={aeo} variant="aeo" size={100} strokeWidth={8} label="AEO" />
-                </div>
-                <div className="text-center">
-                  <CircularProgress value={geo} variant="geo" size={100} strokeWidth={8} label="GEO" />
+                <p className="text-white/20 text-xl">vs</p>
+                <div className="text-center p-4 rounded-xl border border-[#00e5ff]/30 bg-[#00e5ff]/5 w-36">
+                  <p className="text-xs text-[#00e5ff] font-bold mb-1">Your audit</p>
+                  <p className="text-3xl font-black text-[#00e5ff]">$80</p>
+                  <p className="text-[10px] text-white/40">one time</p>
                 </div>
               </div>
+              <p className="text-sm text-white/40">Same insights. Fraction of the cost.</p>
               <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 27: The Secret (1:1) */}
+        <AdFrame ratio="1:1" id="ad-27-the-secret">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#BC13FE]/8 rounded-full blur-[140px]" />
+            <div className="relative z-10 flex flex-col items-center gap-6 px-12">
+              <p className="text-sm text-[#BC13FE] font-bold uppercase tracking-widest">The secret</p>
+              <p className="text-2xl font-black text-center leading-tight">The #1 result for your keyword<br />isn&apos;t the best business.</p>
+              <p className="text-xl text-[#00e5ff] font-black text-center">It&apos;s the best optimized.</p>
+              <CircularProgress value={seo} variant="seo" size={120} strokeWidth={10} />
+              <p className="text-sm text-white/40 text-center">See exactly what they did right.<br />Then do it better.</p>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 28: David vs Goliath (4:5) */}
+        <AdFrame ratio="4:5" id="ad-28-david-goliath">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-80 h-80 bg-[#00e5ff]/8 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#fe3f8c]/8 rounded-full blur-[120px]" />
+            <div className="relative z-10 flex flex-col items-center gap-4 px-8">
+              <div className="flex items-end gap-6">
+                <div className="flex flex-col items-center gap-2">
+                  <CircularProgress value={seo} variant="seo" size={90} strokeWidth={7} />
+                  <p className="text-xs font-bold text-[#00e5ff]">You</p>
+                  <p className="text-[10px] text-white/30">5 employees</p>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <CircularProgress value={cSeo} variant="geo" size={90} strokeWidth={7} />
+                  <p className="text-xs font-bold text-[#fe3f8c]">Them</p>
+                  <p className="text-[10px] text-white/30">500 employees</p>
+                </div>
+              </div>
+              <p className="text-xl font-black text-center mt-2">Size doesn&apos;t win rankings.<br /><span className="text-[#00e5ff]">Optimization does.</span></p>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 29: The Overnight Fix (4:3) */}
+        <AdFrame ratio="4:3" id="ad-29-overnight-fix">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-b from-[#00e5ff]/5 via-transparent to-[#f59e0b]/5" />
+            <div className="relative z-10 flex flex-col items-center gap-5 px-10">
+              <p className="text-2xl font-black text-center leading-tight">What if you could find<br />every SEO mistake on your site<br /><span className="text-[#00e5ff]">in 60 seconds?</span></p>
+              <div className="flex items-center gap-3">
+                <div className="px-4 py-2 rounded-lg border border-red-500/30 bg-red-500/10"><p className="text-xs text-red-400 font-bold">Missing Schema</p></div>
+                <div className="px-4 py-2 rounded-lg border border-red-500/30 bg-red-500/10"><p className="text-xs text-red-400 font-bold">Thin Content</p></div>
+                <div className="px-4 py-2 rounded-lg border border-red-500/30 bg-red-500/10"><p className="text-xs text-red-400 font-bold">Slow Speed</p></div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="px-4 py-2 rounded-lg border border-yellow-500/30 bg-yellow-500/10"><p className="text-xs text-yellow-400 font-bold">No FAQ</p></div>
+                <div className="px-4 py-2 rounded-lg border border-yellow-500/30 bg-yellow-500/10"><p className="text-xs text-yellow-400 font-bold">Bad Metadata</p></div>
+              </div>
+              <p className="text-sm text-white/50">Found. Prioritized. Fixed.</p>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 30: Local Business (4:3) */}
+        <AdFrame ratio="4:3" id="ad-30-local-business">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-[#22c55e]/8 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#00e5ff]/8 rounded-full blur-[120px]" />
+            <div className="relative z-10 flex flex-col items-center gap-5 px-10">
+              <p className="text-sm text-[#22c55e] font-bold uppercase tracking-widest">For local businesses</p>
+              <p className="text-2xl font-black text-center leading-tight">&ldquo;Best plumber near me&rdquo;</p>
+              <p className="text-lg text-white/50 text-center">Google shows 10 results.<br />AI shows <span className="text-[#fe3f8c] font-bold">one</span>.</p>
+              <CircularProgress value={geo} variant="geo" size={130} strokeWidth={11} label="Your GEO Score" />
+              <p className="text-sm text-white/40">Is it high enough to be the one?</p>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 31: Invisible Competitor (16:9) */}
+        <AdFrame ratio="16:9" id="ad-31-invisible-competitor">
+          <div className="w-full h-full bg-[#0a0a12] flex items-center justify-center relative overflow-hidden px-12">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#fe3f8c]/5 via-transparent to-[#00e5ff]/5" />
+            <div className="relative z-10 flex items-center gap-12">
+              <div className="flex-1">
+                <p className="text-3xl font-black leading-tight mb-3">There&apos;s a competitor<br />you&apos;ve never heard of.</p>
+                <p className="text-lg text-white/50 mb-2">They rank above you in AI search.</p>
+                <p className="text-sm text-[#00e5ff] font-bold">Duelly shows you who they are.</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex flex-col items-center gap-2">
+                  <CircularProgress value={cSeo} variant="geo" size={80} strokeWidth={6} />
+                  <p className="text-[10px] text-[#fe3f8c] font-bold">???</p>
+                </div>
+                <div className="text-white/10 text-2xl">vs</div>
+                <div className="flex flex-col items-center gap-2">
+                  <CircularProgress value={seo} variant="seo" size={80} strokeWidth={6} />
+                  <p className="text-[10px] text-[#00e5ff] font-bold">You</p>
+                </div>
+              </div>
+              <Logo size="md" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 32: No Subscription (4:3) */}
+        <AdFrame ratio="4:3" id="ad-32-no-subscription">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#22c55e]/5 via-transparent to-[#00e5ff]/5" />
+            <div className="relative z-10 flex flex-col items-center gap-5 px-10">
+              <p className="text-sm text-white/20 line-through">$199/month SEO tool subscription</p>
+              <p className="text-3xl font-black text-center leading-tight">One-time purchase.<br /><span className="text-[#00e5ff]">Credits never expire.</span></p>
+              <div className="grid grid-cols-3 gap-3 w-full max-w-sm mt-2">
+                <div className="text-center p-3 rounded-xl border border-[#22c55e]/20 bg-[#22c55e]/5">
+                  <p className="text-lg font-black text-[#22c55e]">$80</p>
+                  <p className="text-[10px] text-white/40">180 credits</p>
+                </div>
+                <div className="text-center p-3 rounded-xl border border-[#00e5ff]/20 bg-[#00e5ff]/5">
+                  <p className="text-lg font-black text-[#00e5ff]">$150</p>
+                  <p className="text-[10px] text-white/40">550 credits</p>
+                </div>
+                <div className="text-center p-3 rounded-xl border border-[#BC13FE]/20 bg-[#BC13FE]/5">
+                  <p className="text-lg font-black text-[#BC13FE]">$300</p>
+                  <p className="text-[10px] text-white/40">1,450 credits</p>
+                </div>
+              </div>
+              <p className="text-sm text-white/40">No monthly fees. No contracts.</p>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 33: Pays for Itself (1:1) */}
+        <AdFrame ratio="1:1" id="ad-33-pays-for-itself">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-80 h-80 bg-[#f59e0b]/8 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#00e5ff]/8 rounded-full blur-[120px]" />
+            <div className="relative z-10 flex flex-col items-center gap-5 px-12">
+              <p className="text-2xl font-black text-center leading-tight">One new customer<br />pays for the entire audit.</p>
+              <div className="w-full max-w-xs space-y-2 mt-2">
+                <div className="flex items-center justify-between py-2 border-b border-white/[0.06]">
+                  <span className="text-sm text-white/50">Audit cost</span>
+                  <span className="text-sm font-bold text-white/70">$80</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-white/[0.06]">
+                  <span className="text-sm text-white/50">Avg customer value</span>
+                  <span className="text-sm font-bold text-[#22c55e]">$500+</span>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <span className="text-sm text-white/50">ROI</span>
+                  <span className="text-sm font-bold text-[#f59e0b]">6x return</span>
+                </div>
+              </div>
+              <p className="text-sm text-white/40 text-center">The math is simple.</p>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 34: While You Sleep (4:5) */}
+        <AdFrame ratio="4:5" id="ad-34-while-you-sleep">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a12] via-[#0a0a12] to-[#00e5ff]/8" />
+            <div className="relative z-10 flex flex-col items-center gap-5 px-8">
+              <p className="text-xl font-black text-center leading-tight">Right now, someone is asking AI<br />to recommend a business like yours.</p>
+              <div className="space-y-2 w-full max-w-xs">
+                <div className="p-3 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+                  <p className="text-xs text-white/30 mb-1">ChatGPT</p>
+                  <p className="text-sm text-white/60">&ldquo;Based on my analysis, I&apos;d recommend <span className="text-[#00e5ff] font-bold">competitor.com</span> for this service...&rdquo;</p>
+                </div>
+                <div className="p-3 rounded-lg bg-[#fe3f8c]/5 border border-[#fe3f8c]/20">
+                  <p className="text-xs text-[#fe3f8c] font-bold">Your site wasn&apos;t mentioned.</p>
+                </div>
+              </div>
+              <p className="text-lg font-black text-center mt-2">Change that.</p>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 35: Better Intel (4:3) */}
+        <AdFrame ratio="4:3" id="ad-35-better-intel">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#00e5ff]/6 rounded-full blur-[140px]" />
+            <div className="relative z-10 flex flex-col items-center gap-5 px-10">
+              <p className="text-2xl font-black text-center leading-tight">You don&apos;t need a bigger budget.<br />You need <span className="text-[#00e5ff]">better intel</span>.</p>
+              <div className="flex items-center gap-10 mt-2">
+                <CircularProgress value={seo} variant="seo" size={100} strokeWidth={8} label="SEO" />
+                <CircularProgress value={aeo} variant="aeo" size={100} strokeWidth={8} label="AEO" />
+                <CircularProgress value={geo} variant="geo" size={100} strokeWidth={8} label="GEO" />
+              </div>
+              <p className="text-sm text-white/50 text-center max-w-sm">Duelly tells you exactly what to fix, in what order, for your specific platform.</p>
+              <Logo size="xl" />
             </div>
           </div>
         </AdFrame>
