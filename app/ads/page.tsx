@@ -385,7 +385,6 @@ export default function AdsPage() {
         {/* AD 15: Before/After — Banner (16:9) */}
         <AdFrame ratio="16:9" id="ad-15-before-after-banner">
           <div className="w-full h-full bg-[#0a0a12] flex items-center relative overflow-hidden">
-            {/* Left: Before */}
             <div className="flex-1 flex flex-col items-center justify-center gap-3 border-r border-white/[0.06]">
               <p className="text-xs text-red-400 font-bold uppercase tracking-widest">Before Duelly</p>
               <div className="flex items-center gap-3">
@@ -394,12 +393,10 @@ export default function AdsPage() {
                 <CircularProgress value={19} variant="geo" size={70} strokeWidth={5} label="GEO" />
               </div>
             </div>
-            {/* Center: Logo */}
             <div className="px-6 flex flex-col items-center gap-2">
               <Logo size="lg" />
               <p className="text-xs text-white/30 font-bold">The roadmap to<br />outrank your rivals.</p>
             </div>
-            {/* Right: After */}
             <div className="flex-1 flex flex-col items-center justify-center gap-3 border-l border-white/[0.06]">
               <p className="text-xs text-[#00e5ff] font-bold uppercase tracking-widest">After Duelly</p>
               <div className="flex items-center gap-3">
@@ -407,6 +404,237 @@ export default function AdsPage() {
                 <CircularProgress value={81} variant="aeo" size={70} strokeWidth={5} label="AEO" />
                 <CircularProgress value={86} variant="geo" size={70} strokeWidth={5} label="GEO" />
               </div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 16: The F Score — Fear/Urgency (4:3) */}
+        <AdFrame ratio="4:3" id="ad-16-the-f-score">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-b from-red-500/8 via-transparent to-transparent" />
+            <div className="relative z-10 flex flex-col items-center gap-5">
+              <div className="px-4 py-1.5 rounded-full bg-red-500/20 border border-red-500/30">
+                <span className="text-xs font-black text-red-400 uppercase tracking-widest">Grade: F</span>
+              </div>
+              <CircularProgress value={lGeo} variant="geo" size={160} strokeWidth={13} />
+              <p className="text-2xl font-black text-center leading-tight">This is what AI thinks<br />of your website.</p>
+              <p className="text-sm text-white/40">Most businesses don&apos;t know their score. Do you?</p>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 17: The 3 Engines — Educational (4:3) */}
+        <AdFrame ratio="4:3" id="ad-17-three-engines">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-80 h-80 bg-[#00e5ff]/6 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#fe3f8c]/6 rounded-full blur-[120px]" />
+            <div className="relative z-10 flex flex-col items-center gap-6 px-8">
+              <p className="text-2xl font-black text-center">Your customers search<br />3 different ways now.</p>
+              <div className="space-y-3 w-full max-w-sm">
+                <div className="flex items-center gap-3 p-3 rounded-xl border border-[#00e5ff]/20 bg-[#00e5ff]/5">
+                  <span className="text-2xl">🔍</span>
+                  <div><p className="text-sm font-bold text-[#00e5ff]">Google Search</p><p className="text-xs text-white/40">Traditional rankings</p></div>
+                </div>
+                <div className="flex items-center gap-3 p-3 rounded-xl border border-[#BC13FE]/20 bg-[#BC13FE]/5">
+                  <span className="text-2xl">🤖</span>
+                  <div><p className="text-sm font-bold text-[#BC13FE]">AI Answers</p><p className="text-xs text-white/40">ChatGPT, Perplexity, Gemini</p></div>
+                </div>
+                <div className="flex items-center gap-3 p-3 rounded-xl border border-[#fe3f8c]/20 bg-[#fe3f8c]/5">
+                  <span className="text-2xl">✨</span>
+                  <div><p className="text-sm font-bold text-[#fe3f8c]">AI Overviews</p><p className="text-xs text-white/40">Google&apos;s AI-generated results</p></div>
+                </div>
+              </div>
+              <p className="text-sm text-white/50">One audit covers all three.</p>
+              <Logo />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 18: The Blind Spot — Provocative (1:1) */}
+        <AdFrame ratio="1:1" id="ad-18-blind-spot">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#fe3f8c]/8 via-transparent to-[#BC13FE]/8" />
+            <div className="relative z-10 flex flex-col items-center gap-6 px-12">
+              <p className="text-3xl font-black text-center leading-tight">You spent $5,000<br />on your website.</p>
+              <p className="text-xl text-[#fe3f8c] font-black text-center">AI can&apos;t read it.</p>
+              <div className="w-full max-w-xs space-y-1.5 mt-2">
+                {['No schema markup', 'No FAQ content', 'No entity density', 'No definition statements'].map((item, i) => (
+                  <div key={i} className="flex items-center gap-2 text-sm">
+                    <span className="text-red-400">✗</span>
+                    <span className="text-white/50">{item}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm text-white/40 text-center mt-2">Find out what AI actually sees<br />when it looks at your site.</p>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 19: The Leaderboard — Social Proof (4:3) */}
+        <AdFrame ratio="4:3" id="ad-19-leaderboard">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden px-10">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-[#f59e0b]/6 rounded-full blur-[120px]" />
+            <div className="relative z-10 flex flex-col items-center gap-5 w-full max-w-md">
+              <p className="text-xl font-black text-center">Where do you rank for<br />&ldquo;plumber in Toronto&rdquo;?</p>
+              <div className="w-full space-y-1.5">
+                {[
+                  { rank: 1, name: 'torontoplumbing.ca', score: 94, isYou: false },
+                  { rank: 2, name: 'drainpros.com', score: 88, isYou: false },
+                  { rank: 3, name: 'yoursite.com', score: 71, isYou: true },
+                  { rank: 4, name: 'fixitfast.ca', score: 67, isYou: false },
+                  { rank: 5, name: 'pipeworks.ca', score: 62, isYou: false },
+                ].map(row => (
+                  <div key={row.rank} className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm ${row.isYou ? 'bg-[#00e5ff]/10 border border-[#00e5ff]/30' : 'bg-white/[0.02]'}`}>
+                    <span className={`font-black w-6 ${row.rank === 1 ? 'text-[#f59e0b]' : 'text-white/30'}`}>#{row.rank}</span>
+                    <span className={`flex-1 font-bold ${row.isYou ? 'text-[#00e5ff]' : 'text-white/60'}`}>{row.name} {row.isYou && <span className="text-[10px] text-[#00e5ff]/60 ml-1">← YOU</span>}</span>
+                    <span className={`font-black tabular-nums ${row.score >= 80 ? 'text-green-400' : row.score >= 60 ? 'text-yellow-400' : 'text-red-400'}`}>{row.score}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm text-white/40">Keyword Arena scores every competitor. See where you stand.</p>
+              <Logo />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 20: The Wake-Up Call — Stats (4:5) */}
+        <AdFrame ratio="4:5" id="ad-20-wake-up-stats">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-b from-[#BC13FE]/5 via-transparent to-[#00e5ff]/5" />
+            <div className="relative z-10 flex flex-col items-center gap-5 px-8">
+              <p className="text-xl font-black text-center leading-tight">By 2026, AI answers<br />40% of all searches.</p>
+              <div className="w-full max-w-xs space-y-3">
+                <div className="text-center p-4 rounded-xl border border-white/[0.06] bg-white/[0.02]">
+                  <p className="text-4xl font-black text-[#00e5ff]">40%</p>
+                  <p className="text-xs text-white/40">of searches answered by AI</p>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="text-center p-3 rounded-xl border border-white/[0.06] bg-white/[0.02]">
+                    <p className="text-2xl font-black text-[#fe3f8c]">0</p>
+                    <p className="text-[10px] text-white/40">clicks if AI doesn&apos;t cite you</p>
+                  </div>
+                  <div className="text-center p-3 rounded-xl border border-white/[0.06] bg-white/[0.02]">
+                    <p className="text-2xl font-black text-[#BC13FE]">3x</p>
+                    <p className="text-[10px] text-white/40">more traffic when AI cites you</p>
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm text-white/50 text-center">Is your site ready?</p>
+              <Logo />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 21: The Platform Fix — Specificity (4:3) */}
+        <AdFrame ratio="4:3" id="ad-21-platform-fix">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#00e5ff]/5 rounded-full blur-[140px]" />
+            <div className="relative z-10 flex flex-col items-center gap-5 px-10">
+              <p className="text-2xl font-black text-center">Not just what to fix.<br /><span className="text-[#00e5ff]">How to fix it on YOUR platform.</span></p>
+              <div className="grid grid-cols-3 gap-3 w-full max-w-sm">
+                {['WordPress', 'Shopify', 'Wix', 'Squarespace', 'Webflow', 'Next.js'].map(p => (
+                  <div key={p} className="text-center py-2.5 px-2 rounded-lg border border-white/[0.08] bg-white/[0.03]">
+                    <p className="text-xs font-bold text-white/70">{p}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm text-white/40 text-center max-w-sm">Every fix instruction references your actual admin paths, plugins, and settings.</p>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 22: The Single Number — Minimal Impact (1:1) */}
+        <AdFrame ratio="1:1" id="ad-22-single-number">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#00e5ff]/8 via-transparent to-transparent" />
+            <div className="relative z-10 flex flex-col items-center gap-6">
+              <p className="text-sm text-white/30 font-bold uppercase tracking-[0.3em]">Your AI visibility score</p>
+              <CircularProgress value={lGeo} variant="geo" size={200} strokeWidth={16} />
+              <p className="text-3xl font-black text-center">Not great.</p>
+              <p className="text-sm text-white/40">Find out yours.</p>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 23: The Question Stack — Curiosity (4:5) */}
+        <AdFrame ratio="4:5" id="ad-23-question-stack">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#BC13FE]/6 rounded-full blur-[140px]" />
+            <div className="relative z-10 flex flex-col items-center gap-4 px-8">
+              <div className="space-y-3 text-center">
+                {[
+                  { q: 'Does Google rank you on page 1?', color: '#00e5ff' },
+                  { q: 'Does ChatGPT recommend you?', color: '#BC13FE' },
+                  { q: 'Does Perplexity cite your site?', color: '#fe3f8c' },
+                  { q: 'Does Gemini know you exist?', color: '#f59e0b' },
+                ].map((item, i) => (
+                  <p key={i} className="text-lg font-black" style={{ color: item.color }}>{item.q}</p>
+                ))}
+              </div>
+              <div className="w-16 h-px bg-white/10 my-2" />
+              <p className="text-xl font-black text-white text-center">One audit.<br />Every answer.</p>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 24: The Scoreboard — Sports Metaphor (16:9) */}
+        <AdFrame ratio="16:9" id="ad-24-scoreboard">
+          <div className="w-full h-full bg-[#0a0a12] flex items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#00e5ff]/5 via-transparent to-[#fe3f8c]/5" />
+            <div className="relative z-10 flex flex-col items-center gap-4">
+              <p className="text-sm text-white/30 font-bold uppercase tracking-[0.4em]">The Scoreboard</p>
+              <div className="flex items-end gap-6">
+                <div className="flex flex-col items-center gap-2">
+                  <CircularProgress value={aeo} variant="aeo" size={80} strokeWidth={6} />
+                  <div className="w-16 h-20 rounded-t-lg bg-[#BC13FE]/20 border border-[#BC13FE]/30 border-b-0 flex items-end justify-center pb-2">
+                    <span className="text-xs font-black text-[#BC13FE]">AEO</span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <CircularProgress value={seo} variant="seo" size={80} strokeWidth={6} />
+                  <div className="w-16 h-28 rounded-t-lg bg-[#00e5ff]/20 border border-[#00e5ff]/30 border-b-0 flex items-end justify-center pb-2">
+                    <span className="text-xs font-black text-[#00e5ff]">SEO</span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <CircularProgress value={geo} variant="geo" size={80} strokeWidth={6} />
+                  <div className="w-16 h-24 rounded-t-lg bg-[#fe3f8c]/20 border border-[#fe3f8c]/30 border-b-0 flex items-end justify-center pb-2">
+                    <span className="text-xs font-black text-[#fe3f8c]">GEO</span>
+                  </div>
+                </div>
+              </div>
+              <p className="text-lg font-black mt-2">Know your numbers. Beat the competition.</p>
+              <Logo size="md" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 25: The Dark Horse — Underdog Story (4:3) */}
+        <AdFrame ratio="4:3" id="ad-25-dark-horse">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-[#00e5ff]/8 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#f59e0b]/8 rounded-full blur-[120px]" />
+            <div className="relative z-10 flex flex-col items-center gap-5 px-10">
+              <p className="text-sm text-[#f59e0b] font-bold uppercase tracking-widest">Small business. Big advantage.</p>
+              <p className="text-2xl font-black text-center leading-tight">Your competitor has<br />10x your budget.</p>
+              <p className="text-xl text-[#00e5ff] font-black text-center">You have better data.</p>
+              <div className="flex items-center gap-10 mt-2">
+                <div className="text-center">
+                  <CircularProgress value={seo} variant="seo" size={100} strokeWidth={8} label="SEO" />
+                </div>
+                <div className="text-center">
+                  <CircularProgress value={aeo} variant="aeo" size={100} strokeWidth={8} label="AEO" />
+                </div>
+                <div className="text-center">
+                  <CircularProgress value={geo} variant="geo" size={100} strokeWidth={8} label="GEO" />
+                </div>
+              </div>
+              <Logo size="lg" />
             </div>
           </div>
         </AdFrame>
