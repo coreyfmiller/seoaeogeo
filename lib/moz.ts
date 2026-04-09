@@ -120,7 +120,7 @@ export async function getMozBacklinks(targetUrl: string, limit?: number): Promis
     body: JSON.stringify({
       target: domain,
       target_type: 'root_domain',
-      filter: 'external+follow',
+      filter: 'external',
       sort: 'source_domain_authority',
       limit: fetchLimit,
     }),
