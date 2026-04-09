@@ -30,25 +30,30 @@ function Slider({ label, value, set, color }: { label: string; value: number; se
   )
 }
 
+function Logo({ size = 'lg' }: { size?: 'md' | 'lg' | 'xl' }) {
+  const h = size === 'xl' ? 'h-24' : size === 'lg' ? 'h-16' : 'h-12'
+  return <img src="/logo.png" alt="Duelly" className={h} />
+}
+
 export default function AdsPage() {
   const [seo, setSeo] = useState(92)
   const [aeo, setAeo] = useState(65)
   const [geo, setGeo] = useState(83)
-  const [compSeo, setCompSeo] = useState(78)
-  const [compAeo, setCompAeo] = useState(82)
-  const [compGeo, setCompGeo] = useState(85)
-  const [lowAeo, setLowAeo] = useState(34)
-  const [lowGeo, setLowGeo] = useState(41)
+  const [cSeo, setCseo] = useState(78)
+  const [cAeo, setCaeo] = useState(82)
+  const [cGeo, setCgeo] = useState(85)
+  const [lAeo, setLaeo] = useState(34)
+  const [lGeo, setLgeo] = useState(41)
 
   return (
     <main className="h-screen overflow-y-auto bg-[#050508] text-white p-8">
       <div className="max-w-5xl mx-auto space-y-12 pb-20">
         <div>
           <h1 className="text-2xl font-black mb-1">Ad Creatives</h1>
-          <p className="text-sm text-white/40">Tweak scores below — all ads update live. Screenshot at any resolution.</p>
+          <p className="text-sm text-white/40">Tweak scores — all ads update live.</p>
         </div>
 
-        {/* ═══ CONTROL PANEL ═══ */}
+        {/* CONTROL PANEL */}
         <div className="rounded-2xl border border-[#00e5ff]/20 bg-[#00e5ff]/[0.03] p-6 space-y-4 sticky top-0 z-50 backdrop-blur-xl">
           <p className="text-xs font-bold text-[#00e5ff] uppercase tracking-widest">Score Control Panel</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -59,41 +64,36 @@ export default function AdsPage() {
               <Slider label="GEO" value={geo} set={setGeo} color="#fe3f8c" />
             </div>
             <div className="space-y-2">
-              <p className="text-[10px] font-bold text-white/50 uppercase">Competitor Scores</p>
-              <Slider label="SEO" value={compSeo} set={setCompSeo} color="#00e5ff" />
-              <Slider label="AEO" value={compAeo} set={setCompAeo} color="#BC13FE" />
-              <Slider label="GEO" value={compGeo} set={setCompGeo} color="#fe3f8c" />
+              <p className="text-[10px] font-bold text-white/50 uppercase">Competitor</p>
+              <Slider label="SEO" value={cSeo} set={setCseo} color="#00e5ff" />
+              <Slider label="AEO" value={cAeo} set={setCaeo} color="#BC13FE" />
+              <Slider label="GEO" value={cGeo} set={setCgeo} color="#fe3f8c" />
             </div>
             <div className="space-y-2">
-              <p className="text-[10px] font-bold text-white/50 uppercase">Low Scores (warning ads)</p>
-              <Slider label="AEO" value={lowAeo} set={setLowAeo} color="#fe3f8c" />
-              <Slider label="GEO" value={lowGeo} set={setLowGeo} color="#fe3f8c" />
+              <p className="text-[10px] font-bold text-white/50 uppercase">Low / Warning</p>
+              <Slider label="AEO" value={lAeo} set={setLaeo} color="#fe3f8c" />
+              <Slider label="GEO" value={lGeo} set={setLgeo} color="#fe3f8c" />
             </div>
           </div>
         </div>
 
-        {/* ═══ AD 1: SEO + GEO Side by Side (4:3) ═══ */}
+        {/* AD 1: SEO + GEO (4:3) */}
         <AdFrame ratio="4:3" id="ad-01-seo-geo">
           <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
             <div className="absolute top-0 left-1/4 w-64 h-64 bg-[#00e5ff]/10 rounded-full blur-[100px]" />
             <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-[#fe3f8c]/10 rounded-full blur-[100px]" />
             <div className="relative z-10 flex flex-col items-center gap-6">
-              <p className="text-2xl font-black text-center leading-tight px-8">
-                Your SEO score is great.<br /><span className="text-white/50">But can AI find you?</span>
-              </p>
+              <p className="text-2xl font-black text-center leading-tight px-8">Your SEO score is great.<br /><span className="text-white/50">But can AI find you?</span></p>
               <div className="flex items-center gap-12">
                 <CircularProgress value={seo} variant="seo" size={150} strokeWidth={12} label="SEO Score" />
                 <CircularProgress value={geo} variant="geo" size={150} strokeWidth={12} label="GEO Score" />
               </div>
-              <div className="flex items-center gap-3 mt-2">
-                <img src="/logo.png" alt="Duelly" className="h-8" />
-                <span className="text-white/40 text-sm font-bold">duelly.ai</span>
-              </div>
+              <Logo />
             </div>
           </div>
         </AdFrame>
 
-        {/* ═══ AD 2: All Three Scores (4:3) ═══ */}
+        {/* AD 2: Three Scores (4:3) */}
         <AdFrame ratio="4:3" id="ad-02-three-scores">
           <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-80 h-80 bg-[#00e5ff]/8 rounded-full blur-[120px]" />
@@ -107,15 +107,12 @@ export default function AdsPage() {
                 <CircularProgress value={geo} variant="geo" size={120} strokeWidth={10} label="GEO" />
               </div>
               <p className="text-sm text-white/50 text-center max-w-sm">Google. ChatGPT. Gemini. Perplexity.<br />One audit covers them all.</p>
-              <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="Duelly" className="h-7" />
-                <span className="text-white/40 text-sm font-bold">duelly.ai</span>
-              </div>
+              <Logo />
             </div>
           </div>
         </AdFrame>
 
-        {/* ═══ AD 3: Competitive Angle (4:3) ═══ */}
+        {/* AD 3: Competitor Rank (4:3) */}
         <AdFrame ratio="4:3" id="ad-03-competitor">
           <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-[#00e5ff]/5 via-transparent to-[#fe3f8c]/5" />
@@ -123,25 +120,16 @@ export default function AdsPage() {
               <p className="text-3xl font-black text-center leading-tight">Your competitor didn&apos;t<br />get lucky.</p>
               <p className="text-xl text-[#00e5ff] font-black">They got optimized.</p>
               <div className="flex items-center gap-6 mt-2">
-                <div className="text-center">
-                  <div className="text-4xl font-black text-red-400">#7</div>
-                  <div className="text-xs text-white/40 font-bold mt-1">Your Rank</div>
-                </div>
+                <div className="text-center"><div className="text-4xl font-black text-red-400">#7</div><div className="text-xs text-white/40 font-bold mt-1">Your Rank</div></div>
                 <div className="text-white/20 text-2xl">→</div>
-                <div className="text-center">
-                  <div className="text-4xl font-black text-green-400">#2</div>
-                  <div className="text-xs text-white/40 font-bold mt-1">After Duelly</div>
-                </div>
+                <div className="text-center"><div className="text-4xl font-black text-green-400">#2</div><div className="text-xs text-white/40 font-bold mt-1">After Duelly</div></div>
               </div>
-              <div className="flex items-center gap-3 mt-4">
-                <img src="/logo.png" alt="Duelly" className="h-8" />
-                <span className="text-white/40 text-sm font-bold">duelly.ai</span>
-              </div>
+              <Logo size="lg" />
             </div>
           </div>
         </AdFrame>
 
-        {/* ═══ AD 4: ChatGPT Question (1:1) ═══ */}
+        {/* AD 4: ChatGPT Question (1:1) */}
         <AdFrame ratio="1:1" id="ad-04-chatgpt-square">
           <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
             <div className="absolute top-0 right-0 w-72 h-72 bg-[#BC13FE]/10 rounded-full blur-[100px]" />
@@ -150,30 +138,24 @@ export default function AdsPage() {
               <p className="text-2xl font-black text-center leading-tight">When someone asks<br />ChatGPT for a recommendation...</p>
               <p className="text-xl text-[#fe3f8c] font-black text-center">does it mention<br />your business?</p>
               <div className="flex items-center gap-8">
-                <CircularProgress value={lowAeo} variant="geo" size={100} strokeWidth={8} label="AEO" />
-                <CircularProgress value={lowGeo} variant="geo" size={100} strokeWidth={8} label="GEO" />
+                <CircularProgress value={lAeo} variant="geo" size={100} strokeWidth={8} label="AEO" />
+                <CircularProgress value={lGeo} variant="geo" size={100} strokeWidth={8} label="GEO" />
               </div>
               <p className="text-xs text-white/40 text-center">If your scores look like this, the answer is no.</p>
-              <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="Duelly" className="h-7" />
-                <span className="text-white/40 text-sm font-bold">duelly.ai</span>
-              </div>
+              <Logo />
             </div>
           </div>
         </AdFrame>
 
-        {/* ═══ AD 5: Keyword Arena Banner (16:9) ═══ */}
+        {/* AD 5: Arena Banner (16:9) */}
         <AdFrame ratio="16:9" id="ad-05-arena-banner">
           <div className="w-full h-full bg-[#0a0a12] flex items-center justify-between relative overflow-hidden px-12">
             <div className="absolute top-0 left-0 w-96 h-96 bg-[#00e5ff]/6 rounded-full blur-[120px]" />
             <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#f59e0b]/6 rounded-full blur-[120px]" />
             <div className="relative z-10 flex-1">
               <p className="text-3xl font-black leading-tight mb-3">Search any keyword.<br /><span className="text-[#00e5ff]">Score every competitor.</span></p>
-              <p className="text-sm text-white/50 max-w-md">Keyword Arena shows you how every top-ranking site scores on SEO, AEO, and GEO — so you know exactly what to fix to climb.</p>
-              <div className="flex items-center gap-3 mt-6">
-                <img src="/logo.png" alt="Duelly" className="h-8" />
-                <span className="text-white/40 text-sm font-bold">duelly.ai</span>
-              </div>
+              <p className="text-sm text-white/50 max-w-md mb-6">Keyword Arena shows how every top-ranking site scores on SEO, AEO, and GEO.</p>
+              <Logo size="md" />
             </div>
             <div className="relative z-10 flex items-center gap-4">
               <CircularProgress value={seo} variant="seo" size={90} strokeWidth={7} label="SEO" />
@@ -183,7 +165,7 @@ export default function AdsPage() {
           </div>
         </AdFrame>
 
-        {/* ═══ AD 6: Ranked on Google, Invisible to AI (4:5) ═══ */}
+        {/* AD 6: Invisible to AI (4:5) */}
         <AdFrame ratio="4:5" id="ad-06-invisible-to-ai">
           <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-[#00e5ff]/8 rounded-full blur-[120px]" />
@@ -191,23 +173,17 @@ export default function AdsPage() {
             <div className="relative z-10 flex flex-col items-center gap-5 px-8">
               <p className="text-xl font-black text-center leading-tight">Ranked on Google.<br /><span className="text-[#fe3f8c]">Invisible to AI.</span></p>
               <CircularProgress value={seo} variant="seo" size={120} strokeWidth={10} label="SEO Score" />
-              <div className="text-center">
-                <p className="text-white/30 text-xs font-bold uppercase tracking-widest mb-3">But your AI scores say...</p>
-                <div className="flex items-center gap-6">
-                  <CircularProgress value={lowAeo} variant="geo" size={80} strokeWidth={6} label="AEO" />
-                  <CircularProgress value={lowGeo} variant="geo" size={80} strokeWidth={6} label="GEO" />
-                </div>
+              <p className="text-white/30 text-xs font-bold uppercase tracking-widest">But your AI scores say...</p>
+              <div className="flex items-center gap-6">
+                <CircularProgress value={lAeo} variant="geo" size={80} strokeWidth={6} label="AEO" />
+                <CircularProgress value={lGeo} variant="geo" size={80} strokeWidth={6} label="GEO" />
               </div>
-              <p className="text-xs text-white/40 text-center max-w-xs">SEO alone isn&apos;t enough anymore. Find out if Google, ChatGPT, and Perplexity can actually find you.</p>
-              <div className="flex items-center gap-3 mt-1">
-                <img src="/logo.png" alt="Duelly" className="h-7" />
-                <span className="text-white/40 text-sm font-bold">duelly.ai</span>
-              </div>
+              <Logo />
             </div>
           </div>
         </AdFrame>
 
-        {/* ═══ AD 7: SEO was for Google, GEO is for AI (4:3) ═══ */}
+        {/* AD 7: SEO was for Google, GEO is for AI (4:3) */}
         <AdFrame ratio="4:3" id="ad-07-seo-was-geo-is">
           <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-96 h-96 bg-[#00e5ff]/6 rounded-full blur-[140px]" />
@@ -219,15 +195,15 @@ export default function AdsPage() {
               </div>
               <div className="flex items-center gap-16">
                 <CircularProgress value={seo} variant="seo" size={130} strokeWidth={11} label="SEO" />
-                <CircularProgress value={lowGeo} variant="geo" size={130} strokeWidth={11} label="GEO" />
+                <CircularProgress value={lGeo} variant="geo" size={130} strokeWidth={11} label="GEO" />
               </div>
               <p className="text-lg font-black text-white mt-2">Can AI find you?</p>
-              <img src="/logo.png" alt="Duelly" className="h-20" />
+              <Logo size="xl" />
             </div>
           </div>
         </AdFrame>
 
-        {/* ═══ AD 8: Competitor Duel VS (4:3) ═══ */}
+        {/* AD 8: Duel VS (4:3) */}
         <AdFrame ratio="4:3" id="ad-08-duel-vs">
           <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-80 h-80 bg-[#00e5ff]/8 rounded-full blur-[120px]" />
@@ -241,29 +217,26 @@ export default function AdsPage() {
                 </div>
                 <span className="text-4xl font-black text-white/20">VS</span>
                 <div className="flex flex-col items-center gap-2">
-                  <CircularProgress value={compSeo} variant="geo" size={100} strokeWidth={8} />
+                  <CircularProgress value={cSeo} variant="geo" size={100} strokeWidth={8} />
                   <p className="text-xs text-[#fe3f8c] font-bold">Competitor</p>
                 </div>
               </div>
               <p className="text-lg font-black text-center mt-2">Know exactly where<br />you&apos;re winning — and losing.</p>
-              <div className="flex items-center gap-3 mt-2">
-                <img src="/logo.png" alt="Duelly" className="h-7" />
-                <span className="text-white/40 text-sm font-bold">duelly.ai</span>
-              </div>
+              <Logo />
             </div>
           </div>
         </AdFrame>
 
-        {/* ═══ AD 9: Competitor Duel Score Bars (4:3) ═══ */}
+        {/* AD 9: Duel Bars (4:3) */}
         <AdFrame ratio="4:3" id="ad-09-duel-bars">
           <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden px-12">
             <div className="absolute inset-0 bg-gradient-to-b from-[#00e5ff]/3 via-transparent to-[#fe3f8c]/3" />
-            <div className="relative z-10 w-full max-w-md space-y-6">
+            <div className="relative z-10 w-full max-w-md space-y-5">
               <p className="text-2xl font-black text-center">Who&apos;s really winning<br />your keyword?</p>
               {[
-                { label: 'SEO', you: seo, them: compSeo },
-                { label: 'AEO', you: aeo, them: compAeo },
-                { label: 'GEO', you: geo, them: compGeo },
+                { label: 'SEO', you: seo, them: cSeo },
+                { label: 'AEO', you: aeo, them: cAeo },
+                { label: 'GEO', you: geo, them: cGeo },
               ].map(bar => (
                 <div key={bar.label} className="space-y-1.5">
                   <div className="flex justify-between text-xs font-bold">
@@ -280,15 +253,12 @@ export default function AdsPage() {
                   </div>
                 </div>
               ))}
-              <div className="flex items-center justify-center gap-3 pt-2">
-                <img src="/logo.png" alt="Duelly" className="h-7" />
-                <span className="text-white/40 text-sm font-bold">duelly.ai</span>
-              </div>
+              <div className="flex justify-center pt-2"><Logo size="lg" /></div>
             </div>
           </div>
         </AdFrame>
 
-        {/* ═══ AD 10: Steal Their Strategy (1:1) ═══ */}
+        {/* AD 10: Gap Table (1:1) */}
         <AdFrame ratio="1:1" id="ad-10-steal-strategy">
           <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-80 h-80 bg-[#fe3f8c]/8 rounded-full blur-[120px]" />
@@ -297,31 +267,28 @@ export default function AdsPage() {
               <p className="text-2xl font-black text-center leading-tight">Your competitor ranks higher.<br /><span className="text-[#00e5ff]">Now you know why.</span></p>
               <div className="w-full max-w-xs space-y-2">
                 {[
-                  { label: 'Schema Markup', you: '✗', them: '✓', youBad: true },
-                  { label: 'FAQ Content', you: '✗', them: '✓', youBad: true },
-                  { label: 'Domain Authority', you: '12', them: '47', youBad: true },
-                  { label: 'Word Count', you: '280', them: '1,400', youBad: true },
+                  { label: 'Schema Markup', you: '✗', them: '✓' },
+                  { label: 'FAQ Content', you: '✗', them: '✓' },
+                  { label: 'Domain Authority', you: '12', them: '47' },
+                  { label: 'Word Count', you: '280', them: '1,400' },
                 ].map((row, i) => (
                   <div key={i} className="flex items-center justify-between py-2 border-b border-white/[0.06] text-sm">
                     <span className="text-white/60">{row.label}</span>
                     <div className="flex items-center gap-4">
-                      <span className={row.youBad ? 'text-red-400 font-bold' : 'text-green-400 font-bold'}>{row.you}</span>
+                      <span className="text-red-400 font-bold">{row.you}</span>
                       <span className="text-white/20">vs</span>
                       <span className="text-green-400 font-bold">{row.them}</span>
                     </div>
                   </div>
                 ))}
               </div>
-              <p className="text-sm text-white/40 text-center">Duelly shows you the gaps — and exactly how to close them.</p>
-              <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="Duelly" className="h-7" />
-                <span className="text-white/40 text-sm font-bold">duelly.ai</span>
-              </div>
+              <p className="text-sm text-white/40 text-center">See the gaps. Get the fixes.</p>
+              <Logo />
             </div>
           </div>
         </AdFrame>
 
-        {/* ═══ AD 11: The AI Question Minimal (4:3) ═══ */}
+        {/* AD 11: AI Question (4:3) */}
         <AdFrame ratio="4:3" id="ad-11-ai-question">
           <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-[#BC13FE]/5 via-transparent to-[#00e5ff]/5" />
@@ -329,16 +296,13 @@ export default function AdsPage() {
               <p className="text-sm text-white/30 font-bold uppercase tracking-[0.3em]">The question every business should ask</p>
               <p className="text-4xl font-black leading-tight">&ldquo;Hey ChatGPT,<br />recommend a <span className="text-[#00e5ff]">[your industry]</span><br />near me.&rdquo;</p>
               <p className="text-lg text-white/50">Are you in the answer?</p>
-              <div className="flex items-center justify-center gap-3 pt-4">
-                <img src="/logo.png" alt="Duelly" className="h-8" />
-                <span className="text-white/40 text-sm font-bold">duelly.ai</span>
-              </div>
+              <Logo size="lg" />
             </div>
           </div>
         </AdFrame>
 
-        {/* ═══ AD 12: Before/After (4:5) ═══ */}
-        <AdFrame ratio="4:5" id="ad-12-before-after">
+        {/* AD 12: Before/After — Vertical (4:5) */}
+        <AdFrame ratio="4:5" id="ad-12-before-after-vertical">
           <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-[#fe3f8c]/6 rounded-full blur-[120px]" />
             <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-80 h-80 bg-[#00e5ff]/6 rounded-full blur-[120px]" />
@@ -357,10 +321,91 @@ export default function AdsPage() {
                 <CircularProgress value={81} variant="geo" size={70} strokeWidth={6} label="GEO" />
               </div>
               <p className="text-lg font-black text-center mt-2">Same site. Different strategy.</p>
-              <p className="text-xs text-white/40 text-center">Duelly tells you what to fix — and how to fix it.</p>
-              <div className="flex items-center gap-3 mt-1">
-                <img src="/logo.png" alt="Duelly" className="h-7" />
-                <span className="text-white/40 text-sm font-bold">duelly.ai</span>
+              <Logo />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 13: Before/After — Square (1:1) */}
+        <AdFrame ratio="1:1" id="ad-13-before-after-square">
+          <div className="w-full h-full bg-[#0a0a12] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-80 h-80 bg-[#fe3f8c]/8 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#00e5ff]/8 rounded-full blur-[120px]" />
+            <div className="relative z-10 flex flex-col items-center gap-5 px-10">
+              <p className="text-2xl font-black text-center">What Duelly finds.<br />What Duelly fixes.</p>
+              <div className="flex items-center gap-8">
+                <div className="flex flex-col items-center gap-3">
+                  <p className="text-[10px] text-red-400 font-bold uppercase tracking-widest">Before</p>
+                  <CircularProgress value={28} variant="geo" size={90} strokeWidth={7} />
+                  <p className="text-xs text-white/30 font-bold">Overall</p>
+                </div>
+                <div className="text-white/10 text-3xl">→</div>
+                <div className="flex flex-col items-center gap-3">
+                  <p className="text-[10px] text-[#00e5ff] font-bold uppercase tracking-widest">After</p>
+                  <CircularProgress value={87} variant="seo" size={90} strokeWidth={7} />
+                  <p className="text-xs text-white/30 font-bold">Overall</p>
+                </div>
+              </div>
+              <p className="text-sm text-white/40 text-center">AI-powered fixes tailored to your platform.</p>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 14: Before/After — Wide (4:3) */}
+        <AdFrame ratio="4:3" id="ad-14-before-after-wide">
+          <div className="w-full h-full bg-[#0a0a12] flex items-center justify-center relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-96 h-96 bg-[#fe3f8c]/6 rounded-full blur-[140px]" />
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#00e5ff]/6 rounded-full blur-[140px]" />
+            <div className="relative z-10 flex items-center gap-12">
+              <div className="flex flex-col items-center gap-4">
+                <p className="text-sm text-red-400/80 font-bold uppercase tracking-widest">Before</p>
+                <div className="flex items-center gap-3">
+                  <CircularProgress value={31} variant="geo" size={80} strokeWidth={6} label="SEO" />
+                  <CircularProgress value={15} variant="geo" size={80} strokeWidth={6} label="AEO" />
+                  <CircularProgress value={24} variant="geo" size={80} strokeWidth={6} label="GEO" />
+                </div>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <Logo size="lg" />
+                <div className="text-white/10 text-4xl">→</div>
+              </div>
+              <div className="flex flex-col items-center gap-4">
+                <p className="text-sm text-[#00e5ff]/80 font-bold uppercase tracking-widest">After</p>
+                <div className="flex items-center gap-3">
+                  <CircularProgress value={91} variant="seo" size={80} strokeWidth={6} label="SEO" />
+                  <CircularProgress value={78} variant="aeo" size={80} strokeWidth={6} label="AEO" />
+                  <CircularProgress value={84} variant="geo" size={80} strokeWidth={6} label="GEO" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 15: Before/After — Banner (16:9) */}
+        <AdFrame ratio="16:9" id="ad-15-before-after-banner">
+          <div className="w-full h-full bg-[#0a0a12] flex items-center relative overflow-hidden">
+            {/* Left: Before */}
+            <div className="flex-1 flex flex-col items-center justify-center gap-3 border-r border-white/[0.06]">
+              <p className="text-xs text-red-400 font-bold uppercase tracking-widest">Before Duelly</p>
+              <div className="flex items-center gap-3">
+                <CircularProgress value={29} variant="geo" size={70} strokeWidth={5} label="SEO" />
+                <CircularProgress value={12} variant="geo" size={70} strokeWidth={5} label="AEO" />
+                <CircularProgress value={19} variant="geo" size={70} strokeWidth={5} label="GEO" />
+              </div>
+            </div>
+            {/* Center: Logo */}
+            <div className="px-6 flex flex-col items-center gap-2">
+              <Logo size="lg" />
+              <p className="text-xs text-white/30 font-bold">The roadmap to<br />outrank your rivals.</p>
+            </div>
+            {/* Right: After */}
+            <div className="flex-1 flex flex-col items-center justify-center gap-3 border-l border-white/[0.06]">
+              <p className="text-xs text-[#00e5ff] font-bold uppercase tracking-widest">After Duelly</p>
+              <div className="flex items-center gap-3">
+                <CircularProgress value={93} variant="seo" size={70} strokeWidth={5} label="SEO" />
+                <CircularProgress value={81} variant="aeo" size={70} strokeWidth={5} label="AEO" />
+                <CircularProgress value={86} variant="geo" size={70} strokeWidth={5} label="GEO" />
               </div>
             </div>
           </div>
