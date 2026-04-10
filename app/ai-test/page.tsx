@@ -1,13 +1,14 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { PageShell } from "@/components/dashboard/page-shell"
 import { CreditConfirmDialog } from "@/components/dashboard/credit-confirm-dialog"
 import { ScanErrorDialog } from "@/components/dashboard/scan-error-dialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { FlaskConical, Search, Loader2, Crown, CheckCircle2, XCircle, Sparkles, Bot, Globe, Trophy, AlertTriangle } from "lucide-react"
+import { FlaskConical, Search, Loader2, Crown, CheckCircle2, XCircle, Sparkles, Bot, Globe, Trophy, AlertTriangle, Lightbulb, ArrowRight } from "lucide-react"
 
 interface Recommendation {
   rank: number; name: string; url?: string; urlStatus?: 'valid' | 'invalid' | 'parked'; reason: string
@@ -25,6 +26,7 @@ interface AITestResult {
   keyword: string
   results: EngineResult[]
   consensus: ConsensusItem[]
+  insights?: { visibility: string; competitors: string; actions: string[]; nextTool: { name: string; reason: string } } | null
   creditCost: number
 }
 
@@ -59,7 +61,7 @@ export default function AITestPage() {
       const res = await fetch('/api/ai-test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ keyword: keyword.trim() }),
+        body: JSON.stringify({ keyword: keyword.trim(), userUrl: userUrl.trim() || undefined }),
       })
       const data = await res.json()
       if (typeof window !== 'undefined') window.dispatchEvent(new Event('credits-changed'))
@@ -299,6 +301,45 @@ export default function AITestPage() {
                     })()}
                   </p>
                 </div>
+              )}
+
+              {/* AI Insights */}
+              {result.insights && (
+                <Card className="border-[#00e5ff]/20 bg-[#00e5ff]/[0.02]">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-white flex items-center gap-2 text-base">
+                      <Lightbulb className="h-5 w-5 text-[#00e5ff]" />
+                      What This Means
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <p className="text-sm text-white/70">{result.insights.visibility}</p>
+                      <p className="text-sm text-white/50">{result.insights.competitors}</p>
+                    </div>
+                    {result.insights.actions.length > 0 && (
+                      <div className="space-y-1.5">
+                        <p className="text-[10px] text-white/30 uppercase tracking-wider font-bold">What to do</p>
+                        {result.insights.actions.map((action, i) => (
+                          <div key={i} className="flex items-start gap-2 text-sm text-white/60">
+                            <span className="text-[#00e5ff] font-bold shrink-0">{i + 1}.</span>
+                            <span>{action}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {result.insights.nextTool && (
+                      <div className="pt-2 border-t border-white/[0.06]">
+                        <Link href={`/${result.insights.nextTool.name}`}
+                          className="flex items-center gap-2 text-sm text-[#00e5ff] hover:text-[#00e5ff]/80 transition-colors group">
+                          <span className="font-bold">Next step:</span>
+                          <span className="text-white/50 group-hover:text-white/70">{result.insights.nextTool.reason}</span>
+                          <ArrowRight className="h-3.5 w-3.5 ml-auto shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                        </Link>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               )}
             </div>
           )}
