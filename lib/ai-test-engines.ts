@@ -317,18 +317,47 @@ async function queryChatGPT(keyword: string): Promise<AITestEngineResult> {
     }
     // Path 3: Check for direct text field
     if (!textOutput && data.output_text) textOutput = data.output_text
-    // Path 4: Stringify the whole response as last resort
+    // Path 4: Log the structure so we can debug, then try chat completions as fallback
     if (!textOutput) {
-      console.log('[AI Test] ChatGPT response structure:', JSON.stringify(data).substring(0, 500))
-      textOutput = JSON.stringify(data)
+      const outputSummary = JSON.stringify(data.output?.map((o: any) => ({ type: o.type, contentTypes: o.content?.map((c: any) => c.type) })) || [])
+      console.log(`[AI Test] ChatGPT empty text. Output structure: ${outputSummary}`)
+      // Fall through to chat completions fallback below
     }
 
-    console.log(`[AI Test] ChatGPT text length: ${textOutput.length}`)
-    const chatRecs = parseNaturalResponse(textOutput)
-    if (chatRecs.length === 0) throw new Error('No recommendations in response')
+    if (textOutput) {
+      console.log(`[AI Test] ChatGPT text length: ${textOutput.length}, first 200: ${textOutput.substring(0, 200)}`)
+      const chatRecs = parseNaturalResponse(textOutput)
+      if (chatRecs.length > 0) {
+        return {
+          engine: 'chatgpt',
+          recommendations: await validateRecommendationUrls(chatRecs),
+          durationMs: Date.now() - start,
+        }
+      }
+      console.log(`[AI Test] ChatGPT parser returned 0 recs from text, falling back to chat completions`)
+    }
+
+    // Fallback: use chat completions when Responses API gives empty/unparseable output
+    const fallbackRes2 = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: NATURAL_PROMPT(keyword) }],
+        temperature: 0.3,
+        max_tokens: 1500,
+      }),
+      signal: AbortSignal.timeout(30000),
+    })
+    if (!fallbackRes2.ok) throw new Error(`OpenAI fallback API error: ${fallbackRes2.status}`)
+    const fallbackData2 = await fallbackRes2.json()
+    const fallbackText2 = fallbackData2.choices?.[0]?.message?.content || ''
+    console.log(`[AI Test] ChatGPT fallback text length: ${fallbackText2.length}`)
+    const fallbackRecs2 = parseNaturalResponse(fallbackText2)
+    if (fallbackRecs2.length === 0) throw new Error('No recommendations in response')
     return {
       engine: 'chatgpt',
-      recommendations: await validateRecommendationUrls(chatRecs),
+      recommendations: await validateRecommendationUrls(fallbackRecs2),
       durationMs: Date.now() - start,
     }
   } catch (err: any) {
