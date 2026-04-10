@@ -7,13 +7,13 @@ import { ScanErrorDialog } from "@/components/dashboard/scan-error-dialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import { FlaskConical, Search, Loader2, Crown, CheckCircle2, XCircle, Sparkles, Bot, Globe, Trophy } from "lucide-react"
+import { FlaskConical, Search, Loader2, Crown, CheckCircle2, XCircle, Sparkles, Bot, Globe, Trophy, AlertTriangle } from "lucide-react"
 
 interface Recommendation {
-  rank: number; name: string; url?: string; reason: string
+  rank: number; name: string; url?: string; urlStatus?: 'valid' | 'invalid' | 'parked'; reason: string
 }
 interface EngineResult {
-  engine: 'gemini' | 'chatgpt' | 'perplexity'
+  engine: 'gemini' | 'chatgpt' | 'perplexity' | 'google'
   recommendations: Recommendation[]
   error?: string
   durationMs: number
@@ -28,10 +28,11 @@ interface AITestResult {
   creditCost: number
 }
 
-const ENGINE_META = {
-  gemini: { label: 'Google Gemini', color: '#00e5ff', icon: <Globe className="h-5 w-5" />, desc: 'Live Google Search grounding' },
-  chatgpt: { label: 'ChatGPT', color: '#BC13FE', icon: <Bot className="h-5 w-5" />, desc: 'Web search enabled' },
-  perplexity: { label: 'Perplexity', color: '#fe3f8c', icon: <Sparkles className="h-5 w-5" />, desc: 'Live web search + AI' },
+const ENGINE_META: Record<string, { label: string; color: string; icon: React.ReactNode; desc: string }> = {
+  google: { label: 'Google Search', color: '#4285f4', icon: <Search className="h-5 w-5" />, desc: 'Actual Google results' },
+  gemini: { label: 'Google Gemini', color: '#00e5ff', icon: <Globe className="h-5 w-5" />, desc: 'Powered by Google Search' },
+  chatgpt: { label: 'ChatGPT', color: '#BC13FE', icon: <Bot className="h-5 w-5" />, desc: 'Powered by web search' },
+  perplexity: { label: 'Perplexity', color: '#fe3f8c', icon: <Sparkles className="h-5 w-5" />, desc: 'Real-time web search' },
 }
 
 export default function AITestPage() {
@@ -73,11 +74,25 @@ export default function AITestPage() {
 
   const normalizeUrl = (url: string) => url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '').toLowerCase()
   const userDomain = userUrl ? normalizeUrl(userUrl) : ''
+  // Extract just the core domain name without TLD for fuzzy name matching
+  const userDomainBase = userDomain ? userDomain.split('/')[0].split('.')[0] : ''
 
   const isUserSite = (rec: Recommendation) => {
     if (!userDomain) return false
     const recDomain = rec.url ? normalizeUrl(rec.url) : ''
-    return recDomain.includes(userDomain) || rec.name.toLowerCase().includes(userDomain.split('.')[0])
+    const recDomainBase = recDomain ? recDomain.split('/')[0].split('.')[0] : ''
+    const recNameNormalized = rec.name.toLowerCase().replace(/[^a-z0-9]/g, '')
+
+    // 1. Exact domain match (url contains user domain or vice versa)
+    if (recDomain && (recDomain.includes(userDomain) || recDomain.startsWith(userDomainBase + '.'))) return true
+    // 2. Domain base match (e.g. "pizzatwice" in both domains)
+    if (recDomainBase && userDomainBase && recDomainBase === userDomainBase) return true
+    // 3. Name contains domain base (e.g. name "Pizza Twice" -> "pizzatwice" matches "pizzatwice")
+    if (userDomainBase && recNameNormalized.includes(userDomainBase)) return true
+    // 4. Domain base contains the stripped name (e.g. domain "pizzatwice" matches name "pizzatwice")
+    if (recNameNormalized && userDomainBase.includes(recNameNormalized) && recNameNormalized.length >= 4) return true
+
+    return false
   }
 
   return (
@@ -91,7 +106,7 @@ export default function AITestPage() {
               <FlaskConical className="h-6 w-6 text-[#00e5ff]" />
               The AI Test
             </h1>
-            <p className="text-sm text-white/60 mt-1.5">Ask Google Gemini, ChatGPT, and Perplexity to recommend businesses for any keyword. See who AI picks — and if it picks you.</p>
+            <p className="text-sm text-white/60 mt-1.5">Compare real Google Search results with AI recommendations from Gemini, ChatGPT, and Perplexity. See who ranks where — and if AI can find you.</p>
           </div>
 
           <ScanErrorDialog error={error} onClose={() => setError(null)} creditsRefunded={creditsRefunded} />
@@ -124,8 +139,9 @@ export default function AITestPage() {
                   <FlaskConical className="h-6 w-6 text-[#00e5ff]" />
                 </div>
               </div>
-              <p className="text-sm text-white/60">Asking 3 AI engines for their recommendations...</p>
+              <p className="text-sm text-white/60">Searching Google and asking 3 AI engines...</p>
               <div className="flex items-center gap-4 text-xs text-white/30">
+                <span className="flex items-center gap-1"><Search className="h-3 w-3 text-[#4285f4]" /> Google</span>
                 <span className="flex items-center gap-1"><Globe className="h-3 w-3 text-[#00e5ff]" /> Gemini</span>
                 <span className="flex items-center gap-1"><Bot className="h-3 w-3 text-[#BC13FE]" /> ChatGPT</span>
                 <span className="flex items-center gap-1"><Sparkles className="h-3 w-3 text-[#fe3f8c]" /> Perplexity</span>
@@ -167,8 +183,8 @@ export default function AITestPage() {
                 </Card>
               )}
 
-              {/* 3 Engine Columns */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* 4 Engine Columns */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {result.results.map(engineResult => {
                   const meta = ENGINE_META[engineResult.engine]
                   const hasResults = engineResult.recommendations.length > 0
@@ -207,8 +223,13 @@ export default function AITestPage() {
                                     {highlighted && <Badge className="bg-[#00e5ff]/10 text-[#00e5ff] border-[#00e5ff]/30 text-[8px] shrink-0">YOUR SITE</Badge>}
                                   </div>
                                   {rec.url && (
-                                    <a href={rec.url.startsWith('http') ? rec.url : `https://${rec.url}`} target="_blank" rel="noopener noreferrer"
-                                      className="text-[10px] text-white/30 hover:text-[#00e5ff] truncate block mb-1">{rec.url}</a>
+                                    <div className="flex items-center gap-1 mb-1">
+                                      <a href={rec.url.startsWith('http') ? rec.url : `https://${rec.url}`} target="_blank" rel="noopener noreferrer"
+                                        className={cn("text-[10px] truncate", rec.urlStatus === 'invalid' || rec.urlStatus === 'parked' ? "text-red-400/50 line-through" : "text-white/30 hover:text-[#00e5ff]")}>{rec.url}</a>
+                                      {(rec.urlStatus === 'invalid' || rec.urlStatus === 'parked') && (
+                                        <span className="text-[8px] text-red-400/60 flex items-center gap-0.5 shrink-0"><AlertTriangle className="h-2.5 w-2.5" />{rec.urlStatus === 'parked' ? 'parked' : 'bad link'}</span>
+                                      )}
+                                    </div>
                                   )}
                                   <p className="text-xs text-white/50 leading-relaxed">{rec.reason}</p>
                                 </div>
@@ -239,11 +260,14 @@ export default function AITestPage() {
                 <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 text-center">
                   <p className="text-sm text-white/60">
                     {(() => {
-                      const found = result.results.filter(r => r.recommendations.some(isUserSite)).length
-                      if (found === 3) return <span className="text-green-400 font-bold">All 3 AI engines recommend your site for &ldquo;{result.keyword}&rdquo;. Strong AI visibility.</span>
-                      if (found === 2) return <span className="text-yellow-400 font-bold">2 of 3 AI engines recommend your site. Good, but there&apos;s room to improve.</span>
-                      if (found === 1) return <span className="text-[#f59e0b] font-bold">Only 1 AI engine recommends your site. You&apos;re partially visible to AI.</span>
-                      return <span className="text-red-400 font-bold">None of the 3 AI engines recommended your site for &ldquo;{result.keyword}&rdquo;. AI can&apos;t find you yet.</span>
+                      const aiResults = result.results.filter(r => r.engine !== 'google')
+                      const found = aiResults.filter(r => r.recommendations.some(isUserSite)).length
+                      const googleFound = result.results.find(r => r.engine === 'google')?.recommendations.some(isUserSite)
+                      const googleNote = googleFound ? ' Google Search finds you.' : ' Google Search doesn\u2019t show you either.'
+                      if (found === 3) return <span className="text-green-400 font-bold">All 3 AI engines recommend your site for &ldquo;{result.keyword}&rdquo;.{googleNote}</span>
+                      if (found === 2) return <span className="text-yellow-400 font-bold">2 of 3 AI engines recommend your site.{googleNote}</span>
+                      if (found === 1) return <span className="text-[#f59e0b] font-bold">Only 1 AI engine recommends your site.{googleNote}</span>
+                      return <span className="text-red-400 font-bold">None of the 3 AI engines recommended your site for &ldquo;{result.keyword}&rdquo;.{googleNote}</span>
                     })()}
                   </p>
                 </div>
@@ -261,8 +285,9 @@ export default function AITestPage() {
                   <FlaskConical className="h-8 w-8 text-[#00e5ff]" />
                 </div>
                 <h2 className="text-2xl font-black text-white">Ask AI Who They&apos;d Recommend</h2>
-                <p className="text-sm text-white/60">Enter any keyword and we&apos;ll ask Google Gemini, ChatGPT, and Perplexity for their top 5 recommendations. See if your business makes the cut — and who AI picks instead.</p>
+                <p className="text-sm text-white/60">Enter any keyword and we&apos;ll show you real Google Search results alongside what Gemini, ChatGPT, and Perplexity recommend. See how AI compares to traditional search — and if either can find you.</p>
                 <div className="flex items-center justify-center gap-6 text-xs text-white/40">
+                  <span className="flex items-center gap-1.5"><Search className="h-4 w-4 text-[#4285f4]" /> Google</span>
                   <span className="flex items-center gap-1.5"><Globe className="h-4 w-4 text-[#00e5ff]" /> Gemini</span>
                   <span className="flex items-center gap-1.5"><Bot className="h-4 w-4 text-[#BC13FE]" /> ChatGPT</span>
                   <span className="flex items-center gap-1.5"><Sparkles className="h-4 w-4 text-[#fe3f8c]" /> Perplexity</span>
