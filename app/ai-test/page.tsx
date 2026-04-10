@@ -174,7 +174,7 @@ export default function AITestPage() {
           {/* Input */}
           <div className="mb-6 space-y-3">
             <div>
-              <p className="text-[10px] text-white/30 uppercase tracking-wider font-bold mb-1.5">Step 1 — Enter a keyword</p>
+              <p className="text-xs text-white font-bold mb-1.5">Step 1 — Enter a keyword</p>
               <div className="flex items-center gap-2">
                 <input type="text" value={keyword} onChange={e => setKeyword(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleRun()}
@@ -187,7 +187,7 @@ export default function AITestPage() {
               </div>
             </div>
             <div>
-              <p className="text-[10px] text-white/30 uppercase tracking-wider font-bold mb-1.5">Step 2 — Your website (optional)</p>
+              <p className="text-xs text-white font-bold mb-1.5">Step 2 — Your website (optional)</p>
               <input type="text" value={userUrl} onChange={e => setUserUrl(e.target.value)}
                 placeholder="e.g. yourbusiness.com — highlights your site in results"
                 className="w-full px-4 py-2 bg-white/[0.02] border border-white/[0.06] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#00e5ff]/30 text-sm" />
