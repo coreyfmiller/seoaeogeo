@@ -240,7 +240,11 @@ async function queryGemini(keyword: string): Promise<AITestEngineResult> {
     for (const chunk of groundingChunks) {
       if (chunk.web?.uri && chunk.web?.title) {
         const title = chunk.web.title.toLowerCase().replace(/[^a-z0-9]/g, '')
-        groundingUrls.set(title, chunk.web.uri)
+        // Skip Vertex AI grounding redirect URLs — they're not real URLs
+        const uri = chunk.web.uri
+        if (!uri.includes('vertexaisearch.cloud.google.com')) {
+          groundingUrls.set(title, uri)
+        }
       }
     }
 
@@ -249,9 +253,14 @@ async function queryGemini(keyword: string): Promise<AITestEngineResult> {
     const recs = parseNaturalResponse(text, groundingUrls)
     if (recs.length === 0) throw new Error('Could not extract recommendations from response')
 
+    // Strip any Vertex AI grounding redirect URLs from the parsed recs
+    const cleanedRecs = recs.map(r => ({
+      ...r,
+      url: r.url?.includes('vertexaisearch.cloud.google.com') ? '' : (r.url || ''),
+    }))
     return {
       engine: 'gemini',
-      recommendations: await validateRecommendationUrls(recs),
+      recommendations: await validateRecommendationUrls(cleanedRecs),
       durationMs: Date.now() - start,
     }
   } catch (err: any) {
