@@ -332,7 +332,7 @@ async function queryPerplexity(keyword: string): Promise<AITestEngineResult> {
 async function queryGoogleSearch(keyword: string): Promise<AITestEngineResult> {
   const start = Date.now()
   try {
-    const rawResults = await searchGoogle(keyword, 10)
+    const rawResults = await searchGoogle(keyword, 20)
     const filtered = filterAggregators(rawResults).slice(0, 5)
     const recs: AITestRecommendation[] = filtered.map((r, i) => ({
       rank: i + 1,
