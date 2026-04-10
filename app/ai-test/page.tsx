@@ -173,19 +173,25 @@ export default function AITestPage() {
 
           {/* Input */}
           <div className="mb-6 space-y-3">
-            <div className="flex items-center gap-2">
-              <input type="text" value={keyword} onChange={e => setKeyword(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleRun()}
-                placeholder="Enter a keyword (e.g. pizza oromocto, plumber toronto)"
-                className="flex-1 px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 text-sm" />
-              <button onClick={handleRun} disabled={isLoading || !keyword.trim()}
-                className="px-5 py-2.5 bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-black rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm shrink-0">
-                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <FlaskConical className="h-4 w-4" />} Check AI Visibility
-              </button>
+            <div>
+              <p className="text-[10px] text-white/30 uppercase tracking-wider font-bold mb-1.5">Step 1 — Enter a keyword</p>
+              <div className="flex items-center gap-2">
+                <input type="text" value={keyword} onChange={e => setKeyword(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleRun()}
+                  placeholder="Enter a keyword (e.g. best coffee shop downtown, dentist near me)"
+                  className="flex-1 px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 text-sm" />
+                <button onClick={handleRun} disabled={isLoading || !keyword.trim()}
+                  className="px-5 py-2.5 bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-black rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm shrink-0">
+                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <FlaskConical className="h-4 w-4" />} Check AI Visibility
+                </button>
+              </div>
             </div>
-            <input type="text" value={userUrl} onChange={e => setUserUrl(e.target.value)}
-              placeholder="Your website URL (optional — highlights your site in results)"
-              className="w-full px-4 py-2 bg-white/[0.02] border border-white/[0.06] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#00e5ff]/30 text-sm" />
+            <div>
+              <p className="text-[10px] text-white/30 uppercase tracking-wider font-bold mb-1.5">Step 2 — Your website (optional)</p>
+              <input type="text" value={userUrl} onChange={e => setUserUrl(e.target.value)}
+                placeholder="e.g. yourbusiness.com — highlights your site in results"
+                className="w-full px-4 py-2 bg-white/[0.02] border border-white/[0.06] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#00e5ff]/30 text-sm" />
+            </div>
           </div>
 
           {/* Loading */}
