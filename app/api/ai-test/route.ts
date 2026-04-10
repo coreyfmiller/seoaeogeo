@@ -60,13 +60,17 @@ export async function POST(req: NextRequest) {
         .filter(c => c.engines.length >= 2)
         .sort((a, b) => b.engines.length - a.engines.length)
 
-      // Generate AI insights if user provided their URL
+      // Generate AI insights — always, but framing differs based on whether user URL was provided
       let insights = null
+      const normalizeUrl = (u: string) => u.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '').toLowerCase()
+
+      let googleFound = false
+      let googleRank: number | null = null
+      let aiEngineNames: string[] = []
+
       if (userUrl?.trim()) {
-        const normalizeUrl = (u: string) => u.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '').toLowerCase()
         const userDomain = normalizeUrl(userUrl.trim())
         const userDomainBase = userDomain.split('/')[0].split('.')[0]
-
         const isUserSite = (rec: any) => {
           const recDomain = rec.url ? normalizeUrl(rec.url) : ''
           const recDomainBase = recDomain ? recDomain.split('/')[0].split('.')[0] : ''
@@ -75,28 +79,26 @@ export async function POST(req: NextRequest) {
             (recDomainBase && userDomainBase && recDomainBase === userDomainBase) ||
             (userDomainBase && recName.includes(userDomainBase))
         }
-
         const googleResult = results.find(r => r.engine === 'google')
-        const googleFound = googleResult?.recommendations.some(isUserSite) || false
-        const googleRank = googleFound ? (googleResult?.recommendations.findIndex(isUserSite) ?? -1) + 1 : null
-
+        googleFound = googleResult?.recommendations.some(isUserSite) || false
+        googleRank = googleFound ? (googleResult?.recommendations.findIndex(isUserSite) ?? -1) + 1 : null
         const aiResults = results.filter(r => r.engine !== 'google' && !r.error)
-        const aiEngineNames = aiResults.filter(r => r.recommendations.some(isUserSite)).map(r => r.engine)
+        aiEngineNames = aiResults.filter(r => r.recommendations.some(isUserSite)).map(r => r.engine)
+      }
 
-        try {
-          insights = await generateAITestInsights({
-            keyword: keyword.trim(),
-            userUrl: userUrl.trim(),
-            googleFound,
-            googleRank,
-            aiEnginesFound: aiEngineNames.length,
-            aiEngineNames,
-            topCompetitors: consensus.map(c => c.name),
-            consensus: consensus.map(c => ({ name: c.name, engines: c.engines })),
-          })
-        } catch (err) {
-          console.error('[AI Test] Insights generation failed:', err)
-        }
+      try {
+        insights = await generateAITestInsights({
+          keyword: keyword.trim(),
+          userUrl: userUrl?.trim() || '',
+          googleFound,
+          googleRank,
+          aiEnginesFound: aiEngineNames.length,
+          aiEngineNames,
+          topCompetitors: consensus.map(c => c.name),
+          consensus: consensus.map(c => ({ name: c.name, engines: c.engines })),
+        })
+      } catch (err) {
+        console.error('[AI Test] Insights generation failed:', err)
       }
 
       return NextResponse.json({

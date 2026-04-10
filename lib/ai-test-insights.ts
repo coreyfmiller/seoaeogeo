@@ -35,7 +35,9 @@ export async function generateAITestInsights(input: InsightsInput): Promise<AITe
       generationConfig: { temperature: 0.3, maxOutputTokens: 800 },
     })
 
-    const prompt = `You are an SEO and AI visibility expert. Analyze these search results and give actionable advice.
+    const hasUserUrl = !!input.userUrl
+    const prompt = hasUserUrl
+      ? `You are an SEO and AI visibility expert. Analyze these search results and give actionable advice.
 
 Keyword: "${input.keyword}"
 User's website: ${input.userUrl}
@@ -55,12 +57,29 @@ Return a JSON object with:
 }
 
 Rules for nextTool:
-- If not found on Google at all → "pro-audit" (need to fix fundamentals first)
-- If found on Google but not by AI → "pro-audit" (need AEO optimization)
-- If found by some but want to compare against competitors → "keyword-arena"
-- If found everywhere and want to beat a specific rival → "battle-mode"
+- If not found on Google at all → "pro-audit"
+- If found on Google but not by AI → "pro-audit"
+- If found by some but want to compare → "keyword-arena"
+- If found everywhere → "battle-mode"
 
-Keep actions specific to the keyword and situation. No generic advice. Max 15 words per action.
+Keep actions specific to the keyword. No generic advice. Max 15 words per action.
+Return ONLY the JSON object.`
+      : `You are an SEO and AI visibility expert. Analyze these search results for the keyword "${input.keyword}".
+
+Top sites appearing across multiple AI engines and Google:
+${input.consensus.map(c => `- ${c.name} (found by: ${c.engines.join(', ')})`).join('\n') || 'No consensus yet'}
+
+What makes these sites rank well for "${input.keyword}"? Give 3 specific, actionable tips for any business wanting to rank for this keyword.
+
+Return a JSON object with:
+{
+  "visibility": "One sentence about what it takes to rank for this keyword",
+  "competitors": "One sentence about what the top-ranking sites have in common",
+  "actions": ["Tip 1", "Tip 2", "Tip 3"],
+  "nextTool": { "name": "pro-audit", "reason": "Run a Pro Audit to see how your site compares" }
+}
+
+Keep tips specific to this keyword type. Max 15 words per tip.
 Return ONLY the JSON object.`
 
     const result = await model.generateContent(prompt)
