@@ -132,11 +132,9 @@ const NATURAL_PROMPT = (keyword: string) => `What are the top 5 businesses or we
 
 /**
  * Parse a natural language AI response into structured recommendations.
- * Extracts numbered/bulleted items with names, URLs, and descriptions.
+ * Handles numbered lists, markdown bold names, and ChatGPT's Places-style format.
  */
 function parseNaturalResponse(text: string, groundingUrls?: Map<string, string>): AITestRecommendation[] {
-  const recs: AITestRecommendation[] = []
-
   // Strategy 1: Try JSON first (some engines still return it)
   const jsonArray = extractJsonArray(text)
   if (jsonArray && jsonArray.length >= 3) {
@@ -148,32 +146,60 @@ function parseNaturalResponse(text: string, groundingUrls?: Map<string, string>)
     }))
   }
 
-  // Strategy 2: Parse numbered/bulleted list items
-  // Matches: "1. **Name** - description" or "1. Name (url)" etc.
-  const itemPattern = /(?:^|\n)\s*(?:\d+[\.\)]\s*|\*\s*|-\s*)(?:\*{1,2})?([^\n*\[\]]{3,60})(?:\*{1,2})?(?:[:\s-–—]+|\s*\n\s*)([^\n]{10,})/gm
-  let match
-  while ((match = itemPattern.exec(text)) !== null && recs.length < 5) {
-    const name = match[1].trim().replace(/^\*+|\*+$/g, '').trim()
-    const rest = match[2].trim()
-    if (name.length < 3 || name.length > 80) continue
+  const recs: AITestRecommendation[] = []
 
-    // Extract URL from the rest of the text
-    const urlMatch = rest.match(/https?:\/\/[^\s\)]+/)
-    let url = urlMatch ? urlMatch[0].replace(/[.,;)]+$/, '') : ''
+  // Strategy 2: Parse numbered list items — handles ChatGPT's format:
+  // "1. **Business Name**\nClosed · Pizza restaurant · CA$10–20 · 3.9 (165 reviews)\n270 Restigouche Rd..."
+  // Also handles: "1. **Business Name** - description"
+  const lines = text.split('\n')
+  let i = 0
+  while (i < lines.length && recs.length < 5) {
+    const line = lines[i].trim()
+    // Match numbered item: "1." or "1)" optionally followed by bold name
+    const numMatch = line.match(/^(\d+)[\.\)]\s*(?:\*{1,2})?(.+?)(?:\*{1,2})?$/)
+    if (numMatch) {
+      let name = numMatch[2].trim()
+      // Skip if name looks like metadata (contains ·, ratings, addresses)
+      if (name.includes('·') || name.match(/^\d+\.\d+\s*\(/) || name.match(/^\d+\s+\w+\s+\w+,/)) {
+        i++
+        continue
+      }
+      // Clean up markdown
+      name = name.replace(/\*+/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').trim()
+      if (name.length < 2 || name.length > 100) { i++; continue }
 
-    // Try to find URL from grounding chunks if we have them
-    if (!url && groundingUrls) {
-      const nameKey = name.toLowerCase().replace(/[^a-z0-9]/g, '')
-      for (const [groundTitle, groundUrl] of groundingUrls) {
-        if (nameKey && (groundTitle.includes(nameKey) || nameKey.includes(groundTitle))) {
-          url = groundUrl
-          break
+      // Collect the next 1-3 lines as the description/metadata
+      const descLines: string[] = []
+      let j = i + 1
+      while (j < lines.length && j < i + 4) {
+        const nextLine = lines[j].trim()
+        if (!nextLine || nextLine.match(/^\d+[\.\)]/)) break
+        descLines.push(nextLine.replace(/\*+/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'))
+        j++
+      }
+      const description = descLines.join(' ').trim()
+
+      // Extract URL from description or name
+      const urlMatch = description.match(/https?:\/\/[^\s\)]+/) || name.match(/https?:\/\/[^\s\)]+/)
+      let url = urlMatch ? urlMatch[0].replace(/[.,;)]+$/, '') : ''
+
+      // Try grounding chunks for URL
+      if (!url && groundingUrls) {
+        const nameKey = name.toLowerCase().replace(/[^a-z0-9]/g, '')
+        for (const [groundTitle, groundUrl] of groundingUrls) {
+          if (nameKey && (groundTitle.includes(nameKey) || nameKey.includes(groundTitle))) {
+            url = groundUrl
+            break
+          }
         }
       }
-    }
 
-    const reason = rest.replace(/https?:\/\/[^\s\)]+/g, '').replace(/^\s*[-–—:]\s*/, '').trim()
-    recs.push({ rank: recs.length + 1, name, url, reason: reason.substring(0, 200) })
+      const reason = description.replace(/https?:\/\/[^\s\)]+/g, '').trim()
+      recs.push({ rank: recs.length + 1, name, url, reason: reason.substring(0, 300) })
+      i = j
+      continue
+    }
+    i++
   }
 
   // Strategy 3: If grounding chunks available and we got nothing, use them directly
