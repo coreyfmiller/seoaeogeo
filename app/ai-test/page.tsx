@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { PageShell } from "@/components/dashboard/page-shell"
 import { CreditConfirmDialog } from "@/components/dashboard/credit-confirm-dialog"
@@ -46,6 +46,40 @@ export default function AITestPage() {
   const [creditsRefunded, setCreditsRefunded] = useState(0)
   const [creditDialogOpen, setCreditDialogOpen] = useState(false)
   const [retryingEngine, setRetryingEngine] = useState<string | null>(null)
+  const autoRetryDoneRef = useRef<string | null>(null) // tracks which result set we've auto-retried
+
+  // Auto-retry failed AI engines when results first load
+  useEffect(() => {
+    if (!result || autoRetryDoneRef.current === result.keyword) return
+    const failedAiEngines = result.results.filter(r =>
+      r.engine !== 'google' && r.error && r.recommendations.length === 0
+    )
+    if (failedAiEngines.length === 0) return
+    autoRetryDoneRef.current = result.keyword
+
+    // Stagger retries slightly to avoid hammering APIs simultaneously
+    failedAiEngines.forEach((engineResult, i) => {
+      setTimeout(() => {
+        setRetryingEngine(engineResult.engine)
+        fetch('/api/ai-test/retry', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ engine: engineResult.engine, keyword: result.keyword }),
+        })
+          .then(r => r.json())
+          .then(data => {
+            if (data.success && data.result) {
+              setResult(prev => {
+                if (!prev) return prev
+                return { ...prev, results: prev.results.map(r => r.engine === engineResult.engine ? data.result : r) }
+              })
+            }
+          })
+          .catch(() => {})
+          .finally(() => setRetryingEngine(prev => prev === engineResult.engine ? null : prev))
+      }, i * 1500) // stagger by 1.5s each
+    })
+  }, [result?.keyword])
 
   const handleRun = () => {
     if (!keyword.trim()) return
@@ -228,6 +262,15 @@ export default function AITestPage() {
                       </CardHeader>
                       <CardContent>
                         {engineResult.error ? (
+                          retryingEngine === engineResult.engine ? (
+                            <div className="text-center py-6">
+                              <Loader2 className="h-8 w-8 text-white/20 mx-auto mb-2 animate-spin" />
+                              <p className="text-xs text-white/30">Retrying...</p>
+                              <div className="mt-3 h-0.5 bg-white/[0.04] rounded-full overflow-hidden">
+                                <div className="h-full bg-white/20 rounded-full animate-pulse w-2/3" />
+                              </div>
+                            </div>
+                          ) : (
                           <div className="text-center py-6">
                             <XCircle className="h-8 w-8 text-white/10 mx-auto mb-2" />
                             <p className="text-xs text-white/30 mb-3">{engineResult.error}</p>

@@ -178,7 +178,22 @@ async function queryGemini(keyword: string): Promise<AITestEngineResult> {
     }
 
     const parsed = extractJsonArray(text)
-    if (!parsed || parsed.length === 0) throw new Error('Could not extract recommendations from response')
+    if (!parsed || parsed.length === 0) {
+      // Fallback: if Gemini returned a narrative instead of JSON, build recs from grounding chunks directly
+      if (groundingChunks.length > 0) {
+        console.log(`[AI Test] Gemini JSON parse failed, falling back to grounding chunks. Raw text (200 chars): ${text.substring(0, 200)}`)
+        const fallbackRecs = groundingChunks.slice(0, 5).map((chunk: any, i: number) => ({
+          rank: i + 1,
+          name: chunk.web?.title || chunk.web?.uri || 'Unknown',
+          url: chunk.web?.uri || '',
+          reason: 'Found via Google Search',
+          urlStatus: 'valid' as const,
+        }))
+        return { engine: 'gemini', recommendations: fallbackRecs, durationMs: Date.now() - start }
+      }
+      console.log(`[AI Test] Gemini failed - no JSON and no grounding chunks. Raw text (300 chars): ${text.substring(0, 300)}`)
+      throw new Error('Could not extract recommendations from response')
+    }
     const recs = parsed.slice(0, 5).map((r: any, i: number) => {
       let url = r.url || ''
       // If the model gave a URL, keep it. But also try to find a grounding URL for better accuracy.
