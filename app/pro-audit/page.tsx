@@ -19,6 +19,7 @@ import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialo
 import { Badge } from '@/components/ui/badge'
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { LinkBuildingIntelligence } from '@/components/dashboard/link-building-intelligence'
+import { WhatsNextCard, NEXT_STEPS } from '@/components/dashboard/whats-next-card'
 import { ExpertAnalysis } from '@/components/dashboard/expert-analysis'
 import { cn } from '@/lib/utils'
 
@@ -458,6 +459,15 @@ export default function ProAuditV4Page() {
                 </Card>
               )}
             </div>
+          )}
+
+          {/* What's Next — only show after results */}
+          {result && (
+            <WhatsNextCard steps={[
+              NEXT_STEPS.deepScan(currentUrl),
+              NEXT_STEPS.keywordArena(`Your SEO score is ${result.scores?.seo ?? '?'} — see how that compares against competitors`),
+              NEXT_STEPS.competitorDuel(),
+            ]} />
           )}
         </div>
       </main>

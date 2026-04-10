@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { PageShell } from '@/components/dashboard/page-shell'
 import { AuditPageHeader } from '@/components/dashboard/audit-page-header'
 import { LinkBuildingIntelligence } from '@/components/dashboard/link-building-intelligence'
+import { WhatsNextCard, NEXT_STEPS } from '@/components/dashboard/whats-next-card'
 import { ExpertAnalysis } from '@/components/dashboard/expert-analysis'
 import { CrawlConfig } from '@/components/dashboard/crawl-config'
 import { PageComparisonTable } from '@/components/dashboard/page-comparison-table'
@@ -1011,6 +1012,14 @@ export default function DeepV3Page() {
                 )}
 
               </div>
+            )}
+
+            {/* What's Next */}
+            {result && (
+              <WhatsNextCard steps={[
+                NEXT_STEPS.keywordArena('You know your site-wide issues — now see how you rank against competitors'),
+                NEXT_STEPS.competitorDuel(),
+              ]} />
             )}
           </div>
         </main>

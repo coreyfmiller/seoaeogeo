@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { PageShell } from "@/components/dashboard/page-shell"
+import { WhatsNextCard, NEXT_STEPS } from '@/components/dashboard/whats-next-card'
 import { saveScanToHistory, consumeLoadFromHistory, getFullScanResult, getLatestFullScan, wasHistoryCleared } from '@/lib/scan-history'
 import { DualSearchInput } from "@/components/dashboard/search-input"
 import { Badge } from "@/components/ui/badge"
@@ -713,6 +714,14 @@ export default function BattleModeV3() {
                                 )}
                             </div>
                         </div>
+                    )}
+
+                    {/* What's Next */}
+                    {comparisonData && (
+                      <WhatsNextCard steps={[
+                        NEXT_STEPS.proAudit('Now you know the gaps — get detailed fix instructions for your site'),
+                        NEXT_STEPS.keywordArena('See how you rank against all competitors, not just one'),
+                      ]} />
                     )}
                 </div>
             </main>
