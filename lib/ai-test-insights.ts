@@ -84,10 +84,17 @@ Return ONLY the JSON object.`
 
     const result = await model.generateContent(prompt)
     const text = result.response.text()
+    console.log(`[AI Test Insights] Gemini response length: ${text.length}`)
     const match = text.match(/\{[\s\S]*\}/)
-    if (!match) return null
+    if (!match) {
+      console.log('[AI Test Insights] No JSON object found in response, using fallback')
+      return buildFallbackInsights(input)
+    }
     const parsed = safeJsonParse(match[0])
-    if (!parsed || !parsed.visibility) return null
+    if (!parsed || !parsed.visibility) {
+      console.log('[AI Test Insights] Parsed object missing visibility, using fallback')
+      return buildFallbackInsights(input)
+    }
 
     return {
       visibility: parsed.visibility || '',
@@ -97,6 +104,59 @@ Return ONLY the JSON object.`
     }
   } catch (err) {
     console.error('[AI Test Insights] Failed:', err instanceof Error ? err.message : err)
-    return null
+    return buildFallbackInsights(input)
   }
 }
+
+/** Build deterministic insights from the data when Gemini fails */
+function buildFallbackInsights(input: InsightsInput): AITestInsights {
+  const hasUserUrl = !!input.userUrl
+  const topCompetitor = input.consensus[0]?.name || 'your competitors'
+
+  if (hasUserUrl) {
+    const found = input.aiEnginesFound
+    const googleFound = input.googleFound
+    const visibility = googleFound
+      ? found > 0
+        ? `Your site appears in Google Search and ${found} AI engine${found > 1 ? 's' : ''} for "${input.keyword}".`
+        : `Your site appears in Google Search but no AI engines recommend it for "${input.keyword}".`
+      : `Your site is not appearing in Google Search or AI results for "${input.keyword}".`
+
+    const competitors = input.consensus.length > 0
+      ? `${topCompetitor} is consistently recommended across multiple engines for this keyword.`
+      : `No clear consensus competitor identified — results vary across engines.`
+
+    const actions = googleFound && found === 0
+      ? ['Add structured data (schema markup) to help AI engines understand your business', 'Create content that directly answers questions about ' + input.keyword, 'Ensure your Google Business Profile is complete and up to date']
+      : !googleFound
+        ? ['Optimize your page title and meta description for "' + input.keyword + '"', 'Build local citations and directory listings for your area', 'Add location-specific content to your website']
+        : ['Run a Pro Audit to identify technical issues holding you back', 'Compare your site against top competitors in Keyword Arena', 'Review your AEO score to improve AI engine visibility']
+
+    const nextTool = !googleFound
+      ? { name: 'pro-audit', reason: 'Fix the fundamentals — your site needs SEO work before AI can find it' }
+      : found < 2
+        ? { name: 'pro-audit', reason: 'Improve your AEO score to get recommended by more AI engines' }
+        : { name: 'keyword-arena', reason: 'See how your scores compare against the top competitors' }
+
+    return { visibility, competitors, actions, nextTool }
+  }
+
+  // No user URL — general keyword insights
+  const visibility = input.consensus.length > 0
+    ? `For "${input.keyword}", ${topCompetitor} leads across multiple search engines.`
+    : `Results for "${input.keyword}" vary significantly across different AI engines.`
+
+  const competitors = input.consensus.length > 0
+    ? `Sites like ${input.consensus.slice(0, 2).map(c => c.name).join(' and ')} appear consistently — they likely have strong local signals and reviews.`
+    : `No single site dominates — this keyword has an opportunity for a well-optimized local business.`
+
+  return {
+    visibility,
+    competitors,
+    actions: [
+      'Ensure your Google Business Profile is fully optimized with photos and reviews',
+      'Add LocalBusiness schema markup to your website',
+      'Create content that mentions your city and service type together',
+    ],
+    nextTool: { name: 'pro-audit', reason: 'Run a Pro Audit on your site to see how it compares' },
+  }
