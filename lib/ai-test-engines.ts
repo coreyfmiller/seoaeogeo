@@ -305,9 +305,6 @@ async function queryChatGPT(keyword: string): Promise<AITestEngineResult> {
       recommendations: await validateRecommendationUrls(chatRecs),
       durationMs: Date.now() - start,
     }
-      recommendations: await validateRecommendationUrls(chatRecs),
-      durationMs: Date.now() - start,
-    }
   } catch (err: any) {
     return { engine: 'chatgpt', recommendations: [], error: err.message, durationMs: Date.now() - start }
   }

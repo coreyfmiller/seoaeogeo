@@ -262,24 +262,25 @@ export default function AITestPage() {
                       </CardHeader>
                       <CardContent>
                         {engineResult.error ? (
-                          retryingEngine === engineResult.engine ? (
-                            <div className="text-center py-6">
-                              <Loader2 className="h-8 w-8 text-white/20 mx-auto mb-2 animate-spin" />
-                              <p className="text-xs text-white/30">Retrying...</p>
-                              <div className="mt-3 h-0.5 bg-white/[0.04] rounded-full overflow-hidden">
-                                <div className="h-full bg-white/20 rounded-full animate-pulse w-2/3" />
-                              </div>
-                            </div>
-                          ) : (
                           <div className="text-center py-6">
-                            <XCircle className="h-8 w-8 text-white/10 mx-auto mb-2" />
-                            <p className="text-xs text-white/30 mb-3">{engineResult.error}</p>
-                            <button onClick={() => handleRetryEngine(engineResult.engine)}
-                              disabled={retryingEngine === engineResult.engine}
-                              className="px-3 py-1.5 text-[10px] font-bold rounded-lg border border-white/10 text-white/50 hover:text-white hover:border-white/20 transition-all disabled:opacity-50">
-                              {retryingEngine === engineResult.engine ? <Loader2 className="h-3 w-3 animate-spin inline mr-1" /> : null}
-                              {retryingEngine === engineResult.engine ? 'Retrying...' : 'Retry'}
-                            </button>
+                            {retryingEngine === engineResult.engine ? (
+                              <>
+                                <Loader2 className="h-8 w-8 text-white/20 mx-auto mb-2 animate-spin" />
+                                <p className="text-xs text-white/30">Retrying...</p>
+                                <div className="mt-3 h-0.5 bg-white/[0.04] rounded-full overflow-hidden">
+                                  <div className="h-full bg-white/20 rounded-full animate-pulse w-2/3" />
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <XCircle className="h-8 w-8 text-white/10 mx-auto mb-2" />
+                                <p className="text-xs text-white/30 mb-3">{engineResult.error}</p>
+                                <button onClick={() => handleRetryEngine(engineResult.engine)}
+                                  className="px-3 py-1.5 text-[10px] font-bold rounded-lg border border-white/10 text-white/50 hover:text-white hover:border-white/20 transition-all">
+                                  Retry
+                                </button>
+                              </>
+                            )}
                           </div>
                         ) : (
                           <div className="space-y-2">
