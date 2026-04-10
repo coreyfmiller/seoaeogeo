@@ -39,8 +39,8 @@ const mainNav: NavItem[] = [
   { name: "Pro Audit", icon: Bot, href: "/pro-audit" },
   { name: "Deep Scan", icon: Layers, href: "/deep-scan" },
   { name: "Competitor Duel", icon: Swords, href: "/battle-mode" },
-  { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena" },
   { name: "AI Visibility", icon: FlaskConical, href: "/ai-test", badge: "NEW" },
+  { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena" },
   { name: "Dashboard", icon: Home, href: "/dashboard" },
 ]
 
