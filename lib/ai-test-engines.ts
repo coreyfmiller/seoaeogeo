@@ -253,8 +253,30 @@ async function queryChatGPT(keyword: string): Promise<AITestEngineResult> {
       }
     }
     const data = await res.json()
-    // Responses API returns output array with message items
-    const textOutput = data.output?.find((o: any) => o.type === 'message')?.content?.find((c: any) => c.type === 'output_text')?.text || ''
+    // Responses API can return output in various structures — try multiple extraction paths
+    let textOutput = ''
+    // Path 1: Standard message output
+    textOutput = data.output?.find((o: any) => o.type === 'message')?.content?.find((c: any) => c.type === 'output_text')?.text || ''
+    // Path 2: Try all text content from all output items
+    if (!textOutput) {
+      for (const item of (data.output || [])) {
+        if (item.type === 'message' && item.content) {
+          for (const c of item.content) {
+            if (c.text) textOutput += c.text + '\n'
+            if (c.type === 'output_text' && c.text) textOutput += c.text + '\n'
+          }
+        }
+      }
+    }
+    // Path 3: Check for direct text field
+    if (!textOutput && data.output_text) textOutput = data.output_text
+    // Path 4: Stringify the whole response as last resort
+    if (!textOutput) {
+      console.log('[AI Test] ChatGPT response structure:', JSON.stringify(data).substring(0, 500))
+      textOutput = JSON.stringify(data)
+    }
+
+    console.log(`[AI Test] ChatGPT text length: ${textOutput.length}`)
     const chatParsed = extractJsonArray(textOutput)
     if (!chatParsed || chatParsed.length === 0) throw new Error('No recommendations in response')
     const chatRecs = chatParsed.slice(0, 5).map((r: any, i: number) => ({
