@@ -102,7 +102,7 @@ export default function AITestPage() {
       if (data.success) {
         setResult(data.data)
       } else {
-        setError(data.error || 'AI Test failed')
+        setError(data.error || 'AI Visibility check failed')
         setCreditsRefunded(data.creditsRefunded || 0)
       }
     } catch { setError('Connection failed') }
@@ -162,14 +162,14 @@ export default function AITestPage() {
           <div className="mb-8">
             <h1 className="text-2xl font-black text-white flex items-center gap-3 tracking-tight">
               <FlaskConical className="h-6 w-6 text-[#00e5ff]" />
-              The AI Test
+              AI Visibility
             </h1>
             <p className="text-sm text-white/60 mt-1.5">Compare real Google Search results with AI recommendations from Gemini, ChatGPT, and Perplexity. See who ranks where — and if AI can find you.</p>
           </div>
 
           <ScanErrorDialog error={error} onClose={() => setError(null)} creditsRefunded={creditsRefunded} />
           <CreditConfirmDialog open={creditDialogOpen} onConfirm={handleConfirm} onCancel={() => setCreditDialogOpen(false)}
-            creditCost={5} scanType="The AI Test" costBreakdown="5 credits per AI Test run" />
+            creditCost={5} scanType="AI Visibility" costBreakdown="5 credits per run" />
 
           {/* Input */}
           <div className="mb-6 space-y-3">
@@ -180,7 +180,7 @@ export default function AITestPage() {
                 className="flex-1 px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 text-sm" />
               <button onClick={handleRun} disabled={isLoading || !keyword.trim()}
                 className="px-5 py-2.5 bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-black rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm shrink-0">
-                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <FlaskConical className="h-4 w-4" />} Run AI Test
+                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <FlaskConical className="h-4 w-4" />} Check AI Visibility
               </button>
             </div>
             <input type="text" value={userUrl} onChange={e => setUserUrl(e.target.value)}
@@ -397,7 +397,7 @@ export default function AITestPage() {
                 <div className="mx-auto w-16 h-16 rounded-full bg-[#00e5ff]/10 flex items-center justify-center mb-4">
                   <FlaskConical className="h-8 w-8 text-[#00e5ff]" />
                 </div>
-                <h2 className="text-2xl font-black text-white">Ask AI Who They&apos;d Recommend</h2>
+                <h2 className="text-2xl font-black text-white">Check Your AI Visibility</h2>
                 <p className="text-sm text-white/60">Enter any keyword and we&apos;ll show you real Google Search results alongside what Gemini, ChatGPT, and Perplexity recommend. See how AI compares to traditional search — and if either can find you.</p>
                 <div className="flex items-center justify-center gap-6 text-xs text-white/40">
                   <span className="flex items-center gap-1.5"><Search className="h-4 w-4 text-[#4285f4]" /> Google</span>
