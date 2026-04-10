@@ -599,7 +599,7 @@ export default function KeywordArenaV3Page() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-white flex items-center gap-2 text-base">
                     <Crown className="h-5 w-5 text-[#00e5ff]" />
-                    Select Your Site
+                    Step 2 — Select Your Site
                     <Badge className="bg-red-500/10 text-red-400 border-red-500/30 text-[9px]">REQUIRED</Badge>
                   </CardTitle>
                   <CardDescription className="text-white/70">Look for your website in the search results below and click it. If it&apos;s not listed, add it manually.</CardDescription>
