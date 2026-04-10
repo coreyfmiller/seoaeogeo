@@ -127,15 +127,15 @@ function buildFallbackInsights(input: InsightsInput): AITestInsights {
       : `No clear consensus competitor identified — results vary across engines.`
 
     const actions = googleFound && found === 0
-      ? ['Add structured data (schema markup) to help AI engines understand your business', 'Create content that directly answers questions about ' + input.keyword, 'Ensure your Google Business Profile is complete and up to date']
+      ? ['Add structured data (schema markup) so AI engines understand your business', 'Create content that directly answers common questions about ' + input.keyword, 'Make sure your Google Business Profile is complete and up to date']
       : !googleFound
-        ? ['Optimize your page title and meta description for "' + input.keyword + '"', 'Build local citations and directory listings for your area', 'Add location-specific content to your website']
-        : ['Run a Pro Audit to identify technical issues holding you back', 'Compare your site against top competitors in Keyword Arena', 'Review your AEO score to improve AI engine visibility']
+        ? ['Run a Pro Audit to find and fix issues keeping you out of search results', 'Build local citations and directory listings for your area', 'Add location-specific content to your website']
+        : ['Run a Pro Audit to get step-by-step fixes for your site', 'Compare your site against top competitors in Keyword Arena', 'Improve your AEO score so AI engines start recommending you']
 
     const nextTool = !googleFound
-      ? { name: 'pro-audit', reason: 'Fix the fundamentals — your site needs SEO work before AI can find it' }
+      ? { name: 'pro-audit', reason: 'Find out what needs fixing so search engines can find you' }
       : found < 2
-        ? { name: 'pro-audit', reason: 'Improve your AEO score to get recommended by more AI engines' }
+        ? { name: 'pro-audit', reason: 'Get specific fixes to improve your AI visibility' }
         : { name: 'keyword-arena', reason: 'See how your scores compare against the top competitors' }
 
     return { visibility, competitors, actions, nextTool }
