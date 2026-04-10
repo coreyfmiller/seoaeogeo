@@ -8,7 +8,6 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 import { getGeminiModel } from './gemini-model-resolver'
 import { safeJsonParse } from './utils/json-sanitizer'
 import { searchGoogle } from './google-search'
-import { filterAggregators } from './aggregator-domains'
 
 /**
  * Extract a JSON array from messy AI text responses.
@@ -332,16 +331,17 @@ async function queryPerplexity(keyword: string): Promise<AITestEngineResult> {
 async function queryGoogleSearch(keyword: string): Promise<AITestEngineResult> {
   const start = Date.now()
   try {
-    const rawResults = await searchGoogle(keyword, 20)
-    const filtered = filterAggregators(rawResults).slice(0, 5)
-    const recs: AITestRecommendation[] = filtered.map((r, i) => ({
+    const rawResults = await searchGoogle(keyword, 10)
+    // No aggregator filtering for AI Test — show what Google actually returns
+    const top5 = rawResults.slice(0, 5)
+    const recs: AITestRecommendation[] = top5.map((r, i) => ({
       rank: i + 1,
       name: r.title || r.displayLink,
       url: r.url,
       urlStatus: 'valid' as const,
       reason: r.snippet || '',
     }))
-    console.log(`[AI Test] Google Search: ${rawResults.length} raw → ${filtered.length} after filtering`)
+    console.log(`[AI Test] Google Search: ${rawResults.length} results, showing top ${recs.length}`)
     return { engine: 'google', recommendations: recs, durationMs: Date.now() - start }
   } catch (err: any) {
     return { engine: 'google', recommendations: [], error: err.message, durationMs: Date.now() - start }
