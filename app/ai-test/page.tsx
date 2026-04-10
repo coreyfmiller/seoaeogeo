@@ -43,6 +43,7 @@ export default function AITestPage() {
   const [error, setError] = useState<string | null>(null)
   const [creditsRefunded, setCreditsRefunded] = useState(0)
   const [creditDialogOpen, setCreditDialogOpen] = useState(false)
+  const [retryingEngine, setRetryingEngine] = useState<string | null>(null)
 
   const handleRun = () => {
     if (!keyword.trim()) return
@@ -70,6 +71,27 @@ export default function AITestPage() {
       }
     } catch { setError('Connection failed') }
     finally { setIsLoading(false) }
+  }
+
+  const handleRetryEngine = async (engine: string) => {
+    if (!result || retryingEngine) return
+    setRetryingEngine(engine)
+    try {
+      const res = await fetch('/api/ai-test/retry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ engine, keyword: result.keyword }),
+      })
+      const data = await res.json()
+      if (data.success && data.result) {
+        setResult(prev => {
+          if (!prev) return prev
+          const updated = prev.results.map(r => r.engine === engine ? data.result : r)
+          return { ...prev, results: updated }
+        })
+      }
+    } catch {}
+    finally { setRetryingEngine(null) }
   }
 
   const normalizeUrl = (url: string) => url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '').toLowerCase()
@@ -206,7 +228,13 @@ export default function AITestPage() {
                         {engineResult.error ? (
                           <div className="text-center py-6">
                             <XCircle className="h-8 w-8 text-white/10 mx-auto mb-2" />
-                            <p className="text-xs text-white/30">{engineResult.error}</p>
+                            <p className="text-xs text-white/30 mb-3">{engineResult.error}</p>
+                            <button onClick={() => handleRetryEngine(engineResult.engine)}
+                              disabled={retryingEngine === engineResult.engine}
+                              className="px-3 py-1.5 text-[10px] font-bold rounded-lg border border-white/10 text-white/50 hover:text-white hover:border-white/20 transition-all disabled:opacity-50">
+                              {retryingEngine === engineResult.engine ? <Loader2 className="h-3 w-3 animate-spin inline mr-1" /> : null}
+                              {retryingEngine === engineResult.engine ? 'Retrying...' : 'Retry'}
+                            </button>
                           </div>
                         ) : (
                           <div className="space-y-2">

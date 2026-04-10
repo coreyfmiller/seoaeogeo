@@ -348,13 +348,35 @@ async function queryGoogleSearch(keyword: string): Promise<AITestEngineResult> {
   }
 }
 
-/** Run all 4 engines in parallel (Google Search + 3 AI engines) */
+/** Wrap an engine query with 1 automatic retry on failure */
+async function withRetry(fn: () => Promise<AITestEngineResult>): Promise<AITestEngineResult> {
+  const first = await fn()
+  if (first.error && first.recommendations.length === 0) {
+    console.log(`[AI Test] ${first.engine} failed, retrying once...`)
+    const second = await fn()
+    return second
+  }
+  return first
+}
+
+/** Run all 4 engines in parallel (Google Search + 3 AI engines, with auto-retry) */
 export async function runAITest(keyword: string): Promise<AITestEngineResult[]> {
   const results = await Promise.all([
     queryGoogleSearch(keyword),
-    queryGemini(keyword),
-    queryChatGPT(keyword),
-    queryPerplexity(keyword),
+    withRetry(() => queryGemini(keyword)),
+    withRetry(() => queryChatGPT(keyword)),
+    withRetry(() => queryPerplexity(keyword)),
   ])
   return results
+}
+
+/** Retry a single engine by name — used by the retry API endpoint */
+export async function retrySingleEngine(engine: string, keyword: string): Promise<AITestEngineResult> {
+  switch (engine) {
+    case 'gemini': return queryGemini(keyword)
+    case 'chatgpt': return queryChatGPT(keyword)
+    case 'perplexity': return queryPerplexity(keyword)
+    case 'google': return queryGoogleSearch(keyword)
+    default: return { engine: engine as any, recommendations: [], error: 'Unknown engine', durationMs: 0 }
+  }
 }
