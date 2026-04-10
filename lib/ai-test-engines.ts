@@ -147,62 +147,65 @@ function parseNaturalResponse(text: string, groundingUrls?: Map<string, string>)
   }
 
   const recs: AITestRecommendation[] = []
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
 
-  // Strategy 2: Parse numbered list items — handles ChatGPT's format:
-  // "1. **Business Name**\nClosed · Pizza restaurant · CA$10–20 · 3.9 (165 reviews)\n270 Restigouche Rd..."
-  // Also handles: "1. **Business Name** - description"
-  const lines = text.split('\n')
-  let i = 0
-  while (i < lines.length && recs.length < 5) {
-    const line = lines[i].trim()
-    // Match numbered item: "1." or "1)" optionally followed by bold name
-    const numMatch = line.match(/^(\d+)[\.\)]\s*(?:\*{1,2})?(.+?)(?:\*{1,2})?$/)
-    if (numMatch) {
-      let name = numMatch[2].trim()
-      // Skip if name looks like metadata (contains ·, ratings, addresses)
-      if (name.includes('·') || name.match(/^\d+\.\d+\s*\(/) || name.match(/^\d+\s+\w+\s+\w+,/)) {
-        i++
-        continue
-      }
-      // Clean up markdown
-      name = name.replace(/\*+/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').trim()
-      if (name.length < 2 || name.length > 100) { i++; continue }
+  for (let i = 0; i < lines.length && recs.length < 5; i++) {
+    const line = lines[i]
 
-      // Collect the next 1-3 lines as the description/metadata
-      const descLines: string[] = []
-      let j = i + 1
-      while (j < lines.length && j < i + 4) {
-        const nextLine = lines[j].trim()
-        if (!nextLine || nextLine.match(/^\d+[\.\)]/)) break
-        descLines.push(nextLine.replace(/\*+/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'))
-        j++
-      }
-      const description = descLines.join(' ').trim()
+    // Strip markdown formatting to get the raw text of this line
+    const stripped = line
+      .replace(/^\d+[\.\)]\s*/, '')  // remove leading number
+      .replace(/\*+/g, '')           // remove bold/italic markers
+      .replace(/^#+\s*/, '')         // remove heading markers
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // unwrap links
+      .trim()
 
-      // Extract URL from description or name
-      const urlMatch = description.match(/https?:\/\/[^\s\)]+/) || name.match(/https?:\/\/[^\s\)]+/)
-      let url = urlMatch ? urlMatch[0].replace(/[.,;)]+$/, '') : ''
+    // Must start with a number OR bold/heading marker to be a candidate name line
+    const isNameLine = /^\d+[\.\)]/.test(line) || /^\*{1,2}[^*]/.test(line) || /^#{1,3}\s/.test(line)
+    if (!isNameLine) continue
 
-      // Try grounding chunks for URL
-      if (!url && groundingUrls) {
-        const nameKey = name.toLowerCase().replace(/[^a-z0-9]/g, '')
-        for (const [groundTitle, groundUrl] of groundingUrls) {
-          if (nameKey && (groundTitle.includes(nameKey) || nameKey.includes(groundTitle))) {
-            url = groundUrl
-            break
-          }
+    const name = stripped
+    if (name.length < 2 || name.length > 100) continue
+
+    // Skip metadata lines
+    if (
+      name.includes('·') ||
+      /^\d+\.\d+\s*\(/.test(name) ||
+      /^(Closed|Open|Hours|Rating|Address|Phone|Website)\b/i.test(name) ||
+      /^\$/.test(name)
+    ) continue
+
+    // Collect next 1-3 lines as description
+    const descLines: string[] = []
+    let j = i + 1
+    while (j < lines.length && j < i + 4) {
+      const next = lines[j]
+      if (/^\d+[\.\)]\s/.test(next) || /^#{1,3}\s/.test(next)) break
+      descLines.push(next.replace(/\*+/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'))
+      j++
+    }
+    const description = descLines.join(' ').trim()
+
+    // Extract URL
+    const urlMatch = (line + ' ' + description).match(/https?:\/\/[^\s\)]+/)
+    let url = urlMatch ? urlMatch[0].replace(/[.,;)]+$/, '') : ''
+
+    if (!url && groundingUrls) {
+      const nameKey = name.toLowerCase().replace(/[^a-z0-9]/g, '')
+      for (const [groundTitle, groundUrl] of groundingUrls) {
+        if (nameKey && (groundTitle.includes(nameKey) || nameKey.includes(groundTitle))) {
+          url = groundUrl
+          break
         }
       }
-
-      const reason = description.replace(/https?:\/\/[^\s\)]+/g, '').trim()
-      recs.push({ rank: recs.length + 1, name, url, reason: reason.substring(0, 300) })
-      i = j
-      continue
     }
-    i++
+
+    const reason = description.replace(/https?:\/\/[^\s\)]+/g, '').trim()
+    recs.push({ rank: recs.length + 1, name, url, reason: reason.substring(0, 300) })
+    i = j - 1
   }
 
-  // Strategy 3: If grounding chunks available and we got nothing, use them directly
+  // Fallback: use grounding chunks directly
   if (recs.length === 0 && groundingUrls && groundingUrls.size > 0) {
     let rank = 1
     for (const [title, url] of groundingUrls) {
