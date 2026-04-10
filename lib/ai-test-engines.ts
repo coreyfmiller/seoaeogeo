@@ -128,28 +128,65 @@ export interface AITestEngineResult {
   durationMs: number
 }
 
-const PROMPT_TEMPLATE = (keyword: string) => `Search the web for: "${keyword}"
+const NATURAL_PROMPT = (keyword: string) => `What are the top 5 businesses or websites for "${keyword}"? Search the web and tell me what you find. For each one, give me the name, their website URL if you know it, and a brief description of what they offer.`
 
-Based ONLY on the actual search results you find, list the top 5 websites/businesses that appear for this search. Do NOT use your training data — only cite what you find in live search results.
+/**
+ * Parse a natural language AI response into structured recommendations.
+ * Extracts numbered/bulleted items with names, URLs, and descriptions.
+ */
+function parseNaturalResponse(text: string, groundingUrls?: Map<string, string>): AITestRecommendation[] {
+  const recs: AITestRecommendation[] = []
 
-IMPORTANT: If the search query includes a location (city, town, region), you MUST focus on LOCAL businesses that actually operate in that specific location. Do NOT list national chains or franchises unless they have a confirmed location in that specific area according to search results. A pizza chain that exists nationally but has no location in the specified town should NOT be listed.
+  // Strategy 1: Try JSON first (some engines still return it)
+  const jsonArray = extractJsonArray(text)
+  if (jsonArray && jsonArray.length >= 3) {
+    return jsonArray.slice(0, 5).map((r: any, i: number) => ({
+      rank: r.rank || i + 1,
+      name: r.name || 'Unknown',
+      url: r.url || '',
+      reason: r.reason || r.description || '',
+    }))
+  }
 
-For each result provide:
-1. The exact business or website name as it appears in search results
-2. The exact URL from the search results (or empty string if not found in results)
-3. Why this result is relevant — if local, mention the specific location (1-2 sentences)
+  // Strategy 2: Parse numbered/bulleted list items
+  // Matches: "1. **Name** - description" or "1. Name (url)" etc.
+  const itemPattern = /(?:^|\n)\s*(?:\d+[\.\)]\s*|\*\s*|-\s*)(?:\*{1,2})?([^\n*\[\]]{3,60})(?:\*{1,2})?(?:[:\s-–—]+|\s*\n\s*)([^\n]{10,})/gm
+  let match
+  while ((match = itemPattern.exec(text)) !== null && recs.length < 5) {
+    const name = match[1].trim().replace(/^\*+|\*+$/g, '').trim()
+    const rest = match[2].trim()
+    if (name.length < 3 || name.length > 80) continue
 
-Return ONLY a JSON array with exactly 5 objects:
-[
-  { "rank": 1, "name": "Business Name", "url": "https://example.com", "reason": "Why this is relevant" },
-  ...
-]
+    // Extract URL from the rest of the text
+    const urlMatch = rest.match(/https?:\/\/[^\s\)]+/)
+    let url = urlMatch ? urlMatch[0].replace(/[.,;)]+$/, '') : ''
 
-RULES:
-- ONLY include websites you found in the search results. Do NOT make up or guess any names or URLs.
-- URLs must come directly from search results. If you cannot find the URL, use an empty string.
-- For local searches: prioritize businesses confirmed to be in that specific location. Exclude chains with no verified local presence.
-- Return ONLY the raw JSON array. No markdown, no code blocks, no explanation.`
+    // Try to find URL from grounding chunks if we have them
+    if (!url && groundingUrls) {
+      const nameKey = name.toLowerCase().replace(/[^a-z0-9]/g, '')
+      for (const [groundTitle, groundUrl] of groundingUrls) {
+        if (nameKey && (groundTitle.includes(nameKey) || nameKey.includes(groundTitle))) {
+          url = groundUrl
+          break
+        }
+      }
+    }
+
+    const reason = rest.replace(/https?:\/\/[^\s\)]+/g, '').replace(/^\s*[-–—:]\s*/, '').trim()
+    recs.push({ rank: recs.length + 1, name, url, reason: reason.substring(0, 200) })
+  }
+
+  // Strategy 3: If grounding chunks available and we got nothing, use them directly
+  if (recs.length === 0 && groundingUrls && groundingUrls.size > 0) {
+    let rank = 1
+    for (const [title, url] of groundingUrls) {
+      if (rank > 5) break
+      recs.push({ rank: rank++, name: title, url, reason: '' })
+    }
+  }
+
+  return recs
+}
 
 /** Query Google Gemini with Google Search grounding */
 async function queryGemini(keyword: string): Promise<AITestEngineResult> {
@@ -162,11 +199,11 @@ async function queryGemini(keyword: string): Promise<AITestEngineResult> {
       generationConfig: { temperature: 0.1, maxOutputTokens: 2000 },
       tools: [{ googleSearch: {} } as any],
     })
-    const result = await model.generateContent(PROMPT_TEMPLATE(keyword))
+    const result = await model.generateContent(NATURAL_PROMPT(keyword))
     const response = result.response
     const text = response.text()
 
-    // Try to extract grounding metadata — these contain REAL URLs from Google Search
+    // Extract grounding metadata — real URLs from Google Search
     const groundingMetadata = (response as any).candidates?.[0]?.groundingMetadata
     const groundingChunks = groundingMetadata?.groundingChunks || []
     const groundingUrls = new Map<string, string>()
@@ -177,37 +214,10 @@ async function queryGemini(keyword: string): Promise<AITestEngineResult> {
       }
     }
 
-    const parsed = extractJsonArray(text)
-    if (!parsed || parsed.length === 0) {
-      // Fallback: if Gemini returned a narrative instead of JSON, build recs from grounding chunks directly
-      if (groundingChunks.length > 0) {
-        console.log(`[AI Test] Gemini JSON parse failed, falling back to grounding chunks. Raw text (200 chars): ${text.substring(0, 200)}`)
-        const fallbackRecs = groundingChunks.slice(0, 5).map((chunk: any, i: number) => ({
-          rank: i + 1,
-          name: chunk.web?.title || chunk.web?.uri || 'Unknown',
-          url: chunk.web?.uri || '',
-          reason: 'Found via Google Search',
-          urlStatus: 'valid' as const,
-        }))
-        return { engine: 'gemini', recommendations: fallbackRecs, durationMs: Date.now() - start }
-      }
-      console.log(`[AI Test] Gemini failed - no JSON and no grounding chunks. Raw text (300 chars): ${text.substring(0, 300)}`)
-      throw new Error('Could not extract recommendations from response')
-    }
-    const recs = parsed.slice(0, 5).map((r: any, i: number) => {
-      let url = r.url || ''
-      // If the model gave a URL, keep it. But also try to find a grounding URL for better accuracy.
-      const nameKey = (r.name || '').toLowerCase().replace(/[^a-z0-9]/g, '')
-      for (const [groundTitle, groundUrl] of groundingUrls) {
-        if (nameKey && (groundTitle.includes(nameKey) || nameKey.includes(groundTitle))) {
-          url = groundUrl // Prefer the grounding URL — it's from actual Google Search
-          break
-        }
-      }
-      return { rank: r.rank || i + 1, name: r.name || 'Unknown', url, reason: r.reason || '' }
-    })
+    console.log(`[AI Test] Gemini grounding chunks: ${groundingChunks.length}, text length: ${text.length}`)
 
-    console.log(`[AI Test] Gemini grounding chunks: ${groundingChunks.length}, recs: ${recs.length}`)
+    const recs = parseNaturalResponse(text, groundingUrls)
+    if (recs.length === 0) throw new Error('Could not extract recommendations from response')
 
     return {
       engine: 'gemini',
@@ -233,7 +243,7 @@ async function queryChatGPT(keyword: string): Promise<AITestEngineResult> {
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         tools: [{ type: 'web_search_preview' }],
-        input: PROMPT_TEMPLATE(keyword),
+        input: NATURAL_PROMPT(keyword),
         temperature: 0.1,
       }),
       signal: AbortSignal.timeout(30000),
@@ -246,7 +256,7 @@ async function queryChatGPT(keyword: string): Promise<AITestEngineResult> {
         headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'gpt-4o-mini',
-          messages: [{ role: 'user', content: PROMPT_TEMPLATE(keyword) }],
+          messages: [{ role: 'user', content: NATURAL_PROMPT(keyword) }],
           temperature: 0.3,
           max_tokens: 1500,
         }),
@@ -255,11 +265,8 @@ async function queryChatGPT(keyword: string): Promise<AITestEngineResult> {
       if (!fallbackRes.ok) throw new Error(`OpenAI API error: ${fallbackRes.status}`)
       const fallbackData = await fallbackRes.json()
       const fallbackText = fallbackData.choices?.[0]?.message?.content || ''
-      const fallbackParsed = extractJsonArray(fallbackText)
-      if (!fallbackParsed || fallbackParsed.length === 0) throw new Error('No recommendations in response')
-      const fallbackRecs = fallbackParsed.slice(0, 5).map((r: any, i: number) => ({
-        rank: r.rank || i + 1, name: r.name || 'Unknown', url: r.url || '', reason: r.reason || '',
-      }))
+      const fallbackRecs = parseNaturalResponse(fallbackText)
+      if (fallbackRecs.length === 0) throw new Error('No recommendations in response')
       return {
         engine: 'chatgpt',
         recommendations: await validateRecommendationUrls(fallbackRecs),
@@ -291,13 +298,13 @@ async function queryChatGPT(keyword: string): Promise<AITestEngineResult> {
     }
 
     console.log(`[AI Test] ChatGPT text length: ${textOutput.length}`)
-    const chatParsed = extractJsonArray(textOutput)
-    if (!chatParsed || chatParsed.length === 0) throw new Error('No recommendations in response')
-    const chatRecs = chatParsed.slice(0, 5).map((r: any, i: number) => ({
-      rank: r.rank || i + 1, name: r.name || 'Unknown', url: r.url || '', reason: r.reason || '',
-    }))
+    const chatRecs = parseNaturalResponse(textOutput)
+    if (chatRecs.length === 0) throw new Error('No recommendations in response')
     return {
       engine: 'chatgpt',
+      recommendations: await validateRecommendationUrls(chatRecs),
+      durationMs: Date.now() - start,
+    }
       recommendations: await validateRecommendationUrls(chatRecs),
       durationMs: Date.now() - start,
     }
@@ -318,7 +325,7 @@ async function queryPerplexity(keyword: string): Promise<AITestEngineResult> {
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'sonar',
-        messages: [{ role: 'user', content: PROMPT_TEMPLATE(keyword) }],
+        messages: [{ role: 'user', content: NATURAL_PROMPT(keyword) }],
         temperature: 0.3,
         max_tokens: 1500,
       }),
@@ -327,11 +334,8 @@ async function queryPerplexity(keyword: string): Promise<AITestEngineResult> {
     if (!res.ok) throw new Error(`Perplexity API error: ${res.status}`)
     const data = await res.json()
     const text = data.choices?.[0]?.message?.content || ''
-    const perplexityParsed = extractJsonArray(text)
-    if (!perplexityParsed || perplexityParsed.length === 0) throw new Error('No recommendations in response')
-    const perplexityRecs = perplexityParsed.slice(0, 5).map((r: any, i: number) => ({
-      rank: r.rank || i + 1, name: r.name || 'Unknown', url: r.url || '', reason: r.reason || '',
-    }))
+    const perplexityRecs = parseNaturalResponse(text)
+    if (perplexityRecs.length === 0) throw new Error('No recommendations in response')
     return {
       engine: 'perplexity',
       recommendations: await validateRecommendationUrls(perplexityRecs),
