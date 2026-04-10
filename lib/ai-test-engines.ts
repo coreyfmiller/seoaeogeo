@@ -245,7 +245,7 @@ async function queryChatGPT(keyword: string): Promise<AITestEngineResult> {
       if (!fallbackParsed || fallbackParsed.length === 0) throw new Error('No recommendations in response')
       const fallbackRecs = fallbackParsed.slice(0, 5).map((r: any, i: number) => ({
         rank: r.rank || i + 1, name: r.name || 'Unknown', url: r.url || '', reason: r.reason || '',
-      })) : []
+      }))
       return {
         engine: 'chatgpt',
         recommendations: await validateRecommendationUrls(fallbackRecs),
@@ -259,7 +259,7 @@ async function queryChatGPT(keyword: string): Promise<AITestEngineResult> {
     if (!chatParsed || chatParsed.length === 0) throw new Error('No recommendations in response')
     const chatRecs = chatParsed.slice(0, 5).map((r: any, i: number) => ({
       rank: r.rank || i + 1, name: r.name || 'Unknown', url: r.url || '', reason: r.reason || '',
-    })) : []
+    }))
     return {
       engine: 'chatgpt',
       recommendations: await validateRecommendationUrls(chatRecs),
