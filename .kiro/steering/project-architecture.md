@@ -56,8 +56,8 @@ Every route producing scores MUST follow:
 4. `calculateScoresFromScanResult(scan)` — grading
 Never call step 4 without steps 2-3.
 
-## EOL Pages (admin-only sidebar section)
-Old versions kept for reference: `/pro-audit`, `/deep-scan`, `/competitive-intel`, `/battle-mode`, `/keyword-arena`, `/keyword-arena-v2`
+## Cleanup Status
+All old versioned pages and dead routes have been removed. Only the active tool pages listed above remain.
 
 ## Environment Variables
 - `GOOGLE_GENERATIVE_AI_API_KEY` — Gemini AI

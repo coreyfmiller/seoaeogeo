@@ -353,6 +353,14 @@ export default function AITestPage() {
                 </div>
               )}
 
+              {/* Methodology Note */}
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-5 py-3 flex items-start gap-3">
+                <AlertTriangle className="h-4 w-4 text-[#f59e0b] shrink-0 mt-0.5" />
+                <p className="text-xs text-white/40 leading-relaxed">
+                  These results come from a clean, unpersonalized session with no browsing history, location data, or logged-in accounts influencing the output. This is your baseline visibility — how AI sees your brand when it knows nothing about the person asking. Individual users will see different results based on their personal context, location, and search history. Minor variance between runs is normal — AI models are non-deterministic by design. The trend over time is what matters.
+                </p>
+              </div>
+
               {/* AI Insights */}
               {result.insights && (
                 <Card className="border-[#00e5ff]/20 bg-[#00e5ff]/[0.02]">
@@ -367,29 +375,30 @@ export default function AITestPage() {
                       <p className="text-sm text-white/70">{result.insights.visibility}</p>
                       <p className="text-sm text-white/50">{result.insights.competitors}</p>
                     </div>
-                    {result.insights.actions.length > 0 && (
-                      <div className="space-y-1.5">
-                        <p className="text-[10px] text-white/30 uppercase tracking-wider font-bold">What to do</p>
-                        {result.insights.actions.map((action, i) => (
-                          <div key={i} className="flex items-start gap-2 text-sm text-white/60">
-                            <span className="text-[#00e5ff] font-bold shrink-0">{i + 1}.</span>
-                            <span>{action}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {result.insights.nextTool && (
-                      <div className="pt-2 border-t border-white/[0.06]">
-                        <Link href={`/${result.insights.nextTool.name}`}
-                          className="flex items-center gap-2 text-sm text-[#00e5ff] hover:text-[#00e5ff]/80 transition-colors group">
-                          <span className="font-bold">Next step:</span>
-                          <span className="text-white/50 group-hover:text-white/70">{result.insights.nextTool.reason}</span>
-                          <ArrowRight className="h-3.5 w-3.5 ml-auto shrink-0 group-hover:translate-x-0.5 transition-transform" />
-                        </Link>
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
+              )}
+
+              {/* Next Step CTA */}
+              <Card className="border-[#BC13FE]/30 bg-gradient-to-br from-[#BC13FE]/[0.04] to-[#00e5ff]/[0.04] relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#BC13FE]/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+                <CardContent className="p-6 relative">
+                  <div className="text-center space-y-3">
+                    <p className="text-[10px] text-[#BC13FE] uppercase tracking-widest font-bold">Now you know where you stand</p>
+                    <h3 className="text-xl font-black text-white">Get Specific Fixes to Improve Your AI Visibility</h3>
+                    <p className="text-sm text-white/50 max-w-lg mx-auto">
+                      Pro Audit analyzes your site with the same AI that powers these search engines and gives you step-by-step, platform-specific instructions to fix every issue holding you back.
+                    </p>
+                    <div className="pt-2">
+                      <Link href={userUrl ? `/pro-audit` : '/pro-audit'}
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#BC13FE] hover:bg-[#BC13FE]/90 text-white font-bold text-sm shadow-lg hover:shadow-xl transition-all">
+                        Run Pro Audit {userUrl && `on ${userDomain}`}
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
               )}
             </div>
           )}

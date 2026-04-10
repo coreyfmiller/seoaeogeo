@@ -113,7 +113,6 @@ export function consumeLoadFromHistory(): ScanHistoryEntry | null {
 export function getRouteForType(type: ScanHistoryEntry['type']): string {
   switch (type) {
     case 'free-v3': return '/free-audit'
-    case 'free-v4': return '/v4'
     case 'pro': return '/pro-audit'
     case 'deep': return '/deep-scan'
     case 'competitive': return '/battle-mode'

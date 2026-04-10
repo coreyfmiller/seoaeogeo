@@ -70,6 +70,11 @@ const faqs: FAQItem[] = [
   },
   {
     category: "Scoring",
+    question: "How does AI Visibility work? Why don't results match what I see?",
+    answer: "AI Visibility queries Google, Gemini, ChatGPT, and Perplexity from a clean, unpersonalized session — no browsing history, no location data, no logged-in accounts. This gives you a neutral baseline: how AI sees your brand when it knows nothing about the person asking. Your personal results will differ because every AI engine personalizes based on context, location, and history. Minor variance between runs is also normal — AI models are non-deterministic by design, so results can shift slightly each time. Think of it as a lab measurement: consistent and repeatable, even if it doesn't match any one person's experience."
+  },
+  {
+    category: "Scoring",
     question: "Why did my score change slightly between scans?",
     answer: "Pro and Deep Scan audits use AI to evaluate your content the same way answer engines and generative search actually read your site. Just like ChatGPT or Perplexity re-evaluates content every time it encounters it, our AI analysis produces a fresh assessment each scan. Minor variations of ±3 points are normal and reflect how AI perception genuinely works. Your technical checks (meta tags, schema, HTTPS, H1s) are always 100% consistent — it's only the AI quality signals that can shift slightly. This isn't a flaw — it's an honest representation of how your content will be judged in the real world."
   },
@@ -161,7 +166,7 @@ const quickStartGuides = [
     icon: Globe,
     color: "text-aeo",
     bg: "bg-aeo/10",
-    href: "/competitive-intel",
+    href: "/battle-mode",
     steps: ["Enter your URL and competitor URL", "Side-by-side score comparison", "Discover stolen opportunities", "Get counter-strategies to win"],
   },
 ]

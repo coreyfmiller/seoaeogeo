@@ -125,6 +125,37 @@ export default function StandardsPage() {
                   </section>
 
                   <section>
+                    <h3 className="text-xl font-bold mb-3">AI Visibility Methodology</h3>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      AI Visibility checks are performed from a clean, unpersonalized session. No browsing history, 
+                      no location data, no logged-in accounts influence the results. This is intentional — it gives 
+                      you a neutral baseline that represents how AI engines see your brand when they know nothing 
+                      about the person asking.
+                    </p>
+                    <div className="p-4 bg-[#f59e0b]/5 border border-[#f59e0b]/20 rounded-lg space-y-2">
+                      <p className="text-sm font-bold text-[#f59e0b]">Why results may differ from what you see</p>
+                      <ul className="text-sm text-muted-foreground space-y-1">
+                        <li className="flex items-start gap-2">
+                          <span className="text-[#f59e0b] mt-1">•</span>
+                          <span>Every AI engine personalizes based on the user&apos;s context, location, and search history</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[#f59e0b] mt-1">•</span>
+                          <span>AI models are non-deterministic — the same prompt can produce slightly different results each time</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[#f59e0b] mt-1">•</span>
+                          <span>Local intent keywords are especially affected by geographic personalization</span>
+                        </li>
+                      </ul>
+                      <p className="text-xs text-muted-foreground pt-1">
+                        A clean-room test is the right way to measure baseline visibility. It gives you a consistent, 
+                        repeatable benchmark to track trends and compare competitors on a level playing field.
+                      </p>
+                    </div>
+                  </section>
+
+                  <section>
                     <h3 className="text-xl font-bold mb-3">Scoring Methodology</h3>
                     <p className="text-sm text-muted-foreground mb-3">
                       Each pillar is scored out of 100 points using a component-based system:

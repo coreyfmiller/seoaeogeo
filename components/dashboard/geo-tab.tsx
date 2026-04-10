@@ -365,19 +365,19 @@ export function GEOTab({ data, hideScoreDeductions }: GEOTabProps) {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-lg border border-geo/20 bg-geo/10 p-4">
-                <span className="text-sm font-medium text-muted-foreground flex items-center gap-1">Total Brand Images <LearnMore term="alt-text" className="h-3 w-3 text-[7px]" /></span>
-                <p className="mt-1 text-3xl font-bold font-mono">{struct?.media?.totalImages || 0}</p>
+              <div className="rounded-lg border border-geo/20 bg-geo/10 p-4 flex flex-col justify-between min-h-[100px]">
+                <span className="text-sm font-medium text-muted-foreground flex items-center gap-1 leading-tight">Total Brand Images <LearnMore term="alt-text" className="h-3 w-3 text-[7px]" /></span>
+                <p className="text-3xl font-bold font-mono tabular-nums mt-auto">{struct?.media?.totalImages || 0}</p>
               </div>
-              <div className="rounded-lg border border-geo/20 bg-geo/10 p-4">
-                <span className="text-sm font-medium text-muted-foreground flex items-center gap-1">Images with AI Context <LearnMore term="alt-text" className="h-3 w-3 text-[7px]" /></span>
-                <p className="mt-1 text-3xl font-bold font-mono text-geo">{struct?.media?.imagesWithAlt || 0}</p>
+              <div className="rounded-lg border border-geo/20 bg-geo/10 p-4 flex flex-col justify-between min-h-[100px]">
+                <span className="text-sm font-medium text-muted-foreground flex items-center gap-1 leading-tight">Images with AI Context <LearnMore term="alt-text" className="h-3 w-3 text-[7px]" /></span>
+                <p className="text-3xl font-bold font-mono tabular-nums text-geo mt-auto">{struct?.media?.imagesWithAlt || 0}</p>
               </div>
-              <div className="rounded-lg border border-geo/20 bg-geo/10 p-4">
-                <span className="text-sm font-medium text-muted-foreground">AI Blindspot Ratio</span>
+              <div className="rounded-lg border border-geo/20 bg-geo/10 p-4 flex flex-col justify-between min-h-[100px]">
+                <span className="text-sm font-medium text-muted-foreground leading-tight">AI Blindspot Ratio</span>
                 {(() => {
                   const ratio = struct?.media?.totalImages ? Math.round(((struct.media.totalImages - struct.media.imagesWithAlt) / struct.media.totalImages) * 100) : 0
-                  return <p className={`mt-1 text-3xl font-bold font-mono ${ratio <= 10 ? 'text-green-500' : ratio <= 30 ? 'text-yellow-500' : 'text-destructive'}`}>{ratio}%</p>
+                  return <p className={`text-3xl font-bold font-mono tabular-nums mt-auto ${ratio <= 10 ? 'text-green-500' : ratio <= 30 ? 'text-yellow-500' : 'text-destructive'}`}>{ratio}%</p>
                 })()}
               </div>
             </div>
