@@ -29,8 +29,8 @@ interface AITestResult {
 }
 
 const ENGINE_META = {
-  gemini: { label: 'Google Gemini', color: '#00e5ff', icon: <Globe className="h-5 w-5" />, desc: 'Powers Google AI Overviews' },
-  chatgpt: { label: 'ChatGPT', color: '#BC13FE', icon: <Bot className="h-5 w-5" />, desc: 'OpenAI GPT-4o-mini' },
+  gemini: { label: 'Google Gemini', color: '#00e5ff', icon: <Globe className="h-5 w-5" />, desc: 'Live Google Search grounding' },
+  chatgpt: { label: 'ChatGPT', color: '#BC13FE', icon: <Bot className="h-5 w-5" />, desc: 'Web search enabled' },
   perplexity: { label: 'Perplexity', color: '#fe3f8c', icon: <Sparkles className="h-5 w-5" />, desc: 'Live web search + AI' },
 }
 

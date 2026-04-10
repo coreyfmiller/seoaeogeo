@@ -38,7 +38,7 @@ Return ONLY a JSON array with exactly 5 objects:
 
 IMPORTANT: Return ONLY the JSON array. No markdown, no explanation, no code blocks. Just the raw JSON array.`
 
-/** Query Google Gemini */
+/** Query Google Gemini with Google Search grounding */
 async function queryGemini(keyword: string): Promise<AITestEngineResult> {
   const start = Date.now()
   try {
@@ -47,6 +47,7 @@ async function queryGemini(keyword: string): Promise<AITestEngineResult> {
     const model = genAI.getGenerativeModel({
       model: modelName,
       generationConfig: { temperature: 0.3, maxOutputTokens: 1500 },
+      tools: [{ googleSearch: {} } as any],
     })
     const result = await model.generateContent(PROMPT_TEMPLATE(keyword))
     const text = result.response.text()
@@ -65,28 +66,56 @@ async function queryGemini(keyword: string): Promise<AITestEngineResult> {
   }
 }
 
-/** Query OpenAI ChatGPT */
+/** Query OpenAI ChatGPT with web search */
 async function queryChatGPT(keyword: string): Promise<AITestEngineResult> {
   const start = Date.now()
   const apiKey = process.env.OPENAI_API_KEY
   if (!apiKey) return { engine: 'chatgpt', recommendations: [], error: 'OpenAI API key not configured', durationMs: 0 }
 
   try {
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Use Responses API with web_search_preview tool for live search
+    const res = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
-        messages: [{ role: 'user', content: PROMPT_TEMPLATE(keyword) }],
-        temperature: 0.3,
-        max_tokens: 1500,
+        tools: [{ type: 'web_search_preview' }],
+        input: PROMPT_TEMPLATE(keyword),
       }),
       signal: AbortSignal.timeout(30000),
     })
-    if (!res.ok) throw new Error(`OpenAI API error: ${res.status}`)
+    if (!res.ok) {
+      // Fallback to regular chat completions without search
+      console.log('[AI Test] ChatGPT web search failed, falling back to standard')
+      const fallbackRes = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [{ role: 'user', content: PROMPT_TEMPLATE(keyword) }],
+          temperature: 0.3,
+          max_tokens: 1500,
+        }),
+        signal: AbortSignal.timeout(30000),
+      })
+      if (!fallbackRes.ok) throw new Error(`OpenAI API error: ${fallbackRes.status}`)
+      const fallbackData = await fallbackRes.json()
+      const fallbackText = fallbackData.choices?.[0]?.message?.content || ''
+      const fallbackMatch = fallbackText.match(/\[[\s\S]*\]/)
+      if (!fallbackMatch) throw new Error('No JSON array in response')
+      const fallbackParsed = safeJsonParse(fallbackMatch[0])
+      return {
+        engine: 'chatgpt',
+        recommendations: Array.isArray(fallbackParsed) ? fallbackParsed.slice(0, 5).map((r: any, i: number) => ({
+          rank: r.rank || i + 1, name: r.name || 'Unknown', url: r.url || '', reason: r.reason || '',
+        })) : [],
+        durationMs: Date.now() - start,
+      }
+    }
     const data = await res.json()
-    const text = data.choices?.[0]?.message?.content || ''
-    const match = text.match(/\[[\s\S]*\]/)
+    // Responses API returns output array with message items
+    const textOutput = data.output?.find((o: any) => o.type === 'message')?.content?.find((c: any) => c.type === 'output_text')?.text || ''
+    const match = textOutput.match(/\[[\s\S]*\]/)
     if (!match) throw new Error('No JSON array in response')
     const parsed = safeJsonParse(match[0])
     return {
