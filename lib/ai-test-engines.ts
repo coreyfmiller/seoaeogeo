@@ -10,6 +10,59 @@ import { safeJsonParse } from './utils/json-sanitizer'
 import { searchGoogle } from './google-search'
 import { filterAggregators } from './aggregator-domains'
 
+/**
+ * Extract a JSON array from messy AI text responses.
+ * Tries multiple strategies: direct match, code block extraction, 
+ * individual object extraction, etc.
+ */
+function extractJsonArray(text: string): any[] | null {
+  // Strategy 1: Match a JSON array directly
+  const arrayMatch = text.match(/\[[\s\S]*\]/)
+  if (arrayMatch) {
+    try {
+      const parsed = safeJsonParse(arrayMatch[0])
+      if (Array.isArray(parsed)) return parsed
+    } catch {}
+  }
+
+  // Strategy 2: Extract from markdown code block
+  const codeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/)
+  if (codeBlockMatch) {
+    try {
+      const parsed = safeJsonParse(codeBlockMatch[1].trim())
+      if (Array.isArray(parsed)) return parsed
+    } catch {}
+  }
+
+  // Strategy 3: Find individual JSON objects and collect them
+  const objectMatches = text.match(/\{[^{}]*"name"\s*:\s*"[^"]*"[^{}]*\}/g)
+  if (objectMatches && objectMatches.length > 0) {
+    const items: any[] = []
+    for (const objStr of objectMatches) {
+      try {
+        const obj = safeJsonParse(objStr)
+        if (obj && obj.name) items.push(obj)
+      } catch {}
+    }
+    if (items.length > 0) return items
+  }
+
+  // Strategy 4: Regex extraction of name/url/reason patterns from text
+  const linePattern = /(?:^|\n)\s*\d+[\.\)]\s*(?:\*\*)?(.+?)(?:\*\*)?\s*[-–—]\s*(https?:\/\/\S+)?\s*[-–—:]\s*(.+)/gm
+  const lineItems: any[] = []
+  let lineMatch
+  while ((lineMatch = linePattern.exec(text)) !== null) {
+    lineItems.push({
+      name: lineMatch[1]?.trim() || 'Unknown',
+      url: lineMatch[2]?.trim() || '',
+      reason: lineMatch[3]?.trim() || '',
+    })
+  }
+  if (lineItems.length > 0) return lineItems
+
+  return null
+}
+
 /** Validate a URL actually resolves to a real site (not parked/placeholder) */
 async function validateUrl(url: string): Promise<'valid' | 'parked' | 'invalid'> {
   if (!url || url.trim() === '') return 'invalid'
@@ -125,10 +178,9 @@ async function queryGemini(keyword: string): Promise<AITestEngineResult> {
       }
     }
 
-    const match = text.match(/\[[\s\S]*\]/)
-    if (!match) throw new Error('No JSON array in response')
-    const parsed = safeJsonParse(match[0])
-    const recs = Array.isArray(parsed) ? parsed.slice(0, 5).map((r: any, i: number) => {
+    const parsed = extractJsonArray(text)
+    if (!parsed || parsed.length === 0) throw new Error('Could not extract recommendations from response')
+    const recs = parsed.slice(0, 5).map((r: any, i: number) => {
       let url = r.url || ''
       // If the model gave a URL, keep it. But also try to find a grounding URL for better accuracy.
       const nameKey = (r.name || '').toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -139,7 +191,7 @@ async function queryGemini(keyword: string): Promise<AITestEngineResult> {
         }
       }
       return { rank: r.rank || i + 1, name: r.name || 'Unknown', url, reason: r.reason || '' }
-    }) : []
+    })
 
     console.log(`[AI Test] Gemini grounding chunks: ${groundingChunks.length}, recs: ${recs.length}`)
 
@@ -189,10 +241,9 @@ async function queryChatGPT(keyword: string): Promise<AITestEngineResult> {
       if (!fallbackRes.ok) throw new Error(`OpenAI API error: ${fallbackRes.status}`)
       const fallbackData = await fallbackRes.json()
       const fallbackText = fallbackData.choices?.[0]?.message?.content || ''
-      const fallbackMatch = fallbackText.match(/\[[\s\S]*\]/)
-      if (!fallbackMatch) throw new Error('No JSON array in response')
-      const fallbackParsed = safeJsonParse(fallbackMatch[0])
-      const fallbackRecs = Array.isArray(fallbackParsed) ? fallbackParsed.slice(0, 5).map((r: any, i: number) => ({
+      const fallbackParsed = extractJsonArray(fallbackText)
+      if (!fallbackParsed || fallbackParsed.length === 0) throw new Error('No recommendations in response')
+      const fallbackRecs = fallbackParsed.slice(0, 5).map((r: any, i: number) => ({
         rank: r.rank || i + 1, name: r.name || 'Unknown', url: r.url || '', reason: r.reason || '',
       })) : []
       return {
@@ -204,10 +255,9 @@ async function queryChatGPT(keyword: string): Promise<AITestEngineResult> {
     const data = await res.json()
     // Responses API returns output array with message items
     const textOutput = data.output?.find((o: any) => o.type === 'message')?.content?.find((c: any) => c.type === 'output_text')?.text || ''
-    const match = textOutput.match(/\[[\s\S]*\]/)
-    if (!match) throw new Error('No JSON array in response')
-    const parsed = safeJsonParse(match[0])
-    const chatRecs = Array.isArray(parsed) ? parsed.slice(0, 5).map((r: any, i: number) => ({
+    const chatParsed = extractJsonArray(textOutput)
+    if (!chatParsed || chatParsed.length === 0) throw new Error('No recommendations in response')
+    const chatRecs = chatParsed.slice(0, 5).map((r: any, i: number) => ({
       rank: r.rank || i + 1, name: r.name || 'Unknown', url: r.url || '', reason: r.reason || '',
     })) : []
     return {
@@ -241,12 +291,11 @@ async function queryPerplexity(keyword: string): Promise<AITestEngineResult> {
     if (!res.ok) throw new Error(`Perplexity API error: ${res.status}`)
     const data = await res.json()
     const text = data.choices?.[0]?.message?.content || ''
-    const match = text.match(/\[[\s\S]*\]/)
-    if (!match) throw new Error('No JSON array in response')
-    const parsed = safeJsonParse(match[0])
-    const perplexityRecs = Array.isArray(parsed) ? parsed.slice(0, 5).map((r: any, i: number) => ({
+    const perplexityParsed = extractJsonArray(text)
+    if (!perplexityParsed || perplexityParsed.length === 0) throw new Error('No recommendations in response')
+    const perplexityRecs = perplexityParsed.slice(0, 5).map((r: any, i: number) => ({
       rank: r.rank || i + 1, name: r.name || 'Unknown', url: r.url || '', reason: r.reason || '',
-    })) : []
+    }))
     return {
       engine: 'perplexity',
       recommendations: await validateRecommendationUrls(perplexityRecs),
