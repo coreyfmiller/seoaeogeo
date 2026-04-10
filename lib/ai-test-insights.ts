@@ -160,3 +160,4 @@ function buildFallbackInsights(input: InsightsInput): AITestInsights {
     ],
     nextTool: { name: 'pro-audit', reason: 'Run a Pro Audit on your site to see how it compares' },
   }
+}
