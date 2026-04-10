@@ -132,6 +132,54 @@ export interface AITestEngineResult {
 const NATURAL_PROMPT = (keyword: string) => `What are the top 5 businesses or websites for "${keyword}"? Search the web and tell me what you find. For each one, give me the name, their website URL if you know it, and a brief description of what they offer.`
 
 /**
+ * Step 2: Take raw AI text and extract exactly 5 structured businesses using Gemini.
+ * This separates the "search" task from the "format" task for consistent output.
+ */
+async function structureWithGemini(rawText: string, keyword: string): Promise<AITestRecommendation[]> {
+  try {
+    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || '')
+    const modelName = await getGeminiModel()
+    const model = genAI.getGenerativeModel({
+      model: modelName,
+      generationConfig: { temperature: 0, maxOutputTokens: 1000, responseMimeType: 'application/json' },
+    })
+
+    const prompt = `Extract exactly 5 businesses from this text about "${keyword}". If fewer than 5 are mentioned, include what you can find.
+
+TEXT:
+${rawText.substring(0, 3000)}
+
+Return a JSON array of objects with: name, url (empty string if unknown), reason (one sentence description).
+Example: [{"name":"Business Name","url":"https://example.com","reason":"Description"}]`
+
+    const result = await model.generateContent(prompt)
+    const text = result.response.text()
+    const parsed = safeJsonParse(text)
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed.slice(0, 5).map((r: any, i: number) => ({
+        rank: i + 1,
+        name: r.name || 'Unknown',
+        url: r.url || '',
+        reason: r.reason || r.description || '',
+      }))
+    }
+    // Try extracting array from response
+    const arr = extractJsonArray(text)
+    if (arr && arr.length > 0) {
+      return arr.slice(0, 5).map((r: any, i: number) => ({
+        rank: i + 1,
+        name: r.name || 'Unknown',
+        url: r.url || '',
+        reason: r.reason || r.description || '',
+      }))
+    }
+  } catch (err) {
+    console.log(`[AI Test] structureWithGemini failed: ${err instanceof Error ? err.message : err}`)
+  }
+  return []
+}
+
+/**
  * Parse a natural language AI response into structured recommendations.
  * Handles numbered lists, markdown bold names, and ChatGPT's Places-style format.
  */
@@ -250,17 +298,29 @@ async function queryGemini(keyword: string): Promise<AITestEngineResult> {
 
     console.log(`[AI Test] Gemini grounding chunks: ${groundingChunks.length}, text length: ${text.length}`)
 
-    const recs = parseNaturalResponse(text, groundingUrls)
+    // Step 2: Structure the raw response into exactly 5 items
+    let recs = await structureWithGemini(text, keyword)
+    // Fallback to parser if structuring fails
+    if (recs.length === 0) {
+      recs = parseNaturalResponse(text, groundingUrls)
+    }
     if (recs.length === 0) throw new Error('Could not extract recommendations from response')
 
-    // Strip any Vertex AI grounding redirect URLs from the parsed recs
-    const cleanedRecs = recs.map(r => ({
-      ...r,
-      url: r.url?.includes('vertexaisearch.cloud.google.com') ? '' : (r.url || ''),
-    }))
+    // Enrich with grounding URLs where possible
+    const enrichedRecs = recs.map(r => {
+      if (r.url && !r.url.includes('vertexaisearch.cloud.google.com')) return r
+      const nameKey = (r.name || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+      for (const [groundTitle, groundUrl] of groundingUrls) {
+        if (nameKey && (groundTitle.includes(nameKey) || nameKey.includes(groundTitle))) {
+          return { ...r, url: groundUrl }
+        }
+      }
+      return { ...r, url: r.url?.includes('vertexaisearch.cloud.google.com') ? '' : (r.url || '') }
+    })
+
     return {
       engine: 'gemini',
-      recommendations: await validateRecommendationUrls(cleanedRecs),
+      recommendations: await validateRecommendationUrls(enrichedRecs),
       durationMs: Date.now() - start,
     }
   } catch (err: any) {
@@ -304,7 +364,9 @@ async function queryChatGPT(keyword: string): Promise<AITestEngineResult> {
       if (!fallbackRes.ok) throw new Error(`OpenAI API error: ${fallbackRes.status}`)
       const fallbackData = await fallbackRes.json()
       const fallbackText = fallbackData.choices?.[0]?.message?.content || ''
-      const fallbackRecs = parseNaturalResponse(fallbackText)
+      // Step 2: Structure with Gemini
+      let fallbackRecs = await structureWithGemini(fallbackText, keyword)
+      if (fallbackRecs.length === 0) fallbackRecs = parseNaturalResponse(fallbackText)
       if (fallbackRecs.length === 0) throw new Error('No recommendations in response')
       return {
         engine: 'chatgpt',
@@ -339,7 +401,9 @@ async function queryChatGPT(keyword: string): Promise<AITestEngineResult> {
 
     if (textOutput) {
       console.log(`[AI Test] ChatGPT text length: ${textOutput.length}, first 200: ${textOutput.substring(0, 200)}`)
-      const chatRecs = parseNaturalResponse(textOutput)
+      // Step 2: Structure with Gemini
+      let chatRecs = await structureWithGemini(textOutput, keyword)
+      if (chatRecs.length === 0) chatRecs = parseNaturalResponse(textOutput)
       if (chatRecs.length > 0) {
         return {
           engine: 'chatgpt',
@@ -366,7 +430,9 @@ async function queryChatGPT(keyword: string): Promise<AITestEngineResult> {
     const fallbackData2 = await fallbackRes2.json()
     const fallbackText2 = fallbackData2.choices?.[0]?.message?.content || ''
     console.log(`[AI Test] ChatGPT fallback text length: ${fallbackText2.length}`)
-    const fallbackRecs2 = parseNaturalResponse(fallbackText2)
+    // Step 2: Structure with Gemini
+    let fallbackRecs2 = await structureWithGemini(fallbackText2, keyword)
+    if (fallbackRecs2.length === 0) fallbackRecs2 = parseNaturalResponse(fallbackText2)
     if (fallbackRecs2.length === 0) throw new Error('No recommendations in response')
     return {
       engine: 'chatgpt',
@@ -399,7 +465,9 @@ async function queryPerplexity(keyword: string): Promise<AITestEngineResult> {
     if (!res.ok) throw new Error(`Perplexity API error: ${res.status}`)
     const data = await res.json()
     const text = data.choices?.[0]?.message?.content || ''
-    const perplexityRecs = parseNaturalResponse(text)
+    // Step 2: Structure with Gemini
+    let perplexityRecs = await structureWithGemini(text, keyword)
+    if (perplexityRecs.length === 0) perplexityRecs = parseNaturalResponse(text)
     if (perplexityRecs.length === 0) throw new Error('No recommendations in response')
     return {
       engine: 'perplexity',
