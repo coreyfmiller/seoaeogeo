@@ -20,7 +20,7 @@ import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialo
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { DownloadReportButton } from '@/components/dashboard/download-report-button'
 import { safeSetItem } from '@/lib/safe-storage'
-import { useDuellyChat } from '@/components/chat/use-duelly-chat'
+
 
 /* ── Glowing Radial Ring (SVG) ── */
 function BattleRing({ value, color, glowColor, size = 130 }: { value: number; color: string; glowColor: string; size?: number }) {
@@ -65,7 +65,6 @@ export default function BattleModeV3() {
     const [inlineUrlB, setInlineUrlB] = useState("")
     const [showLinkGap, setShowLinkGap] = useState(false)
     const [strategyFilter, setStrategyFilter] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM'>('ALL')
-    const { setScanContext } = useDuellyChat()
 
     // Session restore
     useEffect(() => {
@@ -92,7 +91,7 @@ export default function BattleModeV3() {
     useEffect(() => {
         if (comparisonData) {
             const c = comparisonData.comparison || comparisonData
-            setScanContext({
+            window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: {
                 tool: 'battle-mode',
                 url: siteA,
                 seoScore: c.seo?.siteA,
@@ -110,12 +109,12 @@ export default function BattleModeV3() {
                     totalBacklinks: backlinkData.siteA.metrics?.totalBacklinks ?? 0,
                     topBacklinks: (backlinkData.siteA.backlinks || []).slice(0, 5).map((b: any) => ({ source: b.sourceDomain || b.sourceUrl || '', anchor: b.anchorText || '' }))
                 } : undefined,
-            })
+            } }))
         } else {
-            setScanContext(null)
+            window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null }))
         }
-        return () => setScanContext(null)
-    }, [comparisonData, backlinkData, siteA, siteB, setScanContext])
+        return () => { window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null })) }
+    }, [comparisonData, backlinkData, siteA, siteB])
 
     // Progress ticker
     useEffect(() => {

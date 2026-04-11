@@ -20,7 +20,7 @@ import {
   ArrowRight, AlertTriangle, CheckCircle2, Target, Zap
 } from "lucide-react"
 import Link from "next/link"
-import { useDuellyChat } from '@/components/chat/use-duelly-chat'
+
 
 interface SearchResult {
   rank: number
@@ -221,7 +221,6 @@ export default function KeywordArenaV3Page() {
   const [showManualAdd, setShowManualAdd] = useState(false)
 
   const [arenaResult, setArenaResult] = useState<ArenaResult | null>(null)
-  const { setScanContext } = useDuellyChat()
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [creditsRefunded, setCreditsRefunded] = useState(0)
@@ -280,7 +279,7 @@ export default function KeywordArenaV3Page() {
   useEffect(() => {
     if (arenaResult) {
       const userSite = arenaResult.sites.find(s => s.isUserSite)
-      setScanContext({
+      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: {
         tool: 'keyword-arena',
         url: userSite?.url,
         seoScore: userSite?.scores?.seo ?? undefined,
@@ -298,12 +297,12 @@ export default function KeywordArenaV3Page() {
           totalBacklinks: arenaResult.backlinkData.metrics?.totalBacklinks ?? 0,
           topBacklinks: (arenaResult.backlinkData.backlinks || []).slice(0, 5).map((b: any) => ({ source: b.sourceDomain || b.sourceUrl || b.source || '', anchor: b.anchorText || b.anchor || '' }))
         } : undefined,
-      })
+      } }))
     } else {
-      setScanContext(null)
+      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null }))
     }
-    return () => setScanContext(null)
-  }, [arenaResult, setScanContext])
+    return () => { window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null })) }
+  }, [arenaResult])
 
   useEffect(() => {
     if (!isAnalyzing) { setLoadingProgress(0); setElapsedSeconds(0); setLoadingPhase(""); return }

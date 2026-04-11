@@ -20,7 +20,7 @@ import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
 import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
 import { cn } from '@/lib/utils'
-import { useDuellyChat } from '@/components/chat/use-duelly-chat'
+
 
 interface DeepScanResult {
   url: string
@@ -95,7 +95,6 @@ interface DeepScanResult {
 export default function DeepV3Page() {
   const [currentUrl, setCurrentUrl] = useState('')
   const sse = useSSEAnalysis<DeepScanResult>('/api/analyze-deep-v3')
-  const { setScanContext } = useDuellyChat()
   const [crawlConfig, setCrawlConfig] = useState({
     maxPages: 5,
     respectRobotsTxt: true
@@ -169,7 +168,7 @@ export default function DeepV3Page() {
   // Inject scan context for Duelly chat
   useEffect(() => {
     if (result) {
-      setScanContext({
+      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: {
         tool: 'deep-scan',
         url: result.url,
         seoScore: typeof result.scores?.seo === 'number' ? result.scores.seo : (result.scores?.seo as any)?.score,
@@ -182,12 +181,12 @@ export default function DeepV3Page() {
           totalBacklinks: result.backlinkData.metrics?.totalBacklinks ?? 0,
           topBacklinks: (result.backlinkData.backlinks || []).slice(0, 5).map((b: any) => ({ source: b.sourceDomain || b.sourceUrl || '', anchor: b.anchorText || '' }))
         } : undefined,
-      })
+      } }))
     } else {
-      setScanContext(null)
+      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null }))
     }
-    return () => setScanContext(null)
-  }, [result, setScanContext])
+    return () => { window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null })) }
+  }, [result])
 
   // Merge on-demand sitewide data with scan result
   const effectiveSitewide = result?.sitewideIntelligence || sitewideData

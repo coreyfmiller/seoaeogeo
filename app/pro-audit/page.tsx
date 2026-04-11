@@ -22,7 +22,7 @@ import { LinkBuildingIntelligence } from '@/components/dashboard/link-building-i
 import { WhatsNextCard, NEXT_STEPS } from '@/components/dashboard/whats-next-card'
 import { ExpertAnalysis } from '@/components/dashboard/expert-analysis'
 import { cn } from '@/lib/utils'
-import { useDuellyChat } from '@/components/chat/use-duelly-chat'
+
 
 interface AnalysisResult {
   url: string
@@ -56,7 +56,6 @@ export default function ProAuditV4Page() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [priorityFilter, setPriorityFilter] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM'>('ALL')
   const sse = useSSEAnalysis<AnalysisResult>('/api/analyze-v3')
-  const { setScanContext } = useDuellyChat()
 
   const handleAnalyze = async (submittedUrl: string) => { setPendingUrl(submittedUrl); setCreditDialogOpen(true) }
   const handleConfirmAnalyze = async () => { setCreditDialogOpen(false); setCurrentUrl(pendingUrl); await sse.startAnalysis(pendingUrl) }
@@ -72,7 +71,7 @@ export default function ProAuditV4Page() {
       const aiRecs = result.aiAnalysis?.recommendations || []
       const aiCriticalCount = aiRecs.filter((r: any) => (r.priority || '').toUpperCase() === 'CRITICAL').length
 
-      setScanContext({
+      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: {
         tool: 'pro-audit',
         url: result.url,
         seoScore: result.scores?.seo?.score,
@@ -90,12 +89,12 @@ export default function ProAuditV4Page() {
           totalBacklinks: result.backlinkData.metrics?.totalBacklinks ?? 0,
           topBacklinks: (result.backlinkData.backlinks || []).slice(0, 5).map((b: any) => ({ source: b.source || b.url, anchor: b.anchor || '' }))
         } : undefined,
-      })
+      } }))
     } else {
-      setScanContext(null)
+      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null }))
     }
-    return () => setScanContext(null)
-  }, [result, setScanContext])
+    return () => { window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null })) }
+  }, [result])
 
   useEffect(() => {
     if (!isAnalyzing) { setElapsedSeconds(0); return }

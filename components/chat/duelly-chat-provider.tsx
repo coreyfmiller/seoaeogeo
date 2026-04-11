@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  createContext,
   useState,
   useEffect,
   useCallback,
@@ -11,13 +12,18 @@ import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { generateProactiveSuggestion } from '@/lib/chat/proactive-suggestions'
 import { ChatPanel } from './chat-panel'
-import { DuellyChatContext } from './use-duelly-chat'
 import type {
   ChatMessage,
   ScanContext,
   DuellyChatContextValue,
   UserProfile,
 } from '@/lib/chat/types'
+
+// ---------------------------------------------------------------------------
+// Context
+// ---------------------------------------------------------------------------
+
+const DuellyChatContext = createContext<DuellyChatContextValue | null>(null)
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -127,6 +133,16 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
     window.addEventListener('duelly-start-tutorial', handler)
     return () => window.removeEventListener('duelly-start-tutorial', handler)
   }, [startTutorial])
+
+  // Listen for scan context from tool pages (avoids circular import)
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail
+      setScanContext(detail)
+    }
+    window.addEventListener('duelly-scan-context', handler)
+    return () => window.removeEventListener('duelly-scan-context', handler)
+  }, [setScanContext])
 
   // -----------------------------------------------------------------------
   // setScanContext

@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { FlaskConical, Search, Loader2, Crown, CheckCircle2, XCircle, Sparkles, Bot, Globe, Trophy, AlertTriangle, Lightbulb, ArrowRight } from "lucide-react"
-import { useDuellyChat } from '@/components/chat/use-duelly-chat'
+
 
 interface Recommendation {
   rank: number; name: string; url?: string; urlStatus?: 'valid' | 'invalid' | 'parked'; reason: string
@@ -48,7 +48,6 @@ export default function AITestPage() {
   const [creditDialogOpen, setCreditDialogOpen] = useState(false)
   const [retryingEngine, setRetryingEngine] = useState<string | null>(null)
   const autoRetryDoneRef = useRef<string | null>(null) // tracks which result set we've auto-retried
-  const { setScanContext } = useDuellyChat()
 
   // Auto-retry failed AI engines when results first load
   useEffect(() => {
@@ -88,7 +87,7 @@ export default function AITestPage() {
     if (result) {
       const totalRecs = result.results.reduce((sum, r) => sum + r.recommendations.length, 0)
       const enginesWithResults = result.results.filter(r => r.recommendations.length > 0).length
-      setScanContext({
+      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: {
         tool: 'ai-test',
         keywordData: {
           keyword: result.keyword,
@@ -98,12 +97,12 @@ export default function AITestPage() {
           consensusCount: result.consensus?.length ?? 0,
           insights: result.insights,
         },
-      })
+      } }))
     } else {
-      setScanContext(null)
+      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null }))
     }
-    return () => setScanContext(null)
-  }, [result, setScanContext])
+    return () => { window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null })) }
+  }, [result])
 
   const handleRun = () => {
     if (!keyword.trim()) return
