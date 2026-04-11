@@ -9,6 +9,7 @@ import {
   useRef,
   type ReactNode,
 } from 'react'
+import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { generateProactiveSuggestion } from '@/lib/chat/proactive-suggestions'
 import { ChatPanel } from './chat-panel'
@@ -46,6 +47,7 @@ const MAX_HISTORY = 10
 
 export function DuellyChatProvider({ children }: { children: ReactNode }) {
   // --- State ---
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isStreaming, setIsStreaming] = useState(false)
@@ -178,6 +180,7 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
             message: text,
             conversationHistory: history,
             scanContext: scanContext,
+            currentPage: pathname,
           }),
           signal: controller.signal,
         })

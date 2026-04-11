@@ -18,11 +18,14 @@ export async function POST(request: NextRequest) {
   let message: string
   let conversationHistory: ChatMessage[]
   let scanContext: ScanContext | null
+  let currentPage: string | undefined
 
   try {
     const body = await request.json()
     message = body.message ?? ''
     conversationHistory = body.conversationHistory ?? []
+    scanContext = body.scanContext ?? null
+    currentPage = body.currentPage
     scanContext = body.scanContext ?? null
   } catch {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
@@ -66,7 +69,7 @@ export async function POST(request: NextRequest) {
   const sanitizedMessage = sanitizeUserInput(message)
 
   // 7. Build system prompt
-  const systemPrompt = buildSystemPrompt(scanContext)
+  const systemPrompt = buildSystemPrompt(scanContext, currentPage)
 
   // 8. Truncate conversation history to last 10 messages
   const truncatedHistory = conversationHistory.slice(-MAX_HISTORY_MESSAGES)

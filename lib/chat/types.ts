@@ -40,6 +40,7 @@ export interface ChatRequest {
   message: string
   conversationHistory: ChatMessage[]
   scanContext: ScanContext | null
+  currentPage?: string
 }
 
 export interface DuellyChatContextValue {

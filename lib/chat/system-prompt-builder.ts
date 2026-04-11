@@ -245,6 +245,41 @@ function formatToolName(tool: string): string {
 
 // ─── Main Export ─────────────────────────────────────────────────────
 
+function buildPageContextSection(pathname: string, scanContext: ScanContext | null): string {
+  const pageDescriptions: Record<string, string> = {
+    '/pro-audit': 'The user is on the Pro Audit page. This tool runs a single-page AI-powered SEO/AEO/GEO analysis (10 credits). Help them understand their scores, penalties, and fix instructions. If they have results loaded, reference their specific data.',
+    '/deep-scan': 'The user is on the Deep Scan page. This tool crawls multiple pages across their site (30 credits). Help them understand sitewide patterns, duplicate content issues, and page-by-page comparisons.',
+    '/battle-mode': 'The user is on the Competitor Duel page. This tool compares two sites head-to-head (10 credits). Help them understand the comparison, who is winning and why, and what counter-strategies to pursue.',
+    '/keyword-arena': 'The user is on the Keyword Arena page. This tool analyzes top-ranking sites for a keyword (10 credits). Help them understand where they rank vs competitors, gap analysis, and what to improve.',
+    '/ai-test': 'The user is on the AI Visibility page. This tool checks how Google, Gemini, ChatGPT, and Perplexity see their brand for a keyword (5 credits). Help them understand AI search visibility and what drives AI citations.',
+    '/dashboard': 'The user is on the Dashboard. They can see their recent scans and quick actions. Help them decide which tool to use next based on their goals.',
+    '/pricing': 'The user is on the Pricing page. They are looking at credit packs. Help them understand which pack fits their needs. Do NOT pressure them to buy — just explain the value of each tool.',
+    '/help': 'The user is on the Help page. They may have questions about how the platform works. Answer their questions about tools, scoring, and methodology.',
+    '/settings': 'The user is on the Settings page. Help them with account-related questions.',
+    '/free-audit': 'The user is on the Quick Audit (free) page. This is a lighter audit without AI analysis. If they want deeper insights, suggest upgrading to Pro Audit.',
+    '/blog': 'The user is reading the blog. Help them with SEO/AEO/GEO questions related to the content they might be reading.',
+    '/standards': 'The user is on the How We Score page. Help them understand the scoring methodology.',
+    '/about': 'The user is on the About page. Help them understand what Duelly does and how it works.',
+  }
+
+  // Match exact path or prefix for blog posts
+  let pageDesc = pageDescriptions[pathname]
+  if (!pageDesc && pathname.startsWith('/blog/')) {
+    pageDesc = 'The user is reading a blog post about SEO/AEO/GEO. Help them with questions related to the topic they are reading.'
+  }
+  if (!pageDesc) {
+    pageDesc = `The user is on the ${pathname} page.`
+  }
+
+  const hasResults = scanContext && (scanContext.seoScore !== undefined || scanContext.keywordData || scanContext.competitorData)
+
+  return `## CURRENT PAGE CONTEXT
+
+${pageDesc}
+
+${hasResults ? 'The user has scan results loaded — reference their specific data when answering.' : 'No scan results are loaded on this page. Answer general questions and suggest running a scan for specific advice.'}`
+}
+
 /**
  * Builds the complete system prompt for Duelly AI.
  *
@@ -252,13 +287,18 @@ function formatToolName(tool: string): string {
  * included. Dynamic sections (scan context, platform guidance) are added
  * only when relevant data is present.
  */
-export function buildSystemPrompt(scanContext: ScanContext | null): string {
+export function buildSystemPrompt(scanContext: ScanContext | null, currentPage?: string): string {
   const sections: string[] = [
     buildRoleSection(),
     buildSafetySection(),
     buildProductKnowledgeSection(),
     buildBacklinkSection(),
   ]
+
+  // Page awareness — tell the AI what the user is currently looking at
+  if (currentPage) {
+    sections.push(buildPageContextSection(currentPage, scanContext))
+  }
 
   if (scanContext) {
     sections.push(buildScanContextSection(scanContext))
