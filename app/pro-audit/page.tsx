@@ -68,6 +68,10 @@ export default function ProAuditV4Page() {
   // Inject scan context for Duelly chat
   useEffect(() => {
     if (result) {
+      // Count critical from AI recommendations (what the page displays)
+      const aiRecs = result.aiAnalysis?.recommendations || []
+      const aiCriticalCount = aiRecs.filter((r: any) => (r.priority || '').toUpperCase() === 'CRITICAL').length
+
       setScanContext({
         tool: 'pro-audit',
         url: result.url,
@@ -76,7 +80,7 @@ export default function ProAuditV4Page() {
         geoScore: result.scores?.geo?.score,
         siteType: result.siteTypeResult?.primaryType,
         platform: result.platformDetection?.platform,
-        criticalIssues: result.graderResult?.criticalIssues,
+        criticalIssues: aiRecs.filter((r: any) => (r.priority || '').toUpperCase() === 'CRITICAL').map((r: any) => r.title || r.description || 'Critical issue'),
         penalties: result.enhancedPenalties?.map(p => ({
           component: p.component, penalty: p.penalty, severity: p.severity,
           pointsDeducted: Math.abs(p.pointsDeducted), explanation: p.explanation, fix: p.fix

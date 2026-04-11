@@ -26,9 +26,7 @@ export interface ChatPanelProps {
 /** Duelly AI icon for the toggle button */
 function DuellyIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 2L14.09 8.26L20 9.27L15.55 13.97L16.91 20L12 16.9L7.09 20L8.45 13.97L4 9.27L9.91 8.26L12 2Z" fill="#00e5ff" fillOpacity="0.9" />
-    </svg>
+    <span className="text-lg font-black text-[#00e5ff] leading-none select-none">D</span>
   )
 }
 
