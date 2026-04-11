@@ -24,11 +24,11 @@ export interface ChatPanelProps {
 }
 
 /** Duelly AI icon for the toggle button */
-function DuellyIcon({ className }: { className?: string }) {
+function DuellyIcon() {
   return (
-    <div className={cn('relative flex items-center justify-center', className)}>
-      <Sparkles className="h-5 w-5 text-[#00e5ff]" />
-    </div>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2L14.09 8.26L20 9.27L15.55 13.97L16.91 20L12 16.9L7.09 20L8.45 13.97L4 9.27L9.91 8.26L12 2Z" fill="#00e5ff" fillOpacity="0.9" />
+    </svg>
   )
 }
 
@@ -143,7 +143,7 @@ export function ChatPanel({
   return (
     <div
       className={cn(
-        'fixed right-0 top-0 h-full w-[380px] z-40',
+        'fixed right-0 top-0 h-dvh max-h-screen w-[380px] z-40',
         'flex flex-col',
         'bg-[#0d0d14] border-l border-white/10',
         'transition-transform duration-300 ease-in-out',
