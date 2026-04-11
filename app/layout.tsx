@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
-import { ChatWrapper } from '@/components/chat/chat-wrapper'
+import { ChatMount } from '@/components/chat/chat-mount'
 import './globals.css'
 
 const geistSans = Geist({ 
@@ -152,10 +152,9 @@ export default function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" forcedTheme="dark" disableTransitionOnChange>
-            <ChatWrapper>
-                {children}
-            </ChatWrapper>
+            {children}
         </ThemeProvider>
+        <ChatMount />
         <Analytics />
       </body>
     </html>

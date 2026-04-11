@@ -1,7 +1,6 @@
 'use client'
 
 import {
-  createContext,
   useState,
   useEffect,
   useCallback,
@@ -15,15 +14,8 @@ import { ChatPanel } from './chat-panel'
 import type {
   ChatMessage,
   ScanContext,
-  DuellyChatContextValue,
   UserProfile,
 } from '@/lib/chat/types'
-
-// ---------------------------------------------------------------------------
-// Context
-// ---------------------------------------------------------------------------
-
-const DuellyChatContext = createContext<DuellyChatContextValue | null>(null)
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -306,7 +298,7 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <DuellyChatContext.Provider value={contextValue}>
+    <>
       {children}
       <ChatPanel
         isOpen={isOpen}
@@ -321,6 +313,6 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
         onSend={sendMessage}
         onClear={clearConversation}
       />
-    </DuellyChatContext.Provider>
+    </>
   )
 }
