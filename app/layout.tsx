@@ -2,8 +2,13 @@ import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
-import { DuellyChatProvider } from '@/components/chat/duelly-chat-provider'
+import dynamic from 'next/dynamic'
 import './globals.css'
+
+const DuellyChatProvider = dynamic(
+  () => import('@/components/chat/duelly-chat-provider').then(m => ({ default: m.DuellyChatProvider })),
+  { ssr: false }
+)
 
 const geistSans = Geist({ 
   subsets: ["latin"],

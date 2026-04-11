@@ -26,12 +26,26 @@ import type {
 
 const DuellyChatContext = createContext<DuellyChatContextValue | null>(null)
 
+const noopContext: DuellyChatContextValue = {
+  isOpen: false,
+  messages: [],
+  isStreaming: false,
+  messageCount: 0,
+  messageLimit: 50,
+  error: null,
+  scanContext: null,
+  setScanContext: () => {},
+  togglePanel: () => {},
+  sendMessage: async () => {},
+  clearConversation: () => {},
+  startTutorial: () => {},
+  user: null,
+  proactiveSuggestion: null,
+}
+
 export function useDuellyChat(): DuellyChatContextValue {
   const ctx = useContext(DuellyChatContext)
-  if (!ctx) {
-    throw new Error('useDuellyChat must be used within a DuellyChatProvider')
-  }
-  return ctx
+  return ctx ?? noopContext
 }
 
 // ---------------------------------------------------------------------------
