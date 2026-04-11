@@ -123,7 +123,7 @@ export function ChatPanel({
       <button
         onClick={onToggle}
         className={cn(
-          'fixed right-4 bottom-4 z-40 flex h-12 w-12 items-center justify-center',
+          'fixed right-4 bottom-4 z-50 flex h-12 w-12 items-center justify-center',
           'rounded-full bg-[#0d0d14] border border-white/10 shadow-lg',
           'hover:border-[#00e5ff]/40 hover:shadow-[0_0_15px_rgba(0,229,255,0.15)]',
           'transition-all duration-200'
@@ -131,7 +131,6 @@ export function ChatPanel({
         aria-label="Open Duelly AI chat"
       >
         <DuellyIcon />
-        {/* Notification badge for proactive suggestion */}
         {proactiveSuggestion && (
           <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-[#fe3f8c] border-2 border-[#0d0d14]" />
         )}
@@ -142,12 +141,12 @@ export function ChatPanel({
   // --- Full panel ---
   return (
     <div
+      style={{ height: '100vh' }}
       className={cn(
-        'fixed right-0 top-0 h-dvh max-h-screen w-[380px] z-40',
-        'flex flex-col',
+        'fixed right-0 top-0 w-[380px] z-50',
+        'flex flex-col overflow-hidden',
         'bg-[#0d0d14] border-l border-white/10',
-        'transition-transform duration-300 ease-in-out',
-        isOpen ? 'translate-x-0' : 'translate-x-full'
+        'shadow-2xl'
       )}
     >
       {/* Header */}
