@@ -3,6 +3,20 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Hide Vercel toolbar/comments widget injected on deployed sites */
+[data-vercel-toolbar],
+[data-vercel-comments],
+vercel-live-feedback,
+#vercel-live-feedback,
+.vercel-live-feedback,
+[id^="__vercel"],
+[class*="vercel-live"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 :root {
   /* Light mode */
   --background: oklch(0.98 0.005 260);
