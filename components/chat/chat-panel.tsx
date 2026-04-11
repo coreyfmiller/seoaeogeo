@@ -204,6 +204,39 @@ export function ChatPanel({
               </div>
             )}
 
+            {/* Welcome message — shown when no messages and no proactive suggestion */}
+            {messages.length === 0 && !proactiveSuggestion && (
+              <div className="space-y-3">
+                <div className="rounded-xl bg-[#00e5ff]/5 border border-[#00e5ff]/15 px-3.5 py-3 text-sm text-gray-200">
+                  <p className="font-semibold text-white mb-1.5">Hey, I'm Duelly AI.</p>
+                  <p className="text-white/60 text-xs leading-relaxed">I'm your search intelligence consultant. I can help you understand your scores, explain fixes, build a backlink strategy, or walk you through the platform.</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => onSend('Give me a walkthrough of the platform')}
+                    disabled={isStreaming}
+                    className="px-3 py-1.5 rounded-lg bg-[#00e5ff]/10 border border-[#00e5ff]/20 text-xs font-medium text-[#00e5ff] hover:bg-[#00e5ff]/20 transition-colors disabled:opacity-50"
+                  >
+                    Take a tour
+                  </button>
+                  <button
+                    onClick={() => onSend('What should I do first?')}
+                    disabled={isStreaming}
+                    className="px-3 py-1.5 rounded-lg bg-[#BC13FE]/10 border border-[#BC13FE]/20 text-xs font-medium text-[#BC13FE] hover:bg-[#BC13FE]/20 transition-colors disabled:opacity-50"
+                  >
+                    What should I do first?
+                  </button>
+                  <button
+                    onClick={() => onSend('Explain SEO vs AEO vs GEO')}
+                    disabled={isStreaming}
+                    className="px-3 py-1.5 rounded-lg bg-[#fe3f8c]/10 border border-[#fe3f8c]/20 text-xs font-medium text-[#fe3f8c] hover:bg-[#fe3f8c]/20 transition-colors disabled:opacity-50"
+                  >
+                    SEO vs AEO vs GEO?
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Messages */}
             {messages.map((msg) => (
               <MessageBubble key={msg.id} message={msg} />
