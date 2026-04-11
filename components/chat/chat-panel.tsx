@@ -162,13 +162,14 @@ export function ChatPanel({
               {messageCount}/{messageLimit}
             </span>
           )}
-          {user && messages.length > 0 && (
+          {user && (
             <Button
               variant="ghost"
               size="icon-sm"
               onClick={onClear}
               className="text-muted-foreground hover:text-white h-7 w-7"
               aria-label="Clear conversation"
+              title="Clear conversation"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
