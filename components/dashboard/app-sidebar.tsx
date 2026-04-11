@@ -156,21 +156,6 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
             Main
           </p>
           <ul className="space-y-1">
-            {/* Tutorial — always first */}
-            {user && (
-              <li>
-                <button
-                  onClick={startTutorial}
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors w-full text-[#00e5ff] hover:bg-[#00e5ff]/10"
-                >
-                  <GraduationCap className="h-4 w-4" />
-                  <span className="flex-1 text-left">Tutorial</span>
-                  <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-[#00e5ff]/10 text-[#00e5ff] border border-[#00e5ff]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
-                    AI
-                  </span>
-                </button>
-              </li>
-            )}
             {mainNav
               .map((item) => {
               const isProOnly = proOnlyPaths.includes(item.href)
@@ -296,6 +281,20 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
               </div>
             )}
           </div>
+        )}
+
+        {/* Tutorial — below Refer & Earn */}
+        {user && (
+          <button
+            onClick={startTutorial}
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors w-full text-[#00e5ff] hover:bg-[#00e5ff]/10 mb-1"
+          >
+            <GraduationCap className="h-4 w-4" />
+            <span className="flex-1 text-left">Tutorial</span>
+            <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-[#00e5ff]/10 text-[#00e5ff] border border-[#00e5ff]/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
+              AI
+            </span>
+          </button>
         )}
 
         <ul className="space-y-1">
