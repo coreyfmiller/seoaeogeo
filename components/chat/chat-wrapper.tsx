@@ -1,9 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { DuellyChatProvider } from './duelly-chat-provider'
+import { useState, useEffect, type ReactNode } from 'react'
+import dynamic from 'next/dynamic'
 
-export function ChatWrapper({ children }: { children: React.ReactNode }) {
+const DuellyChatProvider = dynamic(
+  () => import('./duelly-chat-provider').then(m => ({ default: m.DuellyChatProvider })),
+  { ssr: false }
+)
+
+export function ChatWrapper({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {

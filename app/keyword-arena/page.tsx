@@ -20,7 +20,7 @@ import {
   ArrowRight, AlertTriangle, CheckCircle2, Target, Zap
 } from "lucide-react"
 import Link from "next/link"
-import { useDuellyChat } from '@/components/chat/duelly-chat-provider'
+import { useDuellyChat } from '@/components/chat/use-duelly-chat'
 
 interface SearchResult {
   rank: number

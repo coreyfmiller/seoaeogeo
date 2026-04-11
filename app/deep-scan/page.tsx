@@ -20,7 +20,7 @@ import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
 import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
 import { cn } from '@/lib/utils'
-import { useDuellyChat } from '@/components/chat/duelly-chat-provider'
+import { useDuellyChat } from '@/components/chat/use-duelly-chat'
 
 interface DeepScanResult {
   url: string

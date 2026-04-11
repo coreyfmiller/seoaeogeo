@@ -20,7 +20,7 @@ import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialo
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { DownloadReportButton } from '@/components/dashboard/download-report-button'
 import { safeSetItem } from '@/lib/safe-storage'
-import { useDuellyChat } from '@/components/chat/duelly-chat-provider'
+import { useDuellyChat } from '@/components/chat/use-duelly-chat'
 
 /* ── Glowing Radial Ring (SVG) ── */
 function BattleRing({ value, color, glowColor, size = 130 }: { value: number; color: string; glowColor: string; size?: number }) {

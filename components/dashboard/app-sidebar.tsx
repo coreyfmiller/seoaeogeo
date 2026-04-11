@@ -27,7 +27,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
-import { useDuellyChat } from "@/components/chat/duelly-chat-provider"
+import { useDuellyChat } from "@/components/chat/use-duelly-chat"
 import type { User } from "@supabase/supabase-js"
 
 interface NavItem {

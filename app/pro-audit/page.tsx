@@ -22,7 +22,7 @@ import { LinkBuildingIntelligence } from '@/components/dashboard/link-building-i
 import { WhatsNextCard, NEXT_STEPS } from '@/components/dashboard/whats-next-card'
 import { ExpertAnalysis } from '@/components/dashboard/expert-analysis'
 import { cn } from '@/lib/utils'
-import { useDuellyChat } from '@/components/chat/duelly-chat-provider'
+import { useDuellyChat } from '@/components/chat/use-duelly-chat'
 
 interface AnalysisResult {
   url: string

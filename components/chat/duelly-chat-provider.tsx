@@ -1,8 +1,6 @@
 'use client'
 
 import {
-  createContext,
-  useContext,
   useState,
   useEffect,
   useCallback,
@@ -13,6 +11,7 @@ import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { generateProactiveSuggestion } from '@/lib/chat/proactive-suggestions'
 import { ChatPanel } from './chat-panel'
+import { DuellyChatContext } from './use-duelly-chat'
 import type {
   ChatMessage,
   ScanContext,
@@ -20,33 +19,8 @@ import type {
   UserProfile,
 } from '@/lib/chat/types'
 
-// ---------------------------------------------------------------------------
-// Context
-// ---------------------------------------------------------------------------
-
-const DuellyChatContext = createContext<DuellyChatContextValue | null>(null)
-
-const noopContext: DuellyChatContextValue = {
-  isOpen: false,
-  messages: [],
-  isStreaming: false,
-  messageCount: 0,
-  messageLimit: 50,
-  error: null,
-  scanContext: null,
-  setScanContext: () => {},
-  togglePanel: () => {},
-  sendMessage: async () => {},
-  clearConversation: () => {},
-  startTutorial: () => {},
-  user: null,
-  proactiveSuggestion: null,
-}
-
-export function useDuellyChat(): DuellyChatContextValue {
-  const ctx = useContext(DuellyChatContext)
-  return ctx ?? noopContext
-}
+// Re-export for backward compatibility
+export { useDuellyChat } from './use-duelly-chat'
 
 // ---------------------------------------------------------------------------
 // Constants

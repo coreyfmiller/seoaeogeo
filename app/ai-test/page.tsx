@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { FlaskConical, Search, Loader2, Crown, CheckCircle2, XCircle, Sparkles, Bot, Globe, Trophy, AlertTriangle, Lightbulb, ArrowRight } from "lucide-react"
-import { useDuellyChat } from '@/components/chat/duelly-chat-provider'
+import { useDuellyChat } from '@/components/chat/use-duelly-chat'
 
 interface Recommendation {
   rank: number; name: string; url?: string; urlStatus?: 'valid' | 'invalid' | 'parked'; reason: string
