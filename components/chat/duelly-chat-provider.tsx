@@ -19,9 +19,6 @@ import type {
   UserProfile,
 } from '@/lib/chat/types'
 
-// Re-export for backward compatibility
-export { useDuellyChat } from './use-duelly-chat'
-
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -119,11 +116,17 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
     setMessages([])
     setError(null)
     setIsOpen(true)
-    // Small delay so the panel renders before sending
     setTimeout(() => {
       sendMessage('Give me a walkthrough of the platform')
     }, 100)
   }, [sendMessage])
+
+  // Listen for tutorial trigger from sidebar (avoids circular import)
+  useEffect(() => {
+    const handler = () => startTutorial()
+    window.addEventListener('duelly-start-tutorial', handler)
+    return () => window.removeEventListener('duelly-start-tutorial', handler)
+  }, [startTutorial])
 
   // -----------------------------------------------------------------------
   // setScanContext

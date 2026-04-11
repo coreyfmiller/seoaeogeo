@@ -27,7 +27,6 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { createClient } from "@/lib/supabase/client"
-import { useDuellyChat } from "@/components/chat/use-duelly-chat"
 import type { User } from "@supabase/supabase-js"
 
 interface NavItem {
@@ -64,7 +63,6 @@ interface AppSidebarProps {
 export function AppSidebar({ mobile }: AppSidebarProps = {}) {
   const pathname = usePathname()
   const router = useRouter()
-  const { startTutorial } = useDuellyChat()
   const [referralOpen, setReferralOpen] = useState(false)
   const [referralCode, setReferralCode] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
@@ -286,7 +284,7 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
         {/* Tutorial — below Refer & Earn */}
         {user && (
           <button
-            onClick={startTutorial}
+            onClick={() => window.dispatchEvent(new CustomEvent('duelly-start-tutorial'))}
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors w-full text-[#00e5ff] hover:bg-[#00e5ff]/10 mb-1"
           >
             <GraduationCap className="h-4 w-4" />
