@@ -2,13 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
-import dynamic from 'next/dynamic'
+import { ChatWrapper } from '@/components/chat/chat-wrapper'
 import './globals.css'
-
-const DuellyChatProvider = dynamic(
-  () => import('@/components/chat/duelly-chat-provider').then(m => ({ default: m.DuellyChatProvider })),
-  { ssr: false }
-)
 
 const geistSans = Geist({ 
   subsets: ["latin"],
@@ -157,9 +152,9 @@ export default function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" forcedTheme="dark" disableTransitionOnChange>
-            <DuellyChatProvider>
+            <ChatWrapper>
                 {children}
-            </DuellyChatProvider>
+            </ChatWrapper>
         </ThemeProvider>
         <Analytics />
       </body>
