@@ -22,6 +22,7 @@ import { LinkBuildingIntelligence } from '@/components/dashboard/link-building-i
 import { WhatsNextCard, NEXT_STEPS } from '@/components/dashboard/whats-next-card'
 import { ExpertAnalysis } from '@/components/dashboard/expert-analysis'
 import { cn } from '@/lib/utils'
+import { useDuellyChat } from '@/components/chat/duelly-chat-provider'
 
 interface AnalysisResult {
   url: string
@@ -55,6 +56,7 @@ export default function ProAuditV4Page() {
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [priorityFilter, setPriorityFilter] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM'>('ALL')
   const sse = useSSEAnalysis<AnalysisResult>('/api/analyze-v3')
+  const { setScanContext } = useDuellyChat()
 
   const handleAnalyze = async (submittedUrl: string) => { setPendingUrl(submittedUrl); setCreditDialogOpen(true) }
   const handleConfirmAnalyze = async () => { setCreditDialogOpen(false); setCurrentUrl(pendingUrl); await sse.startAnalysis(pendingUrl) }
@@ -62,6 +64,34 @@ export default function ProAuditV4Page() {
   const result = sse.data
   const isAnalyzing = sse.isAnalyzing
   const error = sse.error
+
+  // Inject scan context for Duelly chat
+  useEffect(() => {
+    if (result) {
+      setScanContext({
+        tool: 'pro-audit',
+        url: result.url,
+        seoScore: result.scores?.seo?.score,
+        aeoScore: result.scores?.aeo?.score,
+        geoScore: result.scores?.geo?.score,
+        siteType: result.siteTypeResult?.primaryType,
+        platform: result.platformDetection?.platform,
+        criticalIssues: result.graderResult?.criticalIssues,
+        penalties: result.enhancedPenalties?.map(p => ({
+          component: p.component, penalty: p.penalty, severity: p.severity,
+          pointsDeducted: Math.abs(p.pointsDeducted), explanation: p.explanation, fix: p.fix
+        })),
+        backlinks: result.backlinkData ? {
+          domainAuthority: result.backlinkData.metrics?.domainAuthority ?? 0,
+          totalBacklinks: result.backlinkData.metrics?.totalBacklinks ?? 0,
+          topBacklinks: (result.backlinkData.backlinks || []).slice(0, 5).map((b: any) => ({ source: b.source || b.url, anchor: b.anchor || '' }))
+        } : undefined,
+      })
+    } else {
+      setScanContext(null)
+    }
+    return () => setScanContext(null)
+  }, [result, setScanContext])
 
   useEffect(() => {
     if (!isAnalyzing) { setElapsedSeconds(0); return }

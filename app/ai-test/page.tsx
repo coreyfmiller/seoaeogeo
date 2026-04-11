@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { FlaskConical, Search, Loader2, Crown, CheckCircle2, XCircle, Sparkles, Bot, Globe, Trophy, AlertTriangle, Lightbulb, ArrowRight } from "lucide-react"
+import { useDuellyChat } from '@/components/chat/duelly-chat-provider'
 
 interface Recommendation {
   rank: number; name: string; url?: string; urlStatus?: 'valid' | 'invalid' | 'parked'; reason: string
@@ -47,6 +48,7 @@ export default function AITestPage() {
   const [creditDialogOpen, setCreditDialogOpen] = useState(false)
   const [retryingEngine, setRetryingEngine] = useState<string | null>(null)
   const autoRetryDoneRef = useRef<string | null>(null) // tracks which result set we've auto-retried
+  const { setScanContext } = useDuellyChat()
 
   // Auto-retry failed AI engines when results first load
   useEffect(() => {
@@ -80,6 +82,28 @@ export default function AITestPage() {
       }, i * 1500) // stagger by 1.5s each
     })
   }, [result?.keyword])
+
+  // Inject scan context for Duelly chat
+  useEffect(() => {
+    if (result) {
+      const totalRecs = result.results.reduce((sum, r) => sum + r.recommendations.length, 0)
+      const enginesWithResults = result.results.filter(r => r.recommendations.length > 0).length
+      setScanContext({
+        tool: 'ai-test',
+        keywordData: {
+          keyword: result.keyword,
+          enginesQueried: result.results.length,
+          enginesWithResults,
+          totalRecommendations: totalRecs,
+          consensusCount: result.consensus?.length ?? 0,
+          insights: result.insights,
+        },
+      })
+    } else {
+      setScanContext(null)
+    }
+    return () => setScanContext(null)
+  }, [result, setScanContext])
 
   const handleRun = () => {
     if (!keyword.trim()) return

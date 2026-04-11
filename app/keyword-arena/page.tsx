@@ -20,6 +20,7 @@ import {
   ArrowRight, AlertTriangle, CheckCircle2, Target, Zap
 } from "lucide-react"
 import Link from "next/link"
+import { useDuellyChat } from '@/components/chat/duelly-chat-provider'
 
 interface SearchResult {
   rank: number
@@ -220,6 +221,7 @@ export default function KeywordArenaV3Page() {
   const [showManualAdd, setShowManualAdd] = useState(false)
 
   const [arenaResult, setArenaResult] = useState<ArenaResult | null>(null)
+  const { setScanContext } = useDuellyChat()
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [creditsRefunded, setCreditsRefunded] = useState(0)
@@ -273,6 +275,35 @@ export default function KeywordArenaV3Page() {
       timestamp: new Date().toISOString(),
     }, arenaResult)
   }, [arenaResult])
+
+  // Inject scan context for Duelly chat
+  useEffect(() => {
+    if (arenaResult) {
+      const userSite = arenaResult.sites.find(s => s.isUserSite)
+      setScanContext({
+        tool: 'keyword-arena',
+        url: userSite?.url,
+        seoScore: userSite?.scores?.seo ?? undefined,
+        aeoScore: userSite?.scores?.aeo ?? undefined,
+        geoScore: userSite?.scores?.geo ?? undefined,
+        keywordData: {
+          keyword: arenaResult.keyword,
+          totalSites: arenaResult.totalSites,
+          scoredSites: arenaResult.scoredSites,
+          userSiteRank: arenaResult.userSiteRank,
+          arenaAvg: arenaResult.arenaAvg,
+        },
+        backlinks: arenaResult.backlinkData ? {
+          domainAuthority: arenaResult.backlinkData.metrics?.domainAuthority ?? 0,
+          totalBacklinks: arenaResult.backlinkData.metrics?.totalBacklinks ?? 0,
+          topBacklinks: (arenaResult.backlinkData.backlinks || []).slice(0, 5).map((b: any) => ({ source: b.sourceDomain || b.sourceUrl || b.source || '', anchor: b.anchorText || b.anchor || '' }))
+        } : undefined,
+      })
+    } else {
+      setScanContext(null)
+    }
+    return () => setScanContext(null)
+  }, [arenaResult, setScanContext])
 
   useEffect(() => {
     if (!isAnalyzing) { setLoadingProgress(0); setElapsedSeconds(0); setLoadingPhase(""); return }

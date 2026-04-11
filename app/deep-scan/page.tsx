@@ -20,6 +20,7 @@ import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { useSSEAnalysis } from '@/hooks/use-sse-analysis'
 import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialog'
 import { cn } from '@/lib/utils'
+import { useDuellyChat } from '@/components/chat/duelly-chat-provider'
 
 interface DeepScanResult {
   url: string
@@ -94,6 +95,7 @@ interface DeepScanResult {
 export default function DeepV3Page() {
   const [currentUrl, setCurrentUrl] = useState('')
   const sse = useSSEAnalysis<DeepScanResult>('/api/analyze-deep-v3')
+  const { setScanContext } = useDuellyChat()
   const [crawlConfig, setCrawlConfig] = useState({
     maxPages: 5,
     respectRobotsTxt: true
@@ -163,6 +165,29 @@ export default function DeepV3Page() {
   const result = sse.data
   const isAnalyzing = sse.isAnalyzing
   const error = sse.error
+
+  // Inject scan context for Duelly chat
+  useEffect(() => {
+    if (result) {
+      setScanContext({
+        tool: 'deep-scan',
+        url: result.url,
+        seoScore: typeof result.scores?.seo === 'number' ? result.scores.seo : (result.scores?.seo as any)?.score,
+        aeoScore: typeof result.scores?.aeo === 'number' ? result.scores.aeo : (result.scores?.aeo as any)?.score,
+        geoScore: typeof result.scores?.geo === 'number' ? result.scores.geo : (result.scores?.geo as any)?.score,
+        siteType: result.siteTypeResult?.primaryType,
+        platform: result.platformDetection?.platform,
+        backlinks: result.backlinkData ? {
+          domainAuthority: result.backlinkData.metrics?.domainAuthority ?? 0,
+          totalBacklinks: result.backlinkData.metrics?.totalBacklinks ?? 0,
+          topBacklinks: (result.backlinkData.backlinks || []).slice(0, 5).map((b: any) => ({ source: b.sourceDomain || b.sourceUrl || '', anchor: b.anchorText || '' }))
+        } : undefined,
+      })
+    } else {
+      setScanContext(null)
+    }
+    return () => setScanContext(null)
+  }, [result, setScanContext])
 
   // Merge on-demand sitewide data with scan result
   const effectiveSitewide = result?.sitewideIntelligence || sitewideData

@@ -20,6 +20,7 @@ import { CreditConfirmDialog } from '@/components/dashboard/credit-confirm-dialo
 import { FixInstructionCard } from '@/components/dashboard/fix-instruction-card'
 import { DownloadReportButton } from '@/components/dashboard/download-report-button'
 import { safeSetItem } from '@/lib/safe-storage'
+import { useDuellyChat } from '@/components/chat/duelly-chat-provider'
 
 /* ── Glowing Radial Ring (SVG) ── */
 function BattleRing({ value, color, glowColor, size = 130 }: { value: number; color: string; glowColor: string; size?: number }) {
@@ -64,6 +65,7 @@ export default function BattleModeV3() {
     const [inlineUrlB, setInlineUrlB] = useState("")
     const [showLinkGap, setShowLinkGap] = useState(false)
     const [strategyFilter, setStrategyFilter] = useState<'ALL' | 'CRITICAL' | 'HIGH' | 'MEDIUM'>('ALL')
+    const { setScanContext } = useDuellyChat()
 
     // Session restore
     useEffect(() => {
@@ -85,6 +87,35 @@ export default function BattleModeV3() {
         if (comparisonData) safeSetItem("battle_v3_data", JSON.stringify(comparisonData))
         if (backlinkData) safeSetItem("battle_v3_backlinks", JSON.stringify(backlinkData))
     }, [siteA, siteB, comparisonData, backlinkData])
+
+    // Inject scan context for Duelly chat
+    useEffect(() => {
+        if (comparisonData) {
+            const c = comparisonData.comparison || comparisonData
+            setScanContext({
+                tool: 'battle-mode',
+                url: siteA,
+                seoScore: c.seo?.siteA,
+                aeoScore: c.aeo?.siteA,
+                geoScore: c.geo?.siteA,
+                competitorData: {
+                    competitorUrl: siteB,
+                    seoScore: c.seo?.siteB,
+                    aeoScore: c.aeo?.siteB,
+                    geoScore: c.geo?.siteB,
+                    winner: c.winner,
+                },
+                backlinks: backlinkData?.siteA ? {
+                    domainAuthority: backlinkData.siteA.metrics?.domainAuthority ?? 0,
+                    totalBacklinks: backlinkData.siteA.metrics?.totalBacklinks ?? 0,
+                    topBacklinks: (backlinkData.siteA.backlinks || []).slice(0, 5).map((b: any) => ({ source: b.sourceDomain || b.sourceUrl || '', anchor: b.anchorText || '' }))
+                } : undefined,
+            })
+        } else {
+            setScanContext(null)
+        }
+        return () => setScanContext(null)
+    }, [comparisonData, backlinkData, siteA, siteB, setScanContext])
 
     // Progress ticker
     useEffect(() => {
