@@ -2,7 +2,6 @@
 
 import { useRef, useEffect } from 'react'
 import { X, Trash2, MessageSquare, Sparkles } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { MessageBubble } from './message-bubble'
 import { ChatInput } from './chat-input'
@@ -163,26 +162,22 @@ export function ChatPanel({
             </span>
           )}
           {user && (
-            <Button
-              variant="ghost"
-              size="icon-sm"
+            <button
               onClick={onClear}
-              className="text-muted-foreground hover:text-white h-7 w-7"
+              className="text-muted-foreground hover:text-white h-7 w-7 inline-flex items-center justify-center rounded-md"
               aria-label="Clear conversation"
               title="Clear conversation"
             >
               <Trash2 className="h-3.5 w-3.5" />
-            </Button>
+            </button>
           )}
-          <Button
-            variant="ghost"
-            size="icon-sm"
+          <button
             onClick={onToggle}
-            className="text-muted-foreground hover:text-white h-7 w-7"
+            className="text-muted-foreground hover:text-white h-7 w-7 inline-flex items-center justify-center rounded-md"
             aria-label="Close Duelly AI chat"
           >
             <X className="h-4 w-4" />
-          </Button>
+          </button>
         </div>
       </div>
 

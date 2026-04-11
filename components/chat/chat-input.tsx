@@ -2,7 +2,6 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { Send } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 interface ChatInputProps {
@@ -73,15 +72,14 @@ export function ChatInput({ isStreaming, onSend }: ChatInputProps) {
             'max-h-[120px]'
           )}
         />
-        <Button
-          size="icon-sm"
+        <button
           onClick={handleSend}
           disabled={!text.trim() || isStreaming}
-          className="shrink-0 bg-[#00e5ff] hover:bg-[#00e5ff]/80 text-black disabled:opacity-30"
+          className="shrink-0 h-8 w-8 inline-flex items-center justify-center rounded-md bg-[#00e5ff] hover:bg-[#00e5ff]/80 text-black disabled:opacity-30"
           aria-label="Send message"
         >
           <Send className="h-4 w-4" />
-        </Button>
+        </button>
       </div>
     </div>
   )
