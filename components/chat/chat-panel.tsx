@@ -195,23 +195,24 @@ export function ChatPanel({
         <>
           {/* Scrollable message area */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-            {/* Proactive suggestion */}
-            {proactiveSuggestion && messages.length === 0 && (
-              <div className="rounded-xl bg-[#BC13FE]/10 border border-[#BC13FE]/20 px-3.5 py-2.5 text-sm text-gray-200">
-                <div className="flex items-start gap-2">
-                  <Sparkles className="h-4 w-4 text-[#BC13FE] mt-0.5 shrink-0" />
-                  <p>{proactiveSuggestion}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Welcome message — shown when no messages and no proactive suggestion */}
-            {messages.length === 0 && !proactiveSuggestion && (
+            {/* Welcome + quick actions — always shown when no messages */}
+            {messages.length === 0 && (
               <div className="space-y-3">
                 <div className="rounded-xl bg-[#00e5ff]/5 border border-[#00e5ff]/15 px-3.5 py-3 text-sm text-gray-200">
                   <p className="font-semibold text-white mb-1.5">Hey, I'm Duelly AI.</p>
                   <p className="text-white/60 text-xs leading-relaxed">I'm your search intelligence consultant. I can help you understand your scores, explain fixes, build a backlink strategy, or walk you through the platform.</p>
                 </div>
+
+                {/* Proactive suggestion from scan results */}
+                {proactiveSuggestion && (
+                  <div className="rounded-xl bg-[#BC13FE]/10 border border-[#BC13FE]/20 px-3.5 py-2.5 text-sm text-gray-200">
+                    <div className="flex items-start gap-2">
+                      <Sparkles className="h-4 w-4 text-[#BC13FE] mt-0.5 shrink-0" />
+                      <p>{proactiveSuggestion}</p>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => onSend('Give me a walkthrough of the platform')}
