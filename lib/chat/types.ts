@@ -1,7 +1,12 @@
-import type { UserProfile } from '@/lib/supabase/auth-helpers'
-
-// Re-export for convenience
-export type { UserProfile }
+// UserProfile type (inlined to avoid importing auth-helpers in client bundles)
+export interface UserProfile {
+  id: string
+  email: string
+  full_name: string | null
+  plan: string
+  is_admin: boolean
+  credits: number
+}
 
 export interface ChatMessage {
   id: string
