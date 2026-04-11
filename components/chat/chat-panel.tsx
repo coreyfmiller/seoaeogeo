@@ -25,9 +25,7 @@ export interface ChatPanelProps {
 
 /** Duelly AI icon for the toggle button */
 function DuellyIcon() {
-  return (
-    <span className="text-lg font-black text-[#00e5ff] leading-none select-none">D</span>
-  )
+  return null // icon is inline in the button below
 }
 
 /** Sign-in gate */
@@ -121,16 +119,21 @@ export function ChatPanel({
       <button
         onClick={onToggle}
         className={cn(
-          'fixed right-4 bottom-4 z-50 flex h-12 w-12 items-center justify-center',
-          'rounded-full bg-[#0d0d14] border border-white/10 shadow-lg',
-          'hover:border-[#00e5ff]/40 hover:shadow-[0_0_15px_rgba(0,229,255,0.15)]',
+          'fixed right-5 bottom-5 z-50 group',
+          'flex items-center gap-2 px-4 py-2.5',
+          'rounded-full',
+          'bg-gradient-to-r from-[#00e5ff] to-[#BC13FE]',
+          'shadow-[0_0_20px_rgba(0,229,255,0.3),0_0_40px_rgba(188,19,254,0.15)]',
+          'hover:shadow-[0_0_25px_rgba(0,229,255,0.5),0_0_50px_rgba(188,19,254,0.25)]',
+          'hover:scale-105 active:scale-95',
           'transition-all duration-200'
         )}
         aria-label="Open Duelly AI chat"
       >
-        <DuellyIcon />
+        <MessageSquare className="h-5 w-5 text-white" />
+        <span className="text-sm font-black text-white tracking-wide">AI</span>
         {proactiveSuggestion && (
-          <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-[#fe3f8c] border-2 border-[#0d0d14]" />
+          <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-[#fe3f8c] border-2 border-[#0d0d14] animate-pulse" />
         )}
       </button>
     )
