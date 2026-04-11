@@ -60,6 +60,7 @@ export interface DuellyChatContextValue {
   togglePanel: () => void
   sendMessage: (text: string) => Promise<void>
   clearConversation: () => void
+  startTutorial: () => void
 
   // Auth state
   user: UserProfile | null

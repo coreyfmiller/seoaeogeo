@@ -125,6 +125,19 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
   }, [])
 
   // -----------------------------------------------------------------------
+  // startTutorial — opens panel, clears chat, sends walkthrough prompt
+  // -----------------------------------------------------------------------
+  const startTutorial = useCallback(() => {
+    setMessages([])
+    setError(null)
+    setIsOpen(true)
+    // Small delay so the panel renders before sending
+    setTimeout(() => {
+      sendMessage('Give me a walkthrough of the platform')
+    }, 100)
+  }, [sendMessage])
+
+  // -----------------------------------------------------------------------
   // setScanContext
   // -----------------------------------------------------------------------
   const setScanContext = useCallback((ctx: ScanContext | null) => {
@@ -280,6 +293,7 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
     togglePanel,
     sendMessage,
     clearConversation,
+    startTutorial,
     user,
     proactiveSuggestion,
   }
