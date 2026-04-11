@@ -141,12 +141,12 @@ export function ChatPanel({
   // --- Full panel ---
   return (
     <div
-      style={{ height: '100vh' }}
+      style={{ height: '50vh' }}
       className={cn(
-        'fixed right-0 top-0 w-[380px] z-50',
+        'fixed right-0 bottom-0 w-[380px] z-50',
         'flex flex-col overflow-hidden',
-        'bg-[#0d0d14] border-l border-white/10',
-        'shadow-2xl'
+        'bg-[#0d0d14] border-l border-t border-white/10',
+        'shadow-2xl rounded-tl-2xl'
       )}
     >
       {/* Header */}
