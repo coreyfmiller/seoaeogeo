@@ -4,7 +4,6 @@ import { useState } from "react"
 import { AppSidebar } from "./app-sidebar"
 import { Header } from "./header"
 import { MobileSidebar } from "./mobile-sidebar"
-import { DuellyChatProvider } from "@/components/chat/duelly-chat-provider"
 
 interface PageShellProps {
   children: React.ReactNode
@@ -48,7 +47,6 @@ export function PageShell({
         />
         {children}
       </div>
-      <DuellyChatProvider />
     </div>
   )
 }
