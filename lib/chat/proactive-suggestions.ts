@@ -1,37 +1,32 @@
 import type { ScanContext } from '@/lib/chat/types'
 
 /**
- * Generates a proactive suggestion based on scan context penalties.
+ * Generates a proactive suggestion based on scan context.
  * Pure client-side function — no API call.
  *
- * Returns a summary string highlighting critical or warning issues,
- * or null if there are no penalties.
+ * Uses both penalties (from grader) and criticalIssues (from grader breakdown)
+ * to produce an accurate count that matches what the user sees on the page.
  */
 export function generateProactiveSuggestion(
   scanContext: ScanContext
 ): string | null {
   const penalties = scanContext.penalties ?? []
+  const criticalIssues = scanContext.criticalIssues ?? []
 
-  if (penalties.length === 0) {
-    return null
-  }
+  // Count critical from both sources, deduplicated by taking the higher count
+  const criticalPenalties = penalties.filter(p => p.severity === 'critical').length
+  const criticalFromGrader = criticalIssues.length
+  const criticalCount = Math.max(criticalPenalties, criticalFromGrader)
 
-  const criticalCount = penalties.filter(
-    (p) => p.severity === 'critical'
-  ).length
+  const totalIssues = penalties.length
 
   if (criticalCount > 0) {
     return `I see ${criticalCount} critical issue${criticalCount === 1 ? '' : 's'} on your site. Want me to walk you through the most impactful fix first?`
   }
 
-  const warningCount = penalties.filter(
-    (p) => p.severity === 'warning'
-  ).length
-
-  if (warningCount > 0) {
-    return `Your site looks decent, but I found ${warningCount} area${warningCount === 1 ? '' : 's'} to improve. Want me to prioritize them?`
+  if (totalIssues > 0) {
+    return `Your site has ${totalIssues} area${totalIssues === 1 ? '' : 's'} to improve. Want me to prioritize them?`
   }
 
-  // Only info-level penalties — nothing actionable to surface
   return null
 }
