@@ -37,30 +37,8 @@ export function useDuellyChat(): DuellyChatContextValue {
 // Constants
 // ---------------------------------------------------------------------------
 
-const STORAGE_KEY = 'duelly-chat-open'
 const MESSAGE_LIMIT = 50
 const MAX_HISTORY = 10
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function readOpenState(): boolean {
-  if (typeof window === 'undefined') return false
-  try {
-    return localStorage.getItem(STORAGE_KEY) === 'true'
-  } catch {
-    return false
-  }
-}
-
-function persistOpenState(open: boolean) {
-  try {
-    localStorage.setItem(STORAGE_KEY, String(open))
-  } catch {
-    // localStorage unavailable (SSR / private browsing)
-  }
-}
 
 // ---------------------------------------------------------------------------
 // Provider
@@ -79,13 +57,6 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
 
   // Abort controller ref for cancelling in-flight streams
   const abortRef = useRef<AbortController | null>(null)
-
-  // -----------------------------------------------------------------------
-  // Restore isOpen from localStorage on mount
-  // -----------------------------------------------------------------------
-  useEffect(() => {
-    setIsOpen(readOpenState())
-  }, [])
 
   // -----------------------------------------------------------------------
   // Fetch user profile + listen for auth changes
@@ -140,11 +111,7 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
   // togglePanel
   // -----------------------------------------------------------------------
   const togglePanel = useCallback(() => {
-    setIsOpen((prev) => {
-      const next = !prev
-      persistOpenState(next)
-      return next
-    })
+    setIsOpen((prev) => !prev)
   }, [])
 
   // -----------------------------------------------------------------------
