@@ -399,7 +399,6 @@ export default function AITestPage() {
                   </div>
                 </CardContent>
               </Card>
-              )}
             </div>
           )}
 
