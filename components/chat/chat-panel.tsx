@@ -131,7 +131,7 @@ export function ChatPanel({
         aria-label="Open Duelly AI chat"
       >
         <MessageSquare className="h-5 w-5 text-white" />
-        <span className="text-sm font-black text-white tracking-wide">AI</span>
+        <span className="text-sm font-black text-white tracking-wide">Ask Duelly</span>
         {proactiveSuggestion && (
           <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-[#fe3f8c] border-2 border-[#0d0d14] animate-pulse" />
         )}
