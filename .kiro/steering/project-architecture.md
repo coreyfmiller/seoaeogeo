@@ -64,7 +64,6 @@ All old versioned pages and dead routes have been removed. Only the active tool 
 - `PAGESPEED_API_KEY` — Core Web Vitals
 - `MOZ_API_TOKEN` — Backlink data
 - `RESEND_API_KEY` — Contact form emails
-- `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` / `RECAPTCHA_SECRET_KEY` — Spam protection
 - `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Database
 - `SERPER_API_KEY` — Google Search for Keyword Arena
 - `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` — Payments

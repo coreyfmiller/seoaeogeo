@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { PublicNav } from '@/components/public-nav'
 import { PublicFooter } from '@/components/public-footer'
 import { Send, Loader2, CheckCircle2 } from 'lucide-react'
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 
 export default function ContactPage() {
   const [name, setName] = useState('')
@@ -12,20 +11,15 @@ export default function ContactPage() {
   const [category, setCategory] = useState('general')
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
-  const { executeRecaptcha } = useGoogleReCaptcha()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('sending')
     try {
-      let recaptchaToken = ''
-      if (executeRecaptcha) {
-        recaptchaToken = await executeRecaptcha('contact')
-      }
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, category, message, recaptchaToken }),
+        body: JSON.stringify({ name, email, category, message }),
       })
       if (res.ok) {
         setStatus('sent')

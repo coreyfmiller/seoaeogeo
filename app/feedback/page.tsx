@@ -34,7 +34,6 @@ export default function FeedbackPage() {
           email: userEmail || 'no-reply@duelly.ai',
           category,
           message,
-          recaptchaToken: '',
         }),
       })
       if (res.ok) {

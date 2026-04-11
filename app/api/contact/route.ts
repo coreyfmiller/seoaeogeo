@@ -3,38 +3,12 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-async function verifyRecaptcha(token: string): Promise<boolean> {
-  const secret = process.env.RECAPTCHA_SECRET_KEY
-  if (!secret) { console.warn('[Contact] No RECAPTCHA_SECRET_KEY, skipping verification'); return true }
-
-  try {
-    const res = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `secret=${secret}&response=${token}`,
-    })
-    const data = await res.json()
-    return data.success && data.score >= 0.5
-  } catch {
-    console.error('[Contact] reCAPTCHA verification failed')
-    return false
-  }
-}
-
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, category, message, recaptchaToken } = await req.json()
+    const { name, email, category, message } = await req.json()
 
     if (!name || !email || !message) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
-    }
-
-    // Verify reCAPTCHA
-    if (recaptchaToken) {
-      const isHuman = await verifyRecaptcha(recaptchaToken)
-      if (!isHuman) {
-        return NextResponse.json({ error: 'Spam detected. Please try again.' }, { status: 403 })
-      }
     }
 
     await resend.emails.send({
