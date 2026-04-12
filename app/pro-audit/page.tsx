@@ -71,7 +71,8 @@ export default function ProAuditV4Page() {
       const aiRecs = result.aiAnalysis?.recommendations || []
       const aiCriticalCount = aiRecs.filter((r: any) => (r.priority || '').toUpperCase() === 'CRITICAL').length
 
-      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: {
+      const chatIframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
+      if (chatIframe?.contentWindow) chatIframe.contentWindow.postMessage({ type: 'duelly-scan-context', payload: {
         tool: 'pro-audit',
         url: result.url,
         seoScore: result.scores?.seo?.score,
@@ -89,11 +90,15 @@ export default function ProAuditV4Page() {
           totalBacklinks: result.backlinkData.metrics?.totalBacklinks ?? 0,
           topBacklinks: (result.backlinkData.backlinks || []).slice(0, 5).map((b: any) => ({ source: b.source || b.url, anchor: b.anchor || '' }))
         } : undefined,
-      } }))
+      } }, '*')
     } else {
-      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null }))
+      const chatIframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
+      if (chatIframe?.contentWindow) chatIframe.contentWindow.postMessage({ type: 'duelly-scan-context', payload: null }, '*')
     }
-    return () => { window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null })) }
+    return () => {
+      const chatIframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
+      if (chatIframe?.contentWindow) chatIframe.contentWindow.postMessage({ type: 'duelly-scan-context', payload: null }, '*')
+    }
   }, [result])
 
   useEffect(() => {

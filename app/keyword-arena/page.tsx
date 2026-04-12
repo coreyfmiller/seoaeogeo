@@ -279,7 +279,8 @@ export default function KeywordArenaV3Page() {
   useEffect(() => {
     if (arenaResult) {
       const userSite = arenaResult.sites.find(s => s.isUserSite)
-      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: {
+      const chatIframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
+      if (chatIframe?.contentWindow) chatIframe.contentWindow.postMessage({ type: 'duelly-scan-context', payload: {
         tool: 'keyword-arena',
         url: userSite?.url,
         seoScore: userSite?.scores?.seo ?? undefined,
@@ -297,11 +298,15 @@ export default function KeywordArenaV3Page() {
           totalBacklinks: arenaResult.backlinkData.metrics?.totalBacklinks ?? 0,
           topBacklinks: (arenaResult.backlinkData.backlinks || []).slice(0, 5).map((b: any) => ({ source: b.sourceDomain || b.sourceUrl || b.source || '', anchor: b.anchorText || b.anchor || '' }))
         } : undefined,
-      } }))
+      } }, '*')
     } else {
-      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null }))
+      const chatIframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
+      if (chatIframe?.contentWindow) chatIframe.contentWindow.postMessage({ type: 'duelly-scan-context', payload: null }, '*')
     }
-    return () => { window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null })) }
+    return () => {
+      const chatIframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
+      if (chatIframe?.contentWindow) chatIframe.contentWindow.postMessage({ type: 'duelly-scan-context', payload: null }, '*')
+    }
   }, [arenaResult])
 
   useEffect(() => {

@@ -240,8 +240,8 @@ export default function ChatPage() {
                     className="px-3 py-1.5 rounded-lg bg-[#00e5ff]/10 border border-[#00e5ff]/20 text-xs font-medium text-[#00e5ff] hover:bg-[#00e5ff]/20 disabled:opacity-50">Take a tour</button>
                   <button onClick={() => sendMessage('What should I do first?')} disabled={isStreaming}
                     className="px-3 py-1.5 rounded-lg bg-[#BC13FE]/10 border border-[#BC13FE]/20 text-xs font-medium text-[#BC13FE] hover:bg-[#BC13FE]/20 disabled:opacity-50">What should I do first?</button>
-                  <button onClick={() => sendMessage('Explain SEO vs AEO vs GEO')} disabled={isStreaming}
-                    className="px-3 py-1.5 rounded-lg bg-[#fe3f8c]/10 border border-[#fe3f8c]/20 text-xs font-medium text-[#fe3f8c] hover:bg-[#fe3f8c]/20 disabled:opacity-50">SEO vs AEO vs GEO?</button>
+                  <button onClick={() => sendMessage('Explain my current scores and what I should fix first')} disabled={isStreaming}
+                    className="px-3 py-1.5 rounded-lg bg-[#fe3f8c]/10 border border-[#fe3f8c]/20 text-xs font-medium text-[#fe3f8c] hover:bg-[#fe3f8c]/20 disabled:opacity-50">Explain my scores</button>
                 </div>
               </div>
             )}
