@@ -285,11 +285,7 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
         {user && (
           <button
             onClick={() => {
-              const iframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
-              if (iframe?.contentWindow) {
-                iframe.contentWindow.postMessage({ type: 'duelly-start-tutorial' }, '*')
-              }
-              window.dispatchEvent(new CustomEvent('duelly-open-chat'))
+              window.dispatchEvent(new CustomEvent('duelly-start-tutorial'))
             }}
             className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors w-full text-[#00e5ff] hover:bg-[#00e5ff]/10 mb-1"
           >
