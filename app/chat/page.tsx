@@ -58,6 +58,10 @@ export default function ChatPage() {
       if (u) {
         supabase.from('profiles').select('credits').eq('id', u.id).single()
           .then(({ data }) => setUser({ id: u.id, credits: data?.credits ?? 0 }))
+        // Fetch today's message count from chat_usage
+        const today = new Date().toISOString().split('T')[0]
+        supabase.from('chat_usage').select('message_count').eq('user_id', u.id).eq('date', today).single()
+          .then(({ data }) => { if (data?.message_count) setMessageCount(data.message_count) })
       }
     })
   }, [])

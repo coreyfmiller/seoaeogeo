@@ -121,8 +121,14 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        // 11. On completion, increment usage
-        await incrementUsage(user.id)
+        // 11. On completion, increment usage (skip for walkthrough/tour messages)
+        const isWalkthrough = sanitizedMessage.toLowerCase().includes('walkthrough') || 
+                              sanitizedMessage.toLowerCase().includes('take a tour') ||
+                              sanitizedMessage.toLowerCase() === 'next' ||
+                              sanitizedMessage.toLowerCase() === 'continue'
+        if (!isWalkthrough) {
+          await incrementUsage(user.id)
+        }
 
         sendEvent({ type: 'done' })
       } catch (err: unknown) {
