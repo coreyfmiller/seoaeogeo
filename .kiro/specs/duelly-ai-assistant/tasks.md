@@ -1,4 +1,14 @@
-# Implementation Plan: Duelly AI Assistant
+64061f57b351793a.js?dpl=dpl_1iRawTrJLRUwLgJsC1XtXazEoorb:1 Uncaught ReferenceError: Cannot access 'D' before initialization
+    at w (64061f57b351793a.js?dpl=dpl_1iRawTrJLRUwLgJsC1XtXazEoorb:1:16922)
+    at av (aee6c7720838f8a2.js?dpl=dpl_1iRawTrJLRUwLgJsC1XtXazEoorb:1:63230)
+    at oY (aee6c7720838f8a2.js?dpl=dpl_1iRawTrJLRUwLgJsC1XtXazEoorb:1:83503)
+    at io (aee6c7720838f8a2.js?dpl=dpl_1iRawTrJLRUwLgJsC1XtXazEoorb:1:93976)
+    at sc (aee6c7720838f8a2.js?dpl=dpl_1iRawTrJLRUwLgJsC1XtXazEoorb:1:137956)
+    at aee6c7720838f8a2.js?dpl=dpl_1iRawTrJLRUwLgJsC1XtXazEoorb:1:137801
+    at ss (aee6c7720838f8a2.js?dpl=dpl_1iRawTrJLRUwLgJsC1XtXazEoorb:1:137809)
+    at u9 (aee6c7720838f8a2.js?dpl=dpl_1iRawTrJLRUwLgJsC1XtXazEoorb:1:133734)
+    at sV (aee6c7720838f8a2.js?dpl=dpl_1iRawTrJLRUwLgJsC1XtXazEoorb:1:159329)
+    at MessagePort.O (# Implementation Plan: Duelly AI Assistant
 
 ## Overview
 

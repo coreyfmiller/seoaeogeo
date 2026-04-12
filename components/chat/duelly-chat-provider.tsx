@@ -21,7 +21,7 @@ import type {
 // Constants
 // ---------------------------------------------------------------------------
 
-const MESSAGE_LIMIT = 50
+const MESSAGE_LIMIT = 100
 const MAX_HISTORY = 10
 
 // ---------------------------------------------------------------------------
@@ -57,7 +57,7 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
       if (authUser) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('credits, plan, full_name')
+          .select('credits, plan, full_name, chat_messages_remaining')
           .eq('id', authUser.id)
           .single()
 
@@ -69,6 +69,9 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
           is_admin: false,
           credits: profile?.credits ?? 0,
         })
+
+        // Set remaining chat messages from profile pool
+        setMessageCount(MESSAGE_LIMIT - (profile?.chat_messages_remaining ?? MESSAGE_LIMIT))
       } else {
         setUser(null)
       }
@@ -96,7 +99,14 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
   // togglePanel
   // -----------------------------------------------------------------------
   const togglePanel = useCallback(() => {
-    setIsOpen((prev) => !prev)
+    setIsOpen((prev) => {
+      const willClose = prev
+      if (willClose) {
+        setMessages([])
+        setError(null)
+      }
+      return !prev
+    })
   }, [])
 
   // -----------------------------------------------------------------------
@@ -311,7 +321,6 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
         proactiveSuggestion={proactiveSuggestion}
         onToggle={togglePanel}
         onSend={sendMessage}
-        onClear={clearConversation}
       />
     </>
   )

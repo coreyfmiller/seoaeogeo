@@ -1,14 +1,15 @@
 
   END IF;
 
-  INSERT INTO public.profiles (id, email, full_name, referral_code, referred_by, credits)
+  INSERT INTO public.profiles (id, email, full_name, referral_code, referred_by, credits, chat_messages_remaining)
   VALUES (
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
     ref_code,
     ref_by,
-    20
+    20,
+    100
   );
 
   -- Create pending referral record if referred
@@ -70,30 +71,7 @@ CREATE POLICY "Service role full access to scan_jobs"
   USING (true)
   WITH CHECK (true);
 
--- 8. Chat usage tracking for Duelly AI rate limiting
--- One row per user per day, upserted on each chat message.
--- Rate limit: 50 messages per user per calendar day (UTC).
-CREATE TABLE public.chat_usage (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-  date DATE NOT NULL DEFAULT CURRENT_DATE,
-  message_count INTEGER NOT NULL DEFAULT 0,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE (user_id, date)
-);
-
-ALTER TABLE public.chat_usage ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Users can view own chat usage"
-  ON public.chat_usage FOR SELECT
-  USING (auth.uid() = user_id);
-
-CREATE POLICY "Service role full access to chat_usage"
-  ON public.chat_usage FOR ALL
-  USING (true)
-  WITH CHECK (true);
-
-CREATE TRIGGER chat_usage_updated_at
-  BEFORE UPDATE ON public.chat_usage
-  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+-- 8. Chat message pool on profiles
+-- Each user gets 100 chat messages. Refillable for 10 credits.
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS chat_messages_remaining INTEGER NOT NULL DEFAULT 100;

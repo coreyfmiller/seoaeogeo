@@ -168,8 +168,7 @@ export default function DeepV3Page() {
   // Inject scan context for Duelly chat
   useEffect(() => {
     if (result) {
-      const chatIframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
-      if (chatIframe?.contentWindow) chatIframe.contentWindow.postMessage({ type: 'duelly-scan-context', payload: {
+      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: {
         tool: 'deep-scan',
         url: result.url,
         seoScore: typeof result.scores?.seo === 'number' ? result.scores.seo : (result.scores?.seo as any)?.score,
@@ -182,14 +181,12 @@ export default function DeepV3Page() {
           totalBacklinks: result.backlinkData.metrics?.totalBacklinks ?? 0,
           topBacklinks: (result.backlinkData.backlinks || []).slice(0, 5).map((b: any) => ({ source: b.sourceDomain || b.sourceUrl || '', anchor: b.anchorText || '' }))
         } : undefined,
-      } }, '*')
+      } }))
     } else {
-      const chatIframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
-      if (chatIframe?.contentWindow) chatIframe.contentWindow.postMessage({ type: 'duelly-scan-context', payload: null }, '*')
+      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null }))
     }
     return () => {
-      const chatIframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
-      if (chatIframe?.contentWindow) chatIframe.contentWindow.postMessage({ type: 'duelly-scan-context', payload: null }, '*')
+      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null }))
     }
   }, [result])
 

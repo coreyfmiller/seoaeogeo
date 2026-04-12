@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useEffect } from 'react'
-import { X, Trash2, MessageSquare, Sparkles } from 'lucide-react'
+import { X, MessageSquare, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { MessageBubble } from './message-bubble'
 import { ChatInput } from './chat-input'
@@ -19,7 +19,6 @@ export interface ChatPanelProps {
   proactiveSuggestion: string | null
   onToggle: () => void
   onSend: (text: string) => Promise<void>
-  onClear: () => void
 }
 
 /** Duelly AI icon for the toggle button */
@@ -70,9 +69,9 @@ function RateLimitGate() {
       <div className="text-center space-y-2">
         <MessageSquare className="h-10 w-10 text-muted-foreground/40 mx-auto" />
         <p className="text-sm text-muted-foreground">
-          You&apos;ve used all 50 messages today.
+          You&apos;ve used all your chat messages.
         </p>
-        <p className="text-xs text-muted-foreground/60">Resets at midnight UTC.</p>
+        <p className="text-xs text-muted-foreground/60">Refill 100 messages for 10 credits.</p>
       </div>
     </div>
   )
@@ -89,7 +88,6 @@ export function ChatPanel({
   proactiveSuggestion,
   onToggle,
   onSend,
-  onClear,
 }: ChatPanelProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -160,16 +158,6 @@ export function ChatPanel({
             <span className="text-xs text-muted-foreground tabular-nums">
               {messageCount}/{messageLimit}
             </span>
-          )}
-          {user && (
-            <button
-              onClick={onClear}
-              className="text-muted-foreground hover:text-white h-7 w-7 inline-flex items-center justify-center rounded-md"
-              aria-label="Clear conversation"
-              title="Clear conversation"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </button>
           )}
           <button
             onClick={onToggle}

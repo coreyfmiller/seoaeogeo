@@ -91,8 +91,7 @@ export default function BattleModeV3() {
     useEffect(() => {
         if (comparisonData) {
             const c = comparisonData.comparison || comparisonData
-            const chatIframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
-            if (chatIframe?.contentWindow) chatIframe.contentWindow.postMessage({ type: 'duelly-scan-context', payload: {
+            window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: {
                 tool: 'battle-mode',
                 url: siteA,
                 seoScore: c.seo?.siteA,
@@ -110,14 +109,12 @@ export default function BattleModeV3() {
                     totalBacklinks: backlinkData.siteA.metrics?.totalBacklinks ?? 0,
                     topBacklinks: (backlinkData.siteA.backlinks || []).slice(0, 5).map((b: any) => ({ source: b.sourceDomain || b.sourceUrl || '', anchor: b.anchorText || '' }))
                 } : undefined,
-            } }, '*')
+            } }))
         } else {
-            const chatIframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
-            if (chatIframe?.contentWindow) chatIframe.contentWindow.postMessage({ type: 'duelly-scan-context', payload: null }, '*')
+            window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null }))
         }
         return () => {
-            const chatIframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
-            if (chatIframe?.contentWindow) chatIframe.contentWindow.postMessage({ type: 'duelly-scan-context', payload: null }, '*')
+            window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null }))
         }
     }, [comparisonData, backlinkData, siteA, siteB])
 

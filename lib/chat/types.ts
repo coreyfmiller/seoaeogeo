@@ -54,7 +54,7 @@ export interface DuellyChatContextValue {
   messages: ChatMessage[]
   isStreaming: boolean
   messageCount: number
-  messageLimit: number // 50
+  messageLimit: number // 100 (pool-based, refillable for 10 credits)
   error: string | null
 
   // Scan context

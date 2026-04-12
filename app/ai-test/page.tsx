@@ -87,8 +87,7 @@ export default function AITestPage() {
     if (result) {
       const totalRecs = result.results.reduce((sum, r) => sum + r.recommendations.length, 0)
       const enginesWithResults = result.results.filter(r => r.recommendations.length > 0).length
-      const chatIframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
-      if (chatIframe?.contentWindow) chatIframe.contentWindow.postMessage({ type: 'duelly-scan-context', payload: {
+      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: {
         tool: 'ai-test',
         keywordData: {
           keyword: result.keyword,
@@ -98,14 +97,12 @@ export default function AITestPage() {
           consensusCount: result.consensus?.length ?? 0,
           insights: result.insights,
         },
-      } }, '*')
+      } }))
     } else {
-      const chatIframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
-      if (chatIframe?.contentWindow) chatIframe.contentWindow.postMessage({ type: 'duelly-scan-context', payload: null }, '*')
+      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null }))
     }
     return () => {
-      const chatIframe = document.querySelector('iframe[title="Duelly AI Chat"]') as HTMLIFrameElement
-      if (chatIframe?.contentWindow) chatIframe.contentWindow.postMessage({ type: 'duelly-scan-context', payload: null }, '*')
+      window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null }))
     }
   }, [result])
 

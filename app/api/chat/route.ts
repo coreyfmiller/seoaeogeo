@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
   const rateLimit = await checkRateLimit(user.id)
   if (!rateLimit.allowed) {
     return NextResponse.json(
-      { error: 'Daily limit reached', resetsAt: rateLimit.resetsAt },
+      { error: 'Chat messages exhausted. Refill for 10 credits to get 100 more.', remaining: 0 },
       { status: 429 }
     )
   }

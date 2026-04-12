@@ -1,80 +1,75 @@
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
-const DAILY_MESSAGE_LIMIT = 50
+const CHAT_MESSAGE_POOL = 100
+const REFILL_CREDIT_COST = 10
 
 /**
- * Compute next midnight UTC as an ISO string.
- */
-function getNextMidnightUTC(): string {
-  const now = new Date()
-  const next = new Date(Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate() + 1,
-    0, 0, 0, 0
-  ))
-  return next.toISOString()
-}
-
-/**
- * Check whether a user is within the daily rate limit.
- * Returns the current count, whether the next message is allowed,
- * and when the limit resets (next midnight UTC).
+ * Check whether a user has chat messages remaining in their pool.
  */
 export async function checkRateLimit(
   userId: string
-): Promise<{ allowed: boolean; count: number; resetsAt: string }> {
-  const today = new Date().toISOString().split('T')[0]
-
+): Promise<{ allowed: boolean; remaining: number; total: number }> {
   const { data } = await supabaseAdmin
-    .from('chat_usage')
-    .select('message_count')
-    .eq('user_id', userId)
-    .eq('date', today)
+    .from('profiles')
+    .select('chat_messages_remaining')
+    .eq('id', userId)
     .single()
 
-  const count = data?.message_count ?? 0
+  const remaining = data?.chat_messages_remaining ?? 0
 
   return {
-    allowed: count < DAILY_MESSAGE_LIMIT,
-    count,
-    resetsAt: getNextMidnightUTC(),
+    allowed: remaining > 0,
+    remaining,
+    total: CHAT_MESSAGE_POOL,
   }
 }
 
 /**
- * Increment the user's daily message count via upsert.
- * Creates a new row for today if none exists, otherwise increments
- * the existing count using ON CONFLICT (user_id, date).
- * Returns the new message count.
+ * Decrement the user's chat message pool by 1.
+ * Returns the new remaining count.
  */
 export async function incrementUsage(userId: string): Promise<number> {
-  const today = new Date().toISOString().split('T')[0]
-
-  // First, try to read the current count
-  const { data: existing } = await supabaseAdmin
-    .from('chat_usage')
-    .select('message_count')
-    .eq('user_id', userId)
-    .eq('date', today)
+  const { data } = await supabaseAdmin
+    .from('profiles')
+    .select('chat_messages_remaining')
+    .eq('id', userId)
     .single()
 
-  if (existing) {
-    // Row exists — increment
-    const newCount = existing.message_count + 1
-    await supabaseAdmin
-      .from('chat_usage')
-      .update({ message_count: newCount })
-      .eq('user_id', userId)
-      .eq('date', today)
+  const current = data?.chat_messages_remaining ?? 0
+  const newRemaining = Math.max(0, current - 1)
 
-    return newCount
+  await supabaseAdmin
+    .from('profiles')
+    .update({ chat_messages_remaining: newRemaining })
+    .eq('id', userId)
+
+  return newRemaining
+}
+
+/**
+ * Refill chat messages by spending credits.
+ * Returns { success, remaining, creditsDeducted } or throws.
+ */
+export async function refillChatMessages(
+  userId: string
+): Promise<{ success: boolean; remaining: number; creditsDeducted: number }> {
+  const { data: profile } = await supabaseAdmin
+    .from('profiles')
+    .select('credits, chat_messages_remaining')
+    .eq('id', userId)
+    .single()
+
+  if (!profile || (profile.credits ?? 0) < REFILL_CREDIT_COST) {
+    return { success: false, remaining: profile?.chat_messages_remaining ?? 0, creditsDeducted: 0 }
   }
 
-  // No row yet — insert with count = 1
-  await supabaseAdmin
-    .from('chat_usage')
-    .insert({ user_id: userId, date: today, message_count: 1 })
+  const newCredits = profile.credits - REFILL_CREDIT_COST
+  const newRemaining = (profile.chat_messages_remaining ?? 0) + CHAT_MESSAGE_POOL
 
-  return 1
+  await supabaseAdmin
+    .from('profiles')
+    .update({ credits: newCredits, chat_messages_remaining: newRemaining })
+    .eq('id', userId)
+
+  return { success: true, remaining: newRemaining, creditsDeducted: REFILL_CREDIT_COST }
 }

@@ -58,10 +58,9 @@ export default function ChatPage() {
       if (u) {
         supabase.from('profiles').select('credits').eq('id', u.id).single()
           .then(({ data }) => setUser({ id: u.id, credits: data?.credits ?? 0 }))
-        // Fetch today's message count from chat_usage
-        const today = new Date().toISOString().split('T')[0]
-        supabase.from('chat_usage').select('message_count').eq('user_id', u.id).eq('date', today).single()
-          .then(({ data }) => { if (data?.message_count) setMessageCount(data.message_count) })
+        // Fetch chat messages remaining from profile
+        supabase.from('profiles').select('chat_messages_remaining').eq('id', u.id).single()
+          .then(({ data }) => { if (data) setMessageCount(100 - (data.chat_messages_remaining ?? 100)) })
       }
     })
   }, [])
@@ -165,7 +164,7 @@ export default function ChatPage() {
     sendMessage(t)
   }
 
-  const isRateLimited = messageCount >= 50
+  const isRateLimited = messageCount >= 100
 
   // Tell parent to close
   const handleClose = () => {
@@ -182,7 +181,7 @@ export default function ChatPage() {
           <h2 className="text-sm font-semibold">Duelly AI</h2>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-white/40 tabular-nums">{messageCount}/50</span>
+          <span className="text-xs text-white/40 tabular-nums">{messageCount}/100</span>
           <button onClick={() => { setMessages([]); setError(null) }} className="text-white/40 hover:text-white h-7 w-7 inline-flex items-center justify-center rounded-md" aria-label="Clear">
             <Trash2 className="h-3.5 w-3.5" />
           </button>
@@ -212,8 +211,8 @@ export default function ChatPage() {
       ) : isRateLimited ? (
         <div className="flex flex-1 items-center justify-center p-6">
           <div className="text-center space-y-2">
-            <p className="text-sm text-white/40">You've used all 50 messages today.</p>
-            <p className="text-xs text-white/20">Resets at midnight UTC.</p>
+            <p className="text-sm text-white/40">You've used all your chat messages.</p>
+            <p className="text-xs text-white/20">Refill 100 messages for 10 credits.</p>
           </div>
         </div>
       ) : (
