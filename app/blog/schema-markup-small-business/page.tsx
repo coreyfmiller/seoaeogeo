@@ -6,13 +6,35 @@ import { PublicFooter } from '@/components/public-footer'
 
 export const metadata: Metadata = {
   title: 'Schema Markup for Small Businesses: What It Is and Why You Need It',
-  description: 'Schema markup sounds technical but it\'s one of the easiest ways to stand out in search results. Here\'s how to get started.',
+  description: "Schema markup sounds technical but it's one of the easiest ways to stand out in search results. Here's how to get started.",
   alternates: { canonical: '/blog/schema-markup-small-business' },
+  openGraph: {
+    title: 'Schema Markup for Small Businesses: What It Is and Why You Need It',
+    description: "Schema markup sounds technical but it's one of the easiest ways to stand out in search results. Here's how to get started.",
+    url: 'https://duelly.ai/blog/schema-markup-small-business',
+    type: 'article',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Schema Markup for Small Businesses: What It Is and Why You Need It',
+    description: "Schema markup sounds technical but it's one of the easiest ways to stand out in search results. Here's how to get started.",
+  },
 }
 
 export default function SchemaMarkupPage() {
   return (
     <main className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'Schema Markup for Small Businesses: What It Is and Why You Need It',
+        description: "Schema markup sounds technical but it's one of the easiest ways to stand out in search results. Here's how to get started.",
+        author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
+        publisher: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
+        datePublished: '2026-03-15',
+        dateModified: '2026-04-01',
+        mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://duelly.ai/blog/schema-markup-small-business' },
+      }) }} />
       <PublicNav />
 
       <article className="max-w-3xl mx-auto px-6 py-16">

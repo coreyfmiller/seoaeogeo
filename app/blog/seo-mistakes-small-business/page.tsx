@@ -6,13 +6,35 @@ import { PublicFooter } from '@/components/public-footer'
 
 export const metadata: Metadata = {
   title: 'The 7 Biggest SEO Mistakes Small Businesses Make',
-  description: 'Most small business websites have at least 3 of these 7 SEO problems. Here\'s what they are and exactly how to fix each one.',
+  description: "Most small business websites have at least 3 of these 7 SEO problems. Here's what they are and exactly how to fix each one.",
   alternates: { canonical: '/blog/seo-mistakes-small-business' },
+  openGraph: {
+    title: 'The 7 Biggest SEO Mistakes Small Businesses Make',
+    description: "Most small business websites have at least 3 of these 7 SEO problems. Here's what they are and exactly how to fix each one.",
+    url: 'https://duelly.ai/blog/seo-mistakes-small-business',
+    type: 'article',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'The 7 Biggest SEO Mistakes Small Businesses Make',
+    description: "Most small business websites have at least 3 of these 7 SEO problems. Here's what they are and exactly how to fix each one.",
+  },
 }
 
 export default function SEOMistakesSmallBusinessPage() {
   return (
     <main className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'The 7 Biggest SEO Mistakes Small Businesses Make',
+        description: "Most small business websites have at least 3 of these 7 SEO problems. Here's what they are and exactly how to fix each one.",
+        author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
+        publisher: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
+        datePublished: '2026-03-15',
+        dateModified: '2026-04-01',
+        mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://duelly.ai/blog/seo-mistakes-small-business' },
+      }) }} />
       <PublicNav />
 
       <article className="max-w-3xl mx-auto px-6 py-16">

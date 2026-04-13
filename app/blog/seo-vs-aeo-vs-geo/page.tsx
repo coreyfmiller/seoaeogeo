@@ -5,14 +5,36 @@ import { PublicNav } from '@/components/public-nav'
 import { PublicFooter } from '@/components/public-footer'
 
 export const metadata: Metadata = {
-  title: 'SEO vs AEO vs GEO: What\'s the Difference?',
-  description: 'Traditional SEO isn\'t enough anymore. Here\'s what AEO and GEO mean for your business and why all three matter in 2026.',
+  title: "SEO vs AEO vs GEO: What's the Difference?",
+  description: "Traditional SEO isn't enough anymore. Here's what AEO and GEO mean for your business and why all three matter in 2026.",
   alternates: { canonical: '/blog/seo-vs-aeo-vs-geo' },
+  openGraph: {
+    title: "SEO vs AEO vs GEO: What's the Difference?",
+    description: "Traditional SEO isn't enough anymore. Here's what AEO and GEO mean for your business and why all three matter in 2026.",
+    url: 'https://duelly.ai/blog/seo-vs-aeo-vs-geo',
+    type: 'article',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "SEO vs AEO vs GEO: What's the Difference?",
+    description: "Traditional SEO isn't enough anymore. Here's what AEO and GEO mean for your business and why all three matter in 2026.",
+  },
 }
 
 export default function SEOvsAEOvsGEOPage() {
   return (
     <main className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: "SEO vs AEO vs GEO: What's the Difference?",
+        description: "Traditional SEO isn't enough anymore. Here's what AEO and GEO mean for your business and why all three matter in 2026.",
+        author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
+        publisher: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
+        datePublished: '2026-03-15',
+        dateModified: '2026-04-01',
+        mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://duelly.ai/blog/seo-vs-aeo-vs-geo' },
+      }) }} />
       <PublicNav />
 
       <article className="max-w-3xl mx-auto px-6 py-16">

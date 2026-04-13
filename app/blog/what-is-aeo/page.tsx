@@ -8,11 +8,33 @@ export const metadata: Metadata = {
   title: 'What is AEO? Answer Engine Optimization Explained',
   description: 'AI search engines like ChatGPT and Perplexity are changing how people find businesses. AEO is how you make sure they find yours.',
   alternates: { canonical: '/blog/what-is-aeo' },
+  openGraph: {
+    title: 'What is AEO? Answer Engine Optimization Explained',
+    description: 'AI search engines like ChatGPT and Perplexity are changing how people find businesses. AEO is how you make sure they find yours.',
+    url: 'https://duelly.ai/blog/what-is-aeo',
+    type: 'article',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'What is AEO? Answer Engine Optimization Explained',
+    description: 'AI search engines like ChatGPT and Perplexity are changing how people find businesses. AEO is how you make sure they find yours.',
+  },
 }
 
 export default function WhatIsAEOPage() {
   return (
     <main className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'What is AEO? Answer Engine Optimization Explained',
+        description: 'AI search engines like ChatGPT and Perplexity are changing how people find businesses. AEO is how you make sure they find yours.',
+        author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
+        publisher: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
+        datePublished: '2026-03-15',
+        dateModified: '2026-04-01',
+        mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://duelly.ai/blog/what-is-aeo' },
+      }) }} />
       <PublicNav />
 
       <article className="max-w-3xl mx-auto px-6 py-16">

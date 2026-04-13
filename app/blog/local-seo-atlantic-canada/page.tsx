@@ -8,11 +8,33 @@ export const metadata: Metadata = {
   title: 'Local SEO Guide for Atlantic Canadian Small Businesses',
   description: 'A practical guide to getting your New Brunswick, Nova Scotia, PEI, or Newfoundland business found online in Google and AI search.',
   alternates: { canonical: '/blog/local-seo-atlantic-canada' },
+  openGraph: {
+    title: 'Local SEO Guide for Atlantic Canadian Small Businesses',
+    description: 'A practical guide to getting your New Brunswick, Nova Scotia, PEI, or Newfoundland business found online in Google and AI search.',
+    url: 'https://duelly.ai/blog/local-seo-atlantic-canada',
+    type: 'article',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Local SEO Guide for Atlantic Canadian Small Businesses',
+    description: 'A practical guide to getting your New Brunswick, Nova Scotia, PEI, or Newfoundland business found online in Google and AI search.',
+  },
 }
 
 export default function LocalSEOAtlanticCanadaPage() {
   return (
     <main className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'Local SEO Guide for Atlantic Canadian Small Businesses',
+        description: 'A practical guide to getting your New Brunswick, Nova Scotia, PEI, or Newfoundland business found online in Google and AI search.',
+        author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
+        publisher: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
+        datePublished: '2026-03-15',
+        dateModified: '2026-04-01',
+        mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://duelly.ai/blog/local-seo-atlantic-canada' },
+      }) }} />
       <PublicNav />
 
       <article className="max-w-3xl mx-auto px-6 py-16">

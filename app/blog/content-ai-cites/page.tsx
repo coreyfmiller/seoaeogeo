@@ -6,13 +6,35 @@ import { PublicFooter } from '@/components/public-footer'
 
 export const metadata: Metadata = {
   title: 'How to Write Content That AI Actually Cites',
-  description: 'AI search engines pick favorites. Here\'s what makes them choose one source over another and how to write content that gets cited.',
+  description: "AI search engines pick favorites. Here's what makes them choose one source over another and how to write content that gets cited.",
   alternates: { canonical: '/blog/content-ai-cites' },
+  openGraph: {
+    title: 'How to Write Content That AI Actually Cites',
+    description: "AI search engines pick favorites. Here's what makes them choose one source over another and how to write content that gets cited.",
+    url: 'https://duelly.ai/blog/content-ai-cites',
+    type: 'article',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'How to Write Content That AI Actually Cites',
+    description: "AI search engines pick favorites. Here's what makes them choose one source over another and how to write content that gets cited.",
+  },
 }
 
 export default function ContentAICitesPage() {
   return (
     <main className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'How to Write Content That AI Actually Cites',
+        description: "AI search engines pick favorites. Here's what makes them choose one source over another and how to write content that gets cited.",
+        author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
+        publisher: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
+        datePublished: '2026-03-15',
+        dateModified: '2026-04-01',
+        mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://duelly.ai/blog/content-ai-cites' },
+      }) }} />
       <PublicNav />
 
       <article className="max-w-3xl mx-auto px-6 py-16">

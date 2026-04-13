@@ -5,14 +5,36 @@ import { PublicNav } from '@/components/public-nav'
 import { PublicFooter } from '@/components/public-footer'
 
 export const metadata: Metadata = {
-  title: 'Why Your Google Ranking Doesn\'t Match Your AI Ranking',
-  description: 'You can be #3 on Google and #8 in AI search. Here\'s why the gap exists and what you can do to close it.',
+  title: "Why Your Google Ranking Doesn't Match Your AI Ranking",
+  description: "You can be #3 on Google and #8 in AI search. Here's why the gap exists and what you can do to close it.",
   alternates: { canonical: '/blog/google-rank-vs-ai-rank' },
+  openGraph: {
+    title: "Why Your Google Ranking Doesn't Match Your AI Ranking",
+    description: "You can be #3 on Google and #8 in AI search. Here's why the gap exists and what you can do to close it.",
+    url: 'https://duelly.ai/blog/google-rank-vs-ai-rank',
+    type: 'article',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Why Your Google Ranking Doesn't Match Your AI Ranking",
+    description: "You can be #3 on Google and #8 in AI search. Here's why the gap exists and what you can do to close it.",
+  },
 }
 
 export default function GoogleRankVsAIRankPage() {
   return (
     <main className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: "Why Your Google Ranking Doesn't Match Your AI Ranking",
+        description: "You can be #3 on Google and #8 in AI search. Here's why the gap exists and what you can do to close it.",
+        author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
+        publisher: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
+        datePublished: '2026-03-15',
+        dateModified: '2026-04-01',
+        mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://duelly.ai/blog/google-rank-vs-ai-rank' },
+      }) }} />
       <PublicNav />
 
       <article className="max-w-3xl mx-auto px-6 py-16">

@@ -8,6 +8,17 @@ export const metadata: Metadata = {
   title: 'About Duelly — Search Intelligence Built for Small Business',
   description: 'Duelly is a search intelligence platform built by Fundylogic to help small businesses compete in the AI search era. Learn about our mission, methodology, and the team behind the tool.',
   alternates: { canonical: '/about' },
+  openGraph: {
+    title: 'About Duelly — Search Intelligence Built for Small Business',
+    description: 'Duelly is a search intelligence platform built by Fundylogic to help small businesses compete in the AI search era.',
+    url: 'https://duelly.ai/about',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'About Duelly — Search Intelligence Built for Small Business',
+    description: 'Duelly is a search intelligence platform built by Fundylogic to help small businesses compete in the AI search era.',
+  },
 }
 
 export default function AboutPage() {

@@ -6,13 +6,35 @@ import { PublicFooter } from '@/components/public-footer'
 
 export const metadata: Metadata = {
   title: 'Backlinks Explained: Why Other Websites Linking to You Matters',
-  description: 'Backlinks are one of the biggest ranking factors in SEO. Here\'s what they are, why they matter, and how to actually get them.',
+  description: "Backlinks are one of the biggest ranking factors in SEO. Here's what they are, why they matter, and how to actually get them.",
   alternates: { canonical: '/blog/backlinks-explained' },
+  openGraph: {
+    title: 'Backlinks Explained: Why Other Websites Linking to You Matters',
+    description: "Backlinks are one of the biggest ranking factors in SEO. Here's what they are, why they matter, and how to actually get them.",
+    url: 'https://duelly.ai/blog/backlinks-explained',
+    type: 'article',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Backlinks Explained: Why Other Websites Linking to You Matters',
+    description: "Backlinks are one of the biggest ranking factors in SEO. Here's what they are, why they matter, and how to actually get them.",
+  },
 }
 
 export default function BacklinksExplainedPage() {
   return (
     <main className="min-h-screen h-screen overflow-y-auto bg-background text-foreground">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'Backlinks Explained: Why Other Websites Linking to You Matters',
+        description: "Backlinks are one of the biggest ranking factors in SEO. Here's what they are, why they matter, and how to actually get them.",
+        author: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai' },
+        publisher: { '@type': 'Organization', name: 'Duelly', url: 'https://duelly.ai', logo: { '@type': 'ImageObject', url: 'https://duelly.ai/logo.png' } },
+        datePublished: '2026-03-15',
+        dateModified: '2026-04-01',
+        mainEntityOfPage: { '@type': 'WebPage', '@id': 'https://duelly.ai/blog/backlinks-explained' },
+      }) }} />
       <PublicNav />
 
       <article className="max-w-3xl mx-auto px-6 py-16">
