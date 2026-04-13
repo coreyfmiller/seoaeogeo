@@ -1,4 +1,4 @@
-export type ScanType = 'free-v3' | 'free-v4' | 'pro' | 'deep' | 'competitive' | 'keyword-arena'
+export type ScanType = 'free-v3' | 'free-v4' | 'pro' | 'deep' | 'competitive' | 'keyword-arena' | 'ai-test'
 
 export interface ScanHistoryEntry {
   url: string
@@ -117,6 +117,7 @@ export function getRouteForType(type: ScanHistoryEntry['type']): string {
     case 'deep': return '/deep-scan'
     case 'competitive': return '/battle-mode'
     case 'keyword-arena': return '/keyword-arena'
+    case 'ai-test': return '/ai-test'
     default: return '/free-audit'
   }
 }
@@ -131,6 +132,7 @@ export function clearScanHistory() {
     const toolKeys = [
       'battle_v3_siteA', 'battle_v3_siteB', 'battle_v3_data', 'battle_v3_backlinks',
       'arena_v3_keyword', 'arena_v3_userSite', 'arena_v3_result',
+      'ai_test_keyword', 'ai_test_userUrl', 'ai_test_result',
     ]
     for (const key of toolKeys) {
       try { localStorage.removeItem(key) } catch {}
@@ -153,7 +155,7 @@ export function wasHistoryCleared(): boolean {
 
 /** Clear all cached full results (one per type) */
 function clearAllCachedResults() {
-  const types: ScanType[] = ['free-v3', 'free-v4', 'pro', 'deep', 'competitive', 'keyword-arena']
+  const types: ScanType[] = ['free-v3', 'free-v4', 'pro', 'deep', 'competitive', 'keyword-arena', 'ai-test']
   for (const type of types) {
     try { localStorage.removeItem(latestResultKey(type)) } catch {}
     try { localStorage.removeItem(latestEntryKey(type)) } catch {}
@@ -164,7 +166,7 @@ function clearAllCachedResults() {
 export function exportScanHistory(): string {
   const entries = getScanHistory()
   const fullResults: Record<string, any> = {}
-  const types: ScanType[] = ['free-v3', 'free-v4', 'pro', 'deep', 'competitive', 'keyword-arena']
+  const types: ScanType[] = ['free-v3', 'free-v4', 'pro', 'deep', 'competitive', 'keyword-arena', 'ai-test']
   for (const type of types) {
     const latest = getLatestFullScan(type)
     if (latest) {

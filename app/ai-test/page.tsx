@@ -8,6 +8,8 @@ import { ScanErrorDialog } from "@/components/dashboard/scan-error-dialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { safeSetItem } from "@/lib/safe-storage"
+import { saveScanToHistory, wasHistoryCleared } from '@/lib/scan-history'
 import { FlaskConical, Search, Loader2, Crown, CheckCircle2, XCircle, Sparkles, Bot, Globe, Trophy, AlertTriangle, Lightbulb, ArrowRight } from "lucide-react"
 
 
@@ -48,6 +50,28 @@ export default function AITestPage() {
   const [creditDialogOpen, setCreditDialogOpen] = useState(false)
   const [retryingEngine, setRetryingEngine] = useState<string | null>(null)
   const autoRetryDoneRef = useRef<string | null>(null) // tracks which result set we've auto-retried
+
+  // Restore last scan from localStorage on mount
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (wasHistoryCleared()) return
+    const savedKeyword = localStorage.getItem('ai_test_keyword')
+    const savedUserUrl = localStorage.getItem('ai_test_userUrl')
+    const savedResult = localStorage.getItem('ai_test_result')
+    if (savedKeyword) setKeyword(savedKeyword)
+    if (savedUserUrl) setUserUrl(savedUserUrl)
+    if (savedResult) {
+      try { setResult(JSON.parse(savedResult)) } catch {}
+    }
+  }, [])
+
+  // Save state to localStorage when results change
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (keyword) safeSetItem('ai_test_keyword', keyword)
+    if (userUrl) safeSetItem('ai_test_userUrl', userUrl)
+    if (result) safeSetItem('ai_test_result', JSON.stringify(result))
+  }, [keyword, userUrl, result])
 
   // Auto-retry failed AI engines when results first load
   useEffect(() => {
@@ -126,6 +150,12 @@ export default function AITestPage() {
       if (typeof window !== 'undefined') window.dispatchEvent(new Event('credits-changed'))
       if (data.success) {
         setResult(data.data)
+        saveScanToHistory({
+          url: keyword.trim(),
+          type: 'ai-test',
+          timestamp: new Date().toISOString(),
+          hasFullResult: true,
+        }, data.data)
       } else {
         setError(data.error || 'AI Visibility check failed')
         setCreditsRefunded(data.creditsRefunded || 0)
