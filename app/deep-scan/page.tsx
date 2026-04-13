@@ -181,6 +181,17 @@ export default function DeepV3Page() {
           totalBacklinks: result.backlinkData.metrics?.totalBacklinks ?? 0,
           topBacklinks: (result.backlinkData.backlinks || []).slice(0, 5).map((b: any) => ({ source: b.sourceDomain || b.sourceUrl || '', anchor: b.anchorText || '' }))
         } : undefined,
+        metaChecks: (result as any).scanResult?.metaChecks ? {
+          hasCanonical: (result as any).scanResult.metaChecks.hasCanonical,
+          hasOgTitle: (result as any).scanResult.metaChecks.hasOgTitle,
+          hasOgDescription: (result as any).scanResult.metaChecks.hasOgDescription,
+          hasOgImage: (result as any).scanResult.metaChecks.hasOgImage,
+          hasTwitterCard: (result as any).scanResult.metaChecks.hasTwitterCard,
+          titleLength: (result as any).scanResult.metaChecks.titleLength,
+          descriptionLength: (result as any).scanResult.metaChecks.descriptionLength,
+        } : undefined,
+        pageTitle: (result as any).scanResult?.title || result.url,
+        pageDescription: (result as any).scanResult?.description || undefined,
       } }))
     } else {
       window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null }))

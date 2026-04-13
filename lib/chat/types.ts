@@ -39,6 +39,18 @@ export interface ScanContext {
   }
   competitorData?: any
   keywordData?: any
+  // Meta check data for code generation
+  metaChecks?: {
+    hasCanonical: boolean
+    hasOgTitle: boolean
+    hasOgDescription: boolean
+    hasOgImage: boolean
+    hasTwitterCard: boolean
+    titleLength: number
+    descriptionLength: number
+  }
+  pageTitle?: string
+  pageDescription?: string
 }
 
 export interface ChatRequest {

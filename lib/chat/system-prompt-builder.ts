@@ -124,6 +124,49 @@ You can advise on:
 - **Competitor Backlink Analysis:** How to interpret competitor link profiles and find link gap opportunities.`
 }
 
+function buildCodeGenerationSection(): string {
+  return `## CODE GENERATION CAPABILITIES
+
+You can generate ready-to-use code for users. When a user asks for help fixing an issue, provide the actual code — not just instructions. Tailor code to their detected platform.
+
+### What You Can Generate:
+
+**Open Graph & Twitter Card Tags:**
+When OG or Twitter tags are missing, generate the complete set of meta tags pre-filled with the user's actual page title, description, and URL from the scan data. Include og:type, og:url, og:title, og:description, og:image, twitter:card, twitter:title, twitter:description, twitter:image. Remind them to add a 1200x630px social sharing image.
+
+**Canonical Tags:**
+When canonical is missing, generate \`<link rel="canonical" href="...">\` using the scanned URL. For Next.js, use the metadata API format. Warn about duplicate content risks.
+
+**robots.txt:**
+Generate a platform-appropriate robots.txt. WordPress needs wp-admin/wp-includes blocks. Shopify needs cart/checkout blocks. Always include a Sitemap directive.
+
+**Meta Robots Tags:**
+If a page is accidentally noindexed, generate the fix. If a page should be noindexed (admin, thank-you pages), generate the noindex tag.
+
+**Schema/JSON-LD Markup:**
+Generate structured data for LocalBusiness, Organization, Product, Article, FAQPage, Restaurant — pre-filled with any data available from the scan. Format for the user's platform (WordPress plugin instructions, Shopify theme.liquid, Next.js metadata API, etc.).
+
+### Content Improvement Drafts:
+
+When the user asks you to improve their meta description, title tag, or page content, you should draft improved versions using the actual page content from the scan context. Follow these rules:
+
+- **Title tags:** Draft 2-3 options, 50-60 characters each, primary keyword near the front, include brand name at the end.
+- **Meta descriptions:** Draft 2-3 options, 120-160 characters each, include a call-to-action, mention the key value proposition.
+- **Opening paragraphs:** If the user asks, draft an improved opening paragraph that front-loads the main topic, includes the target keyword, and is written at an 8th-grade reading level.
+- **FAQ sections:** Generate 5-8 relevant Q&A pairs based on the page content, formatted as an FAQ section with proper heading structure.
+
+Always base your drafts on the actual page content and URL from the scan data. Never invent facts about the user's business — use what's in the scan context and ask for clarification if needed.
+
+### Code Formatting Rules:
+- Always wrap generated code in markdown code blocks with the appropriate language tag.
+- For HTML: use \`\`\`html
+- For JSON-LD: use \`\`\`json
+- For JavaScript/TypeScript: use \`\`\`typescript
+- Include comments explaining what each section does.
+- Always note which file to edit and where to paste the code.
+- Remind users to test in a staging environment first.`
+}
+
 function buildScanContextSection(scanContext: ScanContext): string {
   const lines: string[] = ['## CURRENT SCAN DATA']
   lines.push('')
@@ -195,6 +238,32 @@ function buildScanContextSection(scanContext: ScanContext): string {
   if (scanContext.keywordData) {
     lines.push('')
     lines.push('**Keyword Data:** Available — the user ran a Keyword Arena analysis. Reference this for keyword strategy.')
+  }
+
+  // Meta checks for code generation
+  if (scanContext.metaChecks) {
+    const mc = scanContext.metaChecks
+    const missing: string[] = []
+    if (!mc.hasOgTitle) missing.push('OG Title')
+    if (!mc.hasOgDescription) missing.push('OG Description')
+    if (!mc.hasOgImage) missing.push('OG Image')
+    if (!mc.hasTwitterCard) missing.push('Twitter Card')
+    if (!mc.hasCanonical) missing.push('Canonical Tag')
+    if (missing.length > 0) {
+      lines.push('')
+      lines.push(`**Missing Meta Tags:** ${missing.join(', ')}`)
+      lines.push('You can generate the exact code for these. Offer to generate it when relevant.')
+    }
+    if (mc.titleLength > 0) lines.push(`**Title Length:** ${mc.titleLength} chars`)
+    if (mc.descriptionLength > 0) lines.push(`**Description Length:** ${mc.descriptionLength} chars`)
+  }
+
+  // Page content for rewrite suggestions
+  if (scanContext.pageTitle) {
+    lines.push(`**Current Page Title:** "${scanContext.pageTitle}"`)
+  }
+  if (scanContext.pageDescription) {
+    lines.push(`**Current Meta Description:** "${scanContext.pageDescription}"`)
   }
 
   return lines.join('\n')
@@ -317,6 +386,7 @@ export function buildSystemPrompt(scanContext: ScanContext | null, currentPage?:
     buildSafetySection(),
     buildProductKnowledgeSection(),
     buildBacklinkSection(),
+    buildCodeGenerationSection(),
   ]
 
   // Page awareness — tell the AI what the user is currently looking at

@@ -89,6 +89,17 @@ export default function ProAuditV4Page() {
           totalBacklinks: result.backlinkData.metrics?.totalBacklinks ?? 0,
           topBacklinks: (result.backlinkData.backlinks || []).slice(0, 5).map((b: any) => ({ source: b.source || b.url, anchor: b.anchor || '' }))
         } : undefined,
+        metaChecks: result.pageData?.metaChecks ? {
+          hasCanonical: (result.pageData as any).metaChecks.hasCanonical,
+          hasOgTitle: (result.pageData as any).metaChecks.hasOgTitle,
+          hasOgDescription: (result.pageData as any).metaChecks.hasOgDescription,
+          hasOgImage: (result.pageData as any).metaChecks.hasOgImage,
+          hasTwitterCard: (result.pageData as any).metaChecks.hasTwitterCard,
+          titleLength: (result.pageData as any).metaChecks.titleLength,
+          descriptionLength: (result.pageData as any).metaChecks.descriptionLength,
+        } : undefined,
+        pageTitle: result.pageData?.title || result.url,
+        pageDescription: (result.pageData as any)?.description || undefined,
       } }))
     } else {
       window.dispatchEvent(new CustomEvent('duelly-scan-context', { detail: null }))

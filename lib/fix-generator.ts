@@ -531,3 +531,275 @@ export function validateGeneratedCode(code: string): { valid: boolean; errors: s
     errors
   };
 }
+
+
+// ---------------------------------------------------------------------------
+// Open Graph & Twitter Card Generator
+// ---------------------------------------------------------------------------
+
+export interface OgTwitterData {
+  url: string;
+  title: string;
+  description: string;
+  siteName?: string;
+  imageUrl?: string;
+  type?: 'website' | 'article' | 'product';
+  twitterHandle?: string;
+}
+
+export function generateOgTwitterTags(
+  data: OgTwitterData,
+  platform: PlatformType
+): FixInstruction {
+  const ogType = data.type || 'website';
+  const desc = data.description.length > 160
+    ? data.description.slice(0, 157) + '...'
+    : data.description;
+
+  const tags = [
+    `<meta property="og:type" content="${ogType}" />`,
+    `<meta property="og:url" content="${data.url}" />`,
+    `<meta property="og:title" content="${data.title}" />`,
+    `<meta property="og:description" content="${desc}" />`,
+    data.siteName ? `<meta property="og:site_name" content="${data.siteName}" />` : null,
+    data.imageUrl ? `<meta property="og:image" content="${data.imageUrl}" />` : `<meta property="og:image" content="[URL to your social sharing image — 1200x630px recommended]" />`,
+    '',
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:title" content="${data.title}" />`,
+    `<meta name="twitter:description" content="${desc}" />`,
+    data.imageUrl ? `<meta name="twitter:image" content="${data.imageUrl}" />` : `<meta name="twitter:image" content="[URL to your social sharing image]" />`,
+    data.twitterHandle ? `<meta name="twitter:site" content="${data.twitterHandle}" />` : null,
+  ].filter(Boolean).join('\n');
+
+  let code = tags;
+  if (platform === 'nextjs') {
+    code = `// In your page.tsx or layout.tsx — use the Metadata API:
+export const metadata = {
+  openGraph: {
+    type: '${ogType}',
+    url: '${data.url}',
+    title: '${data.title}',
+    description: '${desc}',${data.siteName ? `\n    siteName: '${data.siteName}',` : ''}
+    images: ['${data.imageUrl || '[Your OG image URL]'}'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '${data.title}',
+    description: '${desc}',
+    images: ['${data.imageUrl || '[Your Twitter image URL]'}'],${data.twitterHandle ? `\n    site: '${data.twitterHandle}',` : ''}
+  },
+};`;
+  }
+
+  const steps: InstructionStep[] = [];
+  if (platform === 'wordpress') {
+    steps.push({ step: 1, title: 'Use Yoast SEO or RankMath', description: 'Both plugins auto-generate OG and Twitter tags. Go to the page editor > SEO section > Social tab. Fill in the title, description, and upload a social sharing image (1200x630px).' });
+    steps.push({ step: 2, title: 'Or add manually', description: 'If not using a plugin, paste the code below into your theme\'s header.php inside the <head> tag.' });
+  } else if (platform === 'shopify') {
+    steps.push({ step: 1, title: 'Edit theme.liquid', description: 'Go to Online Store > Themes > Edit Code > Layout > theme.liquid. Paste the tags inside <head> before </head>.' });
+    steps.push({ step: 2, title: 'Use Liquid variables', description: 'For dynamic pages, replace hardcoded values with Liquid: {{ page.title }}, {{ page.description }}, {{ page.url }}.' });
+  } else if (platform === 'nextjs') {
+    steps.push({ step: 1, title: 'Add to your Metadata export', description: 'In your page.tsx or layout.tsx, add the openGraph and twitter fields to your metadata export as shown above.' });
+  } else {
+    steps.push({ step: 1, title: 'Add to <head>', description: 'Paste the meta tags below inside your <head> section, before the closing </head> tag.' });
+  }
+  steps.push({ step: steps.length + 1, title: 'Add a social sharing image', description: 'Create a 1200x630px image for social previews. This is what shows when your link is shared on Facebook, Twitter, LinkedIn, etc.' });
+  steps.push({ step: steps.length + 1, title: 'Validate', description: 'Test your tags with the Facebook Sharing Debugger and Twitter Card Validator.', validationUrl: 'https://developers.facebook.com/tools/debug/' });
+
+  return {
+    title: 'Add Open Graph & Twitter Card Tags',
+    steps,
+    code,
+    platform,
+    estimatedTime: '5-10 minutes',
+    difficulty: 'easy',
+    impact: 'medium',
+    validationLinks: [
+      { tool: 'Facebook Sharing Debugger', url: 'https://developers.facebook.com/tools/debug/', description: 'Preview how your page appears when shared on Facebook' },
+      { tool: 'Twitter Card Validator', url: 'https://cards-dev.twitter.com/validator', description: 'Preview your Twitter Card' },
+    ],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Canonical Tag Generator
+// ---------------------------------------------------------------------------
+
+export function generateCanonicalTag(
+  pageUrl: string,
+  platform: PlatformType
+): FixInstruction {
+  // Normalize URL: ensure https, strip trailing slash for consistency
+  const canonical = pageUrl.replace(/\/$/, '');
+
+  let code = `<link rel="canonical" href="${canonical}" />`;
+
+  if (platform === 'nextjs') {
+    code = `// In your page.tsx or layout.tsx:
+export const metadata = {
+  alternates: {
+    canonical: '${canonical}',
+  },
+};`;
+  }
+
+  const steps: InstructionStep[] = [];
+  if (platform === 'wordpress') {
+    steps.push({ step: 1, title: 'Use Yoast SEO or RankMath', description: 'Edit the page > scroll to the SEO section > Advanced tab > "Canonical URL" field. Enter the preferred URL for this page. The plugin handles the <link> tag automatically.' });
+    steps.push({ step: 2, title: 'Or add manually', description: 'If not using a plugin, add the tag below to your theme\'s header.php inside <head>.' });
+  } else if (platform === 'shopify') {
+    steps.push({ step: 1, title: 'Shopify handles canonicals automatically', description: 'Shopify adds canonical tags by default. If you need to override, edit theme.liquid and add the tag in <head>. Remove the existing {{ canonical_tag }} Liquid tag first to avoid duplicates.' });
+  } else if (platform === 'nextjs') {
+    steps.push({ step: 1, title: 'Add to Metadata', description: 'Add the alternates.canonical field to your metadata export in page.tsx or layout.tsx as shown above.' });
+  } else {
+    steps.push({ step: 1, title: 'Add to <head>', description: 'Paste the canonical link tag inside your <head> section. Ensure only ONE canonical tag exists per page.' });
+  }
+  steps.push({ step: steps.length + 1, title: 'Verify', description: 'View page source and search for "canonical" to confirm the tag is present and points to the correct URL.' });
+
+  return {
+    title: 'Add Canonical Tag',
+    steps,
+    code,
+    platform,
+    estimatedTime: '2-5 minutes',
+    difficulty: 'easy',
+    impact: 'high',
+    validationLinks: [
+      { tool: 'Google Search Console', url: 'https://search.google.com/search-console', description: 'Check for canonical issues under Coverage > Excluded' },
+    ],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// robots.txt Generator
+// ---------------------------------------------------------------------------
+
+export function generateRobotsTxt(
+  siteUrl: string,
+  platform: PlatformType
+): FixInstruction {
+  const baseUrl = siteUrl.replace(/\/+$/, '');
+
+  const robotsTxtByPlatform: Record<string, string> = {
+    wordpress: `User-agent: *
+Allow: /
+Disallow: /wp-admin/
+Disallow: /wp-includes/
+Disallow: /wp-json/
+Disallow: /xmlrpc.php
+Disallow: /?s=
+Disallow: /search/
+Allow: /wp-admin/admin-ajax.php
+
+# Sitemaps
+Sitemap: ${baseUrl}/sitemap_index.xml
+Sitemap: ${baseUrl}/sitemap.xml`,
+
+    shopify: `User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /cart
+Disallow: /orders
+Disallow: /checkouts/
+Disallow: /checkout
+Disallow: /carts
+Disallow: /account
+Disallow: /*?variant=*
+Disallow: /*?q=*
+Disallow: /search
+
+# Sitemaps
+Sitemap: ${baseUrl}/sitemap.xml`,
+
+    nextjs: `User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+
+# Sitemaps
+Sitemap: ${baseUrl}/sitemap.xml`,
+
+    default: `User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /search
+Disallow: /cart
+Disallow: /checkout
+Disallow: /account
+
+# Sitemaps
+Sitemap: ${baseUrl}/sitemap.xml`,
+  };
+
+  const code = robotsTxtByPlatform[platform] || robotsTxtByPlatform.default;
+
+  const steps: InstructionStep[] = [];
+  if (platform === 'wordpress') {
+    steps.push({ step: 1, title: 'Use Yoast SEO', description: 'Go to Yoast SEO > Tools > File Editor > robots.txt. Paste the content below. Yoast manages the file for you.' });
+    steps.push({ step: 2, title: 'Or create manually', description: 'Create a file named robots.txt in your WordPress root directory (same folder as wp-config.php). Upload via FTP or your hosting file manager.' });
+  } else if (platform === 'shopify') {
+    steps.push({ step: 1, title: 'Edit robots.txt.liquid', description: 'Shopify auto-generates robots.txt. To customize: go to Online Store > Themes > Edit Code > Templates > add robots.txt.liquid. Paste the content below.' });
+  } else if (platform === 'nextjs') {
+    steps.push({ step: 1, title: 'Create robots.ts', description: 'Create app/robots.ts (App Router) and export a default function that returns the robots configuration. Or create a static public/robots.txt file.' });
+  } else {
+    steps.push({ step: 1, title: 'Create robots.txt', description: 'Create a file named robots.txt in your website\'s root directory. Paste the content below.' });
+  }
+  steps.push({ step: steps.length + 1, title: 'Verify', description: 'Visit yourdomain.com/robots.txt in a browser to confirm it\'s accessible.', validationUrl: `${baseUrl}/robots.txt` });
+  steps.push({ step: steps.length + 1, title: 'Test in Search Console', description: 'Use Google Search Console > Settings > robots.txt to test your file.', validationUrl: 'https://search.google.com/search-console' });
+
+  return {
+    title: 'Create or Fix robots.txt',
+    steps,
+    code,
+    platform,
+    estimatedTime: '5 minutes',
+    difficulty: 'easy',
+    impact: 'high',
+    validationLinks: [
+      { tool: 'Google robots.txt Tester', url: 'https://search.google.com/search-console', description: 'Test your robots.txt in Google Search Console' },
+    ],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Meta Robots / Noindex Fix
+// ---------------------------------------------------------------------------
+
+export function generateMetaRobots(
+  shouldIndex: boolean,
+  platform: PlatformType
+): FixInstruction {
+  const content = shouldIndex ? 'index, follow' : 'noindex, nofollow';
+  let code = `<meta name="robots" content="${content}" />`;
+
+  if (platform === 'nextjs') {
+    code = `// In your page.tsx:
+export const metadata = {
+  robots: {
+    index: ${shouldIndex},
+    follow: ${shouldIndex},
+  },
+};`;
+  }
+
+  const steps: InstructionStep[] = [];
+  if (shouldIndex) {
+    steps.push({ step: 1, title: 'Remove noindex tag', description: 'Search your page source for <meta name="robots" content="noindex">. Remove it or change to "index, follow". This page should be indexed by search engines.' });
+  } else {
+    steps.push({ step: 1, title: 'Add noindex tag', description: 'Add the meta robots tag below to your <head> section. This tells search engines not to index this page (useful for admin pages, thank-you pages, etc.).' });
+  }
+
+  if (platform === 'wordpress') {
+    steps.push({ step: 2, title: 'Check in Yoast/RankMath', description: 'Edit the page > SEO section > Advanced tab > look for "Allow search engines to show this page in search results?" — set to Yes (for index) or No (for noindex).' });
+  }
+
+  return {
+    title: shouldIndex ? 'Fix Accidental Noindex' : 'Add Noindex Tag',
+    steps,
+    code,
+    platform,
+    estimatedTime: '2 minutes',
+    difficulty: 'easy',
+    impact: 'high',
+  };
+}
