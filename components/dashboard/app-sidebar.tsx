@@ -40,7 +40,7 @@ const mainNav: NavItem[] = [
   { name: "AI Visibility", icon: FlaskConical, href: "/ai-test", badge: "NEW" },
   { name: "Pro Audit", icon: Bot, href: "/pro-audit" },
   { name: "Deep Scan", icon: Layers, href: "/deep-scan" },
-  { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena" },
+  { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena", badge: "ADMIN" },
   { name: "Competitor Duel", icon: Swords, href: "/battle-mode" },
   { name: "Dashboard", icon: Home, href: "/dashboard" },
 ]
@@ -155,6 +155,7 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
           </p>
           <ul className="space-y-1">
             {mainNav
+              .filter(item => item.badge !== 'ADMIN' || isAdmin)
               .map((item) => {
               const isProOnly = proOnlyPaths.includes(item.href)
               const isLocked = isProOnly && isFreeUser
