@@ -15,6 +15,7 @@ import type {
   ChatMessage,
   ScanContext,
   UserProfile,
+  DuellyChatContextValue,
 } from '@/lib/chat/types'
 
 // ---------------------------------------------------------------------------
@@ -83,7 +84,6 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        // Re-fetch profile on auth change
         loadUser()
       } else {
         setUser(null)
@@ -94,6 +94,135 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
       subscription.unsubscribe()
     }
   }, [])
+
+  // -----------------------------------------------------------------------
+  // setScanContext (defined before its consumers)
+  // -----------------------------------------------------------------------
+  const setScanContext = useCallback((ctx: ScanContext | null) => {
+    setScanContextState(ctx)
+    if (ctx) {
+      setProactiveSuggestion(generateProactiveSuggestion(ctx))
+    } else {
+      setProactiveSuggestion(null)
+    }
+  }, [])
+
+  // -----------------------------------------------------------------------
+  // sendMessage (defined before startTutorial which depends on it)
+  // -----------------------------------------------------------------------
+  const sendMessage = useCallback(
+    async (text: string) => {
+      if (isStreaming) return
+
+      setError(null)
+
+      const userMsg: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: 'user',
+        content: text,
+        timestamp: Date.now(),
+      }
+
+      const assistantMsg: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: '',
+        timestamp: Date.now(),
+      }
+
+      setMessages((prev) => [...prev, userMsg, assistantMsg])
+      setIsStreaming(true)
+
+      const history = [...messages, userMsg].slice(-MAX_HISTORY)
+
+      abortRef.current?.abort()
+      const controller = new AbortController()
+      abortRef.current = controller
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: text,
+            conversationHistory: history,
+            scanContext: scanContext,
+            currentPage: pathname,
+          }),
+          signal: controller.signal,
+        })
+
+        if (!response.ok) {
+          const body = await response.json().catch(() => ({}))
+          const errMsg = body.error ?? `Request failed (${response.status})`
+          setError(errMsg)
+          setMessages((prev) => prev.filter((m) => m.id !== assistantMsg.id))
+          setIsStreaming(false)
+          return
+        }
+
+        const reader = response.body?.getReader()
+        if (!reader) {
+          setError('No response stream available')
+          setMessages((prev) => prev.filter((m) => m.id !== assistantMsg.id))
+          setIsStreaming(false)
+          return
+        }
+
+        const decoder = new TextDecoder()
+        let buffer = ''
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          buffer += decoder.decode(value, { stream: true })
+
+          const lines = buffer.split('\n')
+          buffer = lines.pop() ?? ''
+
+          for (const line of lines) {
+            const trimmed = line.trim()
+            if (!trimmed.startsWith('data: ')) continue
+
+            const jsonStr = trimmed.slice(6)
+            try {
+              const event = JSON.parse(jsonStr)
+
+              if (event.type === 'token' && event.content) {
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantMsg.id
+                      ? { ...m, content: m.content + event.content }
+                      : m
+                  )
+                )
+              } else if (event.type === 'done') {
+                setMessageCount((prev) => prev + 1)
+              } else if (event.type === 'error') {
+                setError(event.message ?? 'An error occurred')
+              }
+            } catch {
+              // Ignore malformed JSON lines
+            }
+          }
+        }
+      } catch (err: unknown) {
+        if ((err as Error).name !== 'AbortError') {
+          setError('Connection lost. Please try again.')
+          setMessages((prev) =>
+            prev.filter(
+              (m) => m.id !== assistantMsg.id || m.content.length > 0
+            )
+          )
+        }
+      } finally {
+        setIsStreaming(false)
+        abortRef.current = null
+      }
+    },
+    [isStreaming, messages, scanContext, pathname]
+  )
 
   // -----------------------------------------------------------------------
   // togglePanel
@@ -118,7 +247,7 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
   }, [])
 
   // -----------------------------------------------------------------------
-  // startTutorial — opens panel, clears chat, sends walkthrough prompt
+  // startTutorial (sendMessage is now defined above)
   // -----------------------------------------------------------------------
   const startTutorial = useCallback(() => {
     setMessages([])
@@ -129,14 +258,18 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
     }, 100)
   }, [sendMessage])
 
-  // Listen for tutorial trigger from sidebar (avoids circular import)
+  // -----------------------------------------------------------------------
+  // Event listeners
+  // -----------------------------------------------------------------------
+
+  // Listen for tutorial trigger from sidebar
   useEffect(() => {
     const handler = () => startTutorial()
     window.addEventListener('duelly-start-tutorial', handler)
     return () => window.removeEventListener('duelly-start-tutorial', handler)
   }, [startTutorial])
 
-  // Listen for scan context from tool pages (avoids circular import)
+  // Listen for scan context from tool pages
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent).detail
@@ -147,166 +280,8 @@ export function DuellyChatProvider({ children }: { children: ReactNode }) {
   }, [setScanContext])
 
   // -----------------------------------------------------------------------
-  // setScanContext
+  // Render
   // -----------------------------------------------------------------------
-  const setScanContext = useCallback((ctx: ScanContext | null) => {
-    setScanContextState(ctx)
-    if (ctx) {
-      setProactiveSuggestion(generateProactiveSuggestion(ctx))
-    } else {
-      setProactiveSuggestion(null)
-    }
-  }, [])
-
-  // -----------------------------------------------------------------------
-  // sendMessage
-  // -----------------------------------------------------------------------
-  const sendMessage = useCallback(
-    async (text: string) => {
-      if (isStreaming) return
-
-      setError(null)
-
-      // Add user message
-      const userMsg: ChatMessage = {
-        id: crypto.randomUUID(),
-        role: 'user',
-        content: text,
-        timestamp: Date.now(),
-      }
-
-      // Prepare assistant placeholder
-      const assistantMsg: ChatMessage = {
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        content: '',
-        timestamp: Date.now(),
-      }
-
-      setMessages((prev) => [...prev, userMsg, assistantMsg])
-      setIsStreaming(true)
-
-      // Build conversation history (last 10 messages, excluding the new ones)
-      const history = [...messages, userMsg].slice(-MAX_HISTORY)
-
-      // Abort any previous stream
-      abortRef.current?.abort()
-      const controller = new AbortController()
-      abortRef.current = controller
-
-      try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: text,
-            conversationHistory: history,
-            scanContext: scanContext,
-            currentPage: pathname,
-          }),
-          signal: controller.signal,
-        })
-
-        // Handle non-stream error responses
-        if (!response.ok) {
-          const body = await response.json().catch(() => ({}))
-          const errMsg =
-            body.error ?? `Request failed (${response.status})`
-          setError(errMsg)
-          // Remove the empty assistant placeholder
-          setMessages((prev) => prev.filter((m) => m.id !== assistantMsg.id))
-          setIsStreaming(false)
-          return
-        }
-
-        // Parse SSE stream
-        const reader = response.body?.getReader()
-        if (!reader) {
-          setError('No response stream available')
-          setMessages((prev) => prev.filter((m) => m.id !== assistantMsg.id))
-          setIsStreaming(false)
-          return
-        }
-
-        const decoder = new TextDecoder()
-        let buffer = ''
-
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-
-          buffer += decoder.decode(value, { stream: true })
-
-          // Process complete SSE lines
-          const lines = buffer.split('\n')
-          // Keep the last (possibly incomplete) line in the buffer
-          buffer = lines.pop() ?? ''
-
-          for (const line of lines) {
-            const trimmed = line.trim()
-            if (!trimmed.startsWith('data: ')) continue
-
-            const jsonStr = trimmed.slice(6) // strip "data: "
-            try {
-              const event = JSON.parse(jsonStr)
-
-              if (event.type === 'token' && event.content) {
-                setMessages((prev) =>
-                  prev.map((m) =>
-                    m.id === assistantMsg.id
-                      ? { ...m, content: m.content + event.content }
-                      : m
-                  )
-                )
-              } else if (event.type === 'done') {
-                // Increment local message count on success
-                setMessageCount((prev) => prev + 1)
-              } else if (event.type === 'error') {
-                setError(event.message ?? 'An error occurred')
-              }
-            } catch {
-              // Ignore malformed JSON lines
-            }
-          }
-        }
-      } catch (err: unknown) {
-        if ((err as Error).name !== 'AbortError') {
-          setError('Connection lost. Please try again.')
-          // Remove empty assistant message on network failure
-          setMessages((prev) =>
-            prev.filter(
-              (m) => m.id !== assistantMsg.id || m.content.length > 0
-            )
-          )
-        }
-      } finally {
-        setIsStreaming(false)
-        abortRef.current = null
-      }
-    },
-    [isStreaming, messages, scanContext]
-  )
-
-  // -----------------------------------------------------------------------
-  // Context value
-  // -----------------------------------------------------------------------
-  const contextValue: DuellyChatContextValue = {
-    isOpen,
-    messages,
-    isStreaming,
-    messageCount,
-    messageLimit: MESSAGE_LIMIT,
-    error,
-    scanContext,
-    setScanContext,
-    togglePanel,
-    sendMessage,
-    clearConversation,
-    startTutorial,
-    user,
-    proactiveSuggestion,
-  }
-
   return (
     <>
       {children}
