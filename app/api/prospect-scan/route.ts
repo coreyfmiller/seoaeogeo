@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { performScan } from '@/lib/crawler'
 import { calculateScoresFromScanResult } from '@/lib/grader-v2'
+import { analyzeWithGemini } from '@/lib/gemini'
+import { detectSiteType } from '@/lib/site-type-detector'
 import { getMozBacklinkData } from '@/lib/moz'
 import { fetchPageSpeedInsights } from '@/lib/pagespeed'
 
-export const maxDuration = 30
+export const maxDuration = 60
 
 export async function POST(request: NextRequest) {
   // 1. API key auth
@@ -26,41 +28,61 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'url is required' }, { status: 400 })
   }
 
-  // Normalize URL
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
     url = `https://${url}`
   }
 
   try {
     // 3. Crawl the page
-    const scanResult = await performScan(url)
+    const pageData = await performScan(url)
 
-    if (scanResult.botProtection?.detected) {
+    if (pageData.botProtection?.detected) {
       return NextResponse.json({
         error: 'Bot protection detected',
-        type: scanResult.botProtection.type,
+        type: pageData.botProtection.type,
       }, { status: 422 })
     }
 
-    // 4. Run grader + Moz + PageSpeed in parallel
-    const [graderResult, mozData, pageSpeedMobile, pageSpeedDesktop] = await Promise.allSettled([
-      Promise.resolve(calculateScoresFromScanResult(scanResult)),
+    // 4. Site type detection (affects scoring weights)
+    const siteTypeResult = detectSiteType(pageData, [])
+    ;(pageData as any).siteType = siteTypeResult.primaryType
+
+    // 5. Run Gemini AI + Moz + PageSpeed all in parallel
+    const [aiResult, mozResult, psMobileResult, psDesktopResult] = await Promise.allSettled([
+      analyzeWithGemini({
+        title: pageData.title,
+        description: pageData.description,
+        thinnedText: pageData.thinnedText,
+        summarizedContent: pageData.summarizedContent,
+        schemas: pageData.schemas,
+        structuralData: pageData.structuralData,
+        platform: pageData.platformDetection?.label,
+      }),
       getMozBacklinkData(url, 5),
       fetchPageSpeedInsights(url, 'mobile'),
       fetchPageSpeedInsights(url, 'desktop'),
     ])
 
-    // Extract grader scores (SEO + GEO only)
-    const scores = graderResult.status === 'fulfilled' ? graderResult.value : null
-    const seoScore = scores?.seoScore ?? 0
-    const geoScore = scores?.geoScore ?? 0
+    // 6. Inject AI results into pageData (same as Pro Audit)
+    if (aiResult.status === 'fulfilled') {
+      const ai = aiResult.value
+      ;(pageData as any).semanticFlags = ai.semanticFlags
+      ;(pageData as any).schemaQuality = ai.schemaQuality
+      ;(pageData as any).aiAnalysis = ai
 
-    // Extract critical issues from grader breakdown
+      // Override site type with AI detection if available
+      if (ai.detectedSiteType && ai.detectedSiteType !== 'general') {
+        ;(pageData as any).siteType = ai.detectedSiteType
+      }
+    }
+
+    // 7. Grade with AI-enriched data
+    const graderResult = calculateScoresFromScanResult(pageData)
+
+    // 8. Extract critical issues
     const criticalIssues: string[] = []
-    if (scores?.breakdown) {
-      const seoBreakdown = scores.breakdown.seo || []
-      const geoBreakdown = scores.breakdown.geo || []
-      for (const category of [...seoBreakdown, ...geoBreakdown]) {
+    if (graderResult.breakdown) {
+      for (const category of [...(graderResult.breakdown.seo || []), ...(graderResult.breakdown.geo || [])]) {
         for (const component of category.components || []) {
           if (component.status === 'critical' && component.feedback) {
             criticalIssues.push(component.feedback)
@@ -69,8 +91,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Extract Moz data
-    const moz = mozData.status === 'fulfilled' ? mozData.value : null
+    // 9. Extract parallel results
+    const moz = mozResult.status === 'fulfilled' ? mozResult.value : null
+    const psMobile = psMobileResult.status === 'fulfilled' ? psMobileResult.value : null
+    const psDesktop = psDesktopResult.status === 'fulfilled' ? psDesktopResult.value : null
+
     const topBacklinks = (moz?.backlinks || []).slice(0, 5).map(b => ({
       sourceDomain: b.sourceDomain,
       sourceUrl: b.sourceUrl,
@@ -79,15 +104,11 @@ export async function POST(request: NextRequest) {
       isDofollow: b.isDofollow,
     }))
 
-    // Extract PageSpeed scores
-    const psMobile = pageSpeedMobile.status === 'fulfilled' ? pageSpeedMobile.value : null
-    const psDesktop = pageSpeedDesktop.status === 'fulfilled' ? pageSpeedDesktop.value : null
-
-    // 5. Return flat response
+    // 10. Return flat response
     return NextResponse.json({
-      url: scanResult.url,
-      seoScore,
-      geoScore,
+      url: pageData.url,
+      seoScore: graderResult.seoScore,
+      geoScore: graderResult.geoScore,
       domainAuthority: moz?.metrics?.domainAuthority ?? 0,
       pageAuthority: moz?.metrics?.pageAuthority ?? 0,
       totalBacklinks: moz?.metrics?.totalBacklinks ?? 0,
@@ -96,7 +117,8 @@ export async function POST(request: NextRequest) {
       topBacklinks,
       pageSpeedMobile: psMobile?.performanceScore ?? 0,
       pageSpeedDesktop: psDesktop?.performanceScore ?? 0,
-      platform: scanResult.platformDetection?.platform || 'Unknown',
+      platform: pageData.platformDetection?.platform || 'Unknown',
+      siteType: (pageData as any).siteType || 'general',
       criticalIssues,
       scannedAt: new Date().toISOString(),
     })
