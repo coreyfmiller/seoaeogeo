@@ -75,15 +75,28 @@ export async function POST(request: NextRequest) {
     // 7. Grade with AI-enriched data
     const graderResult = calculateScoresFromScanResult(pageData)
 
-    // 8. Extract Moz DA
+    // 8. Extract critical issues from grader breakdown (free — already computed)
+    const criticalIssues: string[] = []
+    if (graderResult.breakdown) {
+      for (const category of [...(graderResult.breakdown.seo || []), ...(graderResult.breakdown.geo || [])]) {
+        for (const component of category.components || []) {
+          if (component.status === 'critical' && component.feedback) {
+            criticalIssues.push(component.feedback)
+          }
+        }
+      }
+    }
+
+    // 9. Extract Moz DA
     const moz = mozResult.status === 'fulfilled' ? mozResult.value : null
 
-    // 9. Return lean response
+    // 10. Return lean response
     return NextResponse.json({
       url: pageData.url,
       seoScore: graderResult.seoScore,
       geoScore: graderResult.geoScore,
       domainAuthority: moz?.domainAuthority ?? 0,
+      criticalIssues,
     })
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Scan failed'
