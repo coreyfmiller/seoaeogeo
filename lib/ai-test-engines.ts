@@ -274,7 +274,7 @@ async function queryGemini(keyword: string): Promise<AITestEngineResult> {
     const modelName = await getGeminiModel()
     const model = genAI.getGenerativeModel({
       model: modelName,
-      generationConfig: { temperature: 0.1, maxOutputTokens: 2000 },
+      generationConfig: { temperature: 0, maxOutputTokens: 2000 },
       tools: [{ googleSearch: {} } as any],
     })
     const result = await model.generateContent(NATURAL_PROMPT(keyword))

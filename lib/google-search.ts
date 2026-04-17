@@ -171,7 +171,7 @@ For each result provide the rank number, page title, full URL, and a one-line de
     contents: prompt,
     config: {
       tools: [{ googleSearch: {} }],
-      temperature: 0.1,
+      temperature: 0,
     },
   })
 

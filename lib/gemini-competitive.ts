@@ -24,7 +24,7 @@ export async function analyzeCompetitive(siteA: {
   const model = genAI.getGenerativeModel({
     model: modelName,
     generationConfig: {
-      temperature: 0.1,
+      temperature: 0,
       topP: 0.1,
       responseMimeType: "application/json"
     }

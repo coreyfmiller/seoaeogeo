@@ -297,7 +297,7 @@ export async function generateAIExpertAnalysis(data: ExpertAnalysisData): Promis
     const modelName = await getGeminiModel()
     const model = genAI.getGenerativeModel({
       model: modelName,
-      generationConfig: { temperature: 0.3, topP: 0.4, maxOutputTokens: 2048 },
+      generationConfig: { temperature: 0, topP: 0.4, maxOutputTokens: 2048 },
     })
 
     const prompt = buildPrompt(data)

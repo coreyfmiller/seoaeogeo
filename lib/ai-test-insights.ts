@@ -32,7 +32,7 @@ export async function generateAITestInsights(input: InsightsInput): Promise<AITe
     const modelName = await getGeminiModel()
     const model = genAI.getGenerativeModel({
       model: modelName,
-      generationConfig: { temperature: 0.3, maxOutputTokens: 800 },
+      generationConfig: { temperature: 0, maxOutputTokens: 800 },
     })
 
     const hasUserUrl = !!input.userUrl
