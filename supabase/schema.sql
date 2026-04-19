@@ -75,3 +75,23 @@ CREATE POLICY "Service role full access to scan_jobs"
 -- Each user gets 100 chat messages. Refillable for 10 credits.
 ALTER TABLE public.profiles
   ADD COLUMN IF NOT EXISTS chat_messages_remaining INTEGER NOT NULL DEFAULT 100;
+
+-- 9. API usage logging for prospect-scan and future external APIs
+CREATE TABLE public.api_usage_log (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  api_key TEXT NOT NULL DEFAULT 'prospect',
+  url TEXT NOT NULL,
+  seo_score INTEGER DEFAULT 0,
+  geo_score INTEGER DEFAULT 0,
+  duration_ms INTEGER DEFAULT 0,
+  success BOOLEAN NOT NULL DEFAULT true,
+  error TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.api_usage_log ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Service role full access to api_usage_log"
+  ON public.api_usage_log FOR ALL
+  USING (true)
+  WITH CHECK (true);
