@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/battle-mode`, lastModified: '2026-04-01', changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/ai-test`, lastModified: '2026-04-01', changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/free-audit`, lastModified: '2026-03-15', changeFrequency: 'weekly', priority: 0.6 },
+    { url: `${baseUrl}/demo`, lastModified: '2026-04-20', changeFrequency: 'monthly', priority: 0.7 },
     { url: `${baseUrl}/about`, lastModified: '2026-03-15', changeFrequency: 'monthly', priority: 0.8 },
     { url: `${baseUrl}/blog`, lastModified: '2026-04-01', changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/blog/what-is-aeo`, lastModified: '2026-04-01', changeFrequency: 'monthly', priority: 0.7 },
