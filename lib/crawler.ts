@@ -1,5 +1,6 @@
 import { chromium as playwright, type Browser, type Page } from 'playwright-core';
 import chromium from '@sparticuz/chromium';
+import * as cheerio from 'cheerio';
 import { thinHtml, extractSchema } from './utils/cleaner';
 import { summarizeContent, formatSummaryForAI } from './utils/content-summarizer';
 import { getCrawlerErrorMessage } from './utils/crawler-errors';
@@ -253,7 +254,17 @@ async function performScanRemote(targetUrl: string, options?: { lightweight?: bo
 export async function performScan(targetUrl: string, options?: { lightweight?: boolean }): Promise<ScanResult> {
     // Use remote worker when configured (production)
     if (CRAWL_WORKER_URL) {
-        return performScanRemote(targetUrl, options);
+        try {
+            return await performScanRemote(targetUrl, options);
+        } catch (err: any) {
+            const msg = (err.technicalMessage || err.message || '').toLowerCase();
+            const isNavigationError = msg.includes('navigating') || msg.includes('navigation') || msg.includes('page.content');
+            if (isNavigationError) {
+                console.log(`[Crawler] Worker navigation error for ${targetUrl}, falling back to fetch+cheerio`);
+                return performScanFetchFallback(targetUrl);
+            }
+            throw err;
+        }
     }
 
     // Local Playwright fallback (development)
@@ -308,4 +319,141 @@ export async function performScan(targetUrl: string, options?: { lightweight?: b
     } finally {
         if (browser) await browser.close();
     }
+}
+
+/**
+ * Fetch + Cheerio fallback crawler.
+ * Used when the Playwright worker fails due to navigation/redirect issues.
+ * No JS rendering — parses raw HTML only.
+ */
+async function performScanFetchFallback(targetUrl: string): Promise<ScanResult> {
+    if (!targetUrl.startsWith('http')) targetUrl = `https://${targetUrl}`;
+    const start = Date.now();
+
+    let html = '';
+    let finalUrl = targetUrl;
+    let statusCode = 0;
+
+    try {
+        const res = await fetch(targetUrl, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' },
+            redirect: 'follow',
+            signal: AbortSignal.timeout(20000),
+        });
+        html = await res.text();
+        finalUrl = res.url;
+        statusCode = res.status;
+    } catch (err: any) {
+        console.error(`[Crawler Fallback] Fetch failed for ${targetUrl}:`, err.message);
+        throw new Error(`Could not reach ${targetUrl}`);
+    }
+
+    const responseTimeMs = Date.now() - start;
+    const isHttps = finalUrl.startsWith('https');
+
+    // Bot protection check
+    const h = html.toLowerCase();
+    if (h.includes('just a moment') || h.includes('cf-browser-verification') || h.includes('challenge-platform')) {
+        return {
+            url: finalUrl, title: '', description: '', thinnedText: '', summarizedContent: '',
+            schemas: [], structuralData: { semanticTags: { article: 0, main: 0, nav: 0, aside: 0, headers: 0, h1Count: 0, h2Count: 0, h3Count: 0 }, links: { internal: 0, external: 0, socialLinksCount: 0 }, media: { totalImages: 0, imagesWithAlt: 0 }, wordCount: 0 },
+            technical: { responseTimeMs, isHttps, status: statusCode },
+            metaChecks: { titleLength: 0, descriptionLength: 0, hasCanonical: false, canonicalUrl: '', hasViewport: false, hasOgTitle: false, hasOgDescription: false, hasOgImage: false, hasTwitterCard: false },
+            botProtection: { detected: true, type: 'Cloudflare' },
+        };
+    }
+
+    const $ = cheerio.load(html);
+
+    // Extract metadata
+    const title = $('title').first().text().trim();
+    const description = $('meta[name="description"]').attr('content')?.trim() || '';
+    const canonicalUrl = $('link[rel="canonical"]').attr('href') || '';
+
+    // Structural data
+    const h1Count = $('h1').length;
+    const h2Count = $('h2').length;
+    const h3Count = $('h3').length;
+
+    // Remove non-content elements for text extraction
+    $('script, style, svg, iframe, noscript').remove();
+    const bodyText = $('body').text().replace(/\s+/g, ' ').trim();
+    const wordCount = bodyText.split(/\s+/).filter(w => w.length > 1).length;
+
+    // Thinned text (nav/footer removed)
+    const $clean = cheerio.load(html);
+    $clean('script, style, svg, iframe, noscript, nav, footer, header').remove();
+    const thinnedText = $clean('body').text().replace(/\s\s+/g, ' ').trim();
+
+    // Links
+    const domain = new URL(finalUrl).hostname;
+    let internal = 0, external = 0, socialLinksCount = 0;
+    const socialDomains = ['linkedin.com', 'twitter.com', 'x.com', 'facebook.com', 'instagram.com', 'youtube.com'];
+    const $links = cheerio.load(html);
+    $links('a[href]').each((_, el) => {
+        const href = $links(el).attr('href') || '';
+        if (href.startsWith('/') || href.includes(domain)) internal++;
+        else if (href.startsWith('http')) {
+            external++;
+            if (socialDomains.some(d => href.toLowerCase().includes(d))) socialLinksCount++;
+        }
+    });
+
+    // Images
+    const $imgs = cheerio.load(html);
+    const totalImages = $imgs('img').length;
+    let imagesWithAlt = 0;
+    $imgs('img').each((_, el) => { if ($imgs(el).attr('alt')?.trim()) imagesWithAlt++; });
+
+    // Schema
+    const schemas: any[] = [];
+    const $schema = cheerio.load(html);
+    $schema('script[type="application/ld+json"]').each((_, el) => {
+        try {
+            const data = JSON.parse($schema(el).html() || '{}');
+            if (Array.isArray(data)) schemas.push(...data);
+            else if (data['@graph']) schemas.push(...data['@graph']);
+            else schemas.push(data);
+        } catch {}
+    });
+
+    // Platform detection
+    const platformResult = detectPlatform(html);
+
+    // Meta checks
+    const hasViewport = /<meta[^>]*name=["']viewport["']/i.test(html);
+    const hasOgTitle = /<meta[^>]*property=["']og:title["']/i.test(html);
+    const hasOgDescription = /<meta[^>]*property=["']og:description["']/i.test(html);
+    const hasOgImage = /<meta[^>]*property=["']og:image["']/i.test(html);
+    const hasTwitterCard = /<meta[^>]*name=["']twitter:card["']/i.test(html);
+
+    console.log(`[Crawler Fallback] Done: ${finalUrl} (${((Date.now() - start) / 1000).toFixed(1)}s, ${wordCount} words)`);
+
+    return {
+        url: finalUrl,
+        title,
+        description,
+        thinnedText,
+        summarizedContent: thinnedText.slice(0, 3000),
+        schemas,
+        structuralData: {
+            semanticTags: { article: $('article').length, main: $('main').length, nav: cheerio.load(html)('nav').length, aside: cheerio.load(html)('aside').length, headers: h1Count + h2Count + h3Count, h1Count, h2Count, h3Count },
+            links: { internal, external, socialLinksCount },
+            media: { totalImages, imagesWithAlt },
+            wordCount,
+        },
+        technical: { responseTimeMs, isHttps, status: statusCode },
+        metaChecks: {
+            titleLength: title.length,
+            descriptionLength: description.length,
+            hasCanonical: !!canonicalUrl,
+            canonicalUrl,
+            hasViewport,
+            hasOgTitle,
+            hasOgDescription,
+            hasOgImage,
+            hasTwitterCard,
+        },
+        platformDetection: platformResult ? { platform: platformResult.platform, label: platformResult.label, confidence: platformResult.confidence } as any : undefined,
+    };
 }
