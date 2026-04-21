@@ -43,6 +43,7 @@ interface FixInstructionCardProps {
   validationLinks?: Array<{ tool: string; url: string }>
   impactedScores?: string
   whyItMatters?: string
+  showExpandHint?: boolean
   onMarkComplete?: () => void
   isCompleted?: boolean
 }
@@ -122,6 +123,7 @@ export function FixInstructionCard({
   validationLinks,
   impactedScores,
   whyItMatters,
+  showExpandHint = false,
   onMarkComplete,
   isCompleted = false
 }: FixInstructionCardProps) {
@@ -220,6 +222,11 @@ export function FixInstructionCard({
             )}
           </button>
         </div>
+        {showExpandHint && !isExpanded && (
+          <p className="text-[10px] text-[#00e5ff]/60 mt-2 flex items-center gap-1">
+            <ChevronDown className="h-3 w-3" /> Click to see step-by-step fix instructions
+          </p>
+        )}
       </div>
 
       {/* Expanded Content */}

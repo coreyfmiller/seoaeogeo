@@ -304,7 +304,8 @@ export default function DemoBattleModePage() {
                       difficulty={rec.effort >= 3 ? 'difficult' : rec.effort >= 2 ? 'moderate' : 'easy'}
                       impact={rec.roi === 'CRITICAL' ? 'high' : rec.roi === 'HIGH' ? 'medium' : 'low'}
                       impactedScores={rec.impactedScores}
-                      whyItMatters={`${rec.description}\n\n💡 These fix instructions are customized for ${rec.platform || 'your platform'}. Duelly auto-detects your platform and tailors every step.`} />
+                      whyItMatters={`${rec.description}\n\n💡 These fix instructions are customized for ${rec.platform || 'your platform'}. Duelly auto-detects your platform and tailors every step.`}
+                      showExpandHint />
                   ))}
                 </div>
               </CardContent>

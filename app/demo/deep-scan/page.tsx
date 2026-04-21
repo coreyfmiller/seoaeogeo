@@ -531,6 +531,7 @@ export default function DemoDeepScanPage() {
                       affectedPages={DEMO_PAGES_CRAWLED}
                       impactedScores={rec.impactedScores}
                       whyItMatters={`${rec.description}\n\n💡 These fix instructions are customized for ${rec.platform || 'your platform'}. Duelly auto-detects your platform and tailors every step.`}
+                      showExpandHint
                     />
                   ))}
                 </div>

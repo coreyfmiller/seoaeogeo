@@ -494,6 +494,7 @@ export default function DemoProAuditPage() {
                       difficulty={rec.difficulty}
                       impact={rec.impact}
                       whyItMatters={`${rec.whyItMatters}\n\n💡 These fix instructions are customized for ${rec.platform}. Duelly auto-detects your platform and tailors every step.`}
+                      showExpandHint
                     />
                   ))}
                 </div>
