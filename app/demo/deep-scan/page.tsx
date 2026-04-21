@@ -739,31 +739,6 @@ export default function DemoDeepScanPage() {
               </div>
             </Tabs>
 
-            {/* Core Web Vitals */}
-            <Card className="border-[#BC13FE]/20 bg-[#BC13FE]/5">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Zap className="h-5 w-5 text-[#BC13FE]" /> Core Web Vitals
-                  <LearnMore term="core-web-vitals" />
-                  <span className="ml-auto text-sm font-black text-[#BC13FE]">{DEMO_CWV.performanceScore}/100</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-3 gap-4">
-                  {[
-                    { data: DEMO_CWV.lcp, label: 'LCP' },
-                    { data: DEMO_CWV.inp, label: 'INP' },
-                    { data: DEMO_CWV.cls, label: 'CLS' },
-                  ].map(({ data: d, label }) => (
-                    <div key={label} className={`rounded-lg border p-4 text-center ${d.category === 'FAST' ? 'border-green-500/30 bg-green-500/5' : d.category === 'SLOW' ? 'border-red-500/30 bg-red-500/5' : 'border-yellow-500/30 bg-yellow-500/5'}`}>
-                      <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1 flex items-center justify-center gap-1">{label}<LearnMore term="core-web-vitals" /></p>
-                      <p className={`text-2xl font-black ${d.category === 'FAST' ? 'text-green-600' : d.category === 'SLOW' ? 'text-red-600' : 'text-yellow-600'}`}>{d.displayValue}</p>
-                      <p className={`text-[10px] font-bold uppercase mt-1 ${d.category === 'FAST' ? 'text-green-600' : d.category === 'SLOW' ? 'text-red-600' : 'text-yellow-600'}`}>{d.category}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
           {/* What's Next */}
