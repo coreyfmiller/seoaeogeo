@@ -36,8 +36,12 @@ export async function POST(req: NextRequest) {
         supabase_user_id: user.id,
         plan,
       },
-      success_url: `${origin}/settings?checkout=success`,
-      cancel_url: `${origin}/pricing?checkout=cancelled`,
+      success_url: plan === 'test'
+        ? `${origin}/pay-test?checkout=success`
+        : `${origin}/settings?checkout=success`,
+      cancel_url: plan === 'test'
+        ? `${origin}/pay-test?checkout=cancelled`
+        : `${origin}/pricing?checkout=cancelled`,
     })
 
     return NextResponse.json({ url: session.url })

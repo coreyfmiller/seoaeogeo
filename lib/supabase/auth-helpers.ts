@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 
-export type UserPlan = 'free' | 'launch' | 'growth' | 'authority'
+export type UserPlan = 'free' | 'launch' | 'growth' | 'authority' | 'test'
 
 export interface UserProfile {
   id: string
@@ -17,6 +17,7 @@ export const PLAN_CREDITS: Record<Exclude<UserPlan, 'free'>, number> = {
   launch:    180,   // $79.99
   growth:    550,   // $149.99 (490 base + 60 bonus)
   authority: 1450,  // $299.99 (1300 base + 150 bonus)
+  test:      50,    // $5.00 (payment test)
 }
 
 // Max crawl pages (same for all paid plans)

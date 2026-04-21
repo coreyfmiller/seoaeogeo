@@ -37,6 +37,23 @@ export async function POST(req: NextRequest) {
         const plan = session.metadata?.plan as Exclude<UserPlan, 'free'> | undefined
 
         if (userId && plan) {
+          // Idempotency check: skip if this session was already processed
+          const { data: existing } = await supabaseAdmin
+            .from('processed_payments')
+            .select('id')
+            .eq('stripe_session_id', session.id)
+            .single()
+
+          if (existing) {
+            console.log(`[Stripe] Session ${session.id} already processed, skipping`)
+            break
+          }
+
+          // Record this session as processed BEFORE adding credits
+          await supabaseAdmin
+            .from('processed_payments')
+            .insert({ stripe_session_id: session.id, user_id: userId, plan, amount_cents: session.amount_total || 0 })
+
           // Update user's plan tier and store Stripe customer ID
           await supabaseAdmin
             .from('profiles')
@@ -49,7 +66,7 @@ export async function POST(req: NextRequest) {
           // Add credits for the purchased pack
           await addCredits(userId, plan)
 
-          console.log(`[Stripe] User ${userId} purchased ${plan} credit pack`)
+          console.log(`[Stripe] User ${userId} purchased ${plan} credit pack (session ${session.id})`)
 
           // Referral bonus: check if this user was referred and referral hasn't been credited yet
           const { data: referral } = await supabaseAdmin

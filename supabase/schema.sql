@@ -95,3 +95,20 @@ CREATE POLICY "Service role full access to api_usage_log"
   ON public.api_usage_log FOR ALL
   USING (true)
   WITH CHECK (true);
+
+-- 10. Idempotency table for Stripe webhook payments
+CREATE TABLE public.processed_payments (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  stripe_session_id TEXT NOT NULL UNIQUE,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  plan TEXT NOT NULL,
+  amount_cents INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.processed_payments ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Service role full access to processed_payments"
+  ON public.processed_payments FOR ALL
+  USING (true)
+  WITH CHECK (true);

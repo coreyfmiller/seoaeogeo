@@ -14,4 +14,5 @@ export const PLAN_TO_PRICE: Record<string, string> = {
   launch: process.env.STRIPE_PRICE_LAUNCH!,
   growth: process.env.STRIPE_PRICE_GROWTH!,
   authority: process.env.STRIPE_PRICE_AUTHORITY!,
+  test: process.env.STRIPE_PRICE_TEST!,
 }
