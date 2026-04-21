@@ -552,9 +552,9 @@ export default function DemoProAuditPage() {
 
           {/* What's Next */}
           <WhatsNextCard steps={[
-            NEXT_STEPS.deepScan(DEMO_URL),
-            NEXT_STEPS.keywordArena(`Your SEO score is ${DEMO_SCORES.seo} — see how that compares against competitors`),
-            NEXT_STEPS.competitorDuel(),
+            { ...NEXT_STEPS.deepScan(DEMO_URL), href: '/demo/deep-scan' },
+            { ...NEXT_STEPS.keywordArena(`Your SEO score is ${DEMO_SCORES.seo} — see how that compares against competitors`), href: '/demo/ai-test' },
+            { ...NEXT_STEPS.competitorDuel(), href: '/demo/battle-mode' },
           ]} />
         </div>
       </main>

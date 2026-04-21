@@ -768,8 +768,8 @@ export default function DemoDeepScanPage() {
 
           {/* What's Next */}
           <WhatsNextCard steps={[
-            NEXT_STEPS.keywordArena('You know your site-wide issues — now see how you rank against competitors'),
-            NEXT_STEPS.competitorDuel(),
+            { ...NEXT_STEPS.keywordArena('You know your site-wide issues — now see how you rank against competitors'), href: '/demo/ai-test' },
+            { ...NEXT_STEPS.competitorDuel(), href: '/demo/battle-mode' },
           ]} />
         </div>
       </main>

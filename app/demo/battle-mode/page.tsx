@@ -517,8 +517,8 @@ export default function DemoBattleModePage() {
 
           {/* What's Next */}
           <WhatsNextCard steps={[
-            NEXT_STEPS.proAudit('Now you know the gaps — get detailed fix instructions for your site'),
-            NEXT_STEPS.keywordArena('See how you rank against all competitors, not just one'),
+            { ...NEXT_STEPS.proAudit('Now you know the gaps — get detailed fix instructions for your site'), href: '/demo/pro-audit' },
+            { ...NEXT_STEPS.keywordArena('See how you rank against all competitors, not just one'), href: '/demo/ai-test' },
           ]} />
         </div>
       </main>
