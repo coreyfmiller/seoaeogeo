@@ -82,9 +82,9 @@ export default function HomePage() {
           </Link>
           <Link
             href="/pricing"
-            className="px-8 py-3 rounded-xl border border-border/50 hover:border-[#BC13FE]/50 hover:bg-[#BC13FE]/5 font-bold text-lg transition-colors"
+            className="px-8 py-3 rounded-xl bg-[#fe3f8c] hover:bg-[#fe3f8c]/90 text-white font-bold text-lg transition-colors flex items-center gap-2"
           >
-            View Pricing
+            View Pricing <ArrowRight className="h-5 w-5" />
           </Link>
         </div>
         <p className="text-sm text-muted-foreground mt-3">Optimize for Google, ChatGPT, Gemini, and Perplexity — all in one platform.</p>
