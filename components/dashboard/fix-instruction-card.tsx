@@ -223,8 +223,8 @@ export function FixInstructionCard({
           </button>
         </div>
         {showExpandHint && !isExpanded && (
-          <p className="text-[10px] text-[#00e5ff]/60 mt-2 flex items-center gap-1">
-            <ChevronDown className="h-3 w-3" /> Click to see step-by-step fix instructions
+          <p className="text-xs text-[#00e5ff] font-bold mt-2 flex items-center gap-1.5 animate-pulse">
+            <ChevronDown className="h-3.5 w-3.5" /> Click to see step-by-step fix instructions
           </p>
         )}
       </div>
