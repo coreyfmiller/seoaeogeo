@@ -493,7 +493,7 @@ export default function DemoProAuditPage() {
                       estimatedTime={rec.estimatedTime}
                       difficulty={rec.difficulty}
                       impact={rec.impact}
-                      whyItMatters={rec.whyItMatters}
+                      whyItMatters={`${rec.whyItMatters}\n\n💡 These fix instructions are customized for ${rec.platform}. Duelly auto-detects your platform and tailors every step.`}
                     />
                   ))}
                 </div>
