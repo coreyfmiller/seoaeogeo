@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       },
       success_url: plan === 'test'
         ? `${origin}/pay-test?checkout=success`
-        : `${origin}/settings?checkout=success`,
+        : `${origin}/ai-test?checkout=success`,
       cancel_url: plan === 'test'
         ? `${origin}/pay-test?checkout=cancelled`
         : `${origin}/pricing?checkout=cancelled`,
