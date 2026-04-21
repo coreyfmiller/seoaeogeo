@@ -22,7 +22,7 @@ export function DemoSidebar() {
     <aside className="hidden lg:flex w-64 flex-col border-r border-border/50 bg-sidebar h-screen sticky top-0">
       {/* Logo */}
       <div className="p-4 border-b border-border/50">
-        <Link href="/demo/dashboard" className="flex items-center">
+        <Link href="/" className="flex items-center">
           <Image src="/logo.png" alt="Duelly" width={120} height={48} className="h-12 w-auto" priority />
         </Link>
       </div>
