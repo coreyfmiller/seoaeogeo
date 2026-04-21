@@ -41,6 +41,7 @@ export default function HomePage() {
             <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help</Link>
             <Link href="/standards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How We Score</Link>
             <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</Link>
+            <Link href="/demo" className="text-sm font-bold text-[#BC13FE] hover:text-[#BC13FE]/80 transition-colors">Try Demo</Link>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/signup" className="px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-sm transition-colors">
@@ -72,6 +73,12 @@ export default function HomePage() {
             className="px-8 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-lg transition-colors flex items-center gap-2"
           >
             Get Started <ArrowRight className="h-5 w-5" />
+          </Link>
+          <Link
+            href="/demo"
+            className="px-8 py-3 rounded-xl bg-[#BC13FE] hover:bg-[#BC13FE]/90 text-white font-bold text-lg transition-colors flex items-center gap-2"
+          >
+            Try the Demo <ArrowRight className="h-5 w-5" />
           </Link>
           <Link
             href="/pricing"
