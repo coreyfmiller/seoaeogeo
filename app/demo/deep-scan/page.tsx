@@ -441,7 +441,6 @@ export default function DemoDeepScanPage() {
             onSiteTypeConfirm={() => {}}
             onSiteTypeChange={() => {}}
             onPlatformChange={() => {}}
-            cwv={DEMO_CWV}
           />
 
           {/* Results Display */}
