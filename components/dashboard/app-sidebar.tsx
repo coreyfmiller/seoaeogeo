@@ -54,6 +54,7 @@ const bottomNav: NavItem[] = [
   { name: "Feedback", icon: MessageSquare, href: "/contact" },
   { name: "Settings", icon: Settings, href: "/settings" },
   { name: "Usage", icon: BarChart3, href: "/usage", badge: "ADMIN" },
+  { name: "Pay Test", icon: Settings, href: "/pay-test", badge: "ADMIN" },
 ]
 
 interface AppSidebarProps {
