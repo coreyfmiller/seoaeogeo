@@ -286,7 +286,8 @@ export async function performScan(targetUrl: string, options?: { lightweight?: b
             channel: isLocal ? 'chrome' : undefined,
         });
 
-        const page: Page = await browser.newPage();
+        const context = await browser.newContext({ ignoreHTTPSErrors: true });
+        const page: Page = await context.newPage();
 
         console.log(`[Crawler] Navigating to: ${targetUrl}`);
         const response = await page.goto(targetUrl, {
