@@ -854,6 +854,429 @@ export default function AdsPage() {
           </div>
         </AdFrame>
 
+        {/* 20 NEW ADS SECTION */}
+        <div className="pt-12 border-t border-white/10 mt-20">
+          <h2 className="text-xl font-bold mb-4 text-[#00e5ff]">New Creatives Batch</h2>
+        </div>
+
+        {/* AD 36: Mesh Gradient (4:3) */}
+        <AdFrame ratio="4:3" id="ad-36-v2-optimise-mesh">
+          <div className="w-full h-full bg-[#050508] relative overflow-hidden flex items-center justify-center">
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#00e5ff]/20 via-transparent to-[#BC13FE]/20 animate-pulse" />
+            <div className="absolute top-[-10%] right-[-10%] w-80 h-80 bg-[#00e5ff]/10 rounded-full blur-[100px]" />
+            <div className="absolute bottom-[-10%] left-[-10%] w-80 h-80 bg-[#fe3f8c]/10 rounded-full blur-[100px]" />
+            <div className="relative z-10 text-center px-10 space-y-6">
+              <p className="text-3xl font-black tracking-tight leading-tight bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent">
+                Optimise your site for AI<br />for $79.99
+              </p>
+              <div className="flex justify-center gap-4">
+                <div className="h-1 w-12 bg-[#00e5ff] rounded-full" />
+                <div className="h-1 w-12 bg-white/10 rounded-full" />
+                <div className="h-1 w-12 bg-white/10 rounded-full" />
+              </div>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 37: Orbiting Spheres (1:1) */}
+        <AdFrame ratio="1:1" id="ad-37-v2-cited-expert-orbits">
+          <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden flex items-center justify-center">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border border-white/5 rounded-full" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 border border-white/5 rounded-full" />
+            <div className="absolute top-[20%] left-[20%] w-4 h-4 bg-[#00e5ff] rounded-full blur-sm animate-ping" />
+            <div className="absolute bottom-[30%] right-[15%] w-6 h-6 bg-[#fe3f8c] rounded-full blur-md" />
+            <div className="relative z-10 text-center px-12 space-y-8">
+              <p className="text-2xl font-black text-white leading-tight">
+                Get cited as the expert source by ChatGPT<br />
+                <span className="text-[#00e5ff]">for $79.99</span>
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <div className="p-3 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#00e5ff] to-[#BC13FE]" />
+                </div>
+                <div className="text-left">
+                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Authority Status</p>
+                  <p className="text-sm font-black text-green-400">VERIFIED</p>
+                </div>
+              </div>
+              <Logo />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 38: Holographic Scan (16:9) */}
+        <AdFrame ratio="16:9" id="ad-38-v2-secure-spot-hologram">
+          <div className="w-full h-full bg-[#050508] relative overflow-hidden flex items-center px-16">
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] pointer-events-none" />
+            <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-transparent via-[#00e5ff] to-transparent shadow-[0_0_20px_#00e5ff]" />
+            <div className="flex-1 space-y-4 relative z-10">
+              <div className="inline-block px-3 py-1 rounded bg-[#00e5ff]/10 border border-[#00e5ff]/30">
+                <span className="text-[10px] font-black text-[#00e5ff] uppercase tracking-[0.2em]">Citation Protection</span>
+              </div>
+              <p className="text-4xl font-black text-white leading-none">
+                Secure your spot in<br />AI citations <span className="text-white/40">for only $79.99</span>
+              </p>
+            </div>
+            <div className="relative z-10">
+              <div className="w-40 h-40 rounded-full border-4 border-[#00e5ff]/20 flex items-center justify-center relative">
+                <div className="absolute inset-2 rounded-full border border-[#00e5ff]/40 animate-spin" />
+                <div className="text-4xl">🛡️</div>
+              </div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 39: Competitor Comparison (4:3) */}
+        <AdFrame ratio="4:3" id="ad-39-v2-competitors-ready">
+          <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden flex flex-col items-center justify-center">
+            <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-50" />
+            <div className="relative z-10 w-full px-12 space-y-8">
+              <p className="text-2xl font-black text-center text-white italic">
+                &ldquo;Your competitors are already AI-ready.&rdquo;
+              </p>
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1 p-4 rounded-2xl bg-white/[0.03] border border-white/10 text-center space-y-2">
+                  <p className="text-[10px] font-bold text-white/30 uppercase">Them</p>
+                  <p className="text-xl font-black text-green-400">READY</p>
+                </div>
+                <div className="text-2xl font-black text-white/20">VS</div>
+                <div className="flex-1 p-4 rounded-2xl bg-[#fe3f8c]/5 border border-[#fe3f8c]/20 text-center space-y-2">
+                  <p className="text-[10px] font-bold text-white/30 uppercase">You</p>
+                  <p className="text-xl font-black text-red-400">WAITING</p>
+                </div>
+              </div>
+              <p className="text-2xl font-black text-center text-white bg-white/5 py-3 rounded-xl border border-white/10">
+                Are you? <span className="text-[#00e5ff]">$79.99</span>
+              </p>
+              <div className="flex justify-center"><Logo size="md" /></div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 40: Glassmorphism Card (4:5) */}
+        <AdFrame ratio="4:5" id="ad-40-v2-optimise-glass">
+          <div className="w-full h-full bg-[#050508] relative overflow-hidden p-8 flex flex-col">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#BC13FE]/20 rounded-full blur-[80px]" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#00e5ff]/20 rounded-full blur-[80px]" />
+            <div className="flex-1 relative z-10 flex flex-col justify-center">
+              <div className="p-8 rounded-[32px] bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-2xl space-y-6">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#00e5ff] to-[#BC13FE] mb-4" />
+                <p className="text-3xl font-black text-white leading-tight">
+                  Optimise your site<br />for AI
+                </p>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-5xl font-black text-[#00e5ff] tracking-tighter">$79.99</p>
+                </div>
+                <p className="text-sm text-white/40 leading-relaxed">
+                  The most comprehensive AI SEO audit on the market.
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 flex justify-center relative z-10"><Logo size="lg" /></div>
+          </div>
+        </AdFrame>
+
+        {/* AD 41: Data Waterfall (4:3) */}
+        <AdFrame ratio="4:3" id="ad-41-v2-cited-waterfall">
+          <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden flex items-center justify-center px-12">
+            <div className="absolute inset-0 flex justify-around opacity-10">
+              {[1,2,3,4,5,6,7,8].map(i => (
+                <div key={i} className="h-full w-px bg-gradient-to-b from-transparent via-[#00e5ff] to-transparent animate-pulse" style={{ animationDelay: `${i * 200}ms` }} />
+              ))}
+            </div>
+            <div className="relative z-10 text-center space-y-6">
+              <p className="text-4xl font-black text-white leading-tight">
+                Get cited by <span className="text-[#00e5ff]">ChatGPT</span>
+              </p>
+              <p className="text-xl font-bold text-white/50">
+                Become the expert source<br />for your niche.
+              </p>
+              <div className="inline-block px-8 py-3 rounded-full bg-white text-black font-black text-xl shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                ONLY $79.99
+              </div>
+              <div className="pt-2"><Logo size="md" /></div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 42: Minimalist Split (1:1) */}
+        <AdFrame ratio="1:1" id="ad-42-v2-secure-split">
+          <div className="w-full h-full bg-white relative overflow-hidden flex flex-col">
+            <div className="flex-1 bg-black flex items-center justify-center p-12">
+              <p className="text-3xl font-black text-white text-center leading-none">
+                Secure your spot in<br />AI citations
+              </p>
+            </div>
+            <div className="h-1/3 bg-white flex items-center justify-between px-10">
+              <p className="text-4xl font-black text-black">$79.99</p>
+              <Logo size="lg" />
+            </div>
+            <div className="absolute top-2/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-[#fe3f8c] rotate-45 flex items-center justify-center">
+              <div className="text-2xl -rotate-45">✨</div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 43: Dark Mode Depth (4:3) */}
+        <AdFrame ratio="4:3" id="ad-43-v2-competitors-depth">
+          <div className="w-full h-full bg-[#050508] relative overflow-hidden flex items-center justify-center px-10">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#1a1a2e_0%,#050508_100%)]" />
+            <div className="relative z-10 space-y-8 w-full">
+              <div className="p-8 rounded-3xl bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 shadow-[inner_0_1px_1px_rgba(255,255,255,0.1)]">
+                <p className="text-2xl font-black text-white/90 leading-tight">
+                  Your competitors are<br />already AI-ready.
+                </p>
+                <div className="mt-6 flex items-center gap-4">
+                  <div className="h-[2px] flex-1 bg-white/10 overflow-hidden">
+                    <div className="h-full w-[85%] bg-[#00e5ff] shadow-[0_0_10px_#00e5ff]" />
+                  </div>
+                  <span className="text-xs font-black text-[#00e5ff]">85%</span>
+                </div>
+                <p className="mt-1 text-[10px] font-bold text-white/20 uppercase">Industry Readiness</p>
+              </div>
+              <div className="flex items-center justify-between">
+                <p className="text-3xl font-black text-white">Are you? <span className="text-[#fe3f8c]">$79.99</span></p>
+                <Logo size="lg" />
+              </div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 44: Geometric Cyber (4:5) */}
+        <AdFrame ratio="4:5" id="ad-44-v2-optimise-cyber">
+          <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden p-10 flex flex-col justify-between">
+            <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[linear-gradient(45deg,#00e5ff_25%,transparent_25%,transparent_50%,#00e5ff_50%,#00e5ff_75%,transparent_75%,transparent)] bg-[length:20px_20px]" />
+            <div className="relative z-10 border-l-4 border-[#00e5ff] pl-6 py-4">
+              <p className="text-4xl font-black text-white tracking-tighter leading-none mb-2">OPTIMISE</p>
+              <p className="text-lg font-bold text-[#00e5ff] tracking-[0.3em]">FOR ARTIFICIAL INTEL</p>
+            </div>
+            <div className="relative z-10 space-y-6">
+              <div className="flex items-baseline gap-1">
+                <span className="text-7xl font-black text-white tracking-tighter">$79</span>
+                <span className="text-3xl font-black text-[#00e5ff]">.99</span>
+              </div>
+              <button className="w-full py-4 bg-[#00e5ff] text-black font-black uppercase tracking-widest text-sm skew-x-[-12deg]">
+                Secure Your Spot
+              </button>
+            </div>
+            <div className="relative z-10 pt-4"><Logo size="lg" /></div>
+          </div>
+        </AdFrame>
+
+        {/* AD 45: Bright Accent (1:1) */}
+        <AdFrame ratio="1:1" id="ad-45-v2-cited-accent">
+          <div className="w-full h-full bg-[#fe3f8c] relative overflow-hidden flex items-center justify-center p-12">
+            <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
+            <div className="relative z-10 bg-white p-10 rounded-[40px] shadow-2xl rotate-[-2deg] space-y-6 text-center">
+              <p className="text-3xl font-black text-black leading-tight">
+                Get cited as the expert source by <span className="text-[#fe3f8c]">ChatGPT</span>
+              </p>
+              <p className="text-xl font-bold text-black/40">$79.99</p>
+              <div className="flex justify-center"><Logo size="lg" /></div>
+            </div>
+            <div className="absolute top-10 right-10 w-20 h-20 bg-white/20 rounded-full animate-bounce" />
+          </div>
+        </AdFrame>
+
+        {/* AD 45: Bright Accent (1:1) */}
+        <AdFrame ratio="1:1" id="ad-45-v2-cited-accent">
+          <div className="w-full h-full bg-[#fe3f8c] relative overflow-hidden flex items-center justify-center p-12">
+            <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
+            <div className="relative z-10 bg-white p-10 rounded-[40px] shadow-2xl rotate-[-2deg] space-y-6 text-center">
+              <p className="text-3xl font-black text-black leading-tight">
+                Get cited as the expert source by <span className="text-[#fe3f8c]">ChatGPT</span>
+              </p>
+              <p className="text-xl font-bold text-black/40">$79.99</p>
+              <div className="flex justify-center"><Logo size="lg" /></div>
+            </div>
+            <div className="absolute top-10 right-10 w-20 h-20 bg-white/20 rounded-full animate-bounce" />
+          </div>
+        </AdFrame>
+
+        {/* AD 46: Topographic Lines (4:3) */}
+        <AdFrame ratio="4:3" id="ad-46-v2-secure-topo">
+          <div className="w-full h-full bg-[#050508] relative overflow-hidden flex items-center justify-center">
+            <div className="absolute inset-0 opacity-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] blend-overlay" />
+            <div className="absolute inset-0 overflow-hidden">
+               <svg viewBox="0 0 100 100" className="w-full h-full text-white/5 opacity-50">
+                 <path d="M0,20 Q25,10 50,20 T100,20" fill="none" stroke="currentColor" strokeWidth="0.5" />
+                 <path d="M0,40 Q25,30 50,40 T100,40" fill="none" stroke="currentColor" strokeWidth="0.5" />
+                 <path d="M0,60 Q25,50 50,60 T100,60" fill="none" stroke="currentColor" strokeWidth="0.5" />
+                 <path d="M0,80 Q25,70 50,80 T100,80" fill="none" stroke="currentColor" strokeWidth="0.5" />
+               </svg>
+            </div>
+            <div className="relative z-10 text-center space-y-4">
+              <p className="text-sm font-bold text-[#f59e0b] uppercase tracking-[0.4em]">Strategic Placement</p>
+              <p className="text-4xl font-black text-white">Secure your spot in<br />AI citations</p>
+              <p className="text-5xl font-black text-white/20">$79.99</p>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 47: Cyberpunk Grid (4:5) */}
+        <AdFrame ratio="4:5" id="ad-47-v2-competitors-cyber">
+          <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden p-10 flex flex-col justify-center border-2 border-white/5">
+            <div className="absolute top-4 left-4 text-[8px] text-[#00e5ff] font-mono opacity-40 uppercase">System_Active // Port: 8080</div>
+            <div className="absolute bottom-4 right-4 text-[8px] text-[#00e5ff] font-mono opacity-40 uppercase">Optim_Target: Competitor_AI</div>
+            <div className="space-y-6">
+              <p className="text-3xl font-black text-white leading-tight">
+                Your competitors are already<br />
+                <span className="text-[#00e5ff] uppercase italic tracking-wider">AI-Ready.</span>
+              </p>
+              <div className="h-px w-full bg-gradient-to-r from-[#00e5ff] to-transparent" />
+              <p className="text-4xl font-black text-white/40">Are you?</p>
+              <p className="text-6xl font-black text-white">$79.99</p>
+            </div>
+            <div className="mt-12"><Logo size="lg" /></div>
+          </div>
+        </AdFrame>
+
+        {/* AD 48: Focus Rings (1:1) */}
+        <AdFrame ratio="1:1" id="ad-48-v2-optimise-rings">
+          <div className="w-full h-full bg-black relative overflow-hidden flex items-center justify-center">
+            <div className="absolute w-[200%] h-[200%] bg-[radial-gradient(circle_at_50%_50%,#00e5ff0d_0%,transparent_50%)] animate-pulse" />
+            <div className="relative z-10 flex flex-col items-center gap-6">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-full border border-[#00e5ff]/20 scale-110" />
+                <div className="absolute inset-0 rounded-full border border-[#00e5ff]/10 scale-150" />
+                <p className="text-2xl font-black text-white text-center leading-tight">
+                  Optimise your site<br />for AI
+                </p>
+              </div>
+              <div className="px-6 py-2 rounded-full bg-[#00e5ff] text-black font-black text-lg">
+                FOR $79.99
+              </div>
+              <Logo size="md" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 49: Prism Refraction (16:9) */}
+        <AdFrame ratio="16:9" id="ad-49-v2-cited-prism">
+          <div className="w-full h-full bg-[#050508] relative overflow-hidden flex items-center px-12 gap-12">
+            <div className="absolute top-[-50%] left-[-20%] w-[100%] h-[200%] bg-white/5 rotate-[30deg] blur-3xl pointer-events-none" />
+            <div className="relative z-10 flex-1 space-y-4">
+              <p className="text-4xl font-black text-white leading-none">
+                Get cited as the<br /><span className="text-white/40 italic">expert source</span>
+              </p>
+              <p className="text-2xl font-bold text-[#fe3f8c]">by ChatGPT for $79.99</p>
+            </div>
+            <div className="relative z-10 grid grid-cols-2 gap-2">
+              {[1,2,3,4].map(i => (
+                <div key={i} className="w-12 h-12 bg-white/5 border border-white/10 rounded-lg backdrop-blur-md flex items-center justify-center text-xl">
+                  {['✅', '📊', '🌐', '🤖'][i-1]}
+                </div>
+              ))}
+            </div>
+            <div className="absolute bottom-6 left-12"><Logo size="md" /></div>
+          </div>
+        </AdFrame>
+
+        {/* AD 50: Inner Glow Depth (4:3) */}
+        <AdFrame ratio="4:3" id="ad-50-v2-secure-depth">
+          <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden flex items-center justify-center p-12">
+            <div className="absolute inset-0 shadow-[inner_0_0_100px_rgba(0,0,0,0.8)] z-10" />
+            <div className="w-full aspect-[4/3] rounded-[40px] bg-gradient-to-b from-[#1a1a2e] to-[#0a0a12] border border-white/10 flex flex-col items-center justify-center relative">
+              <div className="absolute top-8 left-8 w-12 h-1 text-[#00e5ff] opacity-40">━━━</div>
+              <p className="text-2xl font-black text-white text-center leading-tight">
+                Secure your spot in<br />AI citations
+              </p>
+              <p className="text-4xl font-black mt-4 text-[#00e5ff] drop-shadow-[0_0_15px_#00e5ff66]">$79.99</p>
+              <div className="mt-8"><Logo size="lg" /></div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 51: Abstract Mosaic (4:3) */}
+        <AdFrame ratio="4:3" id="ad-51-v2-competitors-mosaic">
+          <div className="w-full h-full bg-black relative overflow-hidden flex items-center justify-center">
+            <div className="absolute inset-0 grid grid-cols-6 opacity-20">
+              {Array.from({length: 24}).map((_, i) => (
+                <div key={i} className="border border-white/10" style={{ backgroundColor: i % 7 === 0 ? '#fe3f8c22' : 'transparent' }} />
+              ))}
+            </div>
+            <div className="relative z-10 bg-black/80 backdrop-blur-xl p-10 border border-white/20 rounded-[40px] space-y-6 text-center">
+              <p className="text-xl font-bold text-white/50 uppercase tracking-widest italic">The Hard Truth</p>
+              <p className="text-3xl font-black text-white">
+                Your competitors are<br />already AI-ready.
+              </p>
+              <p className="text-2xl font-black text-[#fe3f8c]">Are you? $79.99</p>
+              <div className="flex justify-center pt-2"><Logo size="md" /></div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 52: Clean Professional (16:9) */}
+        <AdFrame ratio="16:9" id="ad-52-v2-optimise-clean">
+          <div className="w-full h-full bg-[#f8fafc] relative overflow-hidden flex items-center justify-between px-20 text-slate-900 font-sans">
+            <div className="space-y-4">
+              <p className="text-4xl font-black flex flex-col leading-none">
+                <span>Optimise your site</span>
+                <span className="text-blue-600">for AI for $79.99</span>
+              </p>
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">INSTANT AUDIT</span>
+                <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">PDF REPORT</span>
+              </div>
+            </div>
+            <div className="w-32 h-32 bg-blue-600 rounded-[32px] shadow-2xl flex items-center justify-center">
+              <div className="w-16 h-16 border-4 border-white/20 rounded-full border-t-white animate-spin" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 53: Neon Glow (4:5) */}
+        <AdFrame ratio="4:5" id="ad-53-v2-cited-neon">
+          <div className="w-full h-full bg-[#030303] relative overflow-hidden flex flex-col items-center justify-center p-8">
+            <div className="absolute w-full h-1 bg-[#fe3f8c] top-0 shadow-[0_0_20px_#fe3f8c]" />
+            <div className="absolute w-full h-1 bg-[#00e5ff] bottom-0 shadow-[0_0_20px_#00e5ff]" />
+            <div className="text-center space-y-10">
+              <p className="text-2xl font-bold text-white/40 uppercase tracking-[0.5em]">Authority Lab</p>
+              <p className="text-3xl font-black text-white leading-tight">
+                Get cited as the<br />expert source by<br /><span className="text-[#fe3f8c] drop-shadow-[0_0_10px_#fe3f8c]">ChatGPT</span>
+              </p>
+              <p className="text-5xl font-black text-white">$79.99</p>
+              <div className="pt-4"><Logo size="lg" /></div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 54: Soft UI (4:3) */}
+        <AdFrame ratio="4:3" id="ad-54-v2-secure-soft">
+          <div className="w-full h-full bg-[#f1f5f9] relative overflow-hidden flex flex-col items-center justify-center p-10 text-slate-800">
+             <div className="w-full p-8 rounded-[40px] bg-white shadow-[20px_20px_60px_#d1d5db,-20px_-20px_60px_#ffffff] space-y-4">
+                <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">Visibility Booster</p>
+                <p className="text-2xl font-black">Secure your spot in<br />AI citations for $79.99</p>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                  <p className="text-xs font-bold text-slate-400">Limited availability for niche experts</p>
+                </div>
+             </div>
+             <div className="mt-8 opacity-50"><Logo size="md" /></div>
+          </div>
+        </AdFrame>
+
+        {/* AD 55: Particle Fusion (4:3) */}
+        <AdFrame ratio="4:3" id="ad-55-v2-competitors-particles">
+          <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden flex items-center justify-center px-12">
+            <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] bg-[size:20px_20px]" />
+            <div className="relative z-10 text-center space-y-6">
+               <div className="inline-block px-4 py-1 bg-white/5 border border-white/10 rounded-full mb-2">
+                 <span className="text-[10px] font-black text-white/50 uppercase tracking-widest">Market Intel v2.0</span>
+               </div>
+               <p className="text-3xl font-black text-white leading-tight italic">
+                 &ldquo;Your competitors are already AI-ready.&rdquo;
+               </p>
+               <p className="text-5xl font-black bg-gradient-to-r from-[#00e5ff] to-[#BC13FE] bg-clip-text text-transparent">
+                 Are you? $79.99
+               </p>
+               <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
       </div>
     </main>
   )

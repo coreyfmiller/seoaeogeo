@@ -3,6 +3,64 @@ import { logUsage } from "./usage";
 import { safeJsonParse } from "./utils/json-sanitizer";
 import { getGeminiModel } from "./gemini-model-resolver";
 
+// ── Deterministic GEO flag calculations ──────────────────────────────────
+// These 4 flags are calculated from crawled text instead of Gemini for reproducibility.
+// Gemini is inconsistent on subjective assessments like "promotional tone" — text analysis is not.
+
+const SALES_WORDS = new Set(['best', 'amazing', 'guaranteed', 'free', 'exclusive', 'limited', 'act now', 'hurry', 'incredible', 'unbeatable', 'revolutionary', 'breakthrough', 'stunning', 'perfect', 'ultimate', 'premium', 'superior', 'exceptional', 'outstanding', 'remarkable', 'extraordinary', 'world-class', 'top-rated', 'award-winning', 'trusted', 'proven', 'leading', 'number one', '#1', 'no obligation', 'risk-free', 'money-back', 'special offer', 'discount', 'save', 'deal', 'bargain', 'lowest price']);
+const FIRST_PERSON = new Set(['i', 'me', 'my', 'mine', 'myself', 'we', 'us', 'our', 'ours', 'ourselves']);
+const CLAIM_WORDS = ['best', 'fastest', 'cheapest', 'most reliable', 'guaranteed', 'proven', 'always', 'never', 'every', '100%', 'all customers', 'everyone'];
+
+function computeDeterministicGeoFlags(text: string): {
+  promotionalTone: number;
+  lackOfHardData: number;
+  heavyFirstPersonUsage: number;
+  unsubstantiatedClaims: number;
+} {
+  const lower = text.toLowerCase();
+  const words = lower.split(/\s+/).filter(w => w.length > 0);
+  const totalWords = words.length;
+  if (totalWords < 10) return { promotionalTone: 50, lackOfHardData: 80, heavyFirstPersonUsage: 20, unsubstantiatedClaims: 40 };
+
+  // Promotional tone: % of sales words
+  let salesCount = 0;
+  for (const w of words) { if (SALES_WORDS.has(w)) salesCount++; }
+  for (let i = 0; i < words.length - 1; i++) {
+    const phrase = words[i] + ' ' + words[i + 1];
+    if (SALES_WORDS.has(phrase)) salesCount++;
+  }
+  const salesRatio = salesCount / totalWords;
+  const promotionalTone = Math.min(100, Math.round(salesRatio * 3300));
+
+  // Hard data: count numbers, percentages, dates, dollar amounts
+  const dataPatterns = text.match(/\d+%|\$[\d,.]+|\d{4}|\d+\.\d+|\d{1,3}(,\d{3})+|\d+ (years?|months?|days?|hours?|percent|million|billion|thousand)/gi) || [];
+  const dataRatio = dataPatterns.length / Math.max(1, totalWords / 100);
+  const lackOfHardData = Math.max(0, Math.min(100, Math.round(100 - dataRatio * 20)));
+
+  // First person usage
+  let fpCount = 0;
+  for (const w of words) { if (FIRST_PERSON.has(w)) fpCount++; }
+  const fpRatio = fpCount / totalWords;
+  const heavyFirstPersonUsage = Math.min(100, Math.round(fpRatio * 2000));
+
+  // Unsubstantiated claims
+  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 10);
+  let claimCount = 0;
+  let substantiatedCount = 0;
+  for (const sentence of sentences) {
+    const sLower = sentence.toLowerCase();
+    const hasClaim = CLAIM_WORDS.some(c => sLower.includes(c));
+    if (hasClaim) {
+      claimCount++;
+      const hasData = /\d/.test(sentence) || /https?:\/\//.test(sentence) || /according to|source|study|research|report/i.test(sentence);
+      if (hasData) substantiatedCount++;
+    }
+  }
+  const unsubstantiatedClaims = claimCount === 0 ? 0 : Math.min(100, Math.round(((claimCount - substantiatedCount) / claimCount) * 100));
+
+  return { promotionalTone, lackOfHardData, heavyFirstPersonUsage, unsubstantiatedClaims };
+}
+
 /**
  * Prompt to analyze website data for SEO, AEO, and GEO using MODERN 2026 STANDARDS.
  * Returns a strictly typed JSON object.
@@ -147,7 +205,13 @@ ${context.platform ? `
       }
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (!jsonMatch) throw new Error("Could not parse AI response as JSON");
-      return safeJsonParse(jsonMatch[0]);
+      const parsed = safeJsonParse(jsonMatch[0]);
+      // Override volatile GEO flags with deterministic text analysis
+      const deterministicFlags = computeDeterministicGeoFlags(contentToAnalyze);
+      if (parsed.semanticFlags) {
+        Object.assign(parsed.semanticFlags, deterministicFlags);
+      }
+      return parsed;
     }
 
     // Run 2 parallel Gemini calls and average semanticFlags for scoring stability
@@ -183,6 +247,8 @@ ${context.platform ? `
     // If second call failed, just use first result
     if (!jsonMatch2) {
       console.warn("[Gemini] Second call failed to parse, using single result");
+      const deterministicFlags = computeDeterministicGeoFlags(contentToAnalyze);
+      if (parsed1.semanticFlags) Object.assign(parsed1.semanticFlags, deterministicFlags);
       return parsed1;
     }
 
@@ -191,19 +257,22 @@ ${context.platform ? `
     // Average the semanticFlags severity scores for stability
     const flags1 = parsed1.semanticFlags || {};
     const flags2 = parsed2.semanticFlags || {};
-    const flagKeys = [
+    const aiFlagKeys = [
       'topicMisalignment', 'keywordStuffing', 'poorReadability',
       'noDirectQnAMatching', 'lowEntityDensity', 'poorFormattingConciseness',
-      'lackOfDefinitionStatements', 'promotionalTone', 'lackOfExpertiseSignals',
-      'lackOfHardData', 'heavyFirstPersonUsage', 'unsubstantiatedClaims'
+      'lackOfDefinitionStatements', 'lackOfExpertiseSignals'
     ];
 
     const averagedFlags: Record<string, number> = {};
-    for (const key of flagKeys) {
+    for (const key of aiFlagKeys) {
       const v1 = typeof flags1[key] === 'number' ? flags1[key] : (flags1[key] ? 100 : 0);
       const v2 = typeof flags2[key] === 'number' ? flags2[key] : (flags2[key] ? 100 : 0);
       averagedFlags[key] = Math.round((v1 + v2) / 2);
     }
+
+    // Override volatile GEO flags with deterministic text analysis
+    const deterministicFlags = computeDeterministicGeoFlags(contentToAnalyze);
+    Object.assign(averagedFlags, deterministicFlags);
 
     // Average schemaQuality score too
     const sq1 = parsed1.schemaQuality?.score || 0;
@@ -333,7 +402,11 @@ ${context.platform ? `
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("Could not parse AI response as JSON");
 
-    return safeJsonParse(jsonMatch[0]);
+    const parsed = safeJsonParse(jsonMatch[0]);
+    // Override volatile GEO flags with deterministic text analysis
+    const deterministicFlags = computeDeterministicGeoFlags(contentToAnalyze);
+    if (parsed.semanticFlags) Object.assign(parsed.semanticFlags, deterministicFlags);
+    return parsed;
   } catch (error) {
     console.error("[Gemini Single] Error:", error);
     throw error;
