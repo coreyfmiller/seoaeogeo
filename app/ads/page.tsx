@@ -1486,6 +1486,389 @@ export default function AdsPage() {
           </div>
         </AdFrame>
 
+        {/* REDDIT OPTIMIZATION SERIES */}
+        <div className="pt-12 border-t border-white/10 mt-20">
+          <h2 className="text-xl font-bold mb-4 text-[#ff4500]">Reddit Optimization Series (Ads 66-75)</h2>
+        </div>
+
+        {/* AD 66: The Self-Aware Reddit Ad (1:1) */}
+        <AdFrame ratio="1:1" id="ad-66-reddit-self-aware">
+          <div className="w-full h-full bg-[#1a1a1b] relative overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+            <div className="relative z-10 flex flex-col items-center gap-6">
+              <p className="text-2xl font-bold text-white/80">
+                Yeah, this is an ad.
+              </p>
+              <p className="text-4xl font-black text-white leading-tight">
+                But your SEO is broken<br />and we both know it.
+              </p>
+              <p className="text-lg text-white/50">
+                Stop guessing what AI wants.<br />Get the exact blueprint.
+              </p>
+              <div className="px-8 py-3 mt-4 bg-[#ff4500] text-white font-black text-xl rounded-full">
+                Audit Site ($79.99)
+              </div>
+              <Logo size="md" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 67: The Agency Roast (16:9) */}
+        <AdFrame ratio="16:9" id="ad-67-reddit-agency-roast">
+          <div className="w-full h-full bg-[#1a1a1b] relative overflow-hidden flex items-center justify-center p-12">
+            <div className="relative z-10 flex flex-col items-center gap-6 text-center">
+              <p className="text-4xl font-black text-white leading-tight">
+                Stop paying agencies $2k/mo for SEO<br />when AI is taking all the traffic anyway.
+              </p>
+              <div className="flex items-center gap-6">
+                <p className="text-xl text-white/50">One-time AI audit.</p>
+                <p className="text-xl font-black text-[#00e5ff]">$79.99</p>
+                <p className="text-xl text-white/50">No subscription BS.</p>
+              </div>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 68: The AMA Format (4:5) */}
+        <AdFrame ratio="4:5" id="ad-68-reddit-ama">
+          <div className="w-full h-full bg-[#1a1a1b] relative overflow-hidden flex flex-col items-start justify-center p-10">
+            <div className="w-full bg-[#272729] border border-[#343536] p-6 rounded-lg mb-8">
+              <p className="text-[#818384] text-xs font-bold mb-2">r/Entrepreneur • Posted by u/DuellyHQ</p>
+              <p className="text-2xl font-bold text-[#d7dadc] leading-tight">
+                I built a tool that shows you EXACTLY why ChatGPT ignores your website. AMA.
+              </p>
+            </div>
+            <div className="w-full flex flex-col items-center text-center gap-6">
+              <p className="text-xl text-white/70">
+                Find your AI blindspots<br />before your competitors do.
+              </p>
+              <p className="text-3xl font-black text-[#00e5ff]">$79.99</p>
+              <Logo size="md" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 69: The TIL Format (4:3) */}
+        <AdFrame ratio="4:3" id="ad-69-reddit-til">
+          <div className="w-full h-full bg-[#1a1a1b] relative overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+            <div className="relative z-10 space-y-8">
+              <p className="text-5xl font-black text-white leading-tight">
+                <span className="text-[#ff4500]">TIL</span> that being #1 on Google<br />doesn&apos;t mean AI knows<br />you exist.
+              </p>
+              <p className="text-xl text-[#818384]">
+                Get the audit that fixes your AI visibility.
+              </p>
+              <div className="inline-block border-b-2 border-[#00e5ff] pb-1">
+                <p className="text-2xl font-black text-white">For only $79.99</p>
+              </div>
+              <div className="mt-4"><Logo size="md" /></div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 70: The Dev Angle (16:9) */}
+        <AdFrame ratio="16:9" id="ad-70-reddit-dev">
+          <div className="w-full h-full bg-[#0d0d0d] relative overflow-hidden flex items-center justify-between px-16 font-mono">
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10" />
+            <div className="relative z-10 flex flex-col items-start gap-4">
+              <p className="text-[#00ff00] text-xl">&gt; Traditional SEO is deprecated.</p>
+              <p className="text-[#00ff00] text-xl">&gt; AEO is the new standard.</p>
+              <p className="text-white/50 text-sm mt-4">Compile your site&apos;s AI visibility report.</p>
+            </div>
+            <div className="relative z-10 flex flex-col items-center border border-[#333] bg-[#111] p-8 rounded-xl gap-4">
+              <p className="text-3xl font-bold text-white">init --audit</p>
+              <p className="text-xl text-[#00e5ff]">$79.99</p>
+              <Logo size="sm" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 71: Roast My Site (1:1) */}
+        <AdFrame ratio="1:1" id="ad-71-reddit-roast">
+          <div className="w-full h-full bg-[#1a1a1b] relative overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#ff4500]/10 rounded-full blur-[80px]" />
+            <div className="relative z-10 space-y-6">
+              <p className="text-sm font-bold text-[#ff4500] uppercase tracking-[0.4em]">r/RoastMySite</p>
+              <p className="text-4xl font-black text-white leading-tight">
+                Let our AI absolutely roast<br />your website&apos;s visibility.
+              </p>
+              <p className="text-lg text-[#818384] max-w-sm mx-auto">
+                We&apos;ll tell you exactly why ChatGPT hates your site, and how to fix it.
+              </p>
+              <p className="text-3xl font-black text-[#00e5ff] pt-4">$79.99</p>
+              <Logo size="md" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 72: Shower Thoughts (4:3) */}
+        <AdFrame ratio="4:3" id="ad-72-reddit-shower">
+          <div className="w-full h-full bg-[#1a1a1b] relative overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+            <div className="w-full bg-[#272729] border border-[#343536] p-8 rounded-xl space-y-6">
+              <p className="text-[#818384] text-sm font-bold text-left">r/Showerthoughts</p>
+              <p className="text-3xl font-bold text-[#d7dadc] leading-tight italic">
+                &ldquo;If an AI recommends your competitor in the forest, do you even exist?&rdquo;
+              </p>
+            </div>
+            <div className="mt-8 space-y-4">
+              <p className="text-xl text-white">Exist in the AI era. Get the audit.</p>
+              <p className="text-2xl font-black text-[#00e5ff]">Only $79.99</p>
+              <Logo size="md" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 73: Life Pro Tip (4:3) */}
+        <AdFrame ratio="4:3" id="ad-73-reddit-lpt">
+          <div className="w-full h-full bg-[#1a1a1b] relative overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+             <div className="relative z-10 space-y-6">
+              <p className="text-4xl font-black text-white leading-tight">
+                <span className="text-[#00e5ff]">LPT:</span> Stop optimizing for Google<br />when 40% of search is<br />moving to AI.
+              </p>
+              <p className="text-lg text-[#818384]">
+                The algorithms changed. Your strategy should too.
+              </p>
+              <div className="bg-white/5 border border-white/10 px-8 py-4 rounded-full mt-4">
+                <p className="text-xl font-black text-white">Full AI Audit: $79.99</p>
+              </div>
+              <div className="pt-4"><Logo size="md" /></div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 74: The Before/After Data (4:5) */}
+        <AdFrame ratio="4:5" id="ad-74-reddit-data">
+          <div className="w-full h-full bg-[#1a1a1b] relative overflow-hidden flex flex-col items-center justify-center p-10">
+            <div className="w-full max-w-sm space-y-8">
+              <p className="text-3xl font-black text-white text-center">Data doesn&apos;t lie.</p>
+              <div className="bg-[#272729] p-4 rounded-xl border border-red-500/30 flex justify-between items-center">
+                <span className="text-[#818384] font-bold">Without Audit</span>
+                <span className="text-red-400 font-black text-2xl">22% Vis</span>
+              </div>
+              <div className="text-center text-white/30 text-2xl">↓</div>
+              <div className="bg-[#272729] p-4 rounded-xl border border-green-500/30 flex justify-between items-center">
+                <span className="text-white font-bold">With Duelly ($79.99)</span>
+                <span className="text-green-400 font-black text-2xl">94% Vis</span>
+              </div>
+              <div className="pt-8 flex justify-center"><Logo size="lg" /></div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 75: Brutal Honesty (16:9) */}
+        <AdFrame ratio="16:9" id="ad-75-reddit-honest">
+          <div className="w-full h-full bg-[#1a1a1b] relative overflow-hidden flex items-center justify-center p-16 text-center">
+            <div className="relative z-10 space-y-6 flex flex-col items-center">
+              <p className="text-5xl font-black text-white">
+                No subscription.<br />No BS.
+              </p>
+              <p className="text-2xl text-[#818384]">
+                Just a $79.99 audit that actually tells you<br />how to rank in AI search.
+              </p>
+              <div className="mt-4"><Logo size="lg" /></div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* HYPER-OPTIMIZED UNIVERSAL SERIES */}
+        <div className="pt-12 border-t border-white/10 mt-20">
+          <h2 className="text-xl font-bold mb-4 text-[#BC13FE]">Hyper-Optimized Series (Ads 76-85)</h2>
+        </div>
+
+        {/* AD 76: The Proof Dashboard (16:9) */}
+        <AdFrame ratio="16:9" id="ad-76-hyper-proof">
+          <div className="w-full h-full bg-[#050508] relative overflow-hidden flex items-center justify-between px-16">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-green-500/10 rounded-full blur-[120px]" />
+            <div className="relative z-10 flex flex-col items-start gap-4">
+              <p className="text-sm font-black text-green-400 uppercase tracking-widest">Proven Results</p>
+              <p className="text-4xl font-black text-white leading-tight">
+                From invisible to<br />the definitive answer.
+              </p>
+              <p className="text-xl text-white/50">One audit. <span className="text-white font-bold">$79.99</span></p>
+            </div>
+            <div className="relative z-10 flex items-center gap-6">
+              <div className="flex flex-col items-center">
+                <CircularProgress value={18} variant="geo" size={100} strokeWidth={8} label="Before" />
+              </div>
+              <div className="text-white/20 text-4xl">→</div>
+              <div className="flex flex-col items-center">
+                <CircularProgress value={96} variant="seo" size={120} strokeWidth={10} label="After Duelly" />
+              </div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 77: Local Domination Visualized (1:1) */}
+        <AdFrame ratio="1:1" id="ad-77-hyper-local-podium">
+          <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+            <div className="absolute inset-0 bg-gradient-to-t from-[#f59e0b]/10 to-transparent" />
+            <div className="relative z-10 space-y-8 flex flex-col items-center">
+              <p className="text-3xl font-black text-white leading-tight">
+                Dominate your local<br />AI search results.
+              </p>
+              <div className="flex items-end gap-2 h-32">
+                <div className="w-16 h-16 bg-white/5 rounded-t-lg border-t border-white/10 flex items-end justify-center pb-2"><span className="text-xs text-white/30 font-bold">#2</span></div>
+                <div className="w-20 h-28 bg-[#f59e0b]/20 rounded-t-lg border-t-2 border-[#f59e0b] shadow-[0_0_30px_rgba(245,158,11,0.3)] flex items-end justify-center pb-4"><span className="text-lg text-[#f59e0b] font-black">YOU</span></div>
+                <div className="w-16 h-12 bg-white/5 rounded-t-lg border-t border-white/10 flex items-end justify-center pb-2"><span className="text-xs text-white/30 font-bold">#3</span></div>
+              </div>
+              <p className="text-lg text-white/50">The exact roadmap for <span className="text-white font-bold">$79.99</span></p>
+              <Logo size="md" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 78: The Secret Weapon (4:5) */}
+        <AdFrame ratio="4:5" id="ad-78-hyper-secret">
+          <div className="w-full h-full bg-black relative overflow-hidden flex flex-col items-center justify-center p-10 text-center">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[50%] bg-[#BC13FE]/10 rounded-full blur-[100px] rotate-45" />
+            <div className="relative z-10 flex flex-col items-center gap-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#00e5ff] to-[#BC13FE] rounded-2xl shadow-[0_0_40px_rgba(188,19,254,0.4)]" />
+              <p className="text-sm font-black text-[#BC13FE] uppercase tracking-[0.4em]">The Secret Weapon</p>
+              <p className="text-4xl font-black text-white leading-tight">
+                The AI audit 7-figure<br />businesses use to stay<br />on top.
+              </p>
+              <p className="text-3xl font-black text-white border-t border-white/10 pt-6 w-full">$79.99</p>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 79: The No Brainer ROI Matrix (4:3) */}
+        <AdFrame ratio="4:3" id="ad-79-hyper-roi">
+          <div className="w-full h-full bg-[#050508] relative overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+            <div className="relative z-10 space-y-6 w-full max-w-md">
+              <p className="text-3xl font-black text-white">Pure Mathematics.</p>
+              <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-6 space-y-4">
+                <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                  <span className="text-white/50">Audit Investment</span>
+                  <span className="text-white font-bold">$79.99</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-white/5 pb-2">
+                  <span className="text-white/50">Avg. Client Value</span>
+                  <span className="text-green-400 font-bold">$1,500.00</span>
+                </div>
+                <div className="flex justify-between items-center pt-2">
+                  <span className="text-white/80 font-bold">Risk Level</span>
+                  <span className="text-[#00e5ff] font-black">ZERO</span>
+                </div>
+              </div>
+              <p className="text-sm text-white/40">It only takes one AI referral to 20x your ROI.</p>
+              <div className="pt-2"><Logo size="md" /></div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 80: The Urgency Warning (16:9) */}
+        <AdFrame ratio="16:9" id="ad-80-hyper-warning">
+          <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden flex items-center justify-center p-12 gap-12">
+            <div className="absolute inset-0 border-[12px] border-red-500/20" />
+            <div className="relative z-10 text-center px-8 py-4 bg-red-500/10 border border-red-500/30 rounded-2xl">
+              <p className="text-3xl font-black text-red-500 animate-pulse">WARNING</p>
+            </div>
+            <div className="relative z-10 flex flex-col items-start gap-4 flex-1">
+              <p className="text-3xl font-black text-white leading-tight">
+                Your competitors are actively<br />optimizing for AI Search.
+              </p>
+              <p className="text-xl text-white/50">
+                Don&apos;t get left behind. <span className="text-white font-bold">Secure your strategy for $79.99</span>
+              </p>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 81: The Executive Summary (4:3) */}
+        <AdFrame ratio="4:3" id="ad-81-hyper-executive">
+          <div className="w-full h-full bg-gradient-to-br from-[#1e293b] to-[#0f172a] relative overflow-hidden flex flex-col items-center justify-center p-12 text-center shadow-inner">
+            <div className="relative z-10 space-y-6 flex flex-col items-center">
+              <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">For Founders & CMOs</p>
+              <p className="text-4xl font-black text-white leading-tight">
+                The definitive board-ready<br />AI visibility report.
+              </p>
+              <div className="w-16 h-1 bg-blue-500 rounded-full" />
+              <p className="text-lg text-slate-300 max-w-sm">
+                Identify precisely where AI engines are dropping your brand.
+              </p>
+              <p className="text-2xl font-black text-blue-400">$79.99</p>
+              <div className="pt-4"><Logo size="md" /></div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 82: The E-Commerce Savior (1:1) */}
+        <AdFrame ratio="1:1" id="ad-82-hyper-ecommerce">
+          <div className="w-full h-full bg-[#050508] relative overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+            <div className="absolute bottom-0 right-0 w-64 h-64 bg-[#f59e0b]/10 rounded-full blur-[80px]" />
+            <div className="relative z-10 space-y-6 flex flex-col items-center">
+              <div className="text-5xl mb-4">🛍️</div>
+              <p className="text-3xl font-black text-white leading-tight">
+                Why didn&apos;t ChatGPT<br />recommend your product?
+              </p>
+              <p className="text-lg text-white/50">
+                Your store lacks critical entity data.<br />We&apos;ll show you exactly what&apos;s missing.
+              </p>
+              <div className="px-8 py-3 bg-white/5 border border-white/10 rounded-xl mt-2">
+                <p className="text-2xl font-black text-[#f59e0b]">Fix it for $79.99</p>
+              </div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 83: The Future-Proof Shield (4:5) */}
+        <AdFrame ratio="4:5" id="ad-83-hyper-shield">
+          <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden flex flex-col items-center justify-center p-10 text-center">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,#00e5ff1a_0%,transparent_60%)]" />
+            <div className="relative z-10 space-y-8 flex flex-col items-center">
+              <div className="text-7xl drop-shadow-[0_0_20px_#00e5ff66]">🛡️</div>
+              <p className="text-4xl font-black text-white leading-tight">
+                Protect your revenue<br />from AI disruption.
+              </p>
+              <p className="text-lg text-[#00e5ff] font-bold uppercase tracking-widest">
+                Future-Proof Audit: $79.99
+              </p>
+              <p className="text-sm text-white/40 max-w-xs">
+                Ensure Google&apos;s AI Overviews and ChatGPT cite you as the source.
+              </p>
+              <div className="pt-6"><Logo size="lg" /></div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 84: The Unlock Box (4:3) */}
+        <AdFrame ratio="4:3" id="ad-84-hyper-unlock">
+          <div className="w-full h-full bg-[#050508] relative overflow-hidden flex flex-col items-center justify-center p-12 text-center border-4 border-white/[0.02]">
+            <div className="relative z-10 space-y-6 flex flex-col items-center">
+              <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center">
+                <span className="text-4xl">🔓</span>
+              </div>
+              <p className="text-3xl font-black text-white leading-tight">
+                Unlock the hidden traffic<br />vault of AI Search.
+              </p>
+              <p className="text-xl text-[#BC13FE] font-black">$79.99</p>
+              <p className="text-sm text-white/50">The exact roadmap to dominate generative engines.</p>
+              <Logo size="md" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 85: The Ultimate Competitor Hook (16:9) */}
+        <AdFrame ratio="16:9" id="ad-85-hyper-competitor">
+          <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden flex items-center justify-center p-16">
+            <div className="absolute left-0 top-0 w-1/2 h-full bg-gradient-to-r from-[#fe3f8c]/10 to-transparent blur-2xl" />
+            <div className="relative z-10 flex flex-col items-center gap-6 text-center">
+              <p className="text-5xl font-black text-white leading-tight">
+                We found exactly why you&apos;re<br />losing to your competitor in AI.
+              </p>
+              <div className="flex items-center gap-4">
+                <p className="text-2xl text-white/60">See the data.</p>
+                <div className="px-6 py-2 bg-[#fe3f8c] rounded-lg">
+                  <p className="text-xl font-black text-white">For $79.99</p>
+                </div>
+              </div>
+              <Logo size="lg" />
+            </div>
+          </div>
+        </AdFrame>
+
       </div>
     </main>
   )
