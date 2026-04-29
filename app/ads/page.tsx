@@ -1137,7 +1137,7 @@ export default function AdsPage() {
         <AdFrame ratio="1:1" id="ad-48-v2-optimise-rings">
           <div className="w-full h-full bg-black relative overflow-hidden flex items-center justify-center">
             <div className="absolute w-[200%] h-[200%] bg-[radial-gradient(circle_at_50%_50%,#00e5ff0d_0%,transparent_50%)] animate-pulse" />
-            <div className="relative z-10 flex flex-col items-center gap-6">
+            <div className="relative z-10 flex flex-col items-center gap-8">
               <div className="relative">
                 <div className="absolute inset-0 rounded-full border border-[#00e5ff]/20 scale-110" />
                 <div className="absolute inset-0 rounded-full border border-[#00e5ff]/10 scale-150" />
@@ -1145,6 +1145,12 @@ export default function AdsPage() {
                   Optimise your site<br />for AI
                 </p>
               </div>
+              
+              <div className="flex items-center gap-6">
+                <CircularProgress value={98} variant="seo" size={80} strokeWidth={6} label="SEO" />
+                <CircularProgress value={97} variant="geo" size={80} strokeWidth={6} label="GEO" />
+              </div>
+
               <div className="px-6 py-2 rounded-full bg-[#00e5ff] text-black font-black text-lg">
                 FOR $79.99
               </div>
@@ -1179,7 +1185,6 @@ export default function AdsPage() {
           <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden flex items-center justify-center p-12">
             <div className="absolute inset-0 shadow-[inner_0_0_100px_rgba(0,0,0,0.8)] z-10" />
             <div className="w-full aspect-[4/3] rounded-[40px] bg-gradient-to-b from-[#1a1a2e] to-[#0a0a12] border border-white/10 flex flex-col items-center justify-center relative">
-              <div className="absolute top-8 left-8 w-12 h-1 text-[#00e5ff] opacity-40">━━━</div>
               <p className="text-2xl font-black text-white text-center leading-tight">
                 Secure your spot in<br />AI citations
               </p>
