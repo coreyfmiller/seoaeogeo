@@ -4,13 +4,26 @@ import { useState } from 'react'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
 
 function AdFrame({ ratio, children, id }: { ratio: '4:3' | '1:1' | '16:9' | '4:5'; children: React.ReactNode; id: string }) {
+  const [isHidden, setIsHidden] = useState(false)
   const aspectMap = { '4:3': '4/3', '1:1': '1/1', '16:9': '16/9', '4:5': '4/5' }
   const widthMap = { '4:3': 640, '1:1': 500, '16:9': 800, '4:5': 400 }
+
+  if (isHidden) {
+    return (
+      <div className="flex items-center gap-2 opacity-50 py-2 border-b border-white/5 w-fit">
+        <span className="text-xs font-bold text-white/40 uppercase tracking-widest line-through">{id}</span>
+        <span className="text-xs text-white/20">({ratio})</span>
+        <button onClick={() => setIsHidden(false)} className="text-[10px] uppercase font-bold text-[#00e5ff]/50 hover:text-[#00e5ff] ml-2">Restore</button>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 group">
         <span className="text-xs font-bold text-white/40 uppercase tracking-widest">{id}</span>
         <span className="text-xs text-white/20">({ratio})</span>
+        <button onClick={() => setIsHidden(true)} className="text-xs text-red-500/30 hover:text-red-500 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" title="Hide Ad">✕</button>
       </div>
       <div className="rounded-2xl overflow-hidden border border-white/10" style={{ aspectRatio: aspectMap[ratio], width: widthMap[ratio] }}>
         {children}
