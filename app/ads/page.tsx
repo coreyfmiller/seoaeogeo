@@ -1,20 +1,43 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CircularProgress } from '@/components/dashboard/circular-progress'
 
 function AdFrame({ ratio, children, id }: { ratio: '4:3' | '1:1' | '16:9' | '4:5'; children: React.ReactNode; id: string }) {
   const [isHidden, setIsHidden] = useState(false)
   const [isPrioritized, setIsPrioritized] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    if (localStorage.getItem(`ad-hidden-${id}`) === 'true') setIsHidden(true)
+    if (localStorage.getItem(`ad-prioritized-${id}`) === 'true') setIsPrioritized(true)
+  }, [id])
+
+  const toggleHidden = (val: boolean) => {
+    setIsHidden(val)
+    if (val) localStorage.setItem(`ad-hidden-${id}`, 'true')
+    else localStorage.removeItem(`ad-hidden-${id}`)
+  }
+
+  const togglePrioritized = () => {
+    const newVal = !isPrioritized
+    setIsPrioritized(newVal)
+    if (newVal) localStorage.setItem(`ad-prioritized-${id}`, 'true')
+    else localStorage.removeItem(`ad-prioritized-${id}`)
+  }
+
   const aspectMap = { '4:3': '4/3', '1:1': '1/1', '16:9': '16/9', '4:5': '4/5' }
   const widthMap = { '4:3': 640, '1:1': 500, '16:9': 800, '4:5': 400 }
+
+  if (!mounted) return <div style={{ aspectRatio: aspectMap[ratio], width: widthMap[ratio] }} className="bg-white/5 animate-pulse rounded-2xl opacity-10" />
 
   if (isHidden) {
     return (
       <div className="flex items-center gap-2 opacity-50 py-2 border-b border-white/5 w-fit" style={{ order: isPrioritized ? -1 : 0 }}>
         <span className="text-xs font-bold text-white/40 uppercase tracking-widest line-through">{id}</span>
         <span className="text-xs text-white/20">({ratio})</span>
-        <button onClick={() => setIsHidden(false)} className="text-[10px] uppercase font-bold text-[#00e5ff]/50 hover:text-[#00e5ff] ml-2">Restore</button>
+        <button onClick={() => toggleHidden(false)} className="text-[10px] uppercase font-bold text-[#00e5ff]/50 hover:text-[#00e5ff] ml-2">Restore</button>
       </div>
     )
   }
@@ -22,10 +45,10 @@ function AdFrame({ ratio, children, id }: { ratio: '4:3' | '1:1' | '16:9' | '4:5
   return (
     <div className="flex flex-col gap-2 transition-all duration-500" style={{ order: isPrioritized ? -1 : 0 }}>
       <div className="flex items-center gap-2 group">
-        <button onClick={() => setIsPrioritized(!isPrioritized)} className={`text-lg transition-colors leading-none ${isPrioritized ? 'text-yellow-400' : 'text-white/20 hover:text-yellow-400/50'}`} title={isPrioritized ? "Unpin Ad" : "Pin Ad to Top"}>★</button>
+        <button onClick={togglePrioritized} className={`text-lg transition-colors leading-none ${isPrioritized ? 'text-yellow-400' : 'text-white/20 hover:text-yellow-400/50'}`} title={isPrioritized ? "Unpin Ad" : "Pin Ad to Top"}>★</button>
         <span className="text-xs font-bold text-white/40 uppercase tracking-widest">{id}</span>
         <span className="text-xs text-white/20">({ratio})</span>
-        <button onClick={() => setIsHidden(true)} className="text-xs text-red-500/50 hover:text-red-500 ml-2 transition-colors" title="Hide Ad">✕</button>
+        <button onClick={() => toggleHidden(true)} className="text-xs text-red-500/50 hover:text-red-500 ml-2 transition-colors" title="Hide Ad">✕</button>
       </div>
       <div className={`rounded-2xl overflow-hidden border transition-colors duration-300 ${isPrioritized ? 'border-yellow-400/50 shadow-[0_0_30px_rgba(250,204,21,0.1)]' : 'border-white/10'}`} style={{ aspectRatio: aspectMap[ratio], width: widthMap[ratio] }}>
         {children}
