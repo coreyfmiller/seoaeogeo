@@ -1882,6 +1882,222 @@ export default function AdsPage() {
           </div>
         </AdFrame>
 
+        {/* INTEL & BLUEPRINT SERIES */}
+        <div className="pt-12 border-t border-white/10 mt-20">
+          <h2 className="text-xl font-bold mb-4 text-[#00e5ff]">The Intel & Blueprint Series (Ads 86-95)</h2>
+        </div>
+
+        {/* AD 86: The Deliverables List (4:5) */}
+        <AdFrame ratio="4:5" id="ad-86-intel-deliverables">
+          <div className="w-full h-full bg-[#050508] relative overflow-hidden flex flex-col justify-center p-10">
+            <div className="absolute top-0 right-0 w-[80%] h-[80%] bg-[#00e5ff]/5 rounded-full blur-[100px]" />
+            <div className="relative z-10 space-y-6 w-full">
+              <p className="text-3xl font-black text-white leading-tight mb-8">
+                What you get for <span className="text-[#00e5ff]">$79.99</span>:
+              </p>
+              <div className="space-y-4">
+                <div className="p-4 bg-white/5 border border-white/10 rounded-xl flex items-center gap-4">
+                  <span className="text-2xl">🔍</span>
+                  <p className="text-lg font-bold text-white/90">1. Deep Technical Scan</p>
+                </div>
+                <div className="p-4 bg-white/5 border border-white/10 rounded-xl flex items-center gap-4">
+                  <span className="text-2xl">📊</span>
+                  <p className="text-lg font-bold text-white/90">2. Competitor Intel</p>
+                </div>
+                <div className="p-4 bg-[#00e5ff]/10 border border-[#00e5ff]/30 rounded-xl flex items-center gap-4">
+                  <span className="text-2xl">🗺️</span>
+                  <p className="text-lg font-bold text-[#00e5ff]">3. The Fix Blueprint</p>
+                </div>
+              </div>
+              <div className="pt-6 text-center"><Logo size="md" /></div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 87: Stop Guessing (16:9) */}
+        <AdFrame ratio="16:9" id="ad-87-intel-stop-guessing">
+          <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden flex items-center justify-between px-16">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#fe3f8c]/10 to-transparent blur-3xl" />
+            <div className="relative z-10 flex flex-col gap-6 w-1/2">
+              <p className="text-4xl font-black text-white leading-tight">
+                Stop guessing what<br />AI wants.
+              </p>
+              <p className="text-xl text-white/60">
+                Buy the exact blueprint to rank in ChatGPT and AI Overviews.
+              </p>
+            </div>
+            <div className="relative z-10 flex flex-col items-center gap-4 bg-white/[0.03] p-8 border border-white/10 rounded-3xl">
+              <p className="text-sm text-white/40 font-bold uppercase tracking-widest">Full Analysis</p>
+              <p className="text-5xl font-black text-[#fe3f8c]">$79.99</p>
+              <Logo size="sm" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 88: The MRI Analogy (4:3) */}
+        <AdFrame ratio="4:3" id="ad-88-intel-mri">
+          <div className="w-full h-full bg-[#050508] relative overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,#00e5ff1a_0%,transparent_60%)]" />
+            <div className="relative z-10 space-y-6">
+              <div className="w-20 h-20 mx-auto bg-white/5 rounded-full border border-[#00e5ff]/30 flex items-center justify-center">
+                <span className="text-4xl text-[#00e5ff]">🩻</span>
+              </div>
+              <p className="text-3xl font-black text-white leading-tight">
+                We are the MRI for your<br />website&apos;s AI visibility.
+              </p>
+              <p className="text-lg text-white/50 max-w-sm mx-auto">
+                You know you have a traffic problem. We provide the scan that finds exactly where it's broken.
+              </p>
+              <div className="inline-block mt-4 px-6 py-2 border border-[#00e5ff]/50 bg-[#00e5ff]/10 rounded-full">
+                <p className="text-xl font-black text-[#00e5ff]">Scan Cost: $79.99</p>
+              </div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 89: Architect Blueprint (1:1) */}
+        <AdFrame ratio="1:1" id="ad-89-intel-architect">
+          <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden flex flex-col items-center justify-center p-12 text-center border-4 border-[#00e5ff]/20">
+            <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+            <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(#00e5ff 1px, transparent 1px), linear-gradient(90deg, #00e5ff 1px, transparent 1px)', backgroundSize: '20px 20px', opacity: 0.05 }} />
+            <div className="relative z-10 space-y-8 flex flex-col items-center bg-[#0a0a12]/80 p-8 rounded-3xl backdrop-blur-sm border border-[#00e5ff]/20">
+              <p className="text-4xl font-black text-white leading-tight">
+                Don&apos;t buy promises.<br />
+                <span className="text-[#00e5ff]">Buy the blueprint.</span>
+              </p>
+              <p className="text-lg text-white/70">
+                Actionable, platform-specific fixes to optimize your site for AI engines.
+              </p>
+              <p className="text-4xl font-black text-white bg-white/10 px-6 py-2 rounded-xl">$79.99</p>
+              <Logo size="md" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 90: Intel Acquisition (16:9) */}
+        <AdFrame ratio="16:9" id="ad-90-intel-acquisition">
+          <div className="w-full h-full bg-black relative overflow-hidden flex items-center justify-between px-16">
+            <div className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-[#BC13FE]/20 to-transparent blur-3xl" />
+            <div className="relative z-10 space-y-6">
+              <p className="text-sm font-bold text-[#BC13FE] uppercase tracking-[0.4em]">Strategic Acquisition</p>
+              <p className="text-4xl font-black text-white leading-tight">
+                Buy the intel your competitors<br />hope you never see.
+              </p>
+              <p className="text-xl text-white/50">Full AI Search Analysis + Fix Roadmap</p>
+            </div>
+            <div className="relative z-10">
+              <div className="text-center p-8 border border-white/20 rounded-2xl bg-white/5 backdrop-blur-xl">
+                <p className="text-5xl font-black text-white mb-2">$79.99</p>
+                <p className="text-xs font-bold text-[#BC13FE] uppercase tracking-widest">One Time</p>
+              </div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 91: Phase 1 & 2 (4:5) */}
+        <AdFrame ratio="4:5" id="ad-91-intel-phases">
+          <div className="w-full h-full bg-[#050508] relative overflow-hidden flex flex-col justify-center p-10 text-center">
+            <div className="absolute bottom-0 right-0 w-[100%] h-[50%] bg-[#00e5ff]/10 rounded-full blur-[100px]" />
+            <div className="relative z-10 space-y-8 flex flex-col items-center">
+              <p className="text-4xl font-black text-white">How it works:</p>
+              <div className="w-full space-y-4 text-left">
+                <div className="p-5 bg-white/5 border border-white/10 rounded-2xl">
+                  <p className="text-[#00e5ff] font-black text-sm uppercase tracking-widest mb-1">Phase 1</p>
+                  <p className="text-xl font-bold text-white">We audit your AI visibility.</p>
+                </div>
+                <div className="p-5 bg-[#00e5ff]/10 border border-[#00e5ff]/30 rounded-2xl">
+                  <p className="text-[#00e5ff] font-black text-sm uppercase tracking-widest mb-1">Phase 2</p>
+                  <p className="text-xl font-bold text-white">We tell you exactly what to fix.</p>
+                </div>
+              </div>
+              <div className="w-full border-t border-white/10 pt-6">
+                <p className="text-3xl font-black text-white mb-2">Total: $79.99</p>
+              </div>
+              <Logo size="md" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 92: The Blindspot Reveal (4:3) */}
+        <AdFrame ratio="4:3" id="ad-92-intel-blindspot">
+          <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+            <div className="absolute inset-0 bg-gradient-to-t from-[#fe3f8c]/10 to-transparent" />
+            <div className="relative z-10 space-y-6">
+              <div className="text-5xl mb-4">🔦</div>
+              <p className="text-3xl font-black text-white leading-tight">
+                Find the exact line of code<br />keeping you out of ChatGPT.
+              </p>
+              <p className="text-lg text-white/60 max-w-sm mx-auto">
+                We scan for missing schema, poor entity density, and weak semantic structure.
+              </p>
+              <p className="text-2xl font-black text-[#fe3f8c] pt-4">The Fix Report: $79.99</p>
+              <div className="pt-2"><Logo size="sm" /></div>
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 93: The Roadmap (16:9) */}
+        <AdFrame ratio="16:9" id="ad-93-intel-roadmap">
+          <div className="w-full h-full bg-[#050508] relative overflow-hidden flex items-center justify-between px-16">
+            <div className="absolute top-0 right-0 w-[50%] h-full bg-[radial-gradient(ellipse_at_right,#00e5ff15,transparent_70%)]" />
+            <div className="relative z-10 flex flex-col items-start gap-4 flex-1">
+              <p className="text-4xl font-black text-white leading-tight">
+                We don&apos;t sell rankings.<br />
+                <span className="text-[#00e5ff]">We sell the roadmap to get them.</span>
+              </p>
+              <p className="text-xl text-white/50 font-medium">A step-by-step diagnostic of your AI Search visibility.</p>
+            </div>
+            <div className="relative z-10 flex flex-col items-center gap-4">
+              <div className="px-8 py-4 bg-white/5 border border-white/20 rounded-2xl text-center">
+                <p className="text-sm font-bold text-white/40 uppercase tracking-widest mb-1">Your Blueprint</p>
+                <p className="text-4xl font-black text-white">$79.99</p>
+              </div>
+              <Logo size="md" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 94: Value Breakdown (1:1) */}
+        <AdFrame ratio="1:1" id="ad-94-intel-value">
+          <div className="w-full h-full bg-[#0a0a12] relative overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+            <div className="relative z-10 space-y-8 w-full">
+              <p className="text-3xl font-black text-white">The exact same analysis.</p>
+              <div className="space-y-4">
+                <div className="bg-white/5 border border-white/10 p-6 rounded-2xl flex justify-between items-center opacity-50">
+                  <span className="text-xl font-bold text-white">Agency Audit</span>
+                  <span className="text-2xl font-black text-white line-through">$2,000</span>
+                </div>
+                <div className="bg-[#00e5ff]/10 border border-[#00e5ff]/30 p-6 rounded-2xl flex justify-between items-center">
+                  <span className="text-xl font-bold text-[#00e5ff]">Duelly AI Audit</span>
+                  <span className="text-3xl font-black text-[#00e5ff]">$79.99</span>
+                </div>
+              </div>
+              <p className="text-lg text-white/50">Why pay for the overhead?</p>
+              <Logo size="md" />
+            </div>
+          </div>
+        </AdFrame>
+
+        {/* AD 95: Ultimate Transparency (4:3) */}
+        <AdFrame ratio="4:3" id="ad-95-intel-transparency">
+          <div className="w-full h-full bg-[#050508] relative overflow-hidden flex flex-col items-center justify-center p-12 text-center">
+            <div className="absolute inset-0 border-[10px] border-white/5" />
+            <div className="relative z-10 space-y-6 flex flex-col items-center">
+              <p className="text-sm font-bold text-[#BC13FE] uppercase tracking-[0.3em]">Absolute Transparency</p>
+              <p className="text-3xl font-black text-white leading-tight">
+                What <span className="text-[#BC13FE]">$79.99</span> actually buys you.
+              </p>
+              <ul className="text-lg text-white/70 space-y-2 text-left bg-white/5 p-6 rounded-xl border border-white/10 w-full max-w-sm mx-auto">
+                <li>• Current AI visibility scores</li>
+                <li>• Top 5 competitor gaps</li>
+                <li>• Missing schema identifiers</li>
+                <li>• Exact steps to fix them</li>
+              </ul>
+              <div className="pt-4"><Logo size="lg" /></div>
+            </div>
+          </div>
+        </AdFrame>
+
       </div>
     </main>
   )
