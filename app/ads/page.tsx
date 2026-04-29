@@ -23,7 +23,7 @@ function AdFrame({ ratio, children, id }: { ratio: '4:3' | '1:1' | '16:9' | '4:5
       <div className="flex items-center gap-2 group">
         <span className="text-xs font-bold text-white/40 uppercase tracking-widest">{id}</span>
         <span className="text-xs text-white/20">({ratio})</span>
-        <button onClick={() => setIsHidden(true)} className="text-xs text-red-500/30 hover:text-red-500 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" title="Hide Ad">✕</button>
+        <button onClick={() => setIsHidden(true)} className="text-xs text-red-500/50 hover:text-red-500 ml-2 transition-colors" title="Hide Ad">✕</button>
       </div>
       <div className="rounded-2xl overflow-hidden border border-white/10" style={{ aspectRatio: aspectMap[ratio], width: widthMap[ratio] }}>
         {children}
