@@ -34,23 +34,31 @@ function AdFrame({ ratio, children, id }: { ratio: '4:3' | '1:1' | '16:9' | '4:5
 
   if (isHidden) {
     return (
-      <div className="flex items-center gap-2 opacity-50 py-2 border-b border-white/5 w-fit" style={{ order: isPrioritized ? -1 : 0 }}>
+      <div className="flex items-center gap-3 opacity-50 py-2 border-b border-white/5 w-fit" style={{ order: isPrioritized ? -1 : 0 }}>
+        <button onClick={() => toggleHidden(false)} className="w-6 h-6 flex items-center justify-center rounded bg-white/5 text-white/40 border border-white/10 hover:bg-white/10 hover:text-white transition-colors" title="Restore Ad">
+          <span className="text-xs font-black">↺</span>
+        </button>
         <span className="text-xs font-bold text-white/40 uppercase tracking-widest line-through">{id}</span>
         <span className="text-xs text-white/20">({ratio})</span>
-        <button onClick={() => toggleHidden(false)} className="text-[10px] uppercase font-bold text-[#00e5ff]/50 hover:text-[#00e5ff] ml-2">Restore</button>
       </div>
     )
   }
 
   return (
     <div className="flex flex-col gap-2 transition-all duration-500" style={{ order: isPrioritized ? -1 : 0 }}>
-      <div className="flex items-center gap-2 group">
-        <button onClick={togglePrioritized} className={`text-lg transition-colors leading-none ${isPrioritized ? 'text-yellow-400' : 'text-white/20 hover:text-yellow-400/50'}`} title={isPrioritized ? "Unpin Ad" : "Pin Ad to Top"}>★</button>
+      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 mr-1">
+          <button onClick={togglePrioritized} className={`w-6 h-6 flex items-center justify-center rounded transition-colors ${isPrioritized ? 'bg-green-500/20 text-green-400 border border-green-500/50' : 'bg-white/5 text-white/40 border border-white/10 hover:bg-green-500/10 hover:text-green-400 hover:border-green-500/30'}`} title={isPrioritized ? "Unpin Ad" : "Approve & Pin Ad"}>
+            <span className="text-xs font-black">✓</span>
+          </button>
+          <button onClick={() => toggleHidden(true)} className="w-6 h-6 flex items-center justify-center rounded bg-white/5 text-white/40 border border-white/10 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-colors" title="Reject & Hide Ad">
+            <span className="text-xs font-black">✕</span>
+          </button>
+        </div>
         <span className="text-xs font-bold text-white/40 uppercase tracking-widest">{id}</span>
         <span className="text-xs text-white/20">({ratio})</span>
-        <button onClick={() => toggleHidden(true)} className="text-xs text-red-500/50 hover:text-red-500 ml-2 transition-colors" title="Hide Ad">✕</button>
       </div>
-      <div className={`rounded-2xl overflow-hidden border transition-colors duration-300 ${isPrioritized ? 'border-yellow-400/50 shadow-[0_0_30px_rgba(250,204,21,0.1)]' : 'border-white/10'}`} style={{ aspectRatio: aspectMap[ratio], width: widthMap[ratio] }}>
+      <div className={`rounded-2xl overflow-hidden border transition-colors duration-300 ${isPrioritized ? 'border-green-500/50 shadow-[0_0_30px_rgba(34,197,94,0.15)]' : 'border-white/10'}`} style={{ aspectRatio: aspectMap[ratio], width: widthMap[ratio] }}>
         {children}
       </div>
     </div>
