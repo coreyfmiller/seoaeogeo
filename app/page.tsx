@@ -122,10 +122,10 @@ export default function HomePage() {
         {/* Social Proof Strip */}
         <div className="mt-16 flex flex-col items-center gap-4">
           <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60">Powered by industry-leading data sources</p>
-          <div className="flex items-center justify-center gap-8 opacity-70">
-            <Image src="/google.png" alt="Google" width={100} height={32} className="h-7 w-auto grayscale hover:grayscale-0 transition-all" />
-            <Image src="/gemini.png" alt="Gemini AI" width={100} height={32} className="h-7 w-auto grayscale brightness-200 hover:grayscale-0 hover:brightness-100 transition-all" />
-            <Image src="/moz.png" alt="Moz" width={80} height={32} className="h-7 w-auto grayscale hover:grayscale-0 transition-all" />
+          <div className="flex items-center justify-center gap-8">
+            <Image src="/google.png" alt="Google" width={100} height={32} className="h-7 w-auto" />
+            <Image src="/gemini.png" alt="Gemini AI" width={100} height={32} className="h-7 w-auto" />
+            <Image src="/moz.png" alt="Moz" width={80} height={32} className="h-7 w-auto" />
           </div>
           <p className="text-xs text-muted-foreground/50">500+ sites audited. Real data from Google PageSpeed, Gemini AI, and Moz Link Explorer.</p>
         </div>
