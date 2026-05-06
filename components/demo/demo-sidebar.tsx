@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 
 const demoNav = [
-  { name: "AI Visibility", icon: FlaskConical, href: "/demo/ai-test", badge: "NEW" },
+  { name: "AI Visibility", icon: FlaskConical, href: "/demo/ai-test" },
   { name: "Pro Audit", icon: Bot, href: "/demo/pro-audit" },
   { name: "Deep Scan", icon: Layers, href: "/demo/deep-scan" },
   { name: "Competitor Duel", icon: Swords, href: "/demo/battle-mode" },

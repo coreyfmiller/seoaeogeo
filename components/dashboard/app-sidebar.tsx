@@ -37,7 +37,7 @@ interface NavItem {
 }
 
 const mainNav: NavItem[] = [
-  { name: "AI Visibility", icon: FlaskConical, href: "/ai-test", badge: "NEW" },
+  { name: "AI Visibility", icon: FlaskConical, href: "/ai-test" },
   { name: "Pro Audit", icon: Bot, href: "/pro-audit" },
   { name: "Deep Scan", icon: Layers, href: "/deep-scan" },
   { name: "Keyword Arena", icon: Trophy, href: "/keyword-arena", badge: "ADMIN" },
