@@ -90,9 +90,12 @@ export default function HomePage() {
         <p className="text-sm text-muted-foreground mt-3">Optimize for Google, ChatGPT, Gemini, and Perplexity — all in one platform.</p>
 
         {/* Product Screenshot */}
-        <div className="mt-12 relative mx-auto max-w-5xl">
-          <div className="absolute -inset-4 bg-gradient-to-r from-[#00e5ff]/20 via-[#BC13FE]/20 to-[#fe3f8c]/20 rounded-2xl blur-2xl opacity-50" />
-          <div className="relative rounded-xl border border-border/50 overflow-hidden shadow-2xl shadow-black/50">
+        <div className="mt-16 relative mx-auto max-w-5xl perspective-[2000px]">
+          {/* Ambient glow */}
+          <div className="absolute -inset-8 bg-gradient-to-r from-[#00e5ff]/30 via-[#BC13FE]/20 to-[#fe3f8c]/30 rounded-3xl blur-3xl opacity-40 animate-pulse" style={{ animationDuration: '4s' }} />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 pointer-events-none rounded-2xl" />
+          {/* Screenshot with perspective */}
+          <div className="relative rounded-2xl border border-white/10 overflow-hidden shadow-[0_20px_80px_-20px_rgba(0,229,255,0.3),0_20px_60px_-30px_rgba(188,19,254,0.2)] transform rotate-x-1 hover:rotate-x-0 transition-transform duration-700 ease-out">
             <Image
               src="/duellyexample.png"
               alt="Duelly dashboard showing SEO, AEO, and GEO scores with prioritized fix recommendations"
