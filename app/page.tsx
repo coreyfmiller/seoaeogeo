@@ -42,7 +42,7 @@ export default function HomePage() {
             <Link href="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help</Link>
             <Link href="/standards" className="text-sm text-muted-foreground hover:text-foreground transition-colors">How We Score</Link>
             <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</Link>
-            <Link href="/demo" className="text-sm px-3 py-1 rounded-lg border border-[#BC13FE]/50 bg-[#BC13FE]/10 font-bold text-[#BC13FE] hover:bg-[#BC13FE]/20 transition-colors">Try Demo</Link>
+            <Link href="/demo" className="text-sm px-3 py-1 rounded-lg border border-[#BC13FE]/50 bg-[#BC13FE]/10 font-bold text-[#BC13FE] hover:bg-[#BC13FE]/20 transition-colors">View Demo</Link>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/signup" className="px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-sm transition-colors">
@@ -57,7 +57,7 @@ export default function HomePage() {
                 <Menu className="h-5 w-5 text-muted-foreground" />
               </summary>
               <div className="absolute right-0 top-full mt-2 w-48 rounded-xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-xl p-3 space-y-1 z-50">
-                <Link href="/demo" className="block px-3 py-2 rounded-lg text-sm font-bold text-[#BC13FE] hover:bg-[#BC13FE]/10 transition-colors">Try Demo</Link>
+                <Link href="/demo" className="block px-3 py-2 rounded-lg text-sm font-bold text-[#BC13FE] hover:bg-[#BC13FE]/10 transition-colors">View Demo</Link>
                 <Link href="/pricing" className="block px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors">Pricing</Link>
                 <Link href="/blog" className="block px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors">Blog</Link>
                 <Link href="/help" className="block px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors">Help</Link>
@@ -90,7 +90,7 @@ export default function HomePage() {
             href="/demo"
             className="px-8 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-lg transition-colors flex items-center gap-2 shadow-lg shadow-[#00e5ff]/20"
           >
-            Try the Demo Free <ArrowRight className="h-5 w-5" />
+            View Demo <ArrowRight className="h-5 w-5" />
           </Link>
           <Link
             href="/signup"
@@ -342,7 +342,7 @@ export default function HomePage() {
             href="/demo"
             className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-lg transition-colors shadow-lg shadow-[#00e5ff]/20"
           >
-            Try the Demo Free <ArrowRight className="h-5 w-5" />
+            View Demo <ArrowRight className="h-5 w-5" />
           </Link>
           <Link
             href="/signup"
