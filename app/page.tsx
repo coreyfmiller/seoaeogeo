@@ -88,6 +88,21 @@ export default function HomePage() {
           </Link>
         </div>
         <p className="text-sm text-muted-foreground mt-3">Optimize for Google, ChatGPT, Gemini, and Perplexity — all in one platform.</p>
+
+        {/* Product Screenshot */}
+        <div className="mt-12 relative mx-auto max-w-5xl">
+          <div className="absolute -inset-4 bg-gradient-to-r from-[#00e5ff]/20 via-[#BC13FE]/20 to-[#fe3f8c]/20 rounded-2xl blur-2xl opacity-50" />
+          <div className="relative rounded-xl border border-border/50 overflow-hidden shadow-2xl shadow-black/50">
+            <Image
+              src="/duellyexample.png"
+              alt="Duelly dashboard showing SEO, AEO, and GEO scores with prioritized fix recommendations"
+              width={1920}
+              height={1080}
+              className="w-full h-auto"
+              priority
+            />
+          </div>
+        </div>
       </section>
 
       {/* Three Pillars — compact */}
