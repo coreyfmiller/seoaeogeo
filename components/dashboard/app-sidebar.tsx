@@ -146,7 +146,7 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
     <aside className={cn(mobile ? "flex flex-col w-full bg-sidebar" : "hidden lg:flex flex-col w-64 border-r border-border/50 bg-sidebar")}>
       {/* Logo */}
       <div className="flex flex-col items-center justify-center px-6 py-5 border-b border-border/50">
-        <a href="/pro-audit">
+        <a href="/ai-test">
           <Image src="/logo.png" alt="Duelly" width={165} height={66} className="h-[66px] w-auto" priority />
         </a>
         <span className="text-xs text-muted-foreground/60 italic mt-1">The roadmap to outrank your rivals.</span>

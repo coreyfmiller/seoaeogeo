@@ -58,10 +58,10 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // If logged in and hitting /login, redirect to dashboard
+  // If logged in and hitting /login, redirect to AI Visibility
   if (user && request.nextUrl.pathname === '/login') {
     const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
+    url.pathname = '/ai-test'
     return NextResponse.redirect(url)
   }
 
