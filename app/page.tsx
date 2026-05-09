@@ -92,16 +92,16 @@ export default function HomePage() {
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/demo"
+            href="/signup"
             className="px-8 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-lg transition-colors flex items-center gap-2 shadow-lg shadow-[#00e5ff]/20"
           >
-            View Demo <ArrowRight className="h-5 w-5" />
+            Check My Visibility Free <ArrowRight className="h-5 w-5" />
           </Link>
           <Link
-            href="/signup"
+            href="/demo"
             className="px-8 py-3 rounded-xl border border-white/20 hover:border-[#BC13FE]/50 hover:bg-[#BC13FE]/5 font-bold text-lg transition-colors flex items-center gap-2"
           >
-            Check My Visibility — $79.99
+            View Demo
           </Link>
         </div>
         <p className="text-sm text-muted-foreground mt-3">No subscription. No demo call. Results in minutes.</p>
@@ -409,16 +409,16 @@ export default function HomePage() {
         <p className="text-sm font-bold text-[#00e5ff] mb-8">$79.99. No subscription. Credits never expire.</p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/demo"
+            href="/signup"
             className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-white font-bold text-lg transition-colors shadow-lg shadow-[#00e5ff]/20"
           >
-            View Demo <ArrowRight className="h-5 w-5" />
+            Check My Visibility Free <ArrowRight className="h-5 w-5" />
           </Link>
           <Link
-            href="/signup"
+            href="/pricing"
             className="inline-flex items-center gap-2 px-8 py-3 rounded-xl border border-white/20 hover:border-[#BC13FE]/50 hover:bg-[#BC13FE]/5 font-bold text-lg transition-colors"
           >
-            Check My Visibility — $79.99
+            View Pricing
           </Link>
         </div>
       </section>
