@@ -43,6 +43,7 @@ const ENGINE_META: Record<string, { label: string; color: string; icon: React.Re
 export default function AITestPage() {
   const [keyword, setKeyword] = useState("")
   const [userUrl, setUserUrl] = useState("")
+  const [location, setLocation] = useState("")
   const [result, setResult] = useState<AITestResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -57,9 +58,11 @@ export default function AITestPage() {
     if (wasHistoryCleared()) return
     const savedKeyword = localStorage.getItem('ai_test_keyword')
     const savedUserUrl = localStorage.getItem('ai_test_userUrl')
+    const savedLocation = localStorage.getItem('ai_test_location')
     const savedResult = localStorage.getItem('ai_test_result')
     if (savedKeyword) setKeyword(savedKeyword)
     if (savedUserUrl) setUserUrl(savedUserUrl)
+    if (savedLocation) setLocation(savedLocation)
     if (savedResult) {
       try { setResult(JSON.parse(savedResult)) } catch {}
     }
@@ -70,6 +73,7 @@ export default function AITestPage() {
     if (typeof window === 'undefined') return
     if (keyword) safeSetItem('ai_test_keyword', keyword)
     if (userUrl) safeSetItem('ai_test_userUrl', userUrl)
+    if (location) safeSetItem('ai_test_location', location)
     if (result) safeSetItem('ai_test_result', JSON.stringify(result))
   }, [keyword, userUrl, result])
 
@@ -144,7 +148,7 @@ export default function AITestPage() {
       const res = await fetch('/api/ai-test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ keyword: keyword.trim(), userUrl: userUrl.trim() || undefined }),
+        body: JSON.stringify({ keyword: keyword.trim(), userUrl: userUrl.trim() || undefined, location: location.trim() || undefined }),
       })
       const data = await res.json()
       if (typeof window !== 'undefined') window.dispatchEvent(new Event('credits-changed'))
@@ -233,7 +237,7 @@ export default function AITestPage() {
               <div className="flex items-center gap-2">
                 <input type="text" value={keyword} onChange={e => setKeyword(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleRun()}
-                  placeholder="Enter a keyword (e.g. best coffee shop downtown, dentist near me)"
+                  placeholder="Enter a keyword (e.g. best coffee shop, dentist, plumber)"
                   className="flex-1 px-4 py-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:border-[#00e5ff]/50 focus:ring-1 focus:ring-[#00e5ff]/30 text-sm" />
                 <button onClick={handleRun} disabled={isLoading || !keyword.trim()}
                   className="px-5 py-2.5 bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-black rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm shrink-0">
@@ -242,9 +246,15 @@ export default function AITestPage() {
               </div>
             </div>
             <div>
-              <p className="text-xs text-white font-bold mb-1.5">Step 2 — Your website (optional)</p>
+              <p className="text-xs text-white font-bold mb-1.5">Step 2 — Add a location <span className="text-white/30 font-normal">(optional, for local results)</span></p>
+              <input type="text" value={location} onChange={e => setLocation(e.target.value)}
+                placeholder="e.g. Quispamsis, New Brunswick"
+                className="w-full px-4 py-2 bg-white/[0.02] border border-white/[0.06] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#00e5ff]/30 text-sm" />
+            </div>
+            <div>
+              <p className="text-xs text-white font-bold mb-1.5">Step 3 — Your website <span className="text-white/30 font-normal">(optional, highlights you in results)</span></p>
               <input type="text" value={userUrl} onChange={e => setUserUrl(e.target.value)}
-                placeholder="e.g. yourbusiness.com — highlights your site in results"
+                placeholder="e.g. yourbusiness.com"
                 className="w-full px-4 py-2 bg-white/[0.02] border border-white/[0.06] rounded-xl text-white placeholder:text-white/20 focus:outline-none focus:border-[#00e5ff]/30 text-sm" />
             </div>
           </div>

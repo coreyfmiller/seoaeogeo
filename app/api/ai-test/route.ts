@@ -7,7 +7,7 @@ const CREDIT_COST = 5
 
 export async function POST(req: NextRequest) {
   try {
-    const { keyword, userUrl } = await req.json()
+    const { keyword, userUrl, location } = await req.json()
     if (!keyword?.trim()) {
       return NextResponse.json({ error: 'Keyword is required' }, { status: 400 })
     }
@@ -21,11 +21,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Insufficient credits' }, { status: 402 })
     }
 
+    // Build the search query: append location if provided
+    const searchKeyword = location?.trim()
+      ? `${keyword.trim()} in ${location.trim()}`
+      : keyword.trim()
+
     let creditsDeducted = true
-    console.log(`[AI Test] Running for keyword: "${keyword.trim()}"`)
+    console.log(`[AI Test] Running for keyword: "${searchKeyword}"${location ? ` (location: ${location.trim()})` : ''}`)
 
     try {
-      const results = await runAITest(keyword.trim())
+      const results = await runAITest(searchKeyword)
 
       // Check if all engines failed
       const allFailed = results.every(r => r.error && r.recommendations.length === 0)
