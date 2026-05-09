@@ -104,7 +104,7 @@ export default function HomePage() {
             View Demo
           </Link>
         </div>
-        <p className="text-sm text-muted-foreground mt-3">No subscription. No demo call. Results in minutes.</p>
+        <p className="text-sm text-muted-foreground mt-3">No credit card needed. 5 free checks. Results in minutes.</p>
       </section>
 
       {/* AI Visibility Table — The Hook */}
