@@ -8,7 +8,7 @@
     COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
     ref_code,
     ref_by,
-    20,
+    25,
     100
   );
 

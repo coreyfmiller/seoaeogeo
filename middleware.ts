@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   // Protected routes — redirect to login if not authenticated
-  const protectedPaths = ['/pro-audit', '/deep-scan']
+  const protectedPaths = ['/pro-audit', '/deep-scan', '/battle-mode', '/keyword-arena', '/ai-test', '/dashboard']
   const isProtected = protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))
 
   if (isProtected && !user) {
@@ -37,6 +37,25 @@ export async function middleware(request: NextRequest) {
     url.pathname = '/login'
     url.searchParams.set('redirect', request.nextUrl.pathname)
     return NextResponse.redirect(url)
+  }
+
+  // Free-plan users can only access AI Visibility and Dashboard — redirect others to pricing
+  const paidOnlyPaths = ['/pro-audit', '/deep-scan', '/battle-mode', '/keyword-arena']
+  const isPaidOnly = paidOnlyPaths.some(path => request.nextUrl.pathname.startsWith(path))
+
+  if (isPaidOnly && user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('plan, is_admin')
+      .eq('id', user.id)
+      .single()
+
+    if (profile && profile.plan === 'free' && !profile.is_admin) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/pricing'
+      url.searchParams.set('upgrade', 'true')
+      return NextResponse.redirect(url)
+    }
   }
 
   // If logged in and hitting /login, redirect to dashboard

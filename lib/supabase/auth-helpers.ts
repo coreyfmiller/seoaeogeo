@@ -20,6 +20,9 @@ export const PLAN_CREDITS: Record<Exclude<UserPlan, 'free'>, number> = {
   test:      50,    // $5.00 (payment test)
 }
 
+// Free credits granted on signup (5 AI Visibility checks at 5 credits each)
+export const FREE_SIGNUP_CREDITS = 25
+
 // Max crawl pages (same for all paid plans)
 export const MAX_CRAWL_PAGES = 50
 

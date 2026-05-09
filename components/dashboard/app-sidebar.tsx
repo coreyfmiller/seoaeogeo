@@ -126,6 +126,10 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
 
   const isAdmin = profile?.is_admin === true
   const isFreeUser = !user
+  const isFreePlan = profile?.plan === 'free' && !isAdmin
+
+  // Free plan users can only access AI Visibility — other tools are locked
+  const freeLockedPaths = ['/pro-audit', '/deep-scan', '/battle-mode', '/keyword-arena']
 
   const referralUrl = referralCode
     ? `https://duelly.ai/signup?ref=${referralCode}`
@@ -159,7 +163,8 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
               .filter(item => item.badge !== 'ADMIN' || isAdmin)
               .map((item) => {
               const isProOnly = proOnlyPaths.includes(item.href)
-              const isLocked = isProOnly && isFreeUser
+              const isLockedFree = isFreePlan && freeLockedPaths.includes(item.href)
+              const isLocked = (isProOnly && isFreeUser) || isLockedFree
               const href = isLocked ? '/pricing' : item.href
 
               return (
@@ -171,12 +176,17 @@ export function AppSidebar({ mobile }: AppSidebarProps = {}) {
                     pathname === item.href
                       ? "bg-seo/10 text-seo font-medium"
                       : isLocked
-                        ? "text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/30"
+                        ? "text-muted-foreground/40 hover:text-muted-foreground/60 hover:bg-muted/20 cursor-not-allowed"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                   )}
                 >
-                  <item.icon className={cn("h-4 w-4", isLocked && "opacity-50")} />
-                  <span className={cn("flex-1", isLocked && "opacity-50")}>{item.name}</span>
+                  <item.icon className={cn("h-4 w-4", isLocked && "opacity-40")} />
+                  <span className={cn("flex-1", isLocked && "opacity-40")}>{item.name}</span>
+                  {isLockedFree && (
+                    <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-white/5 text-muted-foreground/40 border border-white/10 text-[9px] font-bold uppercase tracking-wider">
+                      🔒
+                    </span>
+                  )}
                   {item.badge === "PRO" && (
                     <span className="flex items-center justify-center px-1.5 py-0.5 rounded bg-green-500/10 text-green-600 border border-green-500/20 text-[9px] font-bold uppercase tracking-wider shadow-sm">
                       {item.badge}
