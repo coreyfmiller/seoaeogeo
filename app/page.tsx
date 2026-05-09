@@ -168,7 +168,8 @@ export default function HomePage() {
 
       {/* The Problem — Why This Matters */}
       <section className="max-w-4xl mx-auto px-6 py-16 border-t border-border/30 text-center">
-        <h2 className="text-3xl font-black mb-6">Search Has Split in Two. Most Businesses Only Optimize for One.</h2>
+        <h2 className="text-3xl font-black mb-4">Search Has Split in Two. Most Businesses Only Optimize for One.</h2>
+        <p className="text-lg text-[#00e5ff] font-bold mb-6">We help you optimize for both.</p>
         <div className="grid md:grid-cols-2 gap-6 text-left">
           <div className="p-6 rounded-2xl border border-white/10 bg-white/[0.02]">
             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">Old Search (2015-2024)</p>
