@@ -21,6 +21,14 @@ interface BlogPost {
 
 const posts: BlogPost[] = [
   {
+    slug: 'backlink-strategy-guide',
+    title: 'The Complete Backlink Strategy Guide for Small Businesses (2026)',
+    description: 'Everything you need to know about building backlinks. DIY tactics, professional services, what to avoid, and how backlinks affect both Google and AI search visibility.',
+    date: '2026-05-10',
+    category: 'Guide',
+    readTime: '18 min',
+  },
+  {
     slug: 'schema-markup-small-business',
     title: 'Schema Markup for Small Businesses: What It Is and Why You Need It',
     description: 'Schema markup sounds technical but it\'s one of the easiest ways to stand out in search results. Here\'s how to get started.',

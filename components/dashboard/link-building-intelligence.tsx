@@ -67,47 +67,31 @@ export function LinkBuildingIntelligence({ metrics, backlinks, nofollowOnly }: L
           ))}
         </div>
 
-        {/* DA Assessment */}
-        <div className={cn("rounded-lg p-4 border",
-          da < 20 ? "border-red-500/30 bg-red-500/5" :
-          da < 40 ? "border-yellow-500/30 bg-yellow-500/5" :
-          da < 60 ? "border-seo/30 bg-seo/5" :
-          "border-green-500/30 bg-green-500/5"
+        {/* DA Assessment + Guide Link */}
+        <a href="/blog/backlink-strategy-guide" className={cn("block rounded-lg p-4 border transition-colors",
+          da < 20 ? "border-red-500/30 bg-red-500/5 hover:bg-red-500/10" :
+          da < 40 ? "border-yellow-500/30 bg-yellow-500/5 hover:bg-yellow-500/10" :
+          da < 60 ? "border-seo/30 bg-seo/5 hover:bg-seo/10" :
+          "border-green-500/30 bg-green-500/5 hover:bg-green-500/10"
         )}>
           <p className={cn("text-sm font-bold mb-1",
             da < 20 ? "text-red-500" : da < 40 ? "text-yellow-500" : da < 60 ? "text-seo" : "text-green-500"
           )}>
-            {da < 20 && "Want to get ahead of your competition? You need a backlink strategy."}
-            {da >= 20 && da < 40 && "Building momentum — a focused backlink strategy will set you apart."}
-            {da >= 40 && da < 60 && "Solid authority foundation. Keep building quality links."}
+            {da < 20 && "You need a backlink strategy to compete."}
+            {da >= 20 && da < 40 && "A focused backlink strategy will set you apart."}
+            {da >= 40 && da < 60 && "Solid authority. Keep building quality links."}
             {da >= 60 && "Strong domain authority. Maintain your edge."}
           </p>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            {da < 20 && "With a Domain Authority of " + da + ", even great on-page optimization won't be enough to outrank competitors with stronger backlink profiles. The sites ranking above you likely have more high-quality links pointing to them. A deliberate link-building strategy is the single highest-ROI activity you can invest in right now."}
-            {da >= 20 && da < 40 && "A Domain Authority of " + da + " puts you in the average range. You're competitive for lower-difficulty keywords, but to rank for anything meaningful you need to actively earn quality backlinks. Consistent link building will push you ahead of competitors who aren't working on this."}
-            {da >= 40 && da < 60 && "A Domain Authority of " + da + " is strong. You're competitive for most keywords. Focus on earning links from high-authority sites in your industry to break into the top tier."}
-            {da >= 60 && "A Domain Authority of " + da + " puts you in the top tier. Focus on maintaining your backlink profile, earning links from authoritative sources, and disavowing any toxic links."}
+            {da < 20 && "With a Domain Authority of " + da + ", even great on-page optimization won't outrank competitors with stronger backlink profiles. A deliberate link-building strategy is the single highest-ROI activity you can invest in right now."}
+            {da >= 20 && da < 40 && "A Domain Authority of " + da + " puts you in the average range. To rank for meaningful keywords you need to actively earn quality backlinks."}
+            {da >= 40 && da < 60 && "A Domain Authority of " + da + " is strong. Focus on earning links from high-authority sites in your industry to break into the top tier."}
+            {da >= 60 && "A Domain Authority of " + da + " puts you in the top tier. Focus on maintaining your profile and disavowing any toxic links."}
           </p>
-        </div>
-
-        {/* Actionable Tactics */}
-        <div className="space-y-2">
-          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">What You Can Do</p>
-          {[
-            da < 30 && { icon: "📍", title: "Claim your free listings", desc: "Get listed on Google Business Profile, Yelp, and industry directories. These are free and give your site an immediate authority boost." },
-            { icon: "🤝", title: "Ask people you already work with", desc: "Vendors, suppliers, partners, and local business associations already know you. Ask them to link to your website." },
-            { icon: "📝", title: "Create something worth sharing", desc: "Write a helpful guide, build a resource page, or answer common questions. Useful content naturally attracts links over time." },
-            metrics.spamScore > 20 && { icon: "⚠️", title: "Review your backlink quality", desc: `Your spam score is ${metrics.spamScore}%. Some questionable sites may be linking to you. Consider using Google's Disavow Tool to clean up toxic links.` },
-          ].filter(Boolean).map((tactic: any, i) => (
-            <div key={i} className="flex items-start gap-3 rounded-lg border border-border/30 bg-card/30 p-3">
-              <span className="text-lg shrink-0">{tactic.icon}</span>
-              <div>
-                <p className="text-sm font-bold">{tactic.title}</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">{tactic.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+          <p className="text-xs font-bold text-green-500 mt-2 flex items-center gap-1">
+            Read our complete backlink strategy guide →
+          </p>
+        </a>
 
         {/* Top Referring Domains — always visible, prominent */}
         {backlinks.length > 0 && (
@@ -145,16 +129,6 @@ export function LinkBuildingIntelligence({ metrics, backlinks, nofollowOnly }: L
           </div>
         )}
 
-        {/* Professional Link Building CTA */}
-        <div className="rounded-lg border border-green-500/30 bg-green-500/[0.05] p-4 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-bold text-green-500">Explore a quality backlink strategy with a professional</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Let experts handle the outreach, content, and relationship building for you.</p>
-          </div>
-          <button className="shrink-0 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-500 border border-green-500/30 rounded-lg text-xs font-bold transition-colors">
-            Learn More →
-          </button>
-        </div>
       </CardContent>
     </Card>
   )

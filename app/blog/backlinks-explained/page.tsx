@@ -140,11 +140,16 @@ export default function BacklinksExplainedPage() {
           </p>
 
           <div className="mt-12 p-6 rounded-2xl border border-[#00e5ff]/30 bg-[#00e5ff]/5">
-            <h3 className="font-bold mb-2">See how your backlink profile stacks up</h3>
-            <p className="text-sm text-muted-foreground mb-4">Sign up to audit your site&apos;s SEO health, including backlink intelligence.</p>
-            <Link href="/signup" className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-bold text-sm transition-colors">
-              Get Started <ArrowRight className="h-4 w-4" />
-            </Link>
+            <h3 className="font-bold mb-2">Ready to build a real backlink strategy?</h3>
+            <p className="text-sm text-muted-foreground mb-4">Read our complete guide with 12 DIY tactics, a 90-day plan, and vetted professional services.</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link href="/blog/backlink-strategy-guide" className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#00e5ff] hover:bg-[#00e5ff]/90 text-black font-bold text-sm transition-colors">
+                Read the Full Strategy Guide <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/signup" className="inline-flex items-center gap-2 px-5 py-2 rounded-lg border border-border/50 hover:border-[#00e5ff]/30 text-muted-foreground hover:text-foreground font-medium text-sm transition-colors">
+                Check My Visibility Free
+              </Link>
+            </div>
           </div>
         </div>
       </article>

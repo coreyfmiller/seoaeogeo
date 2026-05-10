@@ -440,35 +440,18 @@ export default function DemoBattleModePage() {
                 </p>
               </div>
 
-              {/* Simple Actionable Tactics */}
-              <div className="space-y-2">
-                <p className="text-xs font-bold text-white/50 uppercase tracking-widest">What You Can Do</p>
-                {[
-                  { icon: '📍', title: 'Claim your free listings', desc: 'Make sure you\'re listed on Google Business Profile, Yelp, and any directories specific to your industry. These are free and give your site an immediate authority boost.' },
-                  { icon: '🤝', title: 'Ask people you already work with', desc: 'Your vendors, suppliers, partners, and local business associations already know you. Ask them to add a link to your website on theirs — most will be happy to.' },
-                  { icon: '📝', title: 'Create something worth sharing', desc: 'Write a helpful guide, build a local resource page, or answer common questions in your industry. Useful content naturally attracts links from other websites over time.' },
-                  { icon: '🎯', title: `${linkGap.length} websites link to your competitor but not you`, desc: 'These sites already link to businesses in your space — they\'re your best opportunities. Reaching out to them is the fastest way to earn quality backlinks.' },
-                ].map((tactic, i) => (
-                  <div key={i} className="flex items-start gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
-                    <span className="text-lg shrink-0">{tactic.icon}</span>
-                    <div>
-                      <p className="text-xs font-bold text-white/80">{tactic.title}</p>
-                      <p className="text-xs text-white/50 leading-relaxed mt-0.5">{tactic.desc}</p>
-                    </div>
+              {/* Backlink Strategy Guide Link */}
+              <a href="/blog/backlink-strategy-guide" className="block rounded-lg border border-green-500/30 bg-green-500/[0.05] p-4 hover:bg-green-500/[0.08] transition-colors">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-bold text-green-400">You need a backlink strategy to close this gap.</p>
+                    <p className="text-xs text-white/40 mt-0.5">Read our complete guide: 12 DIY tactics, a 90-day plan, and vetted professional services.</p>
                   </div>
-                ))}
-              </div>
-
-              {/* CTA */}
-              <div className="mt-4 rounded-lg border border-green-500/30 bg-green-500/[0.05] p-4 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-bold text-green-400">Explore a quality backlink strategy with a professional</p>
-                  <p className="text-xs text-white/40 mt-0.5">Let experts handle the outreach, content, and relationship building for you.</p>
+                  <span className="shrink-0 px-4 py-2 bg-green-500/20 text-green-400 border border-green-500/30 rounded-lg text-xs font-bold">
+                    Read Guide →
+                  </span>
                 </div>
-                <button className="shrink-0 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 rounded-lg text-xs font-bold transition-colors">
-                  Learn More →
-                </button>
-              </div>
+              </a>
             </div>
 
             {/* ── Stolen Opportunities & Strategic Gaps ── */}
