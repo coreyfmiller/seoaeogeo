@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuthUser } from '@/lib/supabase/auth-helpers'
+import { getAuthUser, getAIVisibilityCount, incrementScanCount } from '@/lib/supabase/auth-helpers'
 import { runAITest } from '@/lib/ai-test-engines'
 import { generateAITestInsights } from '@/lib/ai-test-insights'
+
+const FREE_AI_VISIBILITY_LIMIT = 10
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,9 +12,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Keyword is required' }, { status: 400 })
     }
 
-    // Auth only — AI Visibility is free
+    // Auth only — AI Visibility is free (up to 10 lifetime checks)
     const user = await getAuthUser()
     if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+
+    // Check lifetime usage
+    const usageCount = await getAIVisibilityCount(user.id)
+    if (usageCount >= FREE_AI_VISIBILITY_LIMIT) {
+      return NextResponse.json({
+        error: `You've used all ${FREE_AI_VISIBILITY_LIMIT} free AI Visibility checks. Purchase credits to unlock unlimited access.`,
+        limitReached: true,
+        used: usageCount,
+        limit: FREE_AI_VISIBILITY_LIMIT,
+      }, { status: 402 })
+    }
 
     // Build the search query: append location if provided
     const searchKeyword = location?.trim()
@@ -94,9 +107,12 @@ export async function POST(req: NextRequest) {
         console.error('[AI Test] Insights generation failed:', err)
       }
 
+      // Increment usage counter after successful scan
+      await incrementScanCount(user.id, 'ai-visibility')
+
       return NextResponse.json({
         success: true,
-        data: { keyword: keyword.trim(), results, consensus, insights },
+        data: { keyword: keyword.trim(), results, consensus, insights, usageCount: usageCount + 1, usageLimit: FREE_AI_VISIBILITY_LIMIT },
       })
     } catch (innerErr: any) {
       console.error('[AI Test] Inner error:', innerErr)

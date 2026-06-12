@@ -29,6 +29,8 @@ interface AITestResult {
   results: EngineResult[]
   consensus: ConsensusItem[]
   insights?: { visibility: string; competitors: string; actions: string[]; nextTool: { name: string; reason: string } } | null
+  usageCount?: number
+  usageLimit?: number
 }
 
 const ENGINE_META: Record<string, { label: string; color: string; icon: React.ReactNode; desc: string }> = {
@@ -214,7 +216,7 @@ export default function AITestPage() {
               <FlaskConical className="h-6 w-6 text-[#00e5ff]" />
               AI Visibility
             </h1>
-            <p className="text-sm text-white/60 mt-1.5">Compare real Google Search results with AI recommendations from Gemini, ChatGPT, and Perplexity. See who ranks where — and if AI can find you. <span className="text-[#00e5ff] font-bold">Free — no credits required.</span></p>
+            <p className="text-sm text-white/60 mt-1.5">Compare real Google Search results with AI recommendations from Gemini, ChatGPT, and Perplexity. See who ranks where — and if AI can find you. <span className="text-[#00e5ff] font-bold">10 free checks per account.</span></p>
           </div>
 
           <ScanErrorDialog error={error} onClose={() => setError(null)} creditsRefunded={creditsRefunded} />
@@ -233,6 +235,9 @@ export default function AITestPage() {
                   {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <FlaskConical className="h-4 w-4" />} Check AI Visibility
                 </button>
               </div>
+              {result?.usageCount != null && result?.usageLimit != null && (
+                <p className="text-[10px] text-white/30 mt-1.5">{result.usageLimit - result.usageCount} of {result.usageLimit} free checks remaining</p>
+              )}
             </div>
             <div>
               <p className="text-xs text-white font-bold mb-1.5">Step 2 — Add a location <span className="text-white/30 font-normal">(optional, for local results)</span></p>
@@ -498,7 +503,7 @@ export default function AITestPage() {
                   <span className="flex items-center gap-1.5"><Bot className="h-4 w-4 text-[#BC13FE]" /> ChatGPT</span>
                   <span className="flex items-center gap-1.5"><Sparkles className="h-4 w-4 text-[#fe3f8c]" /> Perplexity</span>
                 </div>
-                <p className="text-xs text-[#00e5ff]/60 font-bold">Free — no credits required</p>
+                <p className="text-xs text-[#00e5ff]/60 font-bold">10 free checks per account</p>
               </div>
             </div>
           )}

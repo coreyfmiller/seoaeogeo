@@ -85,10 +85,11 @@ export async function useCredits(
 // Increment lifetime scan counter on profile after a successful scan
 export async function incrementScanCount(
   userId: string,
-  type: 'pro' | 'deep' | 'competitive'
+  type: 'pro' | 'deep' | 'competitive' | 'ai-visibility'
 ): Promise<void> {
   const col = type === 'pro' ? 'total_pro_audits'
     : type === 'deep' ? 'total_deep_scans'
+    : type === 'ai-visibility' ? 'total_ai_visibility'
     : 'total_competitive_intel'
 
   const { data: profile } = await supabaseAdmin
@@ -103,6 +104,17 @@ export async function incrementScanCount(
     .from('profiles')
     .update({ [col]: ((profile as any)[col] || 0) + 1 })
     .eq('id', userId)
+}
+
+// Get the count of AI Visibility checks a user has run
+export async function getAIVisibilityCount(userId: string): Promise<number> {
+  const { data: profile } = await supabaseAdmin
+    .from('profiles')
+    .select('total_ai_visibility')
+    .eq('id', userId)
+    .single()
+
+  return (profile as any)?.total_ai_visibility || 0
 }
 
 // Add credits to a user (called from Stripe webhook after purchase)
