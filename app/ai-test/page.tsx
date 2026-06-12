@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { PageShell } from "@/components/dashboard/page-shell"
-import { CreditConfirmDialog } from "@/components/dashboard/credit-confirm-dialog"
 import { ScanErrorDialog } from "@/components/dashboard/scan-error-dialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -30,7 +29,6 @@ interface AITestResult {
   results: EngineResult[]
   consensus: ConsensusItem[]
   insights?: { visibility: string; competitors: string; actions: string[]; nextTool: { name: string; reason: string } } | null
-  creditCost: number
 }
 
 const ENGINE_META: Record<string, { label: string; color: string; icon: React.ReactNode; desc: string }> = {
@@ -48,7 +46,6 @@ export default function AITestPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [creditsRefunded, setCreditsRefunded] = useState(0)
-  const [creditDialogOpen, setCreditDialogOpen] = useState(false)
   const [retryingEngine, setRetryingEngine] = useState<string | null>(null)
   const autoRetryDoneRef = useRef<string | null>(null) // tracks which result set we've auto-retried
 
@@ -134,13 +131,8 @@ export default function AITestPage() {
     }
   }, [result])
 
-  const handleRun = () => {
+  const handleRun = async () => {
     if (!keyword.trim()) return
-    setCreditDialogOpen(true)
-  }
-
-  const handleConfirm = async () => {
-    setCreditDialogOpen(false)
     setIsLoading(true)
     setError(null)
     setCreditsRefunded(0)
@@ -151,7 +143,6 @@ export default function AITestPage() {
         body: JSON.stringify({ keyword: keyword.trim(), userUrl: userUrl.trim() || undefined, location: location.trim() || undefined }),
       })
       const data = await res.json()
-      if (typeof window !== 'undefined') window.dispatchEvent(new Event('credits-changed'))
       if (data.success) {
         setResult(data.data)
         saveScanToHistory({
@@ -223,12 +214,10 @@ export default function AITestPage() {
               <FlaskConical className="h-6 w-6 text-[#00e5ff]" />
               AI Visibility
             </h1>
-            <p className="text-sm text-white/60 mt-1.5">Compare real Google Search results with AI recommendations from Gemini, ChatGPT, and Perplexity. See who ranks where — and if AI can find you.</p>
+            <p className="text-sm text-white/60 mt-1.5">Compare real Google Search results with AI recommendations from Gemini, ChatGPT, and Perplexity. See who ranks where — and if AI can find you. <span className="text-[#00e5ff] font-bold">Free — no credits required.</span></p>
           </div>
 
           <ScanErrorDialog error={error} onClose={() => setError(null)} creditsRefunded={creditsRefunded} />
-          <CreditConfirmDialog open={creditDialogOpen} onConfirm={handleConfirm} onCancel={() => setCreditDialogOpen(false)}
-            creditCost={5} scanType="AI Visibility" costBreakdown="5 credits per run" />
 
           {/* Input */}
           <div className="mb-6 space-y-3">
@@ -288,13 +277,38 @@ export default function AITestPage() {
                   <CardHeader className="pb-3">
                     <CardTitle className="text-white flex items-center gap-2 text-base">
                       <Trophy className="h-5 w-5 text-[#f59e0b]" />
-                      AI Consensus — Mentioned by {result.consensus[0].engines.length}+ Engines
+                      {(() => {
+                        // Check if the user's site is actually in the consensus
+                        const userInConsensus = userDomain && result.consensus.some(c => {
+                          const cNameNorm = c.name.toLowerCase().replace(/[^a-z0-9]/g, '')
+                          const cUrlNorm = c.url ? c.url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '').toLowerCase() : ''
+                          return (cUrlNorm && cUrlNorm.includes(userDomain)) ||
+                            (userDomainBase && cNameNorm.includes(userDomainBase)) ||
+                            (userDomainBase && cUrlNorm.includes(userDomainBase))
+                        })
+                        if (userDomain && !userInConsensus) {
+                          return `Top Competitors — Mentioned by ${result.consensus[0].engines.length}+ Engines`
+                        }
+                        return `AI Consensus — Mentioned by ${result.consensus[0].engines.length}+ Engines`
+                      })()}
                     </CardTitle>
+                    {userDomain && !result.consensus.some(c => {
+                      const cNameNorm = c.name.toLowerCase().replace(/[^a-z0-9]/g, '')
+                      const cUrlNorm = c.url ? c.url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '').toLowerCase() : ''
+                      return (cUrlNorm && cUrlNorm.includes(userDomain)) ||
+                        (userDomainBase && cNameNorm.includes(userDomainBase)) ||
+                        (userDomainBase && cUrlNorm.includes(userDomainBase))
+                    }) && (
+                      <p className="text-xs text-red-400/80 mt-1">Your site is not among the businesses recommended by multiple AI engines for this keyword.</p>
+                    )}
                   </CardHeader>
                   <CardContent className="space-y-2">
                     {result.consensus.map((c, i) => (
                       <div key={i} className={cn("flex items-center gap-3 p-3 rounded-lg border",
-                        userDomain && c.name.toLowerCase().includes(userDomain.split('.')[0])
+                        userDomain && (
+                          c.name.toLowerCase().replace(/[^a-z0-9]/g, '').includes(userDomainBase) ||
+                          (c.url && c.url.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '').toLowerCase().includes(userDomain))
+                        )
                           ? "border-[#00e5ff]/40 bg-[#00e5ff]/10" : "border-white/[0.06] bg-white/[0.02]")}>
                         <div className="flex items-center gap-1">
                           {c.engines.map(e => {
@@ -484,7 +498,7 @@ export default function AITestPage() {
                   <span className="flex items-center gap-1.5"><Bot className="h-4 w-4 text-[#BC13FE]" /> ChatGPT</span>
                   <span className="flex items-center gap-1.5"><Sparkles className="h-4 w-4 text-[#fe3f8c]" /> Perplexity</span>
                 </div>
-                <p className="text-xs text-white/30">5 credits per run</p>
+                <p className="text-xs text-[#00e5ff]/60 font-bold">Free — no credits required</p>
               </div>
             </div>
           )}

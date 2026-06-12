@@ -104,7 +104,7 @@ export default function HomePage() {
             View Demo
           </Link>
         </div>
-        <p className="text-sm text-muted-foreground mt-3">No credit card needed. 5 free checks. Results in minutes.</p>
+        <p className="text-sm text-muted-foreground mt-3">No credit card needed. Free and unlimited. Results in minutes.</p>
       </section>
 
       {/* AI Visibility Table — The Hook */}
@@ -220,7 +220,7 @@ export default function HomePage() {
             <div className="flex items-center gap-2 mb-3">
               <Bot className="h-5 w-5 text-[#00e5ff]" />
               <h3 className="text-lg font-bold">AI Visibility Check</h3>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-[#00e5ff]/20 text-[#00e5ff] font-bold">5 credits</span>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-[#00e5ff]/20 text-[#00e5ff] font-bold">Free</span>
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
               Query Google, ChatGPT, Gemini, and Perplexity for your keyword. See which engines recommend you, which recommend competitors, and where you&apos;re invisible.
@@ -361,7 +361,7 @@ export default function HomePage() {
             },
             {
               q: 'How much does it cost?',
-              a: 'Credit packs start at $79.99 for 180 credits. AI Visibility Check costs 5 credits, Pro Audit costs 10, Competitor Duel costs 10, Keyword Arena costs 10, Deep Scan costs 30. No subscription. Credits never expire.',
+              a: 'Credit packs start at $79.99 for 180 credits. AI Visibility Check is free, Pro Audit costs 10, Competitor Duel costs 10, Keyword Arena costs 10, Deep Scan costs 30. No subscription. Credits never expire.',
             },
             {
               q: 'What platforms do you support?',

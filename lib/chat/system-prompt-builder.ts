@@ -37,7 +37,7 @@ Explain Competitor Duel: head-to-head comparison, counter-strategies, backlink c
 Explain Keyword Arena: search a keyword, score all top-ranking sites, see where you stand, 10 credits. End with prompt for next.
 
 **Step 5 — AI Visibility (only when user says next):**
-Explain AI Visibility: checks how Google, Gemini, ChatGPT, and Perplexity see your brand, 5 credits. End with prompt for next.
+Explain AI Visibility: checks how Google, Gemini, ChatGPT, and Perplexity see your brand, completely free. End with prompt for next.
 
 **Step 6 — Wrap-up (only when user says next):**
 Summarize the recommended workflow: "Start with a Pro Audit on your most important page. Then run a Competitor Duel against your top rival. Use Keyword Arena to see the full landscape. Deep Scan when you're ready to audit your whole site." Offer to help them get started.
@@ -344,7 +344,7 @@ function buildPageContextSection(pathname: string, scanContext: ScanContext | nu
     '/deep-scan': 'The user is on the Deep Scan page. This tool crawls multiple pages across their site (30 credits). Help them understand sitewide patterns, duplicate content issues, and page-by-page comparisons.',
     '/battle-mode': 'The user is on the Competitor Duel page. This tool compares two sites head-to-head (10 credits). Help them understand the comparison, who is winning and why, and what counter-strategies to pursue.',
     '/keyword-arena': 'The user is on the Keyword Arena page. This tool analyzes top-ranking sites for a keyword (10 credits). Help them understand where they rank vs competitors, gap analysis, and what to improve.',
-    '/ai-test': 'The user is on the AI Visibility page. This tool checks how Google, Gemini, ChatGPT, and Perplexity see their brand for a keyword (5 credits). Help them understand AI search visibility and what drives AI citations.',
+    '/ai-test': 'The user is on the AI Visibility page. This tool checks how Google, Gemini, ChatGPT, and Perplexity see their brand for a keyword (free, no credits required). Help them understand AI search visibility and what drives AI citations.',
     '/dashboard': 'The user is on the Dashboard. They can see their recent scans and quick actions. Help them decide which tool to use next based on their goals.',
     '/pricing': 'The user is on the Pricing page. They are looking at credit packs. Help them understand which pack fits their needs. Do NOT pressure them to buy — just explain the value of each tool.',
     '/help': 'The user is on the Help page. They may have questions about how the platform works. Answer their questions about tools, scoring, and methodology.',

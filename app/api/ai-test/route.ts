@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAuthUser, useCredits, refundCredits } from '@/lib/supabase/auth-helpers'
+import { getAuthUser } from '@/lib/supabase/auth-helpers'
 import { runAITest } from '@/lib/ai-test-engines'
 import { generateAITestInsights } from '@/lib/ai-test-insights'
-
-const CREDIT_COST = 5
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,21 +10,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Keyword is required' }, { status: 400 })
     }
 
-    // Auth + credits
+    // Auth only — AI Visibility is free
     const user = await getAuthUser()
     if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-
-    const creditResult = await useCredits(user.id, CREDIT_COST)
-    if (!creditResult.allowed) {
-      return NextResponse.json({ error: 'Insufficient credits' }, { status: 402 })
-    }
 
     // Build the search query: append location if provided
     const searchKeyword = location?.trim()
       ? `${keyword.trim()} in ${location.trim()}`
       : keyword.trim()
 
-    let creditsDeducted = true
     console.log(`[AI Test] Running for keyword: "${searchKeyword}"${location ? ` (location: ${location.trim()})` : ''}`)
 
     try {
@@ -35,13 +27,9 @@ export async function POST(req: NextRequest) {
       // Check if all engines failed
       const allFailed = results.every(r => r.error && r.recommendations.length === 0)
       if (allFailed) {
-        await refundCredits(user.id, CREDIT_COST)
-        creditsDeducted = false
-        if (typeof globalThis.window !== 'undefined') globalThis.window.dispatchEvent(new Event('credits-changed'))
         return NextResponse.json({
           success: false,
-          error: 'All AI engines failed to respond. Your 5 credits have been refunded.',
-          creditsRefunded: CREDIT_COST,
+          error: 'All AI engines failed to respond. Please try again.',
           results,
         })
       }
@@ -108,18 +96,13 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        data: { keyword: keyword.trim(), results, consensus, insights, creditCost: CREDIT_COST },
+        data: { keyword: keyword.trim(), results, consensus, insights },
       })
     } catch (innerErr: any) {
-      // AI test itself threw — refund credits
-      if (creditsDeducted) {
-        await refundCredits(user.id, CREDIT_COST)
-      }
       console.error('[AI Test] Inner error:', innerErr)
       return NextResponse.json({
         success: false,
-        error: `AI Test failed: ${innerErr.message || 'Unknown error'}. Your 5 credits have been refunded.`,
-        creditsRefunded: CREDIT_COST,
+        error: `AI Test failed: ${innerErr.message || 'Unknown error'}. Please try again.`,
       }, { status: 500 })
     }
   } catch (err: any) {
