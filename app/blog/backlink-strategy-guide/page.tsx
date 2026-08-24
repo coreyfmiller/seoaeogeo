@@ -420,22 +420,6 @@ export default function BacklinkStrategyGuidePage() {
           <div className="space-y-4 my-6">
             {[
               {
-                name: 'uSERP',
-                url: 'https://userp.io',
-                best: 'SaaS, tech companies, and businesses wanting links from major publications',
-                approach: 'Digital PR and content-driven link building. They create original content and pitch it to journalists and editors at high-DA publications.',
-                price: '$5,000–$15,000/month',
-                minDa: 'DA 50+ placements typical',
-              },
-              {
-                name: 'The HOTH',
-                url: 'https://www.thehoth.com',
-                best: 'Small businesses wanting affordable, managed link building',
-                approach: 'Guest posting, blogger outreach, and managed link building packages. They handle content creation and outreach. Multiple tiers from starter to enterprise.',
-                price: '$500–$5,000/month',
-                minDa: 'DA 20–60 depending on package',
-              },
-              {
                 name: 'Fat Joe',
                 url: 'https://fatjoe.com',
                 best: 'Agencies and businesses wanting à la carte link building',
@@ -452,12 +436,28 @@ export default function BacklinkStrategyGuidePage() {
                 minDa: 'DA 20–80 sites available',
               },
               {
+                name: 'The HOTH',
+                url: 'https://www.thehoth.com',
+                best: 'Small businesses wanting affordable, managed link building',
+                approach: 'Guest posting, blogger outreach, and managed link building packages. They handle content creation and outreach. Multiple tiers from starter to enterprise.',
+                price: '$500–$5,000/month',
+                minDa: 'DA 20–60 depending on package',
+              },
+              {
                 name: 'Stellar SEO',
                 url: 'https://www.stellarseo.com',
                 best: 'Local businesses and service companies wanting white-hat link building',
                 approach: 'Custom outreach campaigns, digital PR, and content marketing. They focus on building relationships with publishers rather than transactional link buying.',
                 price: '$2,500–$10,000/month',
                 minDa: 'DA 40+ focus',
+              },
+              {
+                name: 'uSERP',
+                url: 'https://userp.io',
+                best: 'SaaS, tech companies, and businesses wanting links from major publications',
+                approach: 'Digital PR and content-driven link building. They create original content and pitch it to journalists and editors at high-DA publications.',
+                price: '$5,000–$15,000/month',
+                minDa: 'DA 50+ placements typical',
               },
             ].map((service, i) => (
               <div key={i} className="rounded-xl border border-border/50 bg-card/30 p-5 hover:border-[#22c55e]/30 transition-colors">

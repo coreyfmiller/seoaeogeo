@@ -11,3 +11,5 @@ node_modules/
 
 # Test data snapshots (local testing only)
 test-data/
+.vercel
+.env*.local
