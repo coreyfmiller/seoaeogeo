@@ -18,10 +18,8 @@ export interface UsageRecord {
 // Calculated cost was $0.0554, actual multiplier: 30.33x
 // Average cost per query: $0.0227 (based on 74 queries costing $1.68)
 const PRICING = {
-    'gemini-2.5-flash': { input: 2.275, output: 9.10 }, // $ per 1M tokens (adjusted 30.33x)
-    'gemini-2.0-flash': { input: 2.275, output: 9.10 },
-    'gemini-1.5-flash': { input: 2.275, output: 9.10 },
-    'gemini-1.5-pro': { input: 37.91, output: 151.65 },
+    // All flash-tier usage now routes through the self-updating alias.
+    'gemini-flash-latest': { input: 2.275, output: 9.10 }, // $ per 1M tokens (adjusted 30.33x)
     'default': { input: 3.03, output: 12.13 }
 };
 

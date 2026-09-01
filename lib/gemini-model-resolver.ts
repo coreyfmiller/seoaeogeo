@@ -5,7 +5,7 @@
  * Caches the result for 6 hours to avoid excessive API calls.
  */
 
-const PREFERRED_MODEL = 'gemini-2.5-flash'
+const PREFERRED_MODEL = 'gemini-flash-latest'
 const API_BASE = 'https://generativelanguage.googleapis.com/v1beta'
 
 // In-memory cache
@@ -72,14 +72,20 @@ async function discoverFlashModel(apiKey: string): Promise<string> {
   const data = await res.json()
   const models: Array<{ name: string; displayName: string; supportedGenerationMethods?: string[] }> = data.models || []
 
-  // Filter for flash models that support generateContent
+  // Filter for standard flash models that support generateContent.
+  // Exclude non-standard tiers: lite (lower capability), image/tts (different modality),
+  // and omni/experimental families (not drop-in replacements for the chat flash tier).
   const flashModels = models
     .filter(m => {
       const name = m.name.replace('models/', '')
-      const isFlash = name.includes('flash') && !name.includes('lite')
+      const isFlash = name.includes('flash')
+      const isStandardTier =
+        !name.includes('lite') &&
+        !name.includes('image') &&
+        !name.includes('tts') &&
+        !name.includes('omni')
       const supportsGenerate = m.supportedGenerationMethods?.includes('generateContent')
-      // Exclude preview/experimental unless no stable options
-      return isFlash && supportsGenerate
+      return isFlash && isStandardTier && supportsGenerate
     })
     .map(m => m.name.replace('models/', ''))
 
@@ -87,12 +93,18 @@ async function discoverFlashModel(apiKey: string): Promise<string> {
     throw new Error('No flash models available')
   }
 
-  // Prefer stable over preview, then sort by version descending
+  // Prefer stable over preview/experimental
   const stable = flashModels.filter(m => !m.includes('preview') && !m.includes('exp'))
   const candidates = stable.length > 0 ? stable : flashModels
 
-  // Sort descending — higher version numbers first
-  candidates.sort((a, b) => b.localeCompare(a))
+  // Sort by NUMERIC version descending (e.g. 3.7 > 3.6 > 2.5).
+  // localeCompare is wrong here: it sorts lexically so "gemini-omni-..." or
+  // "gemini-9" would beat "gemini-10". Parse the version number instead.
+  const versionOf = (name: string): number => {
+    const m = name.match(/gemini-(\d+(?:\.\d+)?)-flash/)
+    return m ? parseFloat(m[1]) : -1
+  }
+  candidates.sort((a, b) => versionOf(b) - versionOf(a))
 
   const chosen = candidates[0]
   console.log(`[Model Resolver] Discovered flash models: [${flashModels.join(', ')}] → chose: ${chosen}`)
